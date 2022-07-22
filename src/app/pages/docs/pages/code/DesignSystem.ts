@@ -43,7 +43,7 @@ export const DesignSystem = () => {
         box()(
           html(
             'a',
-            ['attr', 'href', '/design-system'],
+            ['attr', 'href', '/design'],
             ['style', 'textDecoration', 'none'],
             ['style', 'color', Theme.Color('white')],
             ['style', 'backgroundColor', Theme.Color('black')],

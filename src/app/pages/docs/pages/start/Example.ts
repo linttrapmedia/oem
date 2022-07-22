@@ -19,7 +19,7 @@ export const Example = () => {
       content: TodoExample(),
       sourceLink: {
         text: 'source',
-        href: 'https://github.com/kvnlnt/oem/blob/main/src/app/docs/elements/TodoExample.ts',
+        href: 'https://github.com/linttrapmedia/oem/blob/main/src/app/docs/elements/TodoExample.ts',
       },
     }),
     Section({

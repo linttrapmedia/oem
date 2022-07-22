@@ -11,7 +11,7 @@ MPA({
       menu: Menu(),
       content: (page ? PAGES[page].page : PAGES.colors.page)(),
       selectors: [
-        ['Design', ROUTES.DESIGN_SYSTEM],
+        ['Design', ROUTES.DESIGN],
         ['Docs', ROUTES.DOCS],
       ],
     }),

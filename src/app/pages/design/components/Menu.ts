@@ -25,7 +25,7 @@ export const Menu = () =>
         ['style', 'cursor', 'pointer'],
         ['style', 'display', 'block'],
         ['style_on_hover', 'color', Theme.Color('white')],
-        ['attr', 'href', `${ROUTES.DESIGN_SYSTEM}/?p=${k}`],
+        ['attr', 'href', `${ROUTES.DESIGN}/?p=${k}`],
         ['style', 'textDecoration', 'none'],
       )(title),
     ),
