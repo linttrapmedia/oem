@@ -28,7 +28,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       content: (PAGES[page] ?? PAGES.overview)(),
       selectors: [
         ['Docs', ROUTES.DOCS],
-        ['Design', ROUTES.DESIGN_SYSTEM],
+        ['Design', ROUTES.DESIGN],
       ],
     }),
   );

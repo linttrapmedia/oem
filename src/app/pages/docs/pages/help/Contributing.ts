@@ -11,7 +11,7 @@ export const Contributing = () => {
   return html('div')(
     Section({
       title: `Contributing`,
-      subtitle: 'Go to our [github](https://github.com/kvnlnt/oem) and do a PR!',
+      subtitle: 'Go to our [github](https://github.com/linttrapmedia/oem) and do a PR!',
     }),
     FooterNav({
       prev: 'faqs',

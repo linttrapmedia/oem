@@ -31,7 +31,7 @@ export const Overview = () =>
     Section({
       title: 'Setup',
       subtitle: 'Clone, Install, Start',
-      content: Snippet(`git clone https://github.com/kvnlnt/oem.git\nnpm i\nnpm start`, 50, 'bash'),
+      content: Snippet(`git clone https://github.com/linttrapmedia/oem.git\nnpm i\nnpm start`, 50, 'bash'),
     }),
     Section({
       title: 'Core Features',

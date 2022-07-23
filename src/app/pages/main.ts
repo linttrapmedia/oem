@@ -1,5 +1,6 @@
 import { Template } from '@core/framework/Template';
 import { Trait } from '@core/framework/Trait';
+import { SPA } from '@core/modules/SPA';
 import { Theme } from '@core/modules/Theme';
 import { box } from 'src/app/components/Layout/Box';
 
@@ -143,29 +144,17 @@ const page = () =>
       description(
         `**OEM** is a dependency-free UI framework and design system. The code is simple and straight forward with virtually no coupling which makes it easy to understand and maintain.`,
       ),
-      html('div', ['style', 'margin', '40px 20px'])(
-        button('/docs/?p=overview')('Docs'),
-        button('/design-system')('Design'),
-      ),
+      html('div', ['style', 'margin', '40px 20px'])(button('/docs/?p=overview')('Docs'), button('/design')('Design')),
       box(['direction', 'row'])(
-        imageLink('http://github.com/kvnlnt/oem')(
+        imageLink('http://linttrap.media')(
+          html('img', ['attr', 'src', '/assets/gfx/lint-trap-logo.svg'], ['attr', 'width', 65])(),
+        ),
+        imageLink('http://github.com/linttrapmedia/oem')(
           html('img', ['attr', 'src', '/assets/gfx/github.svg'], ['attr', 'width', 40])(),
         ),
       ),
-      copyright(`OEM js ~ the own your own framework framework.\ncopryright © 2022 kvnlnt.`),
+      copyright(`OEM js ~ the own your own framework framework.\ncopryright © 2022 linttrapmedia.`),
     ),
   );
 
-window.addEventListener('DOMContentLoaded', async () => {
-  const globalStyles = `html,body { 
-    min-height:100%; 
-    width:100%; 
-    padding:0;
-    margin:0;
-    font-family:${Theme.Font('Space Grotesk')};
-  }`;
-  const style = document.createElement('style');
-  style.innerHTML = globalStyles;
-  document.head.appendChild(style);
-  document.body.appendChild(page());
-});
+SPA(page());

@@ -21,7 +21,7 @@ const config = {
   javascript: {
     'src/app/pages/main.ts': 'public/main.js',
     'src/app/pages/docs/main.ts': 'public/docs/main.js',
-    'src/app/pages/design-system/main.ts': 'public/design-system/main.js',
+    'src/app/pages/design/main.ts': 'public/design/main.js',
   },
 
   /**
@@ -35,17 +35,17 @@ const config = {
     '/index.html': {
       template: 'src/app/templates/main.html',
       script: `<script src="main-${version}.js"></script>`,
-      title: 'Home',
+      title: 'oem',
     },
     '/docs/index.html': {
       template: 'src/app/templates/main.html',
       script: `<script src="main-${version}.js"></script>`,
-      title: 'Docs',
+      title: 'oem | Docs',
     },
-    '/design-system/index.html': {
+    '/design/index.html': {
       template: 'src/app/templates/main.html',
       script: `<script src="main-${version}.js"></script>`,
-      title: 'Design System',
+      title: 'oem | Design',
     },
   },
 };
