@@ -20,7 +20,7 @@ const Font = (font: keyof typeof Theme.Fonts, i: number) =>
     ['style', 'borderRadius', '5px'],
     ['style', 'border', `1px solid ${Theme.Color('white', -70)}`],
     ['style', 'display', 'flex'],
-    ['style', 'justifyContent', 'center'],
+    ['style', 'justifyContent', 'space-between'],
     ['style', 'alignItems', 'center'],
     ['style', 'cursor', 'pointer'],
     ['style', 'transition', 'all 0.5s'],
@@ -35,9 +35,13 @@ const Font = (font: keyof typeof Theme.Fonts, i: number) =>
       ['style', 'color', Theme.Color('white')],
       ['style', 'fontSize', '36px'],
       ['style', 'lineHeight', '1'],
-      ['style', 'padding', '50px'],
       ['style', 'flexGrow', 1],
       ['style', 'textTransform', 'capitalize'],
+      ['style', 'display', 'flex'],
+      ['style', 'justifyContent', 'center'],
+      ['style', 'alignItems', 'center'],
+      ['style', 'padding', '30px'],
+      ['style', 'textAlign', 'center'],
     )(`${font}`),
 
     // Name
