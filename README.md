@@ -1,5 +1,7 @@
 # [oem](https://oem.js.org)
 
+The Dependency-Free UI Framework
+
 ## Introduction
 
 OEM is a dependency-free UI framework and design system. The code is simple and straight forward with virtually no coupling which makes it easy to understand and maintain.
