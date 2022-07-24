@@ -6,6 +6,7 @@ git merge main --no-commit --no-ff && \
 npm run build && \
 mv public docs && \
 echo oem.js.org >> docs/CNAME && \
+echo oem.js.org >> CNAME && \
 git add . && \
 git commit -m 'deploy' && \
 git push && \
