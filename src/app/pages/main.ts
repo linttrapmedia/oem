@@ -153,7 +153,7 @@ const page = () =>
           html('img', ['attr', 'src', '/assets/gfx/github.svg'], ['attr', 'width', 40])(),
         ),
       ),
-      copyright(`OEM js ~ the own your own framework framework.\ncopryright © 2022 linttrapmedia.`),
+      copyright(`OEM js ~ the dependency-free u framework.\ncopryright © 2022 linttrapmedia.`),
     ),
   );
 

@@ -22,6 +22,7 @@ namespace Types {
     | { tag: 'blockquote'; type: HTMLQuoteElement }
     | { tag: 'body'; type: HTMLBodyElement }
     | { tag: 'button'; type: HTMLButtonElement }
+    | { tag: 'caption'; type: HTMLTableCaptionElement }
     | { tag: 'code'; type: HTMLElement }
     | { tag: 'dl'; type: HTMLDListElement }
     | { tag: 'dd'; type: HTMLDListElement }
