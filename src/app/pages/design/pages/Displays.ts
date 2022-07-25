@@ -15,11 +15,21 @@ export const Displays = () =>
       Section({
         title: 'Table',
         subtitle: 'A Basic HTML Table',
-        content: Table.Data(
-          Table.Head(Table.Row(Table.Header('Header'))),
-          Table.Body(Table.Row(Table.Cell('Cell 1'))),
-          Table.Body(Table.Row(Table.Cell('Cell 2'))),
-        ),
+        content: Table<{
+          id: string;
+          firstName: string;
+          lastName: string;
+        }>({
+          columns: [
+            { key: 'id', header: 'ID' },
+            { key: 'firstName', header: 'First Name', transform: (v) => v.toUpperCase() },
+            { key: 'lastName', header: 'Last Name' },
+          ],
+          records: [
+            { firstName: 'oem', lastName: 'ftw', id: '1' },
+            { firstName: 'dependencies', lastName: 'suck', id: '2' },
+          ],
+        }),
       }),
     ),
   );
