@@ -141,8 +141,14 @@ const StyleOnHover = (
   val: string | number,
   resetVal?: string | number,
 ) => {
-  const originalVal = resetVal ?? el.style[prop];
-  el.addEventListener('mouseover', () => ((<any>el.style)[prop] = val));
+  let originalVal = resetVal ?? el.style[prop] ?? null;
+  el.addEventListener('mouseover', () => {
+    // if there was no original value but now there is,
+    // we need to capture it first before we change its style
+    // this allows you to list a style trait (which is presumed to be an "original value") after a hover trait
+    if (!originalVal) originalVal = el.style[prop];
+    return ((<any>el.style)[prop] = val);
+  });
   el.addEventListener('mouseout', () => ((<any>el.style)[prop] = originalVal));
 };
 
