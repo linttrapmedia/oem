@@ -37,14 +37,14 @@ const tr = html('tr');
 type TableRecord = { id: string | number };
 
 type TableColumn<K> = {
-  key: K;
+  column?: K;
   header: string;
   footer?: string;
   width?: number | 'auto';
   sortable?: boolean;
   filter?: boolean;
   hidden?: boolean;
-  transform?: (v: any) => string;
+  transform?: (v: any) => Types.HtmlChild;
 };
 
 type TableProps<R extends TableRecord> = {
@@ -60,12 +60,15 @@ type TableProps<R extends TableRecord> = {
 // presentation
 
 export const Table = <Record extends TableRecord>({ columns, records, footer }: TableProps<Record>) => {
-  const noop = (v: any) => v;
   return table(
     thead(tr(...columns.map((c) => th(c.header)))),
     tbody(
       ...records.map((record) =>
-        tr(...columns.map(({ key, transform = noop }) => td(transform(record[key] as unknown as string)))),
+        tr(
+          ...columns.map(({ column, transform }) =>
+            td(transform ? transform(record) : column ? (record[column] as unknown as string) : null),
+          ),
+        ),
       ),
     ),
   );

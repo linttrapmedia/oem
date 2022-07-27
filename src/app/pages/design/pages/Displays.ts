@@ -8,16 +8,34 @@ const html = Template.Html({
   style: Trait.Style,
 });
 
-const tableExample = Table<{
+type TableExampleRecord = {
   id: string;
   firstName: string;
   lastName: string;
-}>({
+};
+
+const tableExample = Table<TableExampleRecord>({
   columns: [
-    { key: 'id', header: 'ID' },
-    { key: 'firstName', header: 'First Name' },
-    { key: 'lastName', header: 'Last Name' },
-    { key: 'fullName', header: 'Full Name', transform: (v) => v.toUpperCase() },
+    { column: 'id', header: 'ID' },
+    { column: 'firstName', header: 'First Name' },
+    { column: 'lastName', header: 'Last Name' },
+    {
+      header: 'Full Name',
+      transform: (record: TableExampleRecord) => record.firstName + ' ' + record.lastName,
+    },
+    {
+      header: 'Custom',
+      transform: () =>
+        html(
+          'button',
+          ['style', 'backgroundColor', Theme.Color('transparent')],
+          ['style', 'border', 'none'],
+          ['style', 'color', Theme.Color('white')],
+          ['style', 'border', `1px solid ${Theme.Color('white', 0, 0.2)}`],
+          ['style', 'fontSize', '11px'],
+          ['style', 'padding', '5px 10px'],
+        )('Edit'),
+    },
   ],
   records: [
     { firstName: 'oem', lastName: 'ftw', id: '1' },
