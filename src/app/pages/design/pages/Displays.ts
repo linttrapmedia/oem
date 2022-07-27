@@ -15,8 +15,9 @@ const tableExample = Table<{
 }>({
   columns: [
     { key: 'id', header: 'ID' },
-    { key: 'firstName', header: 'First Name', transform: (v) => v.toUpperCase() },
+    { key: 'firstName', header: 'First Name' },
     { key: 'lastName', header: 'Last Name' },
+    { key: 'fullName', header: 'Full Name', transform: (v) => v.toUpperCase() },
   ],
   records: [
     { firstName: 'oem', lastName: 'ftw', id: '1' },
