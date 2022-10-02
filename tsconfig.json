@@ -2,9 +2,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@services/*": ["src/services/*"],
-      "@utils/*": ["src/utils/*"],
-      "@core/*": ["src/core/*"]
+      "@apps/*": ["src/apps/*"],
+      "@core/*": ["src/core/*"],
+      "@services/*": ["src/services/*"]
     },
     "esModuleInterop": true,
     "moduleResolution": "node",

@@ -1,11 +1,15 @@
-const { startDevServer } = require('./lib/dev-server');
-const { startRefreshDevServer } = require('./lib/refresh-server');
-const { copyAssets } = require('./lib/assets');
-const { compilePages } = require('./lib/pages');
-const { bundleJavascript } = require('./lib/bundler');
+const { startDevServer } = require('./lib/servers/dev')
+const { startRefreshDevServer } = require('./lib/servers/refresh')
+const { copyAssets } = require('./lib/assets')
+const { compileHtml } = require('./lib/html')
+const { compileTypescript } = require('./lib/typescript')
+const { consoleSection } = require('./lib/util/console')
+const { printNetworkInterfaces } = require('./lib/util/network')
 
-copyAssets();
-compilePages(true);
-bundleJavascript(true);
-startDevServer();
-startRefreshDevServer();
+consoleSection('ASSETS', copyAssets)
+consoleSection('HTML', compileHtml.bind(null, true))
+consoleSection('TYPESCRIPT', compileTypescript.bind(null, true))
+consoleSection('REFRESH SERVER', startRefreshDevServer)
+consoleSection('APP SERVERS', startDevServer)
+consoleSection('NETWORK INTERFACES', printNetworkInterfaces)
+consoleSection('OUTPUT')

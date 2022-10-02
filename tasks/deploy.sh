@@ -1,10 +1,12 @@
 #!/bin/sh
 
+# You can delete this, it's just a hack to deploy the main oem website to .js.org
+
 git checkout gh-pages && \
 npm run clean && \
 git merge main --no-commit --no-ff && \
 npm run build && \
-mv public docs && \
+mv dist docs && \
 echo oem.js.org >> docs/CNAME && \
 echo oem.js.org >> CNAME && \
 git add . && \

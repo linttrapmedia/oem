@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "build": "node tasks/build",
-    "clean:nuke": "rm -rf ./public node_modules",
-    "clean": "rm -rf public && rm -rf docs",
+    "clean:nuke": "rm -rf ./dist node_modules",
+    "clean": "rm -rf dist && rm -rf docs",
     "deploy:gh": "sh ./tasks/deploy.sh",
     "deploy": "echo TODO",
-    "dev": "node tasks/dev",
-    "lint": "eslint ./src --ext .ts"
+    "start": "node tasks/dev",
+    "lint": "eslint ./src --ext .ts",
+    "scaffold": "node tasks/scaffold"
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,7 @@
   },
   "homepage": "https://github.com/kvnlnt/xscape.space#readme",
   "devDependencies": {
-    "esbuild": "^0.14.27"
-  },
-  "dependencies": {}
+    "esbuild": "^0.14.27",
+    "prettier": "2.7.1"
+  }
 }

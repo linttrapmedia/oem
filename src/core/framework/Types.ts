@@ -1,88 +1,263 @@
-namespace Types {
-  // Utilities
+import { Trait } from './trait'
 
-  export type OmitFirstArg<T> = T extends (x: any, ...args: infer P) => infer R ? (...args: P) => R : never;
+export namespace Types {
+  // Utilities
+  export type OmitFirstArg<T> = T extends (x: any, ...args: infer P) => infer R
+    ? (...args: P) => R
+    : never
+
+  export type Tail<T extends any[]> = T extends [any, ...infer U] ? U : never
 
   // State
 
+  export type AtomReducer<T extends Record<string, (...args: any[]) => void>> = {
+    [P in keyof T]: (...args: Tail<Parameters<T[P]>>) => void
+  }
+
   export type Atom<T> = {
-    get: () => T;
-    set: (atom: T) => void;
-    sub: (cb: () => any) => number;
-  };
+    get: () => T
+    set: (atom: T) => void
+    sub: (cb: (atom: T) => any) => number
+  }
 
-  // Html
+  // Styling
 
-  export type HtmlTraitProp = string;
-  export type HtmlTraitFunc = (el: HTMLElement, ...a: any) => any;
-  export type HtmlTraitParams<T> = Parameters<OmitFirstArg<T>>;
-  export type HtmlChild = HTMLElement | DocumentFragment | string | number | SVGElement | Comment;
-  export type HtmlTags =
-    | { tag: 'a'; type: HTMLAnchorElement }
-    | { tag: 'blockquote'; type: HTMLQuoteElement }
-    | { tag: 'body'; type: HTMLBodyElement }
-    | { tag: 'button'; type: HTMLButtonElement }
-    | { tag: 'caption'; type: HTMLTableCaptionElement }
-    | { tag: 'code'; type: HTMLElement }
-    | { tag: 'dl'; type: HTMLDListElement }
-    | { tag: 'dd'; type: HTMLDListElement }
-    | { tag: 'dt'; type: HTMLDListElement }
-    | { tag: 'div'; type: HTMLDivElement }
-    | { tag: 'fieldset'; type: HTMLFieldSetElement }
-    | { tag: 'figcaption'; type: HTMLElement }
-    | { tag: 'figure'; type: HTMLElement }
-    | { tag: 'form'; type: HTMLFormElement }
-    | { tag: 'h1'; type: HTMLHeadingElement }
-    | { tag: 'h2'; type: HTMLHeadingElement }
-    | { tag: 'h3'; type: HTMLHeadingElement }
-    | { tag: 'h4'; type: HTMLHeadingElement }
-    | { tag: 'h5'; type: HTMLHeadingElement }
-    | { tag: 'h6'; type: HTMLHeadingElement }
-    | { tag: 'iframe'; type: HTMLIFrameElement }
-    | { tag: 'img'; type: HTMLImageElement }
-    | { tag: 'input'; type: HTMLInputElement }
-    | { tag: 'label'; type: HTMLLabelElement }
-    | { tag: 'legend'; type: HTMLLegendElement }
-    | { tag: 'li'; type: HTMLLIElement }
-    | { tag: 'nav'; type: HTMLElement }
-    | { tag: 'ol'; type: HTMLOListElement }
-    | { tag: 'optgroup'; type: HTMLOptGroupElement }
-    | { tag: 'option'; type: HTMLOptionElement }
-    | { tag: 'p'; type: HTMLParagraphElement }
-    | { tag: 'pre'; type: HTMLPreElement }
-    | { tag: 'progress'; type: HTMLProgressElement }
-    | { tag: 'section'; type: HTMLElement }
-    | { tag: 'select'; type: HTMLSelectElement }
-    | { tag: 'span'; type: HTMLSpanElement }
-    | { tag: 'style'; type: HTMLStyleElement }
-    | { tag: 'table'; type: HTMLTableElement }
-    | { tag: 'tbody'; type: HTMLTableSectionElement }
-    | { tag: 'td'; type: HTMLTableCellElement }
-    | { tag: 'textarea'; type: HTMLTextAreaElement }
-    | { tag: 'tfoot'; type: HTMLTableSectionElement }
-    | { tag: 'th'; type: HTMLTableCellElement }
-    | { tag: 'thead'; type: HTMLTableSectionElement }
-    | { tag: 'time'; type: HTMLTimeElement }
-    | { tag: 'title'; type: HTMLTitleElement }
-    | { tag: 'tr'; type: HTMLTableRowElement }
-    | { tag: 'ul'; type: HTMLUListElement }
-    | { tag: 'video'; type: HTMLVideoElement };
+  export type CssPropType = keyof CSSStyleDeclaration
+  export type CssPropValType = string | number
+  export type CssDeclaration = [CssPropType, CssPropValType]
+  export type KeyframeStyleDeclaration = [number, CssPropType, CssPropValType][]
 
-  export type SvgTraitProp = string;
-  export type SvgTraitFunc = (el: SVGElement, ...a: any) => any;
-  export type SvgTraitParams<T> = Parameters<OmitFirstArg<T>>;
-  export type SvgChild = string | number | SVGElement | Comment;
-  export type SvgTags =
-    | { tag: 'svg'; type: SVGElement }
-    | { tag: 'circle'; type: SVGCircleElement }
-    | { tag: 'path'; type: SVGPathElement }
-    | { tag: 'rect'; type: SVGRectElement }
-    | { tag: 'polygon'; type: SVGPolygonElement };
+  export type ThemeColors =
+    | 'transparent'
+    | 'black'
+    | 'brown'
+    | 'blue'
+    | 'purple'
+    | 'red'
+    | 'orange'
+    | 'yellow'
+    | 'green'
+    | 'white'
 
-  // Css
+  export type ThemeFonts =
+    | 'Monospace'
+    | 'Space Grotesk'
+    | 'Times New Roman'
+    | 'Crimson Text'
+    | 'Splash'
+    | 'Primary'
 
-  export type CssPropType = keyof CSSStyleDeclaration;
-  export type CssPropValType = string | number;
-  export type CssDeclaration = [CssPropType, CssPropValType];
-  export type KeyframeStyleDeclaration = [number, CssPropType, CssPropValType][];
+  export type ThemeProps = {
+    colors?: Record<string, [h: number, s: number, l: number] | undefined>
+    fonts?: Record<string, string>
+  }
+
+  export type ThemeFunc<Colors = ThemeColors, Fonts = ThemeFonts> = {
+    color: (color: Colors, opacity?: number, adjustLightness?: number) => string
+    font: (font: Fonts) => string
+  }
+
+  const COLORS = {
+    black: [326, 2, 13],
+    brown: [28, 11, 14],
+    blue: [203, 81, 49],
+    purple: [270, 38, 40],
+    red: [11, 88, 56],
+    orange: [16, 97, 73],
+    yellow: [47, 98, 55],
+    green: [118, 27, 49],
+    white: [0, 4, 98],
+    transparent: 'transparent',
+  }
+
+  const FONTS = {
+    Monospace: 'monospace',
+    'Space Grotesk': 'Space Grotesk, Arial, sans-serif',
+    'Times New Roman': 'Times New Roman, sans-serif',
+    'Crimson Text': 'Crimson Text, serif',
+    Splash: 'Splash, cursive',
+    Primary: 'Space Grotesk, Arial, sans-serif',
+  }
+
+  function Theme<
+    Colors extends Record<string, [h: number, s: number, l: number]> | typeof COLORS,
+    Fonts extends Record<string, string> | typeof FONTS,
+  >({
+    colors,
+    fonts,
+  }: {
+    colors?: Colors
+    fonts?: Fonts
+  } = {}) {
+    const _colors = { ...COLORS, ...colors }
+    const _fonts = { ...FONTS, ...fonts }
+    return {
+      color: (color: keyof typeof _colors) => color,
+      font: (font: keyof typeof _fonts) => font,
+    }
+  }
+  // Fonts
+
+  const theme = Theme({
+    colors: {
+      aasd: [1, 2, 3],
+    },
+  })
+  theme.color('aasd')
+  const theme2 = Theme()
+  theme2.color('blue')
+
+  // Template
+
+  export type TraitProp = string
+  export type TraitFunc = (el: HTMLElement, ...a: any) => any
+  export type TraitParams<T> = Parameters<OmitFirstArg<T>>
+  export type HtmlChild =
+    | HTMLElement
+    | DocumentFragment
+    | string
+    | number
+    | SVGElement
+    | Comment
+    | undefined
+    | null
+
+  export const HtmlTagList = [
+    'a',
+    'abbr',
+    'address',
+    'area',
+    'article',
+    'aside',
+    'audio',
+    'b',
+    'base',
+    'bdi',
+    'bdo',
+    'blockquote',
+    'body',
+    'br',
+    'button',
+    'canvas',
+    'caption',
+    'cite',
+    'code',
+    'col',
+    'colgroup',
+    'data',
+    'datalist',
+    'dd',
+    'del',
+    'details',
+    'dfn',
+    'dialog',
+    'div',
+    'dl',
+    'dt',
+    'em',
+    'embed',
+    'fieldset',
+    'figcaption',
+    'figure',
+    'footer',
+    'form',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'head',
+    'header',
+    'hgroup',
+    'hr',
+    'html',
+    'i',
+    'iframe',
+    'img',
+    'input',
+    'ins',
+    'kbd',
+    'label',
+    'legend',
+    'li',
+    'link',
+    'main',
+    'map',
+    'mark',
+    'menu',
+    'meta',
+    'meter',
+    'nav',
+    'noscript',
+    'object',
+    'ol',
+    'optgroup',
+    'option',
+    'output',
+    'p',
+    'picture',
+    'pre',
+    'progress',
+    'q',
+    'rp',
+    'rt',
+    'ruby',
+    's',
+    'samp',
+    'script',
+    'section',
+    'select',
+    'slot',
+    'small',
+    'source',
+    'span',
+    'strong',
+    'style',
+    'sub',
+    'summary',
+    'sup',
+    'table',
+    'tbody',
+    'td',
+    'template',
+    'textarea',
+    'tfoot',
+    'th',
+    'thead',
+    'time',
+    'title',
+    'tr',
+    'track',
+    'u',
+    'ul',
+    'var',
+    'video',
+    'wbr',
+  ]
+
+  export const TraitsDefault: HtmlTemplateConfig = {
+    attr: Trait.Attr,
+    style: Trait.Style,
+    styles: Trait.Styles,
+  }
+  export type HtmlTemplate = (...children: HtmlChild[]) => HTMLElement
+  export type HtmlTemplateConfig = Record<TraitProp, TraitFunc>
+  export type HtmlTemplateTagMap<Config> = Record<
+    keyof HTMLElementTagNameMap,
+    <KS extends (keyof Config)[]>(
+      ...traits: {
+        [I in keyof KS]-?: [
+          KS[I],
+          ...Parameters<OmitFirstArg<Config[Extract<KS[I], keyof Config>]>>,
+        ]
+      }
+    ) => (...children: HtmlChild[]) => HTMLElementTagNameMap[keyof HTMLElementTagNameMap]
+  >
+
+  export type SvgTraitProp = string
+  export type SvgTraitFunc = (el: SVGElement, ...a: any) => any
+  export type SvgTraitParams<T> = Parameters<OmitFirstArg<T>>
+  export type SvgChild = string | number | SVGElement | Comment
+  export type SvgTags = keyof SVGElementTagNameMap
 }
