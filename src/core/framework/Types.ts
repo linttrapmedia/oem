@@ -1,31 +1,29 @@
-import { Trait } from './trait'
+import { Trait } from './Trait';
 
 export namespace Types {
   // Utilities
-  export type OmitFirstArg<T> = T extends (x: any, ...args: infer P) => infer R
-    ? (...args: P) => R
-    : never
+  export type OmitFirstArg<T> = T extends (x: any, ...args: infer P) => infer R ? (...args: P) => R : never;
 
-  export type Tail<T extends any[]> = T extends [any, ...infer U] ? U : never
+  export type Tail<T extends any[]> = T extends [any, ...infer U] ? U : never;
 
   // State
 
   export type AtomReducer<T extends Record<string, (...args: any[]) => void>> = {
-    [P in keyof T]: (...args: Tail<Parameters<T[P]>>) => void
-  }
+    [P in keyof T]: (...args: Tail<Parameters<T[P]>>) => void;
+  };
 
   export type Atom<T> = {
-    get: () => T
-    set: (atom: T) => void
-    sub: (cb: (atom: T) => any) => number
-  }
+    get: () => T;
+    set: (atom: T) => void;
+    sub: (cb: (atom: T) => any) => number;
+  };
 
   // Styling
 
-  export type CssPropType = keyof CSSStyleDeclaration
-  export type CssPropValType = string | number
-  export type CssDeclaration = [CssPropType, CssPropValType]
-  export type KeyframeStyleDeclaration = [number, CssPropType, CssPropValType][]
+  export type CssPropType = keyof CSSStyleDeclaration;
+  export type CssPropValType = string | number;
+  export type CssDeclaration = [CssPropType, CssPropValType];
+  export type KeyframeStyleDeclaration = [number, CssPropType, CssPropValType][];
 
   export type ThemeColors =
     | 'transparent'
@@ -37,25 +35,19 @@ export namespace Types {
     | 'orange'
     | 'yellow'
     | 'green'
-    | 'white'
+    | 'white';
 
-  export type ThemeFonts =
-    | 'Monospace'
-    | 'Space Grotesk'
-    | 'Times New Roman'
-    | 'Crimson Text'
-    | 'Splash'
-    | 'Primary'
+  export type ThemeFonts = 'Monospace' | 'Space Grotesk' | 'Times New Roman' | 'Crimson Text' | 'Splash' | 'Primary';
 
   export type ThemeProps = {
-    colors?: Record<string, [h: number, s: number, l: number] | undefined>
-    fonts?: Record<string, string>
-  }
+    colors?: Record<string, [h: number, s: number, l: number] | undefined>;
+    fonts?: Record<string, string>;
+  };
 
   export type ThemeFunc<Colors = ThemeColors, Fonts = ThemeFonts> = {
-    color: (color: Colors, opacity?: number, adjustLightness?: number) => string
-    font: (font: Fonts) => string
-  }
+    color: (color: Colors, opacity?: number, adjustLightness?: number) => string;
+    font: (font: Fonts) => string;
+  };
 
   const COLORS = {
     black: [326, 2, 13],
@@ -68,7 +60,7 @@ export namespace Types {
     green: [118, 27, 49],
     white: [0, 4, 98],
     transparent: 'transparent',
-  }
+  };
 
   const FONTS = {
     Monospace: 'monospace',
@@ -77,7 +69,7 @@ export namespace Types {
     'Crimson Text': 'Crimson Text, serif',
     Splash: 'Splash, cursive',
     Primary: 'Space Grotesk, Arial, sans-serif',
-  }
+  };
 
   function Theme<
     Colors extends Record<string, [h: number, s: number, l: number]> | typeof COLORS,
@@ -86,15 +78,15 @@ export namespace Types {
     colors,
     fonts,
   }: {
-    colors?: Colors
-    fonts?: Fonts
+    colors?: Colors;
+    fonts?: Fonts;
   } = {}) {
-    const _colors = { ...COLORS, ...colors }
-    const _fonts = { ...FONTS, ...fonts }
+    const _colors = { ...COLORS, ...colors };
+    const _fonts = { ...FONTS, ...fonts };
     return {
       color: (color: keyof typeof _colors) => color,
       font: (font: keyof typeof _fonts) => font,
-    }
+    };
   }
   // Fonts
 
@@ -102,25 +94,17 @@ export namespace Types {
     colors: {
       aasd: [1, 2, 3],
     },
-  })
-  theme.color('aasd')
-  const theme2 = Theme()
-  theme2.color('blue')
+  });
+  theme.color('aasd');
+  const theme2 = Theme();
+  theme2.color('blue');
 
   // Template
 
-  export type TraitProp = string
-  export type TraitFunc = (el: HTMLElement, ...a: any) => any
-  export type TraitParams<T> = Parameters<OmitFirstArg<T>>
-  export type HtmlChild =
-    | HTMLElement
-    | DocumentFragment
-    | string
-    | number
-    | SVGElement
-    | Comment
-    | undefined
-    | null
+  export type TraitProp = string;
+  export type TraitFunc = (el: HTMLElement, ...a: any) => any;
+  export type TraitParams<T> = Parameters<OmitFirstArg<T>>;
+  export type HtmlChild = HTMLElement | DocumentFragment | string | number | SVGElement | Comment | undefined | null;
 
   export const HtmlTagList = [
     'a',
@@ -234,30 +218,27 @@ export namespace Types {
     'var',
     'video',
     'wbr',
-  ]
+  ];
 
   export const TraitsDefault: HtmlTemplateConfig = {
     attr: Trait.Attr,
     style: Trait.Style,
     styles: Trait.Styles,
-  }
-  export type HtmlTemplate = (...children: HtmlChild[]) => HTMLElement
-  export type HtmlTemplateConfig = Record<TraitProp, TraitFunc>
+  };
+  export type HtmlTemplate = (...children: HtmlChild[]) => HTMLElement;
+  export type HtmlTemplateConfig = Record<TraitProp, TraitFunc>;
   export type HtmlTemplateTagMap<Config> = Record<
     keyof HTMLElementTagNameMap,
     <KS extends (keyof Config)[]>(
       ...traits: {
-        [I in keyof KS]-?: [
-          KS[I],
-          ...Parameters<OmitFirstArg<Config[Extract<KS[I], keyof Config>]>>,
-        ]
+        [I in keyof KS]-?: [KS[I], ...Parameters<OmitFirstArg<Config[Extract<KS[I], keyof Config>]>>];
       }
     ) => (...children: HtmlChild[]) => HTMLElementTagNameMap[keyof HTMLElementTagNameMap]
-  >
+  >;
 
-  export type SvgTraitProp = string
-  export type SvgTraitFunc = (el: SVGElement, ...a: any) => any
-  export type SvgTraitParams<T> = Parameters<OmitFirstArg<T>>
-  export type SvgChild = string | number | SVGElement | Comment
-  export type SvgTags = keyof SVGElementTagNameMap
+  export type SvgTraitProp = string;
+  export type SvgTraitFunc = (el: SVGElement, ...a: any) => any;
+  export type SvgTraitParams<T> = Parameters<OmitFirstArg<T>>;
+  export type SvgChild = string | number | SVGElement | Comment;
+  export type SvgTags = keyof SVGElementTagNameMap;
 }
