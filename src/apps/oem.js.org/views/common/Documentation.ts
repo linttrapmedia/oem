@@ -10,21 +10,11 @@ type DocumentationProps = {
 };
 
 export const Documentation = ({ content, next, prev }: DocumentationProps) => {
-  // functions
-
-  const getResponsiveMode = () => (window.innerWidth < maxWidth ? 'MOBILE' : 'TABLET');
-  const isMenuClosed = () => menuState.get() === 'CLOSED';
-  const isMenuOpen = () => menuState.get() === 'OPEN';
-  const isMobile = () => winSize.get() === 'MOBILE';
-  const isMobileAndClosed = () => isMobile() && isMenuClosed();
-  const isTablet = () => winSize.get() === 'TABLET';
-  const onResize = () => winSize.set(getResponsiveMode());
-  const toggleMenu = () => menuState.set(menuState.get() === 'CLOSED' ? 'OPEN' : 'CLOSED');
-
   // Params
 
   const maxWidth = 1400;
   const menuState = State.Atom<'OPEN' | 'CLOSED'>('CLOSED');
+  const getResponsiveMode = () => (window.innerWidth < maxWidth ? 'MOBILE' : 'TABLET');
   const winSize = State.Atom<'MOBILE' | 'TABLET'>(getResponsiveMode());
   const menu = [
     ['Overview', ROUTES.OVERVIEW],
@@ -37,9 +27,18 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
     ['Contributing', ROUTES.CONTRIBUTING],
   ];
 
+  // functions
+  const isMenuClosed = () => menuState.get() === 'CLOSED';
+  const isMenuOpen = () => menuState.get() === 'OPEN';
+  const isMobile = () => winSize.get() === 'MOBILE';
+  const isMobileAndClosed = () => isMobile() && isMenuClosed();
+  const isTablet = () => winSize.get() === 'TABLET';
+  const onResize = () => winSize.set(getResponsiveMode());
+  const toggleMenu = () => menuState.set(menuState.get() === 'CLOSED' ? 'OPEN' : 'CLOSED');
+
   // Template
 
-  const { div, a, span } = Template.Html({
+  const { div, a } = Template.Html({
     attr: Trait.Attr,
     on_click: Trait.OnClick,
     on_resize: Trait.OnResize,
