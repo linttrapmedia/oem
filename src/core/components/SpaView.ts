@@ -1,48 +1,45 @@
-import { State } from '@core/framework/state'
-import { Template } from '@core/framework/template'
-import { Trait } from '@core/framework/trait'
-import { Types } from '@core/framework/types'
-import { debounce } from '@core/utils/debounce'
+import { State } from '@core/framework/State';
+import { Template } from '@core/framework/Template';
+import { Trait } from '@core/framework/Trait';
+import { Types } from '@core/framework/types';
+import { debounce } from '@core/utils/debounce';
 
 type SpaViewProps<T> = {
-  onReady?: () => void
-  state: Types.Atom<T>
+  onReady?: () => void;
+  state: Types.Atom<T>;
   views: {
-    view: () => HTMLElement
-    state: T
-    breakpoint?: number
-    route?: string
-    transitionView?: boolean
-  }[]
-}
+    view: () => HTMLElement;
+    state: T;
+    breakpoint?: number;
+    route?: string;
+    transitionView?: boolean;
+  }[];
+};
 
 export function SpaView<T extends string>({ onReady, state, views }: SpaViewProps<T>) {
-  const viewState = State.Atom<HTMLElement>(null)
-  const width = State.Atom(0)
-  const transitionView = views.find(view => view.transitionView)
+  const viewState = State.Atom<HTMLElement>(null);
+  const width = State.Atom(0);
+  const transitionView = views.find((view) => view.transitionView);
 
   const { div } = Template.Html({
     'html@state': Trait.Atom(state, Trait.InnerHtml),
     'html@viewState': Trait.Atom(viewState, Trait.InnerHtml),
     on_resize: Trait.OnWinResize,
     style: Trait.Style,
-  })
+  });
 
   const getView = () => {
     const view = views
-      .filter(view => view.state === state.get())
-      .filter(view => (view.breakpoint ?? 0) <= width.get())
-      .pop()
-    if (view) return view.view()
-  }
+      .filter((view) => view.state === state.get())
+      .filter((view) => (view.breakpoint ?? 0) <= width.get())
+      .pop();
+    if (view) return view.view();
+  };
 
-  const setView = debounce(
-    (w: number = el.offsetWidth) => (width.set(w), viewState.set(getView())),
-    {
-      delay: 500,
-      onStart: () => (transitionView ? viewState.set(transitionView.view()) : null),
-    },
-  )
+  const setView = debounce((w: number = el.offsetWidth) => (width.set(w), viewState.set(getView())), {
+    delay: 500,
+    onStart: () => (transitionView ? viewState.set(transitionView.view()) : null),
+  });
 
   const el: HTMLElement = div(
     ['html@viewState', viewState.get],
@@ -51,7 +48,7 @@ export function SpaView<T extends string>({ onReady, state, views }: SpaViewProp
     ['style', 'display', 'flex'],
     ['style', 'minHeight', '100%'],
     ['style', 'width', '100%'],
-  )(getView())
+  )(getView());
 
   window.addEventListener('DOMContentLoaded', async () => {
     // global styles
@@ -65,19 +62,19 @@ export function SpaView<T extends string>({ onReady, state, views }: SpaViewProp
       `html:focus-within{scroll-behavior:auto}`,
       `*,::after,::before{scroll-behavior:auto!important}`,
       `}`,
-    ].join('')
-    const style = document.createElement('style')
-    style.innerHTML = reset
-    document.head.appendChild(style)
-    document.body.appendChild(el)
+    ].join('');
+    const style = document.createElement('style');
+    style.innerHTML = reset;
+    document.head.appendChild(style);
+    document.body.appendChild(el);
 
     // simple routing
-    const currentRoute = window.location.pathname + window.location.search
-    const routeFound = views.find(view => view.route === currentRoute)
-    console.log(routeFound, currentRoute)
-    if (routeFound) state.set(routeFound.state)
+    const currentRoute = window.location.pathname + window.location.search;
+    const routeFound = views.find((view) => view.route === currentRoute);
+    console.log(routeFound, currentRoute);
+    if (routeFound) state.set(routeFound.state);
 
     // mount
-    if (onReady) onReady()
-  })
+    if (onReady) onReady();
+  });
 }

@@ -1,10 +1,10 @@
-import { Template } from '@core/framework/template'
-import { ROUTES, tags } from '../../context'
-import { Documentation } from '../common/Documentation'
-import { Section } from '../common/Section'
-import { Snippet } from '../common/Snippet'
+import { Template } from '@core/framework/Template';
+import { ROUTES, tags } from '../../context';
+import { Documentation } from '../common/Documentation';
+import { Section } from '../common/Section';
+import { Snippet } from '../common/Snippet';
 
-const { div } = tags
+const { div } = tags;
 
 export function HtmlView() {
   return Documentation({
@@ -21,8 +21,7 @@ export function HtmlView() {
 
       Section({
         title: 'Traits',
-        subtitle:
-          'You can create your own traits or use one of the many that ship with the framework.',
+        subtitle: 'You can create your own traits or use one of the many that ship with the framework.',
         description:
           'The syntax and structure of traits have been carefully crafted to keep a balance between readability, composability, troubleshooting, intellisense features and the power of declarative code.',
         content: div(['flex', 'column', 10, 'start', 'start'])(
@@ -95,5 +94,5 @@ div(['my_custom_trait','id','1'])('Sup!')
         ),
       }),
     ),
-  })
+  });
 }

@@ -1,29 +1,21 @@
-import { State } from '@core/framework/state'
-import { Template } from '@core/framework/template'
-import { Theme } from '@core/framework/theme'
-import { Trait } from '@core/framework/trait'
+import { State } from '@core/framework/State';
+import { Template } from '@core/framework/Template';
+import { Theme } from '@core/framework/theme';
+import { Trait } from '@core/framework/Trait';
 
 type DocumentationUIProps = {
-  title?: string
-  menu: HTMLElement
-  content: HTMLElement
-  maxWidth?: number
-  selectors?: [key: string, val: string][]
-}
+  title?: string;
+  menu: HTMLElement;
+  content: HTMLElement;
+  maxWidth?: number;
+  selectors?: [key: string, val: string][];
+};
 
-export const DocumentationUI = ({
-  title,
-  menu,
-  content,
-  maxWidth = 960,
-  selectors,
-}: DocumentationUIProps) => {
+export const DocumentationUI = ({ title, menu, content, maxWidth = 960, selectors }: DocumentationUIProps) => {
   // Params
 
-  const menu_state = State.Atom<'OPEN' | 'CLOSED'>('CLOSED')
-  const win_size = State.Atom<'MOBILE' | 'TABLET'>(
-    window.innerWidth < maxWidth ? 'MOBILE' : 'TABLET',
-  )
+  const menu_state = State.Atom<'OPEN' | 'CLOSED'>('CLOSED');
+  const win_size = State.Atom<'MOBILE' | 'TABLET'>(window.innerWidth < maxWidth ? 'MOBILE' : 'TABLET');
 
   // Template
 
@@ -36,12 +28,12 @@ export const DocumentationUI = ({
     style: Trait.Style,
     style_on_win_change: Trait.Atom(win_size, Trait.Style),
     style_on_menu_change: Trait.Atom(menu_state, Trait.Style),
-  })
+  });
 
   // functions
-  const toggleMenu = () => menu_state.set(menu_state.get() === 'CLOSED' ? 'OPEN' : 'CLOSED')
-  const isTablet = () => win_size.get() === 'TABLET'
-  const isMobile = () => win_size.get() === 'MOBILE'
+  const toggleMenu = () => menu_state.set(menu_state.get() === 'CLOSED' ? 'OPEN' : 'CLOSED');
+  const isTablet = () => win_size.get() === 'TABLET';
+  const isMobile = () => win_size.get() === 'MOBILE';
 
   // Layout
   const Grid = div(
@@ -55,38 +47,28 @@ export const DocumentationUI = ({
     ['style_on_win_change', 'gridTemplateAreas', '"menu-area content-area"', isTablet],
     ['style_on_win_change', 'gridTemplateRows', 'auto', isTablet],
     ['style_on_win_change', 'gridTemplateColumns', 'min-content 1fr', isTablet],
-  )
+  );
 
   const MenuArea = div(
     ['style', 'gridArea', 'menu-area'],
     ['style', 'borderRight', `1px solid ${Theme().color('black', 0, 0.1)}`],
     ['style', 'minWidth', `200px`],
-  )
+  );
 
-  const ContentArea = div(['style', 'gridArea', 'content-area'], ['style', 'minWidth', `0px`])
+  const ContentArea = div(['style', 'gridArea', 'content-area'], ['style', 'minWidth', `0px`]);
 
   // Elements
 
   const MenuWrapper = div(
     ['style', 'margin', '20px'],
     ['style', 'display', 'block'],
-    [
-      'style',
-      'display',
-      'none',
-      () => win_size.get() === 'MOBILE' && menu_state.get() === 'CLOSED',
-    ],
+    ['style', 'display', 'none', () => win_size.get() === 'MOBILE' && menu_state.get() === 'CLOSED'],
     ['style', 'display', 'block', () => win_size.get() === 'TABLET'],
-    [
-      'style_on_win_change',
-      'display',
-      'none',
-      () => win_size.get() === 'MOBILE' && menu_state.get() === 'CLOSED',
-    ],
+    ['style_on_win_change', 'display', 'none', () => win_size.get() === 'MOBILE' && menu_state.get() === 'CLOSED'],
     ['style_on_win_change', 'display', 'block', () => win_size.get() === 'TABLET'],
     ['style_on_menu_change', 'display', 'none', () => menu_state.get() === 'CLOSED'],
     ['style_on_menu_change', 'display', 'block', () => menu_state.get() === 'OPEN'],
-  )
+  );
 
   const Hamburger = div(
     ['on_click', toggleMenu],
@@ -106,7 +88,7 @@ export const DocumentationUI = ({
     ['style', 'display', 'none', () => win_size.get() === 'TABLET'],
     ['style_on_win_change', 'display', 'block', () => win_size.get() === 'MOBILE'],
     ['style_on_win_change', 'display', 'none', () => win_size.get() === 'TABLET'],
-  )
+  );
 
   const LogoWrapper = div(
     ['style', 'display', 'flex'],
@@ -114,7 +96,7 @@ export const DocumentationUI = ({
     ['style', 'justifyContent', 'space-between'],
     ['style', 'alignItems', 'center'],
     ['style', 'padding', '0px 20px'],
-  )
+  );
 
   const Title = div(
     ['style', 'fontFamily', 'sans-serif'],
@@ -127,9 +109,9 @@ export const DocumentationUI = ({
     ['style', 'display', 'block', () => win_size.get() === 'TABLET'],
     ['style_on_win_change', 'display', 'none', () => win_size.get() === 'MOBILE'],
     ['style_on_win_change', 'display', 'block', () => win_size.get() === 'TABLET'],
-  )
+  );
 
-  const ContentWrapper = div(['style', 'padding', '20px'])
+  const ContentWrapper = div(['style', 'padding', '20px']);
 
   const Selectors = () =>
     div(['style', 'margin', '0 20px'], ['style', 'position', 'relative'])(
@@ -146,15 +128,15 @@ export const DocumentationUI = ({
         ['style', 'webkitAppearance', 'none'],
         ['style', 'borderRadius', '5px'],
         ['style', 'border', `1px solid ${Theme().color('black', 0, 0.2)}`],
-        ['on_change', e => (window.location.href = (<HTMLSelectElement>e.target).value)],
-      )(...selectors.map(s => option(['attr', 'value', s[1]])(s[0]))),
+        ['on_change', (e) => (window.location.href = (<HTMLSelectElement>e.target).value)],
+      )(...selectors.map((s) => option(['attr', 'value', s[1]])(s[0]))),
       div(
         ['style', 'position', 'absolute'],
         ['style', 'right', '12px'],
         ['style', 'top', '6px'],
         ['style', 'color', Theme().color('black', 0, 0.3)],
       )('▾'),
-    )
+    );
 
   // Html
 
@@ -180,5 +162,5 @@ export const DocumentationUI = ({
       MenuWrapper(menu),
     ),
     ContentArea(ContentWrapper(content)),
-  )
-}
+  );
+};

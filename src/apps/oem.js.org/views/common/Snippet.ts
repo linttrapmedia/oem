@@ -1,22 +1,22 @@
-import { Template } from '@core/framework/template'
-import { Trait } from '@core/framework/trait'
-import { color } from '../../context'
+import { Template } from '@core/framework/Template';
+import { Trait } from '@core/framework/Trait';
+import { color } from '../../context';
 
 declare module Prism {
-  const highlight: any
-  const languages: any
+  const highlight: any;
+  const languages: any;
 }
 
 export const Snippet = (urlOrString: string, language: 'typescript' | 'bash' = 'typescript') => {
   // params
-  const code = Prism.highlight(urlOrString, Prism.languages[`${language}`])
+  const code = Prism.highlight(urlOrString, Prism.languages[`${language}`]);
 
   // template
   const { div } = Template.Html({
     prism: (el: HTMLElement) => (el.innerHTML = code),
     style_on_resize: Trait.StyleOnResize,
     style: Trait.Style,
-  })
+  });
 
   return div(['style', 'width', '100%'])(
     div(
@@ -31,5 +31,5 @@ export const Snippet = (urlOrString: string, language: 'typescript' | 'bash' = '
       ['style', 'color', color('black', 0.5)],
       ['style', 'padding', '20px'],
     )(div(['style', 'whiteSpace', 'pre'], ['prism'])()),
-  )
-}
+  );
+};

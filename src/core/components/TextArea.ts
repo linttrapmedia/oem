@@ -1,18 +1,18 @@
-import { State } from '@core/framework/state'
-import { Template } from '@core/framework/template'
-import { Trait } from '@core/framework/trait'
-import { Types } from '@core/framework/types'
+import { State } from '@core/framework/State';
+import { Template } from '@core/framework/Template';
+import { Trait } from '@core/framework/Trait';
+import { Types } from '@core/framework/types';
 
 type TextAreaProps = {
-  color?: string
-  text: Types.Atom<string>
-  placeholder?: string
-}
+  color?: string;
+  text: Types.Atom<string>;
+  placeholder?: string;
+};
 
 export const TextArea = ({ color, text, placeholder }: TextAreaProps) => {
-  const reset = State.Atom<boolean>(false)
-  const placeholderTxt = placeholder ?? '...Start typing'
-  text.sub(() => (text.get() === '' ? reset.set(!reset.get()) : null))
+  const reset = State.Atom<boolean>(false);
+  const placeholderTxt = placeholder ?? '...Start typing';
+  text.sub(() => (text.get() === '' ? reset.set(!reset.get()) : null));
 
   const { div } = Template.Html({
     style: Trait.Style,
@@ -20,7 +20,7 @@ export const TextArea = ({ color, text, placeholder }: TextAreaProps) => {
     on_text_change: Trait.OnTextContentInput,
     style_on_text_change: Trait.Atom(text, Trait.Style),
     text_on_reset_change: Trait.Atom(reset, Trait.InnerText),
-  })
+  });
 
   return div(
     ['style', 'position', 'relative'],
@@ -59,5 +59,5 @@ export const TextArea = ({ color, text, placeholder }: TextAreaProps) => {
       ['style', 'pointerEvents', 'none'],
       ['style', 'color', color ?? 'inherit'],
     )(placeholderTxt),
-  )
-}
+  );
+};

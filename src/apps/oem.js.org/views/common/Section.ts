@@ -1,13 +1,13 @@
-import { Template } from '@core/framework/template'
-import { color, tags } from '../../context'
-const { div, a, section } = tags
+import { Template } from '@core/framework/Template';
+import { color, tags } from '../../context';
+const { div, a, section } = tags;
 
 type SectionProps = {
-  description?: string
-  title?: string
-  subtitle?: string
-  content?: HTMLElement | DocumentFragment | string
-}
+  description?: string;
+  title?: string;
+  subtitle?: string;
+  content?: HTMLElement | DocumentFragment | string;
+};
 
 export const Section = ({ title, subtitle, content }: SectionProps) =>
   section(['flex', 'column', 20], ['style', 'width', '100%'])(
@@ -32,4 +32,4 @@ export const Section = ({ title, subtitle, content }: SectionProps) =>
         ['style', 'position', 'relative'],
         ['style', 'width', '100%'],
       )(content),
-  )
+  );

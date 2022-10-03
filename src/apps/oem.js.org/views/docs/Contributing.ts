@@ -1,6 +1,6 @@
-import { Template } from '@core/framework/template'
-import { Documentation } from '../common/Documentation'
-import { Section } from '../common/Section'
+import { Template } from '@core/framework/Template';
+import { Documentation } from '../common/Documentation';
+import { Section } from '../common/Section';
 
 export function ContributingView() {
   return Documentation({
@@ -10,5 +10,5 @@ export function ContributingView() {
         subtitle: 'Go to our [github](https://github.com/linttrapmedia/oem) and do a PR!',
       }),
     ),
-  })
+  });
 }

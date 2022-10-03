@@ -1,15 +1,15 @@
-import { Template } from '@core/framework/template'
-import { Trait } from '@core/framework/trait'
+import { Template } from '@core/framework/Template';
+import { Trait } from '@core/framework/Trait';
 
 type MarkdownProps = {
-  text: Types.Atom<string>
-}
+  text: Types.Atom<string>;
+};
 
 export const Markdown = ({ text }: MarkdownProps) => {
   const html = Template.Html({
     style: Trait.Style,
     on_text_update: Trait.Atom(text, Trait.InnerHtml),
-  })
+  });
 
   return html(
     'div',
@@ -19,5 +19,5 @@ export const Markdown = ({ text }: MarkdownProps) => {
     ['style', 'boxSizing', 'border-box'],
     ['style', 'padding', '50px'],
     ['on_text_update', () => Template.Markdown(text.get())],
-  )(Template.Markdown(text.get()))
-}
+  )(Template.Markdown(text.get()));
+};
