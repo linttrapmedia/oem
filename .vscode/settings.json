@@ -1,8 +1,0 @@
-{
-  "json.schemas": [
-    {
-      "fileMatch": ["*.json"],
-      "url": "./oem.schema.json"
-    }
-  ]
-}

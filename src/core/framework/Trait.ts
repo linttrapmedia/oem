@@ -1,172 +1,216 @@
-import { guid } from '@utils/Guid';
+// Helpers
 
-const Attr = (el: HTMLElement, prop: string, val: string | number, cond: () => boolean = () => true) =>
-  cond() ? el.setAttribute(prop, String(val)) : el.removeAttribute(prop);
+import { Types } from './types'
+
+type Condition = (() => boolean) | boolean
+
+const check = (condition: Condition, ...values: any[]) => {
+  const hasAnUndefinedValue = values.some((v: any) => v === undefined)
+  if (hasAnUndefinedValue) return false
+  const conditionIsFunction = typeof condition === 'function'
+  if (conditionIsFunction) return condition()
+  const conditionIsBoolean = typeof condition === 'boolean'
+  if (conditionIsBoolean) return condition
+  const conditionIsDefined = typeof condition !== 'undefined'
+  if (conditionIsDefined) return Boolean(condition)
+  return true
+}
+
+// Traits
+
+const Attr = (
+  el: HTMLElement,
+  prop: string,
+  val: string | number | undefined,
+  condition?: Condition,
+) => (check(condition, val) ? el.setAttribute(prop, String(val)) : el.removeAttribute(prop))
 
 const Atom =
-  <T extends Types.HtmlTraitFunc>(atom: any, trait: T) =>
-  (...props: Parameters<T>) =>
-    atom.sub(() => trait.apply(null, props));
+  <T extends Types.TraitFunc>(atom: any, trait: T) =>
+  (...props: Parameters<T>) => {
+    atom.sub(() => trait.apply(null, props))
+  }
 
-const InnerHtml = (el: HTMLElement, html: () => HTMLElement | HTMLElement[], cond: () => boolean = () => true) => {
-  const content = html();
-  el.innerHTML = '';
-  if (cond() && content) {
+const Flex = (
+  el: HTMLElement,
+  flexDirection: 'row' | 'column',
+  gap: number,
+  justifyContent?: 'center' | 'start' | 'end',
+  alignItems?: 'center' | 'start' | 'end',
+  condition?: Condition,
+) => {
+  if (check(condition)) {
+    el.style.display = 'flex'
+    el.style.flexDirection = flexDirection ?? 'row'
+    el.style.justifyContent = justifyContent ?? 'start'
+    el.style.alignItems = alignItems ?? 'start'
+    el.style.gap = gap ? `${gap}px` : '0px'
+  }
+}
+const Focus = (el: HTMLElement, condition?: Condition) => (check(condition) ? el.focus : null)
+
+const InnerHtml = (
+  el: HTMLElement,
+  html: () => HTMLElement | HTMLElement[] | DocumentFragment,
+  condition?: Condition,
+) => {
+  const content = html()
+  // TODO: Optimization
+  // if ((<HTMLElement>content).outerHTML.trim() === el.innerHTML.trim()) return
+  el.innerHTML = ''
+  if (check(condition, html) && content) {
     if (Array.isArray(content)) {
-      content.forEach((i) => el.appendChild(i));
+      content.forEach(i => el.appendChild(i))
     } else {
-      el.appendChild(content);
+      el.appendChild(content)
     }
   }
-};
+}
 
-const InnerText = (el: HTMLElement, text: () => string, cond: () => boolean = () => true) => {
-  const content = text();
-  el.innerHTML = '';
-  if (cond()) {
-    el.innerText = content;
+const InnerText = (el: HTMLElement, text: () => string | number, condition?: Condition) => {
+  const content = text()
+  if (check(condition, text)) {
+    el.innerText = ''
+    el.innerText = String(content)
   }
-};
+}
 
-const Focus = (el: HTMLElement, cond: () => boolean = () => true) => (cond() ? el.focus : null);
+const OnChange = (el: HTMLSelectElement, cb: (e: MouseEvent) => void) =>
+  el.addEventListener('change', cb)
 
-// const KeyFrames = <T>(
-//   declarations: Record<keyof T, Types.KeyframeStyleDeclaration>,
-// ): ((...list: (keyof T)[]) => string) => {
-//   const id = guid();
-//   const style = document.createElement('style');
-//   Theme.id = id;
-//   document.getElementsByTagName('head')[0].appendChild(style);
+const OnColorInput = (el: HTMLInputElement, cb: (val: string) => void) =>
+  el.addEventListener('input', () => cb(el.value))
 
-//   const render = () => {
-//     Theme.innerHTML = '';
-//     const styles: string[] = [];
-//     const declarationList = Object.entries(declarations).sort((a, b) => (a[0] < b[0] ? -1 : 1));
-//     declarationList.forEach(([selector, declaration]: [string, Types.KeyframeStyleDeclaration]) => {
-//       styles.push(`@keyframes ${selector}_${id} {\n`);
-//       declaration.forEach(([percent, prop, val]) =>
-//         styles.push(`${percent}% { ${(<string>prop).replace(/([A-Z])/g, '-$1').toLowerCase()}: ${val}; }\n`),
-//       );
-//       styles.push(`}\n`);
-//     });
-//     Theme.innerHTML = styles.join('');
-//   };
+const OnClick = (el: HTMLElement, cb: (e: MouseEvent) => void, condition?: Condition) => {
+  if (check(condition, cb)) {
+    el.addEventListener('click', cb)
+  }
+}
 
-//   render();
+const OnCreate = (el: HTMLElement, cb: (el: HTMLElement) => void) => cb(el)
 
-//   const getter = (...list: (keyof T)[]) => list.map((item) => `${String(item)}_${id}`).join(', ');
+const OnLoad = (el: HTMLElement, cb: (el: HTMLElement) => void) =>
+  window.addEventListener('load', () => cb(el))
 
-//   return getter;
-// };
+const OnMouseOut = (el: HTMLElement, cb: (e: MouseEvent) => void) =>
+  el.addEventListener('mouseout', cb)
 
-const OnCreate = (el: HTMLElement, cb: (el: HTMLElement) => void) => cb(el);
-const OnChange = (el: HTMLSelectElement, cb: (e: MouseEvent) => void) => el.addEventListener('change', cb);
-const OnClick = (el: HTMLElement, cb: (e: MouseEvent) => void) => el.addEventListener('click', cb);
-const OnMouseOver = (el: HTMLElement, cb: (e: MouseEvent) => void) => el.addEventListener('mouseover', cb);
-const OnMouseOut = (el: HTMLElement, cb: (e: MouseEvent) => void) => el.addEventListener('mouseout', cb);
-const OnLoad = (el: HTMLElement, cb: (el: HTMLElement) => void) => window.addEventListener('load', () => cb(el));
+const OnMouseOver = (el: HTMLElement, cb: (e: MouseEvent) => void) =>
+  el.addEventListener('mouseover', cb)
 
-const OnResize = (el: HTMLElement, cb: ({ width, height }: { width: number; height: number }) => void) => {
-  const resizeObserver = new ResizeObserver((entries) => {
+const OnResize = (
+  el: HTMLElement,
+  cb: ({ width, height }: { width: number; height: number }) => void,
+) => {
+  const resizeObserver = new ResizeObserver(entries => {
     for (let entry of entries) {
       // Firefox implements `contentBoxSize` as a single content rect, rather than an array
       const contentBoxSize: ResizeObserverSize = Array.isArray(entry.contentBoxSize)
         ? entry.contentBoxSize[0]
-        : entry.contentBoxSize;
-      cb({ width: contentBoxSize.inlineSize, height: contentBoxSize.blockSize });
+        : entry.contentBoxSize
+      cb({ width: contentBoxSize.inlineSize, height: contentBoxSize.blockSize })
     }
-  });
+  })
 
-  resizeObserver.observe(el);
-};
+  resizeObserver.observe(el)
+}
 
 const OnSubmit = (el: HTMLFormElement, cb: () => void) =>
   el.addEventListener('submit', (e: SubmitEvent) => {
-    e.preventDefault();
-    cb();
-  });
+    e.preventDefault()
+    cb()
+  })
 
 const OnTextInput = (el: HTMLInputElement, cb: (val: string) => void) =>
-  el.addEventListener('input', () => cb(el.value));
+  el.addEventListener('input', () => cb(el.value))
 
-const OnWinResize = (el: HTMLElement, cb: ({ width, height }: { width: number; height: number }) => void) => {
+const OnTextContentInput = (el: HTMLInputElement, cb: (val: string) => void) =>
+  el.addEventListener('input', () => cb(el.innerText))
+
+const OnWinResize = (
+  el: HTMLElement,
+  cb: ({ width, height }: { width: number; height: number }) => void,
+) => {
   window.addEventListener('resize', () => {
-    const bb = el.getBoundingClientRect();
-    cb({ width: bb.width, height: bb.height });
-  });
-};
+    cb({ width: window.innerWidth, height: window.innerHeight })
+  })
+}
 
 const PrintStyle = (
   el: HTMLElement | SVGElement,
   prop: keyof CSSStyleDeclaration,
   val: string | number | (() => string | number),
-  cond: () => boolean = () => true,
+  condition?: Condition,
 ) => {
-  if (!cond()) return;
-  const id = 'print-style';
-  const selector = id + '-' + guid();
-  let style: HTMLStyleElement = document.getElementById(id) as HTMLStyleElement;
-  if (!style) {
-    style = document.createElement('style');
-    style.id = id;
-    style.setAttribute('type', 'text/css');
-    style.setAttribute('media', 'print');
-    document.getElementsByTagName('head')[0].appendChild(style);
+  if (check(condition, val)) {
+    const id = 'print-style'
+    const selector = id + '-' + globalThis.crypto.randomUUID()
+    let style: HTMLStyleElement = document.getElementById(id) as HTMLStyleElement
+    if (!style) {
+      style = document.createElement('style')
+      style.id = id
+      style.setAttribute('type', 'text/css')
+      style.setAttribute('media', 'print')
+      document.getElementsByTagName('head')[0].appendChild(style)
+    }
+    const sheet = style.sheet
+    const propFmt = (<string>prop).replace(/([A-Z])/g, '-$1').toLowerCase()
+    const valFmt = typeof val === 'function' ? val() : val
+    sheet.insertRule(`.${selector} { ${propFmt}:${valFmt} !important; }`, 0)
+    el.classList.add(selector)
   }
-  const sheet = style.sheet;
-  const propFmt = (<string>prop).replace(/([A-Z])/g, '-$1').toLowerCase();
-  const valFmt = typeof val === 'function' ? val() : val;
-  sheet.insertRule(`.${selector} { ${propFmt}:${valFmt} !important; }`, 0);
-  el.classList.add(selector);
-};
+}
 
-const Src = (el: HTMLImageElement, src: string) => (el.src = src);
+const Src = (el: HTMLImageElement, src: string) => (el.src = src)
 
 const Style = (
-  el: HTMLElement | SVGElement,
+  el: HTMLElement,
   prop: keyof CSSStyleDeclaration,
-  val: string | number | (() => string | number),
-  cond: () => boolean = () => true,
-) => (cond() ? ((<any>el.style)[prop] = typeof val === 'function' ? val() : val) : null);
-
-const Styles = (
-  el: HTMLElement | SVGElement,
-  styles: [prop: keyof CSSStyleDeclaration, val: string | number][],
-  cond: () => boolean = () => true,
-) => styles.forEach(([prop, val]) => Style(el, prop, val, cond));
+  val: undefined | string | number | ((el: HTMLElement) => string | number),
+  condition?: Condition,
+) => {
+  if (!check(condition, val)) return
+  const _style = <any>el.style
+  const _val = typeof val === 'function' ? val(el) : val
+  _style[prop] = _val
+  return _style
+}
 
 const StyleOnHover = (
   el: HTMLElement,
   prop: keyof CSSStyleDeclaration,
   val: string | number,
   resetVal?: string | number,
+  condition?: Condition,
 ) => {
-  const originalVal = resetVal ?? el.style[prop];
-  el.addEventListener('mouseover', () => ((<any>el.style)[prop] = val));
-  el.addEventListener('mouseout', () => ((<any>el.style)[prop] = originalVal));
-};
+  if (check(condition, val)) {
+    const originalVal = resetVal ?? el.style[prop]
+    el.addEventListener('mouseover', () => ((<any>el.style)[prop] = val))
+    el.addEventListener('mouseout', () => ((<any>el.style)[prop] = originalVal))
+  }
+}
 
 const StyleOnResize = (
   el: HTMLElement,
   prop: keyof CSSStyleDeclaration,
   cb: ({ width, height }: { width: number; height: number }) => string,
 ) => {
-  const resizeObserver = new ResizeObserver((entries) => {
+  const resizeObserver = new ResizeObserver(entries => {
     for (let entry of entries) {
       // Firefox implements `contentBoxSize` as a single content rect, rather than an array
       const contentBoxSize: ResizeObserverSize = Array.isArray(entry.contentBoxSize)
         ? entry.contentBoxSize[0]
-        : entry.contentBoxSize;
+        : entry.contentBoxSize
 
-      (<any>el.style)[prop] = cb({
+      ;(<any>el.style)[prop] = cb({
         width: contentBoxSize.inlineSize,
         height: contentBoxSize.blockSize,
-      });
+      })
     }
-  });
+  })
 
-  resizeObserver.observe(el);
-};
+  resizeObserver.observe(el)
+}
 
 const StyleOnWinResize = (
   el: HTMLElement,
@@ -177,24 +221,33 @@ const StyleOnWinResize = (
     ((<any>el.style)[prop] = cb({
       width: window.innerWidth,
       height: window.innerHeight,
-    }));
+    }))
+  applyStyle()
+  window.addEventListener('resize', applyStyle)
+}
 
-  window.addEventListener('resize', applyStyle);
-  window.addEventListener('load', applyStyle);
-};
+const Styles = (
+  el: HTMLElement,
+  styles: [prop: keyof CSSStyleDeclaration, val: string | number][],
+  condition?: Condition,
+) =>
+  check(condition, styles) ? styles.forEach(([prop, val]) => Style(el, prop, val, condition)) : null
 
-const SvgAttr = (el: SVGElement, prop: string, val: string | number) => el.setAttribute(prop, String(val));
+const SvgAttr = (el: SVGElement, prop: string, val: string | number) =>
+  el.setAttribute(prop, String(val))
 
-const Value = (el: HTMLInputElement, value: () => string, cond: () => boolean = () => true) =>
-  cond() ? (el.value = value()) : 'blank';
+const Value = (el: HTMLInputElement, value: string | (() => string), condition?: Condition) =>
+  check(condition, value) ? (el.value = typeof value === 'string' ? value : value()) : 'blank'
 
 export const Trait = {
   Attr,
   Atom,
+  Flex,
   Focus,
   InnerHtml,
   InnerText,
   OnChange,
+  OnColorInput,
   OnClick,
   OnCreate,
   OnLoad,
@@ -203,6 +256,7 @@ export const Trait = {
   OnResize,
   OnSubmit,
   OnTextInput,
+  OnTextContentInput,
   OnWinResize,
   PrintStyle,
   Src,
@@ -213,4 +267,4 @@ export const Trait = {
   StyleOnWinResize,
   SvgAttr,
   Value,
-};
+}

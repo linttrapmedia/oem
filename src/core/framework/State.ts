@@ -1,16 +1,20 @@
-const Atom = <T>(atom: T): Types.Atom<T> => {
-  let _atom = atom;
-  const subscribers: ((atom: T) => any)[] = [];
-  const get = (): T => _atom;
-  const set = (atom: T) => ((_atom = atom), subscribers.forEach((i) => i(_atom)));
-  const sub = (cb: () => any) => subscribers.push(cb);
-  return { get, set, sub };
-};
+import { Types } from './types'
+
+function Atom<T>(atom: T): Types.Atom<T>
+function Atom<T>(atom: T): Types.Atom<T>
+function Atom<T>(atom: T) {
+  let _atom = atom
+  const _subscribers: ((atom: T) => any)[] = []
+  const _get = (): T => _atom
+  const _set = (atom: T) => ((_atom = atom), _subscribers.forEach(i => i(_atom)))
+  const _sub = (cb: (atom: T) => any) => _subscribers.push(cb)
+  return { get: _get, set: _set, sub: _sub }
+}
 
 // TODO serialize an object or array of atoms
-const Serialize = () => {};
+const Serialize = () => {}
 
 export const State = {
   Atom,
   Serialize,
-};
+}
