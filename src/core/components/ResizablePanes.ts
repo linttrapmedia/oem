@@ -1,65 +1,62 @@
-import { State } from '@core/framework/state'
-import { Template } from '@core/framework/template'
-import { Theme } from '@core/framework/theme'
-import { Trait } from '@core/framework/trait'
+import { State } from '@core/framework/State';
+import { Template } from '@core/framework/Template';
+import { Theme } from '@core/framework/theme';
+import { Trait } from '@core/framework/Trait';
 
 type ResizablePanesProps = {
-  leftPaneWidth?: number
-  leftPane?: { bg?: string; color?: string }
-  rightPane?: { bg?: string; color?: string }
+  leftPaneWidth?: number;
+  leftPane?: { bg?: string; color?: string };
+  rightPane?: { bg?: string; color?: string };
   handle?: {
-    bg?: string
-    color?: string
-    icon?: HTMLElement | string
-    width?: number
-    touchWidth?: number
-  }
-}
+    bg?: string;
+    color?: string;
+    icon?: HTMLElement | string;
+    width?: number;
+    touchWidth?: number;
+  };
+};
 
-type ResizablePanesReturn = (
-  leftPaneContent: HTMLElement,
-  rightPaneContent: HTMLElement,
-) => HTMLElement
+type ResizablePanesReturn = (leftPaneContent: HTMLElement, rightPaneContent: HTMLElement) => HTMLElement;
 
-function ResizablePanes(): ResizablePanesReturn
-function ResizablePanes(props: ResizablePanesProps): ResizablePanesReturn
+function ResizablePanes(): ResizablePanesReturn;
+function ResizablePanes(props: ResizablePanesProps): ResizablePanesReturn;
 function ResizablePanes(props?: ResizablePanesProps): ResizablePanesReturn {
   return function (leftPaneContent: HTMLElement, rightPaneContent: HTMLElement) {
-    const { leftPane, rightPane, leftPaneWidth = 50, handle } = props || {}
-    const _leftPaneWidth = State.Atom<string>(null)
-    const _rightPaneWidth = State.Atom<string>(null)
-    const _handleTouchLeft = State.Atom<string>(null)
-    const _handleLeft = State.Atom<string>(null)
-    const _container = State.Atom<HTMLElement>(null)
-    const _handleTouchWidth = handle?.touchWidth ?? 50
-    const _handleWidth = handle?.width ?? 20
+    const { leftPane, rightPane, leftPaneWidth = 50, handle } = props || {};
+    const _leftPaneWidth = State.Atom<string>(null);
+    const _rightPaneWidth = State.Atom<string>(null);
+    const _handleTouchLeft = State.Atom<string>(null);
+    const _handleLeft = State.Atom<string>(null);
+    const _container = State.Atom<HTMLElement>(null);
+    const _handleTouchWidth = handle?.touchWidth ?? 50;
+    const _handleWidth = handle?.width ?? 20;
 
     function drag(el: HTMLElement) {
       /** handle mouse down */
       function onMouseDown(e: MouseEvent) {
-        document.onmousemove = onMouseMove
-        document.onmouseup = () => (document.onmousemove = document.onmouseup = null)
+        document.onmousemove = onMouseMove;
+        document.onmouseup = () => (document.onmousemove = document.onmouseup = null);
       }
 
       /** handle mouse move */
       function onMouseMove(e: MouseEvent) {
-        const currentX = e.clientX
-        const handleTouchWidthCenter = _handleTouchWidth / 2
-        const handleWidthCenter = _handleWidth / 2
-        const offscreenLeft = currentX < handleTouchWidthCenter
-        const offscreenRight = currentX > _container.get().offsetWidth - handleTouchWidthCenter
-        if (offscreenLeft || offscreenRight) return
-        const calcTouchLeft = (currentX - handleTouchWidthCenter) / _container.get().offsetWidth
-        _handleTouchLeft.set(calcTouchLeft * 100 + '%')
-        const calcHandleLeft = (currentX - handleWidthCenter) / _container.get().offsetWidth
-        _handleLeft.set(calcHandleLeft * 100 + '%')
-        const rightPaneWidth = _container.get().offsetWidth - currentX
-        _rightPaneWidth.set((rightPaneWidth / _container.get().offsetWidth) * 100 + '%')
-        const leftPaneWidth = _container.get().offsetWidth - rightPaneWidth
-        _leftPaneWidth.set((leftPaneWidth / _container.get().offsetWidth) * 100 + '%')
+        const currentX = e.clientX;
+        const handleTouchWidthCenter = _handleTouchWidth / 2;
+        const handleWidthCenter = _handleWidth / 2;
+        const offscreenLeft = currentX < handleTouchWidthCenter;
+        const offscreenRight = currentX > _container.get().offsetWidth - handleTouchWidthCenter;
+        if (offscreenLeft || offscreenRight) return;
+        const calcTouchLeft = (currentX - handleTouchWidthCenter) / _container.get().offsetWidth;
+        _handleTouchLeft.set(calcTouchLeft * 100 + '%');
+        const calcHandleLeft = (currentX - handleWidthCenter) / _container.get().offsetWidth;
+        _handleLeft.set(calcHandleLeft * 100 + '%');
+        const rightPaneWidth = _container.get().offsetWidth - currentX;
+        _rightPaneWidth.set((rightPaneWidth / _container.get().offsetWidth) * 100 + '%');
+        const leftPaneWidth = _container.get().offsetWidth - rightPaneWidth;
+        _leftPaneWidth.set((leftPaneWidth / _container.get().offsetWidth) * 100 + '%');
       }
 
-      el.onmousedown = onMouseDown
+      el.onmousedown = onMouseDown;
     }
 
     const html = Template.Html({
@@ -69,7 +66,7 @@ function ResizablePanes(props?: ResizablePanesProps): ResizablePanesReturn {
       style_on_handle_left_change: Trait.Atom(_handleLeft, Trait.Style),
       style_on_right_pane_width_change: Trait.Atom(_rightPaneWidth, Trait.Style),
       style_on_left_pane_width_change: Trait.Atom(_leftPaneWidth, Trait.Style),
-    })
+    });
 
     return html(
       'div',
@@ -132,10 +129,10 @@ function ResizablePanes(props?: ResizablePanesProps): ResizablePanesReturn {
         ['style', 'height', '100%'],
         ['style_on_right_pane_width_change', 'width', _rightPaneWidth.get],
       )(rightPaneContent),
-    )
-  }
+    );
+  };
 }
 
 export const Panes = {
   ResizablePanes,
-}
+};

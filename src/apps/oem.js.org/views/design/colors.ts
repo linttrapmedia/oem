@@ -1,10 +1,10 @@
-import { color, font } from '@apps/oem.js.org/context'
-import { State } from '@core/framework/state'
-import { Template } from '@core/framework/template'
-import { COLORS, Theme } from '@core/framework/theme'
-import { Trait } from '@core/framework/trait'
-import { Snippet } from '../common/Snippet'
-const currSwatch = State.Atom(null)
+import { color, font } from '@apps/oem.js.org/context';
+import { State } from '@core/framework/State';
+import { Template } from '@core/framework/Template';
+import { COLORS, Theme } from '@core/framework/theme';
+import { Trait } from '@core/framework/Trait';
+import { Snippet } from '../common/Snippet';
+const currSwatch = State.Atom(null);
 
 const { div } = Template.Html({
   flex: Trait.Flex,
@@ -13,10 +13,10 @@ const { div } = Template.Html({
   style: Trait.Style,
   style_on_change: Trait.Atom(currSwatch, Trait.Style),
   style_on_winsize: Trait.StyleOnWinResize,
-})
+});
 
-type COLORS = Exclude<keyof typeof COLORS, 'transparent'>
-const ColorList = Object.keys(COLORS).filter(c => c !== 'transparent') as COLORS[]
+type COLORS = Exclude<keyof typeof COLORS, 'transparent'>;
+const ColorList = Object.keys(COLORS).filter((c) => c !== 'transparent') as COLORS[];
 
 const Swatch = (colorValue: string, colorArgs: string, i: number) =>
   // Wrapper
@@ -50,23 +50,18 @@ const Swatch = (colorValue: string, colorArgs: string, i: number) =>
       ['style', 'width', '100%'],
       ['style', 'fontFamily', font('Monospace')],
     )(`color(${colorArgs})`),
-  )
+  );
 
-const calcGridColumns = ({ width }: { width: number }) =>
-  `repeat(${width >= 700 ? '3' : '1'}, minmax(0, 1fr))`
+const calcGridColumns = ({ width }: { width: number }) => `repeat(${width >= 700 ? '3' : '1'}, minmax(0, 1fr))`;
 
-const Header = div(['style', 'fontSize', '20px'])
-const Description = div(['style', 'fontSize', '16px'])
-const Section = div(['flex', 'column', 20], ['style', 'width', '100%'])
+const Header = div(['style', 'fontSize', '20px']);
+const Description = div(['style', 'fontSize', '16px']);
+const Section = div(['flex', 'column', 20], ['style', 'width', '100%']);
 
 export const Colors = div(['flex', 'column', 40])(
   Section(
     Header('Palette'),
-    Description(
-      Template.Markdown(
-        'The main color palette is accessible through the `Theme().color` function.',
-      ),
-    ),
+    Description(Template.Markdown('The main color palette is accessible through the `Theme().color` function.')),
     Snippet(`const { color } = Theme();`),
     div(
       ['style', 'display', 'grid'],
@@ -133,9 +128,9 @@ color('blue',0.5, 0.5); // together`),
         ['blue', 1, -10],
         ['blue', 0.5, -10],
       ].map((c, i) => {
-        const [colorName, opacity, adjust] = c as [COLORS, number, number]
-        return Swatch(color('blue', opacity, adjust), `'${colorName}',${opacity},${adjust}`, i)
+        const [colorName, opacity, adjust] = c as [COLORS, number, number];
+        return Swatch(color('blue', opacity, adjust), `'${colorName}',${opacity},${adjust}`, i);
       }),
     ),
   ),
-)
+);

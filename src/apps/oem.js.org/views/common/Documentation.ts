@@ -1,31 +1,31 @@
-import { State } from '@core/framework/state'
-import { Template } from '@core/framework/template'
-import { Trait } from '@core/framework/trait'
-import { color, font, ROUTES } from '../../context'
+import { State } from '@core/framework/State';
+import { Template } from '@core/framework/Template';
+import { Trait } from '@core/framework/Trait';
+import { color, font, ROUTES } from '../../context';
 
 type DocumentationProps = {
-  content: HTMLElement | DocumentFragment
-  next?: [text: string, link: string]
-  prev?: [text: string, link: string]
-}
+  content: HTMLElement | DocumentFragment;
+  next?: [text: string, link: string];
+  prev?: [text: string, link: string];
+};
 
 export const Documentation = ({ content, next, prev }: DocumentationProps) => {
   // functions
 
-  const getResponsiveMode = () => (window.innerWidth < maxWidth ? 'MOBILE' : 'TABLET')
-  const isMenuClosed = () => menuState.get() === 'CLOSED'
-  const isMenuOpen = () => menuState.get() === 'OPEN'
-  const isMobile = () => winSize.get() === 'MOBILE'
-  const isMobileAndClosed = () => isMobile() && isMenuClosed()
-  const isTablet = () => winSize.get() === 'TABLET'
-  const onResize = () => winSize.set(getResponsiveMode())
-  const toggleMenu = () => menuState.set(menuState.get() === 'CLOSED' ? 'OPEN' : 'CLOSED')
+  const getResponsiveMode = () => (window.innerWidth < maxWidth ? 'MOBILE' : 'TABLET');
+  const isMenuClosed = () => menuState.get() === 'CLOSED';
+  const isMenuOpen = () => menuState.get() === 'OPEN';
+  const isMobile = () => winSize.get() === 'MOBILE';
+  const isMobileAndClosed = () => isMobile() && isMenuClosed();
+  const isTablet = () => winSize.get() === 'TABLET';
+  const onResize = () => winSize.set(getResponsiveMode());
+  const toggleMenu = () => menuState.set(menuState.get() === 'CLOSED' ? 'OPEN' : 'CLOSED');
 
   // Params
 
-  const maxWidth = 1400
-  const menuState = State.Atom<'OPEN' | 'CLOSED'>('CLOSED')
-  const winSize = State.Atom<'MOBILE' | 'TABLET'>(getResponsiveMode())
+  const maxWidth = 1400;
+  const menuState = State.Atom<'OPEN' | 'CLOSED'>('CLOSED');
+  const winSize = State.Atom<'MOBILE' | 'TABLET'>(getResponsiveMode());
   const menu = [
     ['Overview', ROUTES.OVERVIEW],
     ['Concepts', ROUTES.CONCEPTS],
@@ -35,7 +35,7 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
     ['Design', ROUTES.DESIGN_SYSTEM],
     ['Config', ROUTES.CONFIG],
     ['Contributing', ROUTES.CONTRIBUTING],
-  ]
+  ];
 
   // Template
 
@@ -48,11 +48,11 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
     style: Trait.Style,
     style_on_win_change: Trait.Atom(winSize, Trait.Style),
     style_on_menu_change: Trait.Atom(menuState, Trait.Style),
-  })
+  });
 
   // Elements
 
-  const ContentArea = div(['style', 'gridArea', 'content-area'], ['style', 'minWidth', `0px`])
+  const ContentArea = div(['style', 'gridArea', 'content-area'], ['style', 'minWidth', `0px`]);
 
   const Grid = div(
     ['on_resize', onResize],
@@ -70,7 +70,7 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
     ['style', 'gap', '50px'],
     ['style', 'padding', '50px'],
     ['style', 'margin', '0 auto'],
-  )
+  );
 
   const Hamburger = div(
     ['on_click', toggleMenu],
@@ -85,7 +85,7 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
     ['style', 'display', 'none', isTablet],
     ['style_on_win_change', 'display', 'block', isMobile],
     ['style_on_win_change', 'display', 'none', isTablet],
-  )
+  );
 
   const Logo = a(
     ['attr', 'href', '/'],
@@ -97,14 +97,14 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
     ['style', 'fontFamily', font('Splash')],
     ['style', 'textDecoration', 'none'],
     ['style', 'width', '100%'],
-  )
+  );
 
   const LogoWrapper = div(
     ['style', 'display', 'flex'],
     ['style', 'flexDirection', 'row'],
     ['style', 'justifyContent', 'space-between'],
     ['style', 'alignItems', 'center'],
-  )
+  );
 
   const MenuArea = div(
     ['style', 'gridArea', 'menu-area'],
@@ -113,7 +113,7 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
     ['style', 'display', 'flex'],
     ['style', 'flexDirection', 'column'],
     ['style', 'gap', '30px'],
-  )
+  );
 
   const MenuWrapper = div(
     ['style', 'display', 'none', isMobileAndClosed],
@@ -122,10 +122,10 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
     ['style_on_win_change', 'display', 'block', isTablet],
     ['style_on_menu_change', 'display', 'none', isMobileAndClosed],
     ['style_on_win_change', 'display', 'none', isMobileAndClosed],
-  )
+  );
 
   function MenuItem(text: string, route: string) {
-    const isCurrentPage = route === '/' + window.location.search
+    const isCurrentPage = route === '/' + window.location.search;
     return a(
       ['attr', 'href', route],
       ['style', 'color', color('black', 0.4), !isCurrentPage],
@@ -135,7 +135,7 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
       ['style', 'display', 'block'],
       ['style_on_hover', 'color', color('black')],
       ['style', 'textDecoration', 'none'],
-    )(text)
+    )(text);
   }
 
   const FooterNav = div(
@@ -169,7 +169,7 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
           ['style', 'transition', '0.25s'],
         )(next[0], ` → `)
       : null,
-  )
+  );
 
   // Output
 
@@ -179,5 +179,5 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
       MenuWrapper(...menu.map(([text, route]) => MenuItem(text, route))),
     ),
     ContentArea(content, FooterNav),
-  )
-}
+  );
+};

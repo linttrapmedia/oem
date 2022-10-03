@@ -1,15 +1,15 @@
-import { Template } from '@core/framework/template'
-import { Theme } from '@core/framework/theme'
-import { Trait } from '@core/framework/trait'
+import { Template } from '@core/framework/Template';
+import { Theme } from '@core/framework/theme';
+import { Trait } from '@core/framework/Trait';
 
-const theme = Theme()
+const theme = Theme();
 
 type BreadcrumbProps = {
-  color?: string
-  colorOnHover?: string
-  font?: string
-  items: { label: string; href?: string; onClick?: () => void }[]
-}
+  color?: string;
+  colorOnHover?: string;
+  font?: string;
+  items: { label: string; href?: string; onClick?: () => void }[];
+};
 
 export const Breadcrumb = ({ color, colorOnHover, font, items = [] }: BreadcrumbProps) => {
   const { div, a } = Template.Html(
@@ -21,7 +21,7 @@ export const Breadcrumb = ({ color, colorOnHover, font, items = [] }: Breadcrumb
       style: Trait.Style,
     },
     ['div', 'a'],
-  )
+  );
 
   return div(
     ['style', 'alignItems', 'center'],
@@ -38,11 +38,7 @@ export const Breadcrumb = ({ color, colorOnHover, font, items = [] }: Breadcrumb
   )(
     ...items.map(({ href, onClick, label }, i) =>
       div(['style', 'display', 'flex'], ['style', 'flexDirection', 'row'])(
-        div(
-          ['style', 'margin', '0 10px'],
-          ['style', 'opacity', '0.5'],
-          ['style', 'display', 'none', i === 0],
-        )('·'),
+        div(['style', 'margin', '0 10px'], ['style', 'opacity', '0.5'], ['style', 'display', 'none', i === 0])('·'),
         a(
           ['attr', 'href', href],
           ['on_click', onClick],
@@ -53,5 +49,5 @@ export const Breadcrumb = ({ color, colorOnHover, font, items = [] }: Breadcrumb
         )(label),
       ),
     ),
-  )
-}
+  );
+};

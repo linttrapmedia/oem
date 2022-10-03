@@ -1,9 +1,9 @@
-import { State } from '@core/framework/state'
-import { Template } from '@core/framework/template'
-import { Theme } from '@core/framework/theme'
-import { Trait } from '@core/framework/trait'
+import { State } from '@core/framework/State';
+import { Template } from '@core/framework/Template';
+import { Theme } from '@core/framework/theme';
+import { Trait } from '@core/framework/Trait';
 
-const { div } = Template.Html({ style: Trait.Style })
+const { div } = Template.Html({ style: Trait.Style });
 
 const AccordionItem = (
   title: string,
@@ -11,14 +11,14 @@ const AccordionItem = (
   expand: boolean = false,
   onExpand: (isExpanded: boolean) => void,
 ) => {
-  const expandAtom = State.Atom(expand)
+  const expandAtom = State.Atom(expand);
 
   const html = Template.Html({
     on_click: Trait.OnClick,
     style_on_expand_change: Trait.Atom(expandAtom, Trait.Style),
     style_on_hover: Trait.StyleOnHover,
     style: Trait.Style,
-  })
+  });
 
   return div(['style', 'display', 'flex'], ['style', 'flexDirection', 'column'])(
     div(
@@ -44,18 +44,10 @@ const AccordionItem = (
       ['style', 'display', 'flex', () => expandAtom.get() === true],
       ['style', 'display', 'none', () => expandAtom.get() === false],
     )(content),
-  )
-}
+  );
+};
 
 export const Accordion = (
-  ...children: [
-    title: string,
-    content: HTMLElement,
-    isExpanded: boolean,
-    onExpand: (isExpanded: boolean) => void,
-  ][]
+  ...children: [title: string, content: HTMLElement, isExpanded: boolean, onExpand: (isExpanded: boolean) => void][]
 ) =>
-  div(
-    ['style', 'display', 'flex'],
-    ['style', 'flexDirection', 'column'],
-  )(...children.map(i => AccordionItem(...i)))
+  div(['style', 'display', 'flex'], ['style', 'flexDirection', 'column'])(...children.map((i) => AccordionItem(...i)));

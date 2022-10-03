@@ -1,28 +1,20 @@
-import { State } from '@core/framework/state'
-import { Template } from '@core/framework/template'
-import { Theme } from '@core/framework/theme'
-import { Trait } from '@core/framework/trait'
+import { State } from '@core/framework/State';
+import { Template } from '@core/framework/Template';
+import { Theme } from '@core/framework/theme';
+import { Trait } from '@core/framework/Trait';
 
 type DesignerUIProps = {
-  title?: string
-  menu: HTMLElement
-  content: HTMLElement
-  maxWidth?: number
-  selectors?: [key: string, val: string][]
-}
+  title?: string;
+  menu: HTMLElement;
+  content: HTMLElement;
+  maxWidth?: number;
+  selectors?: [key: string, val: string][];
+};
 
-export const DesignerUI = ({
-  title,
-  menu,
-  content,
-  maxWidth = 960,
-  selectors,
-}: DesignerUIProps) => {
+export const DesignerUI = ({ title, menu, content, maxWidth = 960, selectors }: DesignerUIProps) => {
   // Params
-  const menu_state = State.Atom<'OPEN' | 'CLOSED'>('CLOSED')
-  const win_size = State.Atom<'MOBILE' | 'TABLET'>(
-    window.innerWidth < maxWidth ? 'MOBILE' : 'TABLET',
-  )
+  const menu_state = State.Atom<'OPEN' | 'CLOSED'>('CLOSED');
+  const win_size = State.Atom<'MOBILE' | 'TABLET'>(window.innerWidth < maxWidth ? 'MOBILE' : 'TABLET');
 
   // Template
   const { div, a, select, option } = Template.Html(
@@ -37,7 +29,7 @@ export const DesignerUI = ({
       style_on_menu_change: Trait.Atom(menu_state, Trait.Style),
     },
     ['div', 'a', 'select', 'option'],
-  )
+  );
 
   // Grid
   return div(
@@ -75,7 +67,7 @@ export const DesignerUI = ({
       div(['style', 'marginTop', '20px'])(
         div(['style', 'position', 'relative'])(
           select(
-            ['on_change', e => (window.location.href = (<HTMLSelectElement>e.target).value)],
+            ['on_change', (e) => (window.location.href = (<HTMLSelectElement>e.target).value)],
             ['style', 'backgroundColor', Theme().color('black')],
             ['style', 'border', `1px solid ${Theme().color('white', 0, 0.1)}`],
             ['style', 'borderRadius', '5px'],
@@ -89,7 +81,7 @@ export const DesignerUI = ({
             ['style', 'textTransform', 'uppercase'],
             ['style', 'webkitAppearance', 'none'],
             ['style', 'width', '100%'],
-          )(...selectors.map(s => option(['attr', 'value', s[1]])(s[0]))),
+          )(...selectors.map((s) => option(['attr', 'value', s[1]])(s[0]))),
           div(
             ['style', 'position', 'absolute'],
             ['style', 'right', '12px'],
@@ -102,5 +94,5 @@ export const DesignerUI = ({
       // Menu
       div(['style', 'marginTop', '20px'])(menu),
     ),
-  )
-}
+  );
+};

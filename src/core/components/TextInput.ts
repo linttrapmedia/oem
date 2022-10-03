@@ -1,24 +1,18 @@
-import { Template } from '@core/framework/template'
-import { Theme } from '@core/framework/theme'
-import { Trait } from '@core/framework/trait'
-import { Types } from '@core/framework/types'
+import { Template } from '@core/framework/Template';
+import { Theme } from '@core/framework/theme';
+import { Trait } from '@core/framework/Trait';
+import { Types } from '@core/framework/types';
 
 type TextInputProps = {
-  color?: string
-  backgroundColor?: string
-  value: Types.Atom<string>
-  placeholder?: string
-  styles?: Types.CssDeclaration[]
-}
+  color?: string;
+  backgroundColor?: string;
+  value: Types.Atom<string>;
+  placeholder?: string;
+  styles?: Types.CssDeclaration[];
+};
 
-export const TextInput = ({
-  color,
-  backgroundColor,
-  value,
-  placeholder,
-  styles,
-}: TextInputProps) => {
-  const theme = Theme()
+export const TextInput = ({ color, backgroundColor, value, placeholder, styles }: TextInputProps) => {
+  const theme = Theme();
 
   const { input } = Template.Html(
     {
@@ -28,7 +22,7 @@ export const TextInput = ({
       'text@input': Trait.OnTextInput,
     },
     ['input'],
-  )
+  );
 
   return input(
     ['attr', 'placeholder', placeholder],
@@ -45,5 +39,5 @@ export const TextInput = ({
     ['style', 'width', '100%'],
     ['styles', styles],
     ['text@input', value.set],
-  )()
-}
+  )();
+};

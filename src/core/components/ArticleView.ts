@@ -1,39 +1,39 @@
-import { Template } from '@core/framework/template'
+import { Template } from '@core/framework/Template';
 
-type MenuItem = {}
-type Comment = []
+type MenuItem = {};
+type Comment = [];
 
 interface ArticleViewProps {
   header: {
-    brand: HTMLElement
-    menu?: MenuItem[]
-    links?: MenuItem[]
-  }
+    brand: HTMLElement;
+    menu?: MenuItem[];
+    links?: MenuItem[];
+  };
   article: {
-    article: HTMLElement
-  }
+    article: HTMLElement;
+  };
   toc?: {
-    menu?: MenuItem[]
-  }
+    menu?: MenuItem[];
+  };
   ads?: {
-    ads: HTMLElement
-    menu?: MenuItem
-  }
+    ads: HTMLElement;
+    menu?: MenuItem;
+  };
   comments?: {
-    comments: Comment[]
-  }
+    comments: Comment[];
+  };
   related?: {
-    menu: MenuItem[]
-  }
+    menu: MenuItem[];
+  };
   footer?: {
-    disclaimer: HTMLElement
-    menu: MenuItem[]
-    contact: HTMLElement
-  }
+    disclaimer: HTMLElement;
+    menu: MenuItem[];
+    contact: HTMLElement;
+  };
   credits?: {
-    menu: MenuItem[]
-    credit: string
-  }
+    menu: MenuItem[];
+    credit: string;
+  };
 }
 
 enum Areas {
@@ -51,7 +51,7 @@ enum Areas {
 }
 
 export function ArticleView(props: ArticleViewProps) {
-  const { div } = Template.Html()
+  const { div } = Template.Html();
 
   const TemplateAreas = [
     [Areas.headerBrand, Areas.headerMenu, Areas.headerLinks].join(' '),
@@ -59,20 +59,20 @@ export function ArticleView(props: ArticleViewProps) {
     [Areas.comments, Areas.comments, Areas.comments].join(' '),
     [Areas.footerDisclaimer, Areas.footerMenu, Areas.footerContact].join(' '),
     [Areas.credits, Areas.credits, Areas.credits].join(' '),
-  ].join('\n')
+  ].join('\n');
 
-  const Grid = div(['style', 'display', 'grid'], ['style', 'gridTemplateAreas', TemplateAreas])
-  const HeaderBrand = div(['style', 'gridArea', Areas.headerBrand])
-  const HeaderMenu = div(['style', 'gridArea', Areas.headerMenu])
-  const HeaderLinks = div(['style', 'gridArea', Areas.headerLinks])
-  const TocArea = div(['style', 'gridArea', Areas.toc])
-  const Article = div(['style', 'gridArea', Areas.article])
-  const Ads = div(['style', 'gridArea', Areas.ads])
-  const Comments = div(['style', 'gridArea', Areas.comments])
-  const FooterDisclaimer = div(['style', 'gridArea', Areas.footerDisclaimer])
-  const FooterMenu = div(['style', 'gridArea', Areas.footerMenu])
-  const FooterContact = div(['style', 'gridArea', Areas.footerContact])
-  const Credits = div(['style', 'gridArea', Areas.credits])
+  const Grid = div(['style', 'display', 'grid'], ['style', 'gridTemplateAreas', TemplateAreas]);
+  const HeaderBrand = div(['style', 'gridArea', Areas.headerBrand]);
+  const HeaderMenu = div(['style', 'gridArea', Areas.headerMenu]);
+  const HeaderLinks = div(['style', 'gridArea', Areas.headerLinks]);
+  const TocArea = div(['style', 'gridArea', Areas.toc]);
+  const Article = div(['style', 'gridArea', Areas.article]);
+  const Ads = div(['style', 'gridArea', Areas.ads]);
+  const Comments = div(['style', 'gridArea', Areas.comments]);
+  const FooterDisclaimer = div(['style', 'gridArea', Areas.footerDisclaimer]);
+  const FooterMenu = div(['style', 'gridArea', Areas.footerMenu]);
+  const FooterContact = div(['style', 'gridArea', Areas.footerContact]);
+  const Credits = div(['style', 'gridArea', Areas.credits]);
 
   return Grid(
     HeaderBrand(),
@@ -86,5 +86,5 @@ export function ArticleView(props: ArticleViewProps) {
     FooterMenu(),
     FooterContact(),
     Credits(),
-  )
+  );
 }

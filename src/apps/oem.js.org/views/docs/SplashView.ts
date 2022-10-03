@@ -1,6 +1,6 @@
-import { Template } from '@core/framework/template'
-import { color, font, ROUTES, tags } from '../../context'
-const { a, div, img } = tags
+import { Template } from '@core/framework/Template';
+import { color, font, ROUTES, tags } from '../../context';
+const { a, div, img } = tags;
 const Button = (href: string) =>
   a(
     ['attr', 'href', href],
@@ -16,7 +16,7 @@ const Button = (href: string) =>
     ['style', 'textTransform', 'uppercase'],
     ['style', 'border', `3px solid ${color('black', 0.2)}`],
     ['style_on_hover', 'border', `3px solid ${color('black')}`, `3px solid ${color('black', 0.2)}`],
-  )
+  );
 
 const Title = div(
   ['style', 'letterSpacing', '2px'],
@@ -27,7 +27,7 @@ const Title = div(
   ['style', 'padding', '30px 0px 20px'],
   ['style', 'color', color('black')],
   ['style', 'fontFamily', font('Splash')],
-)
+);
 
 const Subtitle = div(
   ['style', 'letterSpacing', '2px'],
@@ -39,7 +39,7 @@ const Subtitle = div(
   ['style', 'lineHeight', '1.1'],
   ['style', 'padding', '0px 20px 30px'],
   ['style', 'color', color('black', 0.5)],
-)
+);
 
 const superscript = div(
   ['style', 'letterSpacing', '0px'],
@@ -56,7 +56,7 @@ const superscript = div(
   ['style', 'backgroundColor', color('black', 0.4)],
   ['style', 'fontFamily', font('Monospace')],
   ['style', 'textTransform', 'uppercase'],
-)
+);
 
 const Tagline = div(
   ['style', 'letterSpacing', '2px'],
@@ -72,7 +72,7 @@ const Tagline = div(
   ['style', 'transform', 'skew(-10deg)'],
   ['style', 'borderRadius', '5px'],
   ['style_on_resize', 'fontSize', ({ width }) => (width > 800 ? '32px' : '18px')],
-)
+);
 
 const Description = div(
   ['style', 'color', color('black', 0.7)],
@@ -80,10 +80,10 @@ const Description = div(
   ['style', 'margin', '0px 20px 10px 20px'],
   ['style', 'textAlign', 'center'],
   ['style', 'lineHeight', 1.5],
-)
+);
 
 const imageLink = (href: string) =>
-  a(['style', 'marginLeft', '10px'], ['attr', 'href', href], ['attr', 'target', '_blank'])
+  a(['style', 'marginLeft', '10px'], ['attr', 'href', href], ['attr', 'target', '_blank']);
 
 const Copyright = div(
   ['style', 'color', color('black', 0.3)],
@@ -93,7 +93,7 @@ const Copyright = div(
   ['style', 'textAlign', 'center'],
   ['style', 'textTransform', 'uppercase'],
   ['style', 'letterSpacing', '2px'],
-)
+);
 
 const Wrapper = div(
   ['style', 'width', '100%'],
@@ -104,7 +104,7 @@ const Wrapper = div(
   ['style', 'alignItems', 'center'],
   ['style', 'backgroundColor', color('white')],
   ['style', 'fontFamily', font('Space Grotesk')],
-)
+);
 
 export function SplashView() {
   return Wrapper(
@@ -123,10 +123,7 @@ export function SplashView() {
           `OEM is a dependency-free UI/UX framework. It uses a isomorphic syntax to write declarative html, styling and behavior. The result is clean and expressive code that is easy to read.`,
         ),
       ),
-      div(['style', 'margin', '40px 20px'])(
-        Button(ROUTES.OVERVIEW)('Docs'),
-        Button(ROUTES.DESIGN_SYSTEM)('Design'),
-      ),
+      div(['style', 'margin', '40px 20px'])(Button(ROUTES.OVERVIEW)('Docs'), Button(ROUTES.DESIGN_SYSTEM)('Design')),
       div(
         ['style', 'display', 'flex'],
         ['style', 'flexDirection', 'row'],
@@ -142,5 +139,5 @@ export function SplashView() {
       ),
       Copyright(`OEM js ~ the dependency-free u framework.\ncopryright © 2022 linttrapmedia.`),
     ),
-  )
+  );
 }

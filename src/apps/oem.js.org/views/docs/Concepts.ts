@@ -1,10 +1,10 @@
-import { Template } from '@core/framework/template'
-import { ROUTES, tags } from '../../context'
-import { Documentation } from '../common/Documentation'
-import { Section } from '../common/Section'
-import { Snippet } from '../common/Snippet'
-import { TodoExample } from '../common/TodoExample'
-const { div } = tags
+import { Template } from '@core/framework/Template';
+import { ROUTES, tags } from '../../context';
+import { Documentation } from '../common/Documentation';
+import { Section } from '../common/Section';
+import { Snippet } from '../common/Snippet';
+import { TodoExample } from '../common/TodoExample';
+const { div } = tags;
 
 export function ConceptsView() {
   return Documentation({
@@ -104,5 +104,5 @@ const TodoExample = () => {
 }`),
       }),
     ),
-  })
+  });
 }

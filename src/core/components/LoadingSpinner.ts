@@ -1,34 +1,34 @@
-import { Template } from '@core/framework/template'
-import { Theme } from '@core/framework/theme'
-import { Trait } from '@core/framework/trait'
-import { KeyFrames } from '@core/utils/keyframes'
+import { Template } from '@core/framework/Template';
+import { Theme } from '@core/framework/theme';
+import { Trait } from '@core/framework/Trait';
+import { KeyFrames } from '@core/utils/keyframes';
 
 type LoadingSpinnerProps = {
-  size?: number
-  thickness?: number
-  color?: string
-  speed?: number
-}
+  size?: number;
+  thickness?: number;
+  color?: string;
+  speed?: number;
+};
 
-export function LoadingSpinner(): HTMLElement
-export function LoadingSpinner(props?: LoadingSpinnerProps): HTMLElement
+export function LoadingSpinner(): HTMLElement;
+export function LoadingSpinner(props?: LoadingSpinnerProps): HTMLElement;
 export function LoadingSpinner(props?: LoadingSpinnerProps): HTMLElement {
-  const _props = { size: 35, thickness: 5, color: Theme().color('white'), speed: 0.35, ...props }
-  const containerSize = _props.size + 'px'
-  const spinnerSize = _props.size + 'px'
-  const spinnerThickness = _props.thickness + 'px'
+  const _props = { size: 35, thickness: 5, color: Theme().color('white'), speed: 0.35, ...props };
+  const containerSize = _props.size + 'px';
+  const spinnerSize = _props.size + 'px';
+  const spinnerThickness = _props.thickness + 'px';
 
   const animation = KeyFrames({
     rotate: [
       [0, 'transform', 'rotate(0deg)'],
       [100, 'transform', 'rotate(360deg)'],
     ],
-  })
+  });
 
   const { div } = Template.Html({
     attr: Trait.Attr,
     style: Trait.Style,
-  })
+  });
 
   return div(
     ['style', 'animationName', animation('rotate')],
@@ -46,5 +46,5 @@ export function LoadingSpinner(props?: LoadingSpinnerProps): HTMLElement {
       ['style', 'width', spinnerSize],
       ['style', 'height', spinnerSize],
     )(),
-  )
+  );
 }

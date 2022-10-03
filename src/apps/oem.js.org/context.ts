@@ -1,7 +1,7 @@
-import { State } from '@core/framework/state'
-import { Template } from '@core/framework/template'
-import { Theme } from '@core/framework/theme'
-import { Trait } from '@core/framework/trait'
+import { State } from '@core/framework/State';
+import { Template } from '@core/framework/Template';
+import { Theme } from '@core/framework/theme';
+import { Trait } from '@core/framework/Trait';
 
 // Interface
 
@@ -15,7 +15,7 @@ export type ViewState =
   | 'STATE_MANAGEMENT'
   | 'STYLING'
   | 'HTML'
-  | 'CONFIG'
+  | 'CONFIG';
 
 // Constants
 
@@ -30,15 +30,15 @@ export const ROUTES = {
   STYLING: '/?page=styling',
   HTML: '/?page=html',
   CONFIG: '/?page=config',
-}
+};
 
 // State
 
-export const viewState = State.Atom<ViewState>('SPLASH')
+export const viewState = State.Atom<ViewState>('SPLASH');
 
 // Theming
 
-export const { color, font } = Theme()
+export const { color, font } = Theme();
 
 // Template
 
@@ -52,4 +52,4 @@ export const tags = Template.Html({
   style_on_resize: Trait.StyleOnWinResize,
   style: Trait.Style,
   styles: Trait.Styles,
-})
+});

@@ -1,9 +1,9 @@
-import { Template } from '@core/framework/template'
-import { ROUTES } from '../../context'
-import { Documentation } from '../common/Documentation'
-import { Section } from '../common/Section'
-import { Snippet } from '../common/Snippet'
-import { TodoExample } from '../common/TodoExample'
+import { Template } from '@core/framework/Template';
+import { ROUTES } from '../../context';
+import { Documentation } from '../common/Documentation';
+import { Section } from '../common/Section';
+import { Snippet } from '../common/Snippet';
+import { TodoExample } from '../common/TodoExample';
 
 export function ExampleView() {
   return Documentation({
@@ -75,5 +75,5 @@ const TodoExample = () => {
 }`),
       }),
     ),
-  })
+  });
 }

@@ -1,14 +1,14 @@
-import { Template } from '@core/framework/template'
-import { Theme } from '@core/framework/theme'
-import { Trait } from '@core/framework/trait'
+import { Template } from '@core/framework/Template';
+import { Theme } from '@core/framework/theme';
+import { Trait } from '@core/framework/Trait';
 
 type ColorPickerProps = {
-  color: Types.Atom<string>
-  size?: number
-}
+  color: Types.Atom<string>;
+  size?: number;
+};
 
 export const ColorPicker = (props: ColorPickerProps) => {
-  const id = Math.random().toString(36).substring(2, 15)
+  const id = Math.random().toString(36).substring(2, 15);
 
   const html = Template.Html({
     attr: Trait.Attr,
@@ -16,9 +16,9 @@ export const ColorPicker = (props: ColorPickerProps) => {
     style_on_hover: Trait.StyleOnHover,
     style_on_color_change: Trait.Atom(props.color, Trait.Style),
     on_color_input: Trait.OnColorInput,
-  })
+  });
 
-  const pickerSize = `${props.size ?? 20}px`
+  const pickerSize = `${props.size ?? 20}px`;
 
   return (label: string) =>
     html(
@@ -58,5 +58,5 @@ export const ColorPicker = (props: ColorPickerProps) => {
           ['style', 'border', 'none'],
         )(),
       ),
-    )
-}
+    );
+};

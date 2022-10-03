@@ -1,18 +1,18 @@
-import { Template } from '@core/framework/template'
-import { Theme } from '@core/framework/theme'
-import { Trait } from '@core/framework/trait'
+import { Template } from '@core/framework/Template';
+import { Theme } from '@core/framework/theme';
+import { Trait } from '@core/framework/Trait';
 
 type ButtonProps = {
-  color?: string
-  disabled?: boolean
-  iconLeft?: string | HTMLElement
-  iconRight?: string | HTMLElement
-  onClick: () => void
-  size?: 'XS' | 'SM' | 'MD' | 'LG'
-  text: string
-  textColor?: string
-  variant?: 'OUTLINE' | 'SOLID' | 'GHOST' | 'LINK'
-}
+  color?: string;
+  disabled?: boolean;
+  iconLeft?: string | HTMLElement;
+  iconRight?: string | HTMLElement;
+  onClick: () => void;
+  size?: 'XS' | 'SM' | 'MD' | 'LG';
+  text: string;
+  textColor?: string;
+  variant?: 'OUTLINE' | 'SOLID' | 'GHOST' | 'LINK';
+};
 
 export const Button = ({
   color = Theme().color('blue'),
@@ -30,44 +30,44 @@ export const Button = ({
     style_on_hover: Trait.StyleOnHover,
     style: Trait.Style,
     styles: Trait.Styles,
-  })
+  });
 
   const opacify = (hsla: string, opacity: string) => {
-    const hslaArray = hsla.split(',')
-    hslaArray.splice(3, 1, opacity)
-    return hslaArray.join(',')
-  }
+    const hslaArray = hsla.split(',');
+    hslaArray.splice(3, 1, opacity);
+    return hslaArray.join(',');
+  };
 
   const fontSize: Record<ButtonProps['size'], `${number}px`> = {
     XS: '12px',
     SM: '14px',
     MD: '16px',
     LG: '20px',
-  }
+  };
 
   const padding: Record<ButtonProps['size'], CSSStyleDeclaration['padding']> = {
     XS: '8px 15px',
     SM: '10px 20px ',
     MD: '14px 20px',
     LG: '16px 24px',
-  }
+  };
 
   const gap: Record<ButtonProps['size'], `${number}px`> = {
     XS: '10px',
     SM: '12px',
     MD: '12px',
     LG: '16px',
-  }
+  };
 
   const variantStyle: Record<
     ButtonProps['variant'],
     {
-      backgroundColor: string
-      backgroundColorOnHover?: string
-      borderColor: string
-      borderColorOnHover?: string
-      textColor: string
-      textColorOnHover?: string
+      backgroundColor: string;
+      backgroundColorOnHover?: string;
+      borderColor: string;
+      borderColorOnHover?: string;
+      textColor: string;
+      textColorOnHover?: string;
     }
   > = {
     OUTLINE: {
@@ -95,7 +95,7 @@ export const Button = ({
       textColor: opacify(color, '0.75'),
       textColorOnHover: color,
     },
-  }
+  };
 
   return button(
     ['on_click', onClick, !disabled],
@@ -113,13 +113,7 @@ export const Button = ({
       variantStyle[variant].borderColor,
       !disabled,
     ],
-    [
-      'style_on_hover',
-      'color',
-      variantStyle[variant].textColorOnHover,
-      variantStyle[variant].textColor,
-      !disabled,
-    ],
+    ['style_on_hover', 'color', variantStyle[variant].textColorOnHover, variantStyle[variant].textColor, !disabled],
     ['style', 'alignItems', 'center'],
     ['style', 'backgroundColor', variantStyle[variant].backgroundColor],
     ['style', 'borderColor', variantStyle[variant].borderColor],
@@ -143,5 +137,5 @@ export const Button = ({
     iconLeft && span(['style', 'marginLeft', `calc(${gap[size]} * -0.25)`])(iconLeft),
     span()(text),
     iconRight && span(['style', 'marginRight', `calc(${gap[size]} * -0.25)`])(iconRight),
-  )
-}
+  );
+};
