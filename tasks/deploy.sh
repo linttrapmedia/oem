@@ -5,7 +5,7 @@ git checkout gh-pages && \
 npm run clean && \
 git merge main --no-commit --no-ff && \
 npm run build && \
-mv dist docs && \
+mv dist/oem.js.org docs && \
 echo oem.js.org >> docs/CNAME && \
 echo oem.js.org >> CNAME && \
 git add . && \
