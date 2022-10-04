@@ -12,16 +12,10 @@ export function CounterExample() {
     on_click: Trait.OnClick,
     on_count: Trait.Atom(count, Trait.InnerText),
     style: Trait.Style,
+    flex: Trait.Flex,
   });
 
-  return div(
-    ['style', 'display', 'flex'],
-    ['style', 'flexDirection', 'row'],
-    ['style', 'gap', '30px'],
-    ['style', 'fontSize', '36px'],
-    ['style', 'alignItems', 'center'],
-    ['style', 'cursor', 'pointer'],
-  )(
+  return div(['flex', 'row', 30], ['style', 'fontSize', '36px'], ['style', 'cursor', 'pointer'])(
     button(['on_click', dec], ['style', 'cursor', 'pointer'])('-'),
     div(['on_count', count.get], ['on_click', reset])(count.get()),
     button(['on_click', inc], ['style', 'cursor', 'pointer'])('+'),

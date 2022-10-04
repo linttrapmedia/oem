@@ -1,7 +1,7 @@
 import { color, font } from '@apps/oem.js.org/context';
 import { State } from '@core/framework/State';
 import { Template } from '@core/framework/Template';
-import { COLORS, Theme } from '@core/framework/theme';
+import { COLORS, Theme } from '@core/framework/Theme';
 import { Trait } from '@core/framework/Trait';
 import { Snippet } from '../common/Snippet';
 const currSwatch = State.Atom(null);

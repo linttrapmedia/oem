@@ -1,38 +1,57 @@
-# [oem](https://oem.js.org)
+# O E M
 
-The Dependency-Free UI Framework
+[oem.js.org](https://oem.js.org)
 
-## Introduction
+## The Dependency-Free UI Framework
 
-OEM is a dependency-free UI framework and design system. The code is simple and straight forward with virtually no coupling which makes it easy to understand and maintain.
+OEM is a dependency-free UI/UX framework and platform. It uses a unique declarative syntax to control style and behavior which is easy to read at scale. The core framework is only a handful of modules that are easy to grok while the _extended_ framework includes a library of take-it-or-leave it features which **includes a full-blown design system**. The overall architecture includes a set of highly configurable dev tasks which allows you to manage multiple apps as a monorepo and/or microfrontend.
 
-## Quick Start
+## Setup
 
 ```
-git clone https://github.com/kvnlnt/oem
 npm i
 npm start
 ```
 
-### Features
+and http://localhost:3005/
 
-- [x] - No Dependencies
-- [x] - Typescript
-- [x] - Templating Engine
-- [x] - State Management
-- [x] - Theming/Styling Engine
-- [x] - Self Documented
-- [x] - Secure
+## Example
 
-## The Own-Your-Framework Hypothesis
+```typescript
+// Counter.ts
+import { State } from '@core/framework/State';
+import { Template } from '@core/framework/Template';
+import { Trait } from '@core/framework/Trait';
 
-If you owned and understood 100% of your code and never had to "upgrade", would that not be ideal? To maintain control of a codebase you need a "framework". However installing ready-made frameworks and flavor-of-the-month libraries leads to an anti-pattern called "Continuous obsolescence". However, writing your own framework and/or libraries from scratch is no better as this is a large undertaking. So what's the solution? Adopt one as your own.
+function CounterExample() {
+  // 1. declare and manage state
+  const count = State.Atom(0);
+  const inc = () => count.set(count.get() + 1);
+  const dec = () => count.set(count.get() - 1);
 
-Adopting any ol' framework isn't going to solve much as most frameworks are fairly complicated and involve tightly coupled abstractions and transient dependencies that have nothing to do with your project. OEM on the other hand has been written with adoption in mind from the start. The structure is simple, the code is simple, the tests, the workflow, everything has been written with code adoption in mind. We want you to be able to be able to be so familiar with the framework's code that you feel as if you'd written it in the first place.. All this without losing the utility and power you find in other frameworks but without some blatant compromise in functionality.
+  // 2. declare and create your templating engine
+  const { div, button } = Template.Html({
+    flex: Trait.Flex,
+    on_click: Trait.OnClick,
+    on_count: Trait.Atom(count, Trait.InnerText),
+  });
 
-### Goals
+  // 3. declare and render your html
+  return div(['flex', 'row', 30])(
+    button(['on_click', dec])('-'),
+    div(['on_count', count.get])(count.get()),
+    button(['on_click', inc])('+'),
+  );
+}
+```
 
-- A developer should be able to read the docs and source code and understand how it all works in one sitting.
-- There should be no need to implement solutions for basic things like: handling css, implementing responsive design, having a rich set of components, routing, configuring bundlers, running tests...
-- A write once, maintain forever philosophy supported by the architecture.
-- Outstanding documentation that focuses on understanding the framework and creating great products vs a platform for spreading political propaganda and socioeconomic ideologies.
+## Goals & Features
+
+- [x] 100% Dependency Free
+- [x] 100% Typescript
+- [x] 100% Secure
+- [x] 100% Test Coverage (WIP)
+- [x] Simple State Management
+- [x] Simple Templating
+- [x] Simple Styling
+- [x] Simple Code
