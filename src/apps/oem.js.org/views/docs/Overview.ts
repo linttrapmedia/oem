@@ -38,14 +38,13 @@ export function OverviewView() {
   const { div, button } = Template.Html({
     on_click: Trait.OnClick,
     on_count: Trait.Atom(count, Trait.InnerText),
-    style: Trait.Style,
     flex: Trait.Flex,
   });
 
   return div(['flex', 'row', 30])(
-    button(['on_click', dec], ['style', 'cursor', 'pointer'])('-'),
+    button(['on_click', dec])('-'),
     div(['on_count', count.get], ['on_click', reset])(count.get()),
-    button(['on_click', inc], ['style', 'cursor', 'pointer'])('+'),
+    button(['on_click', inc])('+'),
   );
 }`),
       }),
