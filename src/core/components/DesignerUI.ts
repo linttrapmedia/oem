@@ -1,6 +1,6 @@
 import { State } from '@core/framework/State';
 import { Template } from '@core/framework/Template';
-import { Theme } from '@core/framework/theme';
+import { Theme } from '@core/framework/Theme';
 import { Trait } from '@core/framework/Trait';
 
 type DesignerUIProps = {

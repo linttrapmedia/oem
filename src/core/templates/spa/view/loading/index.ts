@@ -1,6 +1,6 @@
-import { LoadingSpinner } from '@core/components/LoadingSpinner'
-import { Theme } from '@core/framework/theme'
-import { div } from '../../lib/templates'
+import { LoadingSpinner } from '@core/components/LoadingSpinner';
+import { Theme } from '@core/framework/Theme';
+import { div } from '../../lib/templates';
 
 export function LoadingView() {
   return div(
@@ -10,5 +10,5 @@ export function LoadingView() {
     ['style', 'display', 'flex'],
     ['style', 'alignItems', 'center'],
     ['style', 'justifyContent', 'center'],
-  )(LoadingSpinner())
+  )(LoadingSpinner());
 }
