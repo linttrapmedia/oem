@@ -15,7 +15,7 @@ const AccordionItem = (
 
   const html = Template.Html({
     on_click: Trait.OnClick,
-    style_on_expand_change: Trait.Atom(expandAtom, Trait.Style),
+    style_on_expand_change: Trait.State(expandAtom, Trait.Style),
     style_on_hover: Trait.StyleOnHover,
     style: Trait.Style,
   });

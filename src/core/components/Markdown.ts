@@ -8,7 +8,7 @@ type MarkdownProps = {
 export const Markdown = ({ text }: MarkdownProps) => {
   const html = Template.Html({
     style: Trait.Style,
-    on_text_update: Trait.Atom(text, Trait.InnerHtml),
+    on_text_update: Trait.State(text, Trait.InnerHtml),
   });
 
   return html(

@@ -1,8 +1,8 @@
-import { ROUTES, tags } from '../../context'
-import { Documentation } from '../common/Documentation'
-import { Section } from '../common/Section'
-import { Snippet } from '../common/Snippet'
-const { div } = tags
+import { ROUTES, tags } from '../../context';
+import { Documentation } from '../common/Documentation';
+import { Section } from '../common/Section';
+import { Snippet } from '../common/Snippet';
+const { div } = tags;
 
 export function StateView() {
   return Documentation({
@@ -37,7 +37,7 @@ const html = Template.Html({
   // map a text input listener
   on_text_input: Trait.OnTextInput,
   // now use the Atom Trait to map the textAtom to the innerText Trait
-  on_text_update: Trait.Atom(textAtom, Trait.InnerText), 
+  on_text_update: Trait.State(textAtom, Trait.InnerText), 
 });
 
 // Output your html
@@ -50,5 +50,5 @@ return html('div')(
         ),
       }),
     ),
-  })
+  });
 }

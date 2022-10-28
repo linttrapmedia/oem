@@ -21,8 +21,8 @@ export const ResponsiveView = <T extends string>({
   const width = State.Atom(0);
 
   const { div } = Template.Html({
-    'html@state': Trait.Atom(state, Trait.InnerHtml),
-    'html@viewState': Trait.Atom(viewState, Trait.InnerHtml),
+    'html@state': Trait.State(state, Trait.InnerHtml),
+    'html@viewState': Trait.State(viewState, Trait.InnerHtml),
     on_resize: Trait.OnWinResize,
     style: Trait.Style,
   });

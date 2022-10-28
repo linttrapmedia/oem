@@ -43,8 +43,8 @@ const TodoExample = () => {
     attr: Trait.Attr,
     flex: Trait.Flex,
     on_click: Trait.OnClick,
-    on_todos_change: Trait.Atom(todos, Trait.InnerHtml),
-    on_dones_change: Trait.Atom(dones, Trait.InnerHtml),
+    on_todos_change: Trait.State(todos, Trait.InnerHtml),
+    on_dones_change: Trait.State(dones, Trait.InnerHtml),
     style: Trait.Style,
   })
 

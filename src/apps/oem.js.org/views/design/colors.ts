@@ -11,7 +11,7 @@ const { div } = Template.Html({
   on_mouse_over: Trait.OnMouseOver,
   on_mouse_out: Trait.OnMouseOut,
   style: Trait.Style,
-  style_on_change: Trait.Atom(currSwatch, Trait.Style),
+  style_on_change: Trait.State(currSwatch, Trait.Style),
   style_on_winsize: Trait.StyleOnWinResize,
 });
 

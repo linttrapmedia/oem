@@ -22,8 +22,8 @@ export function SpaView<T extends string>({ onReady, state, views }: SpaViewProp
   const transitionView = views.find((view) => view.transitionView);
 
   const { div } = Template.Html({
-    'html@state': Trait.Atom(state, Trait.InnerHtml),
-    'html@viewState': Trait.Atom(viewState, Trait.InnerHtml),
+    'html@state': Trait.State(state, Trait.InnerHtml),
+    'html@viewState': Trait.State(viewState, Trait.InnerHtml),
     on_resize: Trait.OnWinResize,
     style: Trait.Style,
   });

@@ -45,8 +45,8 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
     on_change: Trait.OnChange,
     style_on_hover: Trait.StyleOnHover,
     style: Trait.Style,
-    style_on_win_change: Trait.Atom(winSize, Trait.Style),
-    style_on_menu_change: Trait.Atom(menuState, Trait.Style),
+    style_on_win_change: Trait.State(winSize, Trait.Style),
+    style_on_menu_change: Trait.State(menuState, Trait.Style),
   });
 
   // Elements
