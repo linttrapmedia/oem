@@ -12,6 +12,109 @@ export namespace Types {
     sub: (cb: (atom: T) => any) => number;
   };
 
+  export interface AtomArray<T> {
+    // iterator: () => IterableIterator<T>;
+    at: (index: number) => T;
+    concat: (...items: ConcatArray<T>[]) => T[];
+    copyWithin: (target: number, start: number, end?: number) => T[];
+    entries: () => IterableIterator<[number, T]>;
+    every: (predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any) => boolean;
+    fill: (value: T, start?: number, end?: number) => T[];
+    filter: (predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any) => T[];
+    filterSet: (predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any) => T[];
+    find: (predicate: (value: T, index: number, obj: T[]) => unknown, thisArg?: any) => T | undefined;
+    findIndex: (predicate: (value: T) => value is T, thisArg?: any) => number;
+    flat: (depth?: number) => T[];
+    flatSet: (depth?: number) => T[];
+    flatMap: <U, This = undefined>(
+      callback: (this: This, value: T, index: number, array: T[]) => U | readonly U[],
+      thisArg?: This,
+    ) => U[];
+    // flatMapSet: <U, This = undefined>(
+    //   callback: (this: This, value: T, index: number, array: T[]) => U | readonly U[],
+    //   thisArg?: This,
+    // ) => U[];
+    // forEach: (callbackfn: (value: T, index: number, array: T[]) => void, thisArg?: any) => void;
+    get: () => T[];
+    // includes: (searchElement: T, fromIndex?: number) => boolean;
+    // indexOf: (searchElement: T, fromIndex?: number) => number;
+    // join: (separator?: string) => string;
+    // keys: () => IterableIterator<number>;
+    // lastIndexOf: (searchElement: T, fromIndex?: number) => number;
+    // map: <U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any) => U[];
+    // pop: () => T | undefined;
+    // push: (...items: T[]) => number;
+    // reduce: <U>(
+    //   callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U,
+    //   initialValue: U,
+    // ) => U;
+    // reduceRight: <U>(
+    //   callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U,
+    //   initialValue: U,
+    // ) => U;
+    // reverse: () => T[];
+    set: (atom: T[]) => void;
+    // shift: () => T | undefined;
+    // slice: (start?: number, end?: number) => T[];
+    // some: (predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any) => boolean;
+    // sort: (compareFn?: (a: T, b: T) => number) => this;
+    // splice: (start: number, deleteCount?: number) => T[];
+    sub: (cb: (atom: T[]) => any) => number;
+    // toLocaleString: (
+    //   locales?: string | string[],
+    //   options?: Intl.NumberFormatOptions | Intl.DateTimeFormatOptions,
+    // ) => string;
+    // toString: () => string;
+    // unshift: (...items: T[]) => number;
+    // values: () => IterableIterator<T>;
+  }
+
+  type AtomNumberMathMethods = {
+    [Func in Extract<
+      keyof Math,
+      | 'abs'
+      | 'ceil'
+      | 'cbrt'
+      | 'clz32'
+      | 'exp'
+      | 'expm1'
+      | 'fround'
+      | 'log'
+      | 'log10'
+      | 'log1p'
+      | 'log2'
+      | 'round'
+      | 'sign'
+      | 'sqrt'
+      | 'trunc'
+    >]: () => void;
+  };
+
+  export interface AtomNumber extends AtomNumberMathMethods {
+    get: () => number;
+    reset: () => void;
+    set: (atom: number) => void;
+    sub: (cb: (atom: number) => any) => number;
+    pow: (pow: number) => void;
+    add: (amount: number) => void;
+    subtract: (amount: number) => void;
+  }
+
+  export interface AtomSet<T> {
+    add: (item: T) => void;
+    clear: () => void;
+    delete: (item: T) => void;
+    entries: () => IterableIterator<[T, T]>;
+    forEach: (cb: (item: T, item2: T, set: Set<T>) => void) => void;
+    get: () => Set<T>;
+    has: (item: T) => boolean;
+    keys: () => IterableIterator<T>;
+    reset: () => void;
+    set: (atom: T) => void;
+    sub: (cb: (atom: Set<T>) => any) => number;
+    values: () => IterableIterator<T>;
+  }
+
   // Styling
 
   export type CssPropType = keyof CSSStyleDeclaration;

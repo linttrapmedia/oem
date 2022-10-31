@@ -18,7 +18,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "allowJs": true,
-    "lib": ["ES2019", "dom"]
+    "lib": ["ES2022", "dom", "ES2022.Array"]
   },
   "include": ["**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]

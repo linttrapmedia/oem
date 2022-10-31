@@ -2,8 +2,6 @@ import { State } from '@core/framework/State';
 import { Template } from '@core/framework/Template';
 import { Trait } from '@core/framework/Trait';
 
-type Param<T extends (...args: any) => any> = Parameters<T>;
-
 export function CounterExample() {
   const count = State.Number(0);
 

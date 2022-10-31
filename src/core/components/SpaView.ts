@@ -71,7 +71,6 @@ export function SpaView<T extends string>({ onReady, state, views }: SpaViewProp
     // simple routing
     const currentRoute = window.location.pathname + window.location.search;
     const routeFound = views.find((view) => view.route === currentRoute);
-    console.log(routeFound, currentRoute);
     if (routeFound) state.set(routeFound.state);
 
     // mount

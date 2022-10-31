@@ -23,7 +23,7 @@ export function OverviewView() {
       }),
       Section({
         title: 'A Quick Example',
-        subtitle: 'A simple counter',
+        subtitle: 'A simple counter (State, Html, Styling and Logic in 15 LOC!!!)',
       }),
       Section({
         content: CounterExample(),
@@ -34,14 +34,14 @@ export function OverviewView() {
 
   const { div, button } = Template.Html({
     on_click: Trait.OnClick,
-    on_count_change: Trait.State(count, Trait.InnerText),
+    on_count: Trait.State(count, Trait.InnerText),
     style: Trait.Style,
     flex: Trait.Flex,
   });
 
   return div(['flex', 'row', 30])(
     button(['on_click', () => count.subtract(1)])('-'),
-    div(['on_count_change', count.get])(count.get()),
+    div(['on_count', count.get])(count.get()),
     button(['on_click', () => count.add(1)])('+'),
   );
 }`),

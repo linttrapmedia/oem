@@ -26,8 +26,8 @@ export function HtmlView() {
           'The syntax and structure of traits have been carefully crafted to keep a balance between readability, composability, troubleshooting, intellisense features and the power of declarative code.',
         content: div(['flex', 'column', 10, 'start', 'start'])(
           ...[
-            ['Atom', 'Calls a trait function when an atom changes'],
             ['Attr', 'Adds an attribute to a dom element.'],
+            ['Event', 'Binds a callback to a dom event.'],
             ['Flex', 'Add flexbox styles on one line'],
             ['Focus', 'Listens for focus events on a dom element.'],
             ['InnerHtml', 'Replaces html content of a dom element.'],
@@ -45,6 +45,7 @@ export function HtmlView() {
             ['OnTextContentInput', 'Listens for textinput events on a dom element.'],
             ['OnWinResize', 'Listens for winresize events on a dom element.'],
             ['PrintStyle', 'Adds a style to a dom element in print mode'],
+            ['State', 'Calls a trait function when an atom changes'],
             ['Style', 'Adds a style to a dom element.'],
             ['StyleOnHover', 'Changes styles on a dom element on hover'],
             ['StyleOnResize', 'Changes styles on a dom element on element resize'],

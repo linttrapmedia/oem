@@ -21,6 +21,12 @@ const check = (condition: Condition, ...values: any[]) => {
 const Attr = (el: HTMLElement, prop: string, val: string | number | undefined, condition?: Condition) =>
   check(condition, val) ? el.setAttribute(prop, String(val)) : el.removeAttribute(prop);
 
+const Event =
+  <Callback extends (...args: A) => void, A extends any[]>(event: keyof GlobalEventHandlersEventMap, func: Callback) =>
+  (el: HTMLElement, ...props: Parameters<Callback>) => {
+    el.addEventListener(event, () => func(...props));
+  };
+
 const Flex = (
   el: HTMLElement,
   flexDirection: 'row' | 'column',
@@ -229,6 +235,7 @@ const Value = (el: HTMLInputElement, value: string | (() => string), condition?:
 
 export const Trait = {
   Attr,
+  Event,
   Flex,
   Focus,
   InnerHtml,
