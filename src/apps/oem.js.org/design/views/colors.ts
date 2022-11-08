@@ -1,9 +1,9 @@
-import { color, font } from '@apps/oem.js.org/context';
+import { color, font } from '@apps/oem.js.org/config';
+import { Snippet } from '@apps/oem.js.org/docs/views/common/Snippet';
 import { State } from '@core/framework/State';
 import { Template } from '@core/framework/Template';
 import { COLORS, Theme } from '@core/framework/Theme';
 import { Trait } from '@core/framework/Trait';
-import { Snippet } from '../common/Snippet';
 const currSwatch = State.Atom(null);
 
 const { div } = Template.Html({
@@ -11,7 +11,7 @@ const { div } = Template.Html({
   on_mouse_over: Trait.OnMouseOver,
   on_mouse_out: Trait.OnMouseOut,
   style: Trait.Style,
-  style_on_change: Trait.Atom(currSwatch, Trait.Style),
+  style_on_change: Trait.State(currSwatch, Trait.Style),
   style_on_winsize: Trait.StyleOnWinResize,
 });
 
@@ -110,7 +110,7 @@ export const Colors = div(['flex', 'column', 40])(
     Header('Adust Colors'),
     Description(
       Template.Markdown(
-        'Being able to add opacity or tweak a color in context goes a long to keep color definitions under control without limiting design expression. The `color` function also accepts opacity and lightness parameters.',
+        'Being able to add opacity or tweak a color in config goes a long to keep color definitions under control without limiting design expression. The `color` function also accepts opacity and lightness parameters.',
       ),
     ),
     Snippet(`color('blue',0.5); // at 50% opacity

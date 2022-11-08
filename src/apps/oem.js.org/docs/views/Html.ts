@@ -1,8 +1,8 @@
 import { Template } from '@core/framework/Template';
-import { ROUTES, tags } from '../../context';
-import { Documentation } from '../common/Documentation';
-import { Section } from '../common/Section';
-import { Snippet } from '../common/Snippet';
+import { ROUTES, tags } from '../../config';
+import { Documentation } from './common/Documentation';
+import { Section } from './common/Section';
+import { Snippet } from './common/Snippet';
 
 const { div } = tags;
 
@@ -15,7 +15,7 @@ export function HtmlView() {
         title: 'Html',
         subtitle: `The core features and behavior of the template html come from the traits you add to it. This allows you to create your own domain specific language. `,
         content: Template.Markdown(
-          `The Template engine is unique in that its behaviors are not universal. By declaring its properties and behaviors in a given context you are able specify varying degrees of abstraction for anything you can think of such as custom attributes, styling, event listeners, responsive behaviors, logging, etc. It also makes it incredibly easy to share functionality and behavior between templates, components, elements, functions and more.`,
+          `The Template engine is unique in that its behaviors are not universal. By declaring its properties and behaviors in a given config you are able specify varying degrees of abstraction for anything you can think of such as custom attributes, styling, event listeners, responsive behaviors, logging, etc. It also makes it incredibly easy to share functionality and behavior between templates, components, elements, functions and more.`,
         ),
       }),
 
@@ -26,8 +26,8 @@ export function HtmlView() {
           'The syntax and structure of traits have been carefully crafted to keep a balance between readability, composability, troubleshooting, intellisense features and the power of declarative code.',
         content: div(['flex', 'column', 10, 'start', 'start'])(
           ...[
-            ['Atom', 'Calls a trait function when an atom changes'],
             ['Attr', 'Adds an attribute to a dom element.'],
+            ['Event', 'Binds a callback to a dom event.'],
             ['Flex', 'Add flexbox styles on one line'],
             ['Focus', 'Listens for focus events on a dom element.'],
             ['InnerHtml', 'Replaces html content of a dom element.'],
@@ -45,22 +45,18 @@ export function HtmlView() {
             ['OnTextContentInput', 'Listens for textinput events on a dom element.'],
             ['OnWinResize', 'Listens for winresize events on a dom element.'],
             ['PrintStyle', 'Adds a style to a dom element in print mode'],
+            ['State', 'Calls a trait function when an atom changes'],
             ['Style', 'Adds a style to a dom element.'],
             ['StyleOnHover', 'Changes styles on a dom element on hover'],
             ['StyleOnResize', 'Changes styles on a dom element on element resize'],
             ['StyleOnWinResize', 'Changes styles on a dom element on window resize'],
             ['Styles', 'Adds a list of styles to a dom element.'],
             ['Value', 'Listens for value events on a dom element.'],
-          ].map(
-            ([k, v]) =>
-              div(['flex', 'row', 20], ['style', 'flexWrap', 'wrap'])(
-                div(['style', 'fontSize', '18px'])(k),
-                div(['style', 'fontSize', '14px'])(v),
-              ),
-            // SubSection({
-            //   title: `\`${k}\``,
-            //   subtitle: `${v}`,
-            // }),
+          ].map(([k, v]) =>
+            div(['flex', 'row', 20], ['style', 'flexWrap', 'wrap'])(
+              div(['style', 'fontSize', '18px'])(k),
+              div(['style', 'fontSize', '14px'])(v),
+            ),
           ),
         ),
       }),

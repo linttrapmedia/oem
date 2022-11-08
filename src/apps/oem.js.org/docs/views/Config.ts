@@ -1,8 +1,9 @@
-import { ROUTES, tags } from '../../context'
-import { Documentation } from '../common/Documentation'
-import { Section } from '../common/Section'
-import { Snippet } from '../common/Snippet'
-const { div, p } = tags
+import { ROUTES, tags } from '@apps/oem.js.org/config';
+import { Documentation } from './common/Documentation';
+import { Section } from './common/Section';
+import { Snippet } from './common/Snippet';
+
+const { div } = tags;
 
 export function ConfigView() {
   return Documentation({
@@ -61,5 +62,5 @@ module.exports = {
 npm run deploy // <= That's up to you! S3?`),
       }),
     ),
-  })
+  });
 }

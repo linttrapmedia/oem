@@ -22,8 +22,8 @@ export function SpaView<T extends string>({ onReady, state, views }: SpaViewProp
   const transitionView = views.find((view) => view.transitionView);
 
   const { div } = Template.Html({
-    'html@state': Trait.Atom(state, Trait.InnerHtml),
-    'html@viewState': Trait.Atom(viewState, Trait.InnerHtml),
+    'html@state': Trait.State(state, Trait.InnerHtml),
+    'html@viewState': Trait.State(viewState, Trait.InnerHtml),
     on_resize: Trait.OnWinResize,
     style: Trait.Style,
   });
@@ -71,7 +71,6 @@ export function SpaView<T extends string>({ onReady, state, views }: SpaViewProp
     // simple routing
     const currentRoute = window.location.pathname + window.location.search;
     const routeFound = views.find((view) => view.route === currentRoute);
-    console.log(routeFound, currentRoute);
     if (routeFound) state.set(routeFound.state);
 
     // mount

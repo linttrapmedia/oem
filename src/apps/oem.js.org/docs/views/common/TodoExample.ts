@@ -4,32 +4,21 @@ import { Trait } from '@core/framework/Trait';
 
 export const TodoExample = () => {
   // State
+  const dones = State.Array<string>([]);
+  const todos = State.Array<string>(['Learn OEMs']);
 
-  const todos = State.Atom<string[]>(['Learn OEM']);
-  const dones = State.Atom<string[]>([]);
-
-  // Actions
-  const addTodo = (item: string) => todos.set([...todos.get(), item]);
-  const removeTodo = (item: string) => todos.set(todos.get().filter((i) => i !== item));
-  const addDone = (item: string) => dones.set([...dones.get(), item]);
-  const removeDone = (item: string) => dones.set(dones.get().filter((i) => i !== item));
-  const setInput = (val: string = '') => (Input.value = val);
-
-  // State Machine
+  // actions
   const action = (type: 'ADD' | 'TODO' | 'DONE', item?: string) => () => {
-    if (type === 'ADD') addTodo(Input.value), setInput();
-    if (type === 'TODO') removeDone(item), addTodo(item);
-    if (type === 'DONE') removeTodo(item), addDone(item);
+    if (type === 'ADD') Input.value && todos.push(Input.value), (Input.value = '');
+    if (type === 'TODO') dones.filter((i) => i !== item), todos.push(item);
+    if (type === 'DONE') todos.filter((i) => i !== item), dones.push(item);
   };
 
   // Template
   const { input, div } = Template.Html({
-    attr: Trait.Attr,
-    flex: Trait.Flex,
     on_click: Trait.OnClick,
-    on_todos_change: Trait.Atom(todos, Trait.InnerHtml),
-    on_dones_change: Trait.Atom(dones, Trait.InnerHtml),
-    style: Trait.Style,
+    on_todos_change: Trait.State(todos, Trait.InnerHtml),
+    on_dones_change: Trait.State(dones, Trait.InnerHtml),
   });
 
   // Html

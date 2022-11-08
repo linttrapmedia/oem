@@ -1,5 +1,5 @@
 import { Template } from '@core/framework/Template';
-import { color, font, ROUTES, tags } from '../../context';
+import { color, font, ROUTES, tags } from '../../config';
 const { a, div, img } = tags;
 const Button = (href: string) =>
   a(

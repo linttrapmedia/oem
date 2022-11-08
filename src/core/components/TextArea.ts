@@ -18,8 +18,8 @@ export const TextArea = ({ color, text, placeholder }: TextAreaProps) => {
     style: Trait.Style,
     attr: Trait.Attr,
     on_text_change: Trait.OnTextContentInput,
-    style_on_text_change: Trait.Atom(text, Trait.Style),
-    text_on_reset_change: Trait.Atom(reset, Trait.InnerText),
+    style_on_text_change: Trait.State(text, Trait.Style),
+    text_on_reset_change: Trait.State(reset, Trait.InnerText),
   });
 
   return div(

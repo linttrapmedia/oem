@@ -62,10 +62,10 @@ function ResizablePanes(props?: ResizablePanesProps): ResizablePanesReturn {
     const html = Template.Html({
       on_load: Trait.OnLoad,
       style: Trait.Style,
-      style_on_handle_touch_left_change: Trait.Atom(_handleTouchLeft, Trait.Style),
-      style_on_handle_left_change: Trait.Atom(_handleLeft, Trait.Style),
-      style_on_right_pane_width_change: Trait.Atom(_rightPaneWidth, Trait.Style),
-      style_on_left_pane_width_change: Trait.Atom(_leftPaneWidth, Trait.Style),
+      style_on_handle_touch_left_change: Trait.State(_handleTouchLeft, Trait.Style),
+      style_on_handle_left_change: Trait.State(_handleLeft, Trait.Style),
+      style_on_right_pane_width_change: Trait.State(_rightPaneWidth, Trait.Style),
+      style_on_left_pane_width_change: Trait.State(_leftPaneWidth, Trait.Style),
     });
 
     return html(

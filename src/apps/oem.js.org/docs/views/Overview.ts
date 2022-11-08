@@ -1,8 +1,9 @@
-import { ROUTES, tags } from '../../context';
-import { CounterExample } from '../common/CounterExample';
-import { Documentation } from '../common/Documentation';
-import { Section } from '../common/Section';
-import { Snippet } from '../common/Snippet';
+import { ROUTES, tags } from '@apps/oem.js.org/config';
+import { CounterExample } from './common/CounterExample';
+import { Documentation } from './common/Documentation';
+import { Section } from './common/Section';
+import { Snippet } from './common/Snippet';
+
 const { div } = tags;
 
 export function OverviewView() {
@@ -23,28 +24,26 @@ export function OverviewView() {
       }),
       Section({
         title: 'A Quick Example',
-        subtitle: 'A simple counter',
+        subtitle: 'A simple counter (State, Html, Styling and Logic in 15 LOC!!!)',
       }),
       Section({
         content: CounterExample(),
       }),
       Section({
         content: Snippet(`function CounterExample() {
-  const count = State.Atom(0);
-  const inc = () => count.set(count.get() + 1);
-  const dec = () => count.set(count.get() - 1);
-  const reset = () => count.set(0);
+  const count = State.Number(0);
 
   const { div, button } = Template.Html({
     on_click: Trait.OnClick,
-    on_count: Trait.Atom(count, Trait.InnerText),
+    on_count: Trait.State(count, Trait.InnerText),
+    style: Trait.Style,
     flex: Trait.Flex,
   });
 
   return div(['flex', 'row', 30])(
-    button(['on_click', dec])('-'),
-    div(['on_count', count.get], ['on_click', reset])(count.get()),
-    button(['on_click', inc])('+'),
+    button(['on_click', () => count.subtract(1)])('-'),
+    div(['on_count', count.get])(count.get()),
+    button(['on_click', () => count.add(1)])('+'),
   );
 }`),
       }),

@@ -1,5 +1,5 @@
 import { Template } from '@core/framework/Template';
-import { color, tags } from '../../context';
+import { color, tags } from '../../../config';
 const { div, a, section } = tags;
 
 type SectionProps = {

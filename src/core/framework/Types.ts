@@ -1,22 +1,119 @@
-import { Trait } from './Trait';
-
 export namespace Types {
   // Utilities
   export type OmitFirstArg<T> = T extends (x: any, ...args: infer P) => infer R ? (...args: P) => R : never;
-
   export type Tail<T extends any[]> = T extends [any, ...infer U] ? U : never;
 
   // State
 
-  export type AtomReducer<T extends Record<string, (...args: any[]) => void>> = {
-    [P in keyof T]: (...args: Tail<Parameters<T[P]>>) => void;
-  };
-
   export type Atom<T> = {
     get: () => T;
+    reset: () => void;
     set: (atom: T) => void;
     sub: (cb: (atom: T) => any) => number;
   };
+
+  export interface AtomArray<T> {
+    // iterator: () => IterableIterator<T>;
+    at: (index: number) => T;
+    concat: (...items: ConcatArray<T>[]) => T[];
+    copyWithin: (target: number, start: number, end?: number) => T[];
+    entries: () => IterableIterator<[number, T]>;
+    every: (predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any) => boolean;
+    fill: (value: T, start?: number, end?: number) => T[];
+    filter: (predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any) => T[];
+    filterSet: (predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any) => T[];
+    find: (predicate: (value: T, index: number, obj: T[]) => unknown, thisArg?: any) => T | undefined;
+    findIndex: (predicate: (value: T) => value is T, thisArg?: any) => number;
+    flat: (depth?: number) => T[];
+    flatSet: (depth?: number) => T[];
+    flatMap: <U, This = undefined>(
+      callback: (this: This, value: T, index: number, array: T[]) => U | readonly U[],
+      thisArg?: This,
+    ) => U[];
+    // flatMapSet: <U, This = undefined>(
+    //   callback: (this: This, value: T, index: number, array: T[]) => U | readonly U[],
+    //   thisArg?: This,
+    // ) => U[];
+    // forEach: (callbackfn: (value: T, index: number, array: T[]) => void, thisArg?: any) => void;
+    get: () => T[];
+    // includes: (searchElement: T, fromIndex?: number) => boolean;
+    // indexOf: (searchElement: T, fromIndex?: number) => number;
+    // join: (separator?: string) => string;
+    // keys: () => IterableIterator<number>;
+    // lastIndexOf: (searchElement: T, fromIndex?: number) => number;
+    // map: <U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any) => U[];
+    pop: () => T | undefined;
+    push: (...items: T[]) => number;
+    // reduce: <U>(
+    //   callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U,
+    //   initialValue: U,
+    // ) => U;
+    // reduceRight: <U>(
+    //   callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U,
+    //   initialValue: U,
+    // ) => U;
+    // reverse: () => T[];
+    set: (atom: T[]) => void;
+    // shift: () => T | undefined;
+    // slice: (start?: number, end?: number) => T[];
+    // some: (predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any) => boolean;
+    // sort: (compareFn?: (a: T, b: T) => number) => this;
+    // splice: (start: number, deleteCount?: number) => T[];
+    sub: (cb: (atom: T[]) => any) => number;
+    // toLocaleString: (
+    //   locales?: string | string[],
+    //   options?: Intl.NumberFormatOptions | Intl.DateTimeFormatOptions,
+    // ) => string;
+    // toString: () => string;
+    // unshift: (...items: T[]) => number;
+    // values: () => IterableIterator<T>;
+  }
+
+  type AtomNumberMathMethods = {
+    [Func in Extract<
+      keyof Math,
+      | 'abs'
+      | 'ceil'
+      | 'cbrt'
+      | 'clz32'
+      | 'exp'
+      | 'expm1'
+      | 'fround'
+      | 'log'
+      | 'log10'
+      | 'log1p'
+      | 'log2'
+      | 'round'
+      | 'sign'
+      | 'sqrt'
+      | 'trunc'
+    >]: () => void;
+  };
+
+  export interface AtomNumber extends AtomNumberMathMethods {
+    get: () => number;
+    reset: () => void;
+    set: (atom: number) => void;
+    sub: (cb: (atom: number) => any) => number;
+    pow: (pow: number) => void;
+    add: (amount: number) => void;
+    subtract: (amount: number) => void;
+  }
+
+  export interface AtomSet<T> {
+    add: (item: T) => void;
+    clear: () => void;
+    delete: (item: T) => void;
+    entries: () => IterableIterator<[T, T]>;
+    forEach: (cb: (item: T, item2: T, set: Set<T>) => void) => void;
+    get: () => Set<T>;
+    has: (item: T) => boolean;
+    keys: () => IterableIterator<T>;
+    reset: () => void;
+    set: (atom: T) => void;
+    sub: (cb: (atom: Set<T>) => any) => number;
+    values: () => IterableIterator<T>;
+  }
 
   // Styling
 
@@ -25,206 +122,15 @@ export namespace Types {
   export type CssDeclaration = [CssPropType, CssPropValType];
   export type KeyframeStyleDeclaration = [number, CssPropType, CssPropValType][];
 
-  export type ThemeColors =
-    | 'transparent'
-    | 'black'
-    | 'brown'
-    | 'blue'
-    | 'purple'
-    | 'red'
-    | 'orange'
-    | 'yellow'
-    | 'green'
-    | 'white';
-
-  export type ThemeFonts = 'Monospace' | 'Space Grotesk' | 'Times New Roman' | 'Crimson Text' | 'Splash' | 'Primary';
-
-  export type ThemeProps = {
-    colors?: Record<string, [h: number, s: number, l: number] | undefined>;
-    fonts?: Record<string, string>;
-  };
-
-  export type ThemeFunc<Colors = ThemeColors, Fonts = ThemeFonts> = {
-    color: (color: Colors, opacity?: number, adjustLightness?: number) => string;
-    font: (font: Fonts) => string;
-  };
-
-  const COLORS = {
-    black: [326, 2, 13],
-    brown: [28, 11, 14],
-    blue: [203, 81, 49],
-    purple: [270, 38, 40],
-    red: [11, 88, 56],
-    orange: [16, 97, 73],
-    yellow: [47, 98, 55],
-    green: [118, 27, 49],
-    white: [0, 4, 98],
-    transparent: 'transparent',
-  };
-
-  const FONTS = {
-    Monospace: 'monospace',
-    'Space Grotesk': 'Space Grotesk, Arial, sans-serif',
-    'Times New Roman': 'Times New Roman, sans-serif',
-    'Crimson Text': 'Crimson Text, serif',
-    Splash: 'Splash, cursive',
-    Primary: 'Space Grotesk, Arial, sans-serif',
-  };
-
-  function Theme<
-    Colors extends Record<string, [h: number, s: number, l: number]> | typeof COLORS,
-    Fonts extends Record<string, string> | typeof FONTS,
-  >({
-    colors,
-    fonts,
-  }: {
-    colors?: Colors;
-    fonts?: Fonts;
-  } = {}) {
-    const _colors = { ...COLORS, ...colors };
-    const _fonts = { ...FONTS, ...fonts };
-    return {
-      color: (color: keyof typeof _colors) => color,
-      font: (font: keyof typeof _fonts) => font,
-    };
-  }
-  // Fonts
-
-  const theme = Theme({
-    colors: {
-      aasd: [1, 2, 3],
-    },
-  });
-  theme.color('aasd');
-  const theme2 = Theme();
-  theme2.color('blue');
-
-  // Template
+  // Traits
 
   export type TraitProp = string;
   export type TraitFunc = (el: HTMLElement, ...a: any) => any;
   export type TraitParams<T> = Parameters<OmitFirstArg<T>>;
+
+  // Template
+
   export type HtmlChild = HTMLElement | DocumentFragment | string | number | SVGElement | Comment | undefined | null;
-
-  export const HtmlTagList = [
-    'a',
-    'abbr',
-    'address',
-    'area',
-    'article',
-    'aside',
-    'audio',
-    'b',
-    'base',
-    'bdi',
-    'bdo',
-    'blockquote',
-    'body',
-    'br',
-    'button',
-    'canvas',
-    'caption',
-    'cite',
-    'code',
-    'col',
-    'colgroup',
-    'data',
-    'datalist',
-    'dd',
-    'del',
-    'details',
-    'dfn',
-    'dialog',
-    'div',
-    'dl',
-    'dt',
-    'em',
-    'embed',
-    'fieldset',
-    'figcaption',
-    'figure',
-    'footer',
-    'form',
-    'h1',
-    'h2',
-    'h3',
-    'h4',
-    'h5',
-    'h6',
-    'head',
-    'header',
-    'hgroup',
-    'hr',
-    'html',
-    'i',
-    'iframe',
-    'img',
-    'input',
-    'ins',
-    'kbd',
-    'label',
-    'legend',
-    'li',
-    'link',
-    'main',
-    'map',
-    'mark',
-    'menu',
-    'meta',
-    'meter',
-    'nav',
-    'noscript',
-    'object',
-    'ol',
-    'optgroup',
-    'option',
-    'output',
-    'p',
-    'picture',
-    'pre',
-    'progress',
-    'q',
-    'rp',
-    'rt',
-    'ruby',
-    's',
-    'samp',
-    'script',
-    'section',
-    'select',
-    'slot',
-    'small',
-    'source',
-    'span',
-    'strong',
-    'style',
-    'sub',
-    'summary',
-    'sup',
-    'table',
-    'tbody',
-    'td',
-    'template',
-    'textarea',
-    'tfoot',
-    'th',
-    'thead',
-    'time',
-    'title',
-    'tr',
-    'track',
-    'u',
-    'ul',
-    'var',
-    'video',
-    'wbr',
-  ];
-
-  export const TraitsDefault: HtmlTemplateConfig = {
-    attr: Trait.Attr,
-    style: Trait.Style,
-    styles: Trait.Styles,
-  };
   export type HtmlTemplate = (...children: HtmlChild[]) => HTMLElement;
   export type HtmlTemplateConfig = Record<TraitProp, TraitFunc>;
   export type HtmlTemplateTagMap<Config> = Record<

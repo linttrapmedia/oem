@@ -25,8 +25,8 @@ export const DesignerUI = ({ title, menu, content, maxWidth = 960, selectors }: 
       on_change: Trait.OnChange,
       style_on_hover: Trait.StyleOnHover,
       style: Trait.Style,
-      style_on_win_change: Trait.Atom(win_size, Trait.Style),
-      style_on_menu_change: Trait.Atom(menu_state, Trait.Style),
+      style_on_win_change: Trait.State(win_size, Trait.Style),
+      style_on_menu_change: Trait.State(menu_state, Trait.Style),
     },
     ['div', 'a', 'select', 'option'],
   );

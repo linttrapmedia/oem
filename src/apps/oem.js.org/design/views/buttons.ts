@@ -1,19 +1,19 @@
-import { color, tags } from '@apps/oem.js.org/context'
-import { Button } from '@core/components/Button'
-import { Snippet } from '../common/Snippet'
+import { color, tags } from '@apps/oem.js.org/config';
+import { Button } from '@core/components/Button';
+import { Snippet } from '../../docs/views/common/Snippet';
 
-const { div } = tags
+const { div } = tags;
 
-const Header = div(['style', 'fontSize', '20px'])
-const Description = div(['style', 'fontSize', '16px'])
-const Section = div(['flex', 'column', 20], ['style', 'width', '100%'])
+const Header = div(['style', 'fontSize', '20px']);
+const Description = div(['style', 'fontSize', '16px']);
+const Section = div(['flex', 'column', 20], ['style', 'width', '100%']);
 
-const onClick = () => alert('Clicked!')
+const onClick = () => alert('Clicked!');
 
 export const Buttons = div(['flex', 'row', 40])(
   Section(
     Description(
-      "Buttons exist as first class UI/UX design citizens and are used in so many different contexts they can be tricky to get right. If you're app is formulaic and form heavy then a single set of button components is a good idea, if however button design is more fluid you may opt to create subsets in context.",
+      "Buttons exist as first class UI/UX design citizens and are used in so many different configs they can be tricky to get right. If you're app is formulaic and form heavy then a single set of button components is a good idea, if however button design is more fluid you may opt to create subsets in config.",
     ),
     Header('Interface'),
     Snippet(`type ButtonProps = {
@@ -78,4 +78,4 @@ Button({ text: 'Button', color: color('red'), disabled: false }),
       Button({ onClick, text: 'Button', color: color('red'), disabled: false }),
     ),
   ),
-)
+);

@@ -14,7 +14,7 @@ export const ColorPicker = (props: ColorPickerProps) => {
     attr: Trait.Attr,
     style: Trait.Style,
     style_on_hover: Trait.StyleOnHover,
-    style_on_color_change: Trait.Atom(props.color, Trait.Style),
+    style_on_color_change: Trait.State(props.color, Trait.Style),
     on_color_input: Trait.OnColorInput,
   });
 
