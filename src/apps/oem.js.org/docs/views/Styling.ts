@@ -6,8 +6,8 @@ const { div } = tags;
 
 export function StylingView() {
   return Documentation({
-    prev: ['Html', ROUTES.HTML],
-    next: ['State', ROUTES.STATE_MANAGEMENT],
+    prev: ['State', ROUTES.STATE_MANAGEMENT],
+    next: ['Design', ROUTES.DESIGN_SYSTEM],
     content: div(['flex', 'column', 40])(
       Section({
         title: `Styling`,
