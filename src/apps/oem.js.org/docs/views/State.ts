@@ -6,11 +6,11 @@ const { div } = tags;
 
 export function StateView() {
   return Documentation({
-    prev: ['Styling', ROUTES.STYLING],
-    next: ['Design', ROUTES.DESIGN_SYSTEM],
+    prev: ['Html', ROUTES.HTML],
+    next: ['Styling', ROUTES.STYLING],
     content: div(['flex', 'column', 40])(
       Section({
-        title: `State`,
+        title: `State.Atom<T>`,
         subtitle: `The \`State.Atom\` is a miniature event bus.`,
         content: Snippet(`// Create an atom
 const msg = State.Atom<string>('hello');
@@ -62,7 +62,7 @@ return html('div')(
         ),
       }),
       Section({
-        title: `State.Array`,
+        title: `State.Array<T>`,
         subtitle: `Using \`State.Array\` allows you to mutate the array value with most of the native array methods you're already familiar with.`,
         content: div(['flex', 'column', 10, 'start', 'start'])(
           ...[

@@ -9,7 +9,7 @@ const { div } = tags;
 export function HtmlView() {
   return Documentation({
     prev: ['Concepts', ROUTES.CONCEPTS],
-    next: ['Styling', ROUTES.STYLING],
+    next: ['State', ROUTES.STATE_MANAGEMENT],
     content: div(['flex', 'column', 40])(
       Section({
         title: 'Html',
