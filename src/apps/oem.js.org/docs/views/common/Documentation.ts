@@ -1,7 +1,7 @@
 import { State } from '@core/framework/State';
 import { Template } from '@core/framework/Template';
 import { Trait } from '@core/framework/Trait';
-import { color, font, ROUTES } from '../../context';
+import { color, font, ROUTES } from '../../../config';
 
 type DocumentationProps = {
   content: HTMLElement | DocumentFragment;

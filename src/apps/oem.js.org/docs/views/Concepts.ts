@@ -1,9 +1,9 @@
 import { Template } from '@core/framework/Template';
-import { ROUTES, tags } from '../../context';
-import { Documentation } from '../common/Documentation';
-import { Section } from '../common/Section';
-import { Snippet } from '../common/Snippet';
-import { TodoExample } from '../common/TodoExample';
+import { ROUTES, tags } from '../../config';
+import { Documentation } from './common/Documentation';
+import { Section } from './common/Section';
+import { Snippet } from './common/Snippet';
+import { TodoExample } from './common/TodoExample';
 const { div } = tags;
 
 export function ConceptsView() {
@@ -42,46 +42,32 @@ text.sub(console.log);  // subscribe to text changes`),
       }),
       Section({
         title: `All Together`,
-        subtitle: `Here's a basic Todo list which implements: adding a new todo, marking a todo as done/not-done, sorting and styling in ~50 LOC.`,
+        subtitle: `Here's a basic Todo list which implements: adding a new todo, marking a todo as done/not-done, sorting and styling in < 50 LOC.`,
         content: TodoExample(),
       }),
       Section({
         content: Snippet(`
 const TodoExample = () => {
-  
   // State
-  const todos = State.Atom<string[]>(['Learn OEM'])
-  const dones = State.Atom<string[]>([])
+  const dones = State.Array<string>([]);
+  const todos = State.Array<string>(['Learn OEMs']);
 
   // Actions
-  const addTodo = (item: string) => todos.set([...todos.get(), item])
-  const removeTodo = (item: string) => todos.set(todos.get().filter(i => i !== item))
-  const addDone = (item: string) => dones.set([...dones.get(), item])
-  const removeDone = (item: string) => dones.set(dones.get().filter(i => i !== item))
-  const setInput = (val: string = '') => (Input.value = val)
-
-  // State Machine
   const action = (type: 'ADD' | 'TODO' | 'DONE', item?: string) => () => {
-    if (type === 'ADD') addTodo(Input.value), setInput()
-    if (type === 'TODO') removeDone(item), addTodo(item)
-    if (type === 'DONE') removeTodo(item), addDone(item)
-  }
+    if (type === 'ADD') Input.value && todos.push(Input.value), (Input.value = '');
+    if (type === 'TODO') dones.filter((i) => i !== item), todos.push(item);
+    if (type === 'DONE') todos.filter((i) => i !== item), dones.push(item);
+  };
 
   // Template
   const { input, div } = Template.Html({
-    attr: Trait.Attr,
-    flex: Trait.Flex,
     on_click: Trait.OnClick,
     on_todos_change: Trait.State(todos, Trait.InnerHtml),
     on_dones_change: Trait.State(dones, Trait.InnerHtml),
-    style: Trait.Style,
-  })
+  });
 
   // Html
-  const Input = input(
-    ['attr', 'type', 'text'],
-    ['attr', 'placeholder', 'Enter Something'],
-  )() as HTMLInputElement
+  const Input = input(['attr', 'type', 'text'], ['attr', 'placeholder', 'Enter Something'])() as HTMLInputElement;
 
   const Content = () =>
     div(['flex', 'column', 20])(
@@ -91,17 +77,19 @@ const TodoExample = () => {
       ),
       div(
         ['flex', 'column', 20],
+        ['style', 'cursor', 'pointer'],
         ['style', 'display', 'none', todos.get().length === 0],
-      )(...todos.get().map(i => div(['on_click', action('DONE', i)])(i))),
+      )(...todos.get().map((i) => div(['on_click', action('DONE', i)])(i))),
       div(
         ['flex', 'column', 20],
         ['style', 'textDecoration', 'line-through'],
+        ['style', 'cursor', 'pointer'],
         ['style', 'display', 'none', dones.get().length === 0],
-      )(...dones.get().map(i => div(['on_click', action('TODO', i)])(i))),
-    )
+      )(...dones.get().map((i) => div(['on_click', action('TODO', i)])(i))),
+    );
 
-  return div(['on_todos_change', Content], ['on_dones_change', Content])(Content())
-}`),
+  return div(['on_todos_change', Content], ['on_dones_change', Content])(Content());
+};`),
       }),
     ),
   });

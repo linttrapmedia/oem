@@ -43,6 +43,7 @@ const Flex = (
     el.style.gap = gap ? `${gap}px` : '0px';
   }
 };
+
 const Focus = (el: HTMLElement, condition?: Condition) => (check(condition) ? el.focus : null);
 
 const InnerHtml = (

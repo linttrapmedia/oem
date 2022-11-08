@@ -2,15 +2,22 @@ import { markdown } from '@core/utils/markdown';
 import { Trait } from './Trait';
 import { Types } from './Types';
 
-function Html<
-  Config extends { attr: typeof Trait.Attr; style: typeof Trait.Style; styles: typeof Trait.Styles },
->(): Types.HtmlTemplateTagMap<Config>;
+type DefTraits = {
+  attr: typeof Trait.Attr;
+  flex: typeof Trait.Flex;
+  style: typeof Trait.Style;
+  styles: typeof Trait.Styles;
+};
 
-function Html<Config extends Types.HtmlTemplateConfig>(config?: Config): Types.HtmlTemplateTagMap<Config>;
-
-function Html<Config extends Types.HtmlTemplateConfig>(config = {}) {
+function Html<Config extends DefTraits>(): Types.HtmlTemplateTagMap<Config>;
+function Html<Config extends Types.HtmlTemplateConfig>(config?: Config): Types.HtmlTemplateTagMap<Config & DefTraits>;
+function Html<Config extends Types.HtmlTemplateConfig>(config?: Config) {
   // default traits
   const _config: Types.HtmlTemplateConfig = {
+    attr: config.attr || Trait.Attr,
+    flex: config.flex || Trait.Flex,
+    style: config.style || Trait.Style,
+    styles: config.styles || Trait.Styles,
     ...config,
   };
 

@@ -37,7 +37,11 @@ function ArrayAtom<T>(atom: T[] = []): Types.AtomArray<T> {
       _call();
       return _atom;
     },
-    filter: _atom.filter,
+    filter: (f: (value: T, index: number, array: T[]) => unknown) => {
+      _set(_atom.filter(f));
+      _call();
+      return _atom;
+    },
     filterSet: (callbackfn: (value: T, index: number, array: T[]) => unknown, thisArg?: any) => {
       _set(_atom.filter(callbackfn, thisArg));
       _call();
@@ -46,8 +50,9 @@ function ArrayAtom<T>(atom: T[] = []): Types.AtomArray<T> {
     find: _atom.find,
     findIndex: _atom.findIndex,
     flat: (depth?: number): T[] => {
-      const flatArray = depth ? _atom.flat(depth) : _atom.flat();
-      return flatArray as T[];
+      _set((depth ? _atom.flat(depth) : _atom.flat()) as T[]);
+      _call();
+      return _atom;
     },
     flatSet: (depth?: number) => {
       _set((depth ? _atom.flat(depth) : _atom.flat()) as T[]);
@@ -55,16 +60,36 @@ function ArrayAtom<T>(atom: T[] = []): Types.AtomArray<T> {
       return _atom;
     },
     flatMap: _atom.flatMap,
-    // flatMapSet: (callbackfn: (value: T, index: number, array: T[]) => T[], thisArg?: any): T[] => {
-    //   _set(_atom.flatMap(callbackfn, thisArg));
-    //   _call();
-    //   return _atom as T[];
-    // },
+    flatMapSet: (callbackfn: (value: T, index: number, array: T[]) => T[], thisArg?: any): T[] => {
+      _set(_atom.flatMap(callbackfn, thisArg));
+      _call();
+      return _atom;
+    },
+    forEach: _atom.forEach,
+    includes: _atom.includes,
+    indexOf: _atom.indexOf,
+    join: _atom.join,
+    keys: _atom.keys,
+    lastIndexOf: _atom.lastIndexOf,
+    map: _atom.map,
+    mapSet: (callbackfn: (value: T, index: number, array: T[]) => T, thisArg?: any): T[] => {
+      _set(_atom.map(callbackfn, thisArg));
+      _call();
+      return _atom;
+    },
+    pop: () => {
+      const popped = _atom.pop();
+      _call();
+      return popped;
+    },
+    push: (...items: T[]) => {
+      _set([..._atom, ...items]);
+      _call();
+      return _atom;
+    },
   };
   return { get: _get, set: _set, sub: _sub, ..._extensions };
 }
-
-const atom = ArrayAtom<number>();
 
 function NumberAtom(atom: number): Types.AtomNumber {
   const originalAtom = atom;
@@ -126,6 +151,7 @@ const Serialize = () => {};
 
 export const State = {
   Atom,
+  Array: ArrayAtom,
   Number: NumberAtom,
   Set: SetAtom,
   Serialize,

@@ -1,15 +1,15 @@
-import { SpaView } from '@core/components/SpaView'
-import { ROUTES, ViewState, viewState } from './context'
-import { DesignSystemView } from './views/design'
-import { ConceptsView } from './views/docs/Concepts'
-import { ConfigView } from './views/docs/Config'
-import { ContributingView } from './views/docs/Contributing'
-import { HtmlView } from './views/docs/Html'
-import { LoadingView } from './views/docs/LoadingView'
-import { OverviewView } from './views/docs/Overview'
-import { SplashView } from './views/docs/SplashView'
-import { StateView } from './views/docs/State'
-import { StylingView } from './views/docs/Styling'
+import { SpaView } from '@core/components/SpaView';
+import { ROUTES, viewState, ViewState } from './config';
+import { DesignSystemView } from './design/views';
+import { ConceptsView } from './docs/views/Concepts';
+import { ConfigView } from './docs/views/Config';
+import { ContributingView } from './docs/views/Contributing';
+import { HtmlView } from './docs/views/Html';
+import { LoadingView } from './docs/views/LoadingView';
+import { OverviewView } from './docs/views/Overview';
+import { SplashView } from './docs/views/SplashView';
+import { StateView } from './docs/views/State';
+import { StylingView } from './docs/views/Styling';
 
 SpaView<ViewState>({
   state: viewState,
@@ -25,4 +25,4 @@ SpaView<ViewState>({
     { route: ROUTES.HTML, state: 'HTML', view: HtmlView },
     { route: ROUTES.CONFIG, state: 'CONFIG', view: ConfigView },
   ],
-})
+});

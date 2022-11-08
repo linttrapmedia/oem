@@ -1,9 +1,9 @@
 import { Template } from '@core/framework/Template';
-import { ROUTES } from '../../context';
-import { Documentation } from '../common/Documentation';
-import { Section } from '../common/Section';
-import { Snippet } from '../common/Snippet';
-import { TodoExample } from '../common/TodoExample';
+import { ROUTES } from '../config';
+import { Documentation } from '../views/common/Documentation';
+import { Section } from '../views/common/Section';
+import { Snippet } from '../views/common/Snippet';
+import { TodoExample } from '../views/common/TodoExample';
 
 export function ExampleView() {
   return Documentation({

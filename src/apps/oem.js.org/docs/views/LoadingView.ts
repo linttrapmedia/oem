@@ -1,13 +1,13 @@
-import { LoadingSpinner } from '@core/components/LoadingSpinner'
-import { color, tags } from '../../context'
+import { LoadingSpinner } from '@core/components/LoadingSpinner';
+import { color, tags } from '../../config';
 
 export function LoadingView() {
-  const { div } = tags
+  const { div } = tags;
   return div(
     ['style', 'backgroundColor', color('black')],
     ['style', 'width', '100%'],
     ['style', 'display', 'flex'],
     ['style', 'alignItems', 'center'],
     ['style', 'justifyContent', 'center'],
-  )(LoadingSpinner())
+  )(LoadingSpinner());
 }

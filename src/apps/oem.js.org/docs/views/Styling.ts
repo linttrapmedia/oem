@@ -1,8 +1,8 @@
-import { ROUTES, tags } from '../../context'
-import { Documentation } from '../common/Documentation'
-import { Section } from '../common/Section'
-import { Snippet } from '../common/Snippet'
-const { div } = tags
+import { ROUTES, tags } from '../../config';
+import { Documentation } from './common/Documentation';
+import { Section } from './common/Section';
+import { Snippet } from './common/Snippet';
+const { div } = tags;
 
 export function StylingView() {
   return Documentation({
@@ -38,8 +38,7 @@ const headerTwo = h2(['styles', headerStyles])('Sub Header');`),
       }),
       Section({
         title: 'On Hover',
-        subtitle:
-          '`Trait.StyleOnHover` allows you declare styling inline, eliminating the need for CSS selectors',
+        subtitle: '`Trait.StyleOnHover` allows you declare styling inline, eliminating the need for CSS selectors',
         content: Snippet(`const html = Template.Html({  style_on_hover: Trait.StyleOnHover });
 const hello = div(['style_on_hover','color','red'])('Hello World')`),
       }),
@@ -65,10 +64,7 @@ const hello = div(
   ['style', 'fontSize', '24px'],
   ['style_on_print', 'fontSize', '60px']
 )('Hello Print Styled Text')`),
-          div(
-            ['style', 'fontSize', '24px'],
-            ['style_on_print', 'fontSize', '60px'],
-          )('Hello Print Styled Text'),
+          div(['style', 'fontSize', '24px'], ['style_on_print', 'fontSize', '60px'])('Hello Print Styled Text'),
         ),
       }),
       Section({
@@ -95,5 +91,5 @@ font('Primary')
 `),
       }),
     ),
-  })
+  });
 }

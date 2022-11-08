@@ -1,8 +1,8 @@
 import { Template } from '@core/framework/Template';
-import { ROUTES, tags } from '../../context';
-import { Documentation } from '../common/Documentation';
-import { Section } from '../common/Section';
-import { Snippet } from '../common/Snippet';
+import { ROUTES, tags } from '../../config';
+import { Documentation } from './common/Documentation';
+import { Section } from './common/Section';
+import { Snippet } from './common/Snippet';
 
 const { div } = tags;
 
@@ -15,7 +15,7 @@ export function HtmlView() {
         title: 'Html',
         subtitle: `The core features and behavior of the template html come from the traits you add to it. This allows you to create your own domain specific language. `,
         content: Template.Markdown(
-          `The Template engine is unique in that its behaviors are not universal. By declaring its properties and behaviors in a given context you are able specify varying degrees of abstraction for anything you can think of such as custom attributes, styling, event listeners, responsive behaviors, logging, etc. It also makes it incredibly easy to share functionality and behavior between templates, components, elements, functions and more.`,
+          `The Template engine is unique in that its behaviors are not universal. By declaring its properties and behaviors in a given config you are able specify varying degrees of abstraction for anything you can think of such as custom attributes, styling, event listeners, responsive behaviors, logging, etc. It also makes it incredibly easy to share functionality and behavior between templates, components, elements, functions and more.`,
         ),
       }),
 
@@ -52,16 +52,11 @@ export function HtmlView() {
             ['StyleOnWinResize', 'Changes styles on a dom element on window resize'],
             ['Styles', 'Adds a list of styles to a dom element.'],
             ['Value', 'Listens for value events on a dom element.'],
-          ].map(
-            ([k, v]) =>
-              div(['flex', 'row', 20], ['style', 'flexWrap', 'wrap'])(
-                div(['style', 'fontSize', '18px'])(k),
-                div(['style', 'fontSize', '14px'])(v),
-              ),
-            // SubSection({
-            //   title: `\`${k}\``,
-            //   subtitle: `${v}`,
-            // }),
+          ].map(([k, v]) =>
+            div(['flex', 'row', 20], ['style', 'flexWrap', 'wrap'])(
+              div(['style', 'fontSize', '18px'])(k),
+              div(['style', 'fontSize', '14px'])(v),
+            ),
           ),
         ),
       }),

@@ -1,6 +1,6 @@
 import { Template } from '@core/framework/Template';
-import { Documentation } from '../common/Documentation';
-import { Section } from '../common/Section';
+import { Documentation } from '../views/common/Documentation';
+import { Section } from '../views/common/Section';
 
 export function ContributingView() {
   return Documentation({

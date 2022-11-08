@@ -42,8 +42,8 @@ export namespace Types {
     // keys: () => IterableIterator<number>;
     // lastIndexOf: (searchElement: T, fromIndex?: number) => number;
     // map: <U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any) => U[];
-    // pop: () => T | undefined;
-    // push: (...items: T[]) => number;
+    pop: () => T | undefined;
+    push: (...items: T[]) => number;
     // reduce: <U>(
     //   callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U,
     //   initialValue: U,

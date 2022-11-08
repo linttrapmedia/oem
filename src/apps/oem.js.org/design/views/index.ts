@@ -1,9 +1,10 @@
-import { ROUTES, tags } from '../../context'
-import { Documentation } from '../common/Documentation'
-import { Section } from '../common/Section'
-import { Buttons } from './buttons'
-import { Colors } from './colors'
-const { div, a } = tags
+import { Documentation } from '@apps/oem.js.org/docs/views/common/Documentation';
+import { Section } from '@apps/oem.js.org/docs/views/common/Section';
+import { ROUTES, tags } from '../../config';
+
+import { Buttons } from './buttons';
+import { Colors } from './colors';
+const { div, a } = tags;
 
 export function DesignSystemView() {
   return Documentation({
@@ -30,5 +31,5 @@ export function DesignSystemView() {
         content: Buttons,
       }),
     ),
-  })
+  });
 }

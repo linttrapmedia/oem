@@ -1,8 +1,9 @@
-import { ROUTES, tags } from '../../context';
-import { CounterExample } from '../common/CounterExample';
-import { Documentation } from '../common/Documentation';
-import { Section } from '../common/Section';
-import { Snippet } from '../common/Snippet';
+import { ROUTES, tags } from '@apps/oem.js.org/config';
+import { CounterExample } from './common/CounterExample';
+import { Documentation } from './common/Documentation';
+import { Section } from './common/Section';
+import { Snippet } from './common/Snippet';
+
 const { div } = tags;
 
 export function OverviewView() {
