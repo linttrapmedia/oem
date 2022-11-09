@@ -6,7 +6,7 @@ import { Buttons } from './buttons';
 import { Colors } from './colors';
 const { div, a } = tags;
 
-export function DesignSystemView() {
+export function DesignSystemPage() {
   return Documentation({
     prev: ['State', ROUTES.STATE_MANAGEMENT],
     next: ['Config', ROUTES.CONFIG],

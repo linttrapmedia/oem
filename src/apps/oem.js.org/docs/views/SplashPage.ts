@@ -106,7 +106,7 @@ const Wrapper = div(
   ['style', 'fontFamily', font('Space Grotesk')],
 );
 
-export function SplashView() {
+export function SplashPage() {
   return Wrapper(
     div(
       ['style', 'maxWidth', '500px'],

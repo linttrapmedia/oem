@@ -1,7 +1,7 @@
 type DebounceOpts = {
-  onStart?: () => void
-  delay?: number
-}
+  onStart?: () => void;
+  delay?: number;
+};
 export const debounce = (
   func: (...args: any[]) => any,
   options: DebounceOpts = {
@@ -9,18 +9,18 @@ export const debounce = (
     delay: 500,
   },
 ): any => {
-  let runOnStart = options.onStart !== undefined
-  let timer: number
+  let runOnStart = options.onStart !== undefined;
+  let timer: number;
   return function (event: SecurityPolicyViolationEventInit) {
     const callback = () => {
-      runOnStart = true
-      func(event)
+      runOnStart = true;
+      func(event);
+    };
+    if (timer) clearTimeout(timer);
+    if (runOnStart && options.onStart) {
+      options.onStart();
+      runOnStart = false;
     }
-    if (timer) clearTimeout(timer)
-    if (runOnStart) {
-      options.onStart()
-      runOnStart = false
-    }
-    timer = setTimeout(callback, options.delay ?? 500, event)
-  }
-}
+    timer = setTimeout(callback, options.delay ?? 500, event);
+  };
+};

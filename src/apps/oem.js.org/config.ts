@@ -5,7 +5,7 @@ import { Trait } from '@core/framework/Trait';
 
 // Interface
 
-export type ViewState =
+export type PageState =
   | 'CONCEPTS'
   | 'CONTRIBUTING'
   | 'DESIGN_SYSTEM'
@@ -34,7 +34,7 @@ export const ROUTES = {
 
 // State
 
-export const viewState = State.Atom<ViewState>('SPLASH');
+export const viewState = State.Atom<PageState>('SPLASH');
 
 // Theming
 

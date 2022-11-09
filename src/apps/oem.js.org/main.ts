@@ -1,28 +1,28 @@
 import { SpaView } from '@core/components/SpaView';
-import { ROUTES, viewState, ViewState } from './config';
-import { DesignSystemView } from './design/views';
-import { ConceptsView } from './docs/views/Concepts';
-import { ConfigView } from './docs/views/Config';
-import { ContributingView } from './docs/views/Contributing';
-import { HtmlView } from './docs/views/Html';
-import { LoadingView } from './docs/views/LoadingView';
-import { OverviewView } from './docs/views/Overview';
-import { SplashView } from './docs/views/SplashView';
-import { StateView } from './docs/views/State';
-import { StylingView } from './docs/views/Styling';
+import { PageState, ROUTES, viewState } from './config';
+import { DesignSystemPage } from './design/views';
+import { ConceptsPage } from './docs/views/ConceptsPage';
+import { ConfigPage } from './docs/views/ConfigPage';
+import { ContributingPage } from './docs/views/ContributingPage';
+import { HtmlPage } from './docs/views/HtmlPage';
+import { LoadingPage } from './docs/views/LoadingPage';
+import { OverviewPage } from './docs/views/OverviewPage';
+import { SplashPage } from './docs/views/SplashPage';
+import { StatePage } from './docs/views/StatePage';
+import { StylingPage } from './docs/views/StylingPage';
 
-SpaView<ViewState>({
+SpaView<PageState>({
   state: viewState,
   views: [
-    { route: ROUTES.CONCEPTS, state: 'CONCEPTS', view: ConceptsView },
-    { route: ROUTES.CONTRIBUTING, state: 'CONTRIBUTING', view: ContributingView },
-    { route: ROUTES.DESIGN_SYSTEM, state: 'DESIGN_SYSTEM', view: DesignSystemView },
-    { route: ROUTES.LOADING, state: 'LOADING', transitionView: true, view: LoadingView },
-    { route: ROUTES.OVERVIEW, state: 'OVERVIEW', view: OverviewView },
-    { route: ROUTES.SPLASH, state: 'SPLASH', view: SplashView },
-    { route: ROUTES.STATE_MANAGEMENT, state: 'STATE_MANAGEMENT', view: StateView },
-    { route: ROUTES.STYLING, state: 'STYLING', view: StylingView },
-    { route: ROUTES.HTML, state: 'HTML', view: HtmlView },
-    { route: ROUTES.CONFIG, state: 'CONFIG', view: ConfigView },
+    { route: ROUTES.CONCEPTS, state: 'CONCEPTS', view: ConceptsPage },
+    { route: ROUTES.CONTRIBUTING, state: 'CONTRIBUTING', view: ContributingPage },
+    { route: ROUTES.DESIGN_SYSTEM, state: 'DESIGN_SYSTEM', view: DesignSystemPage },
+    { route: ROUTES.LOADING, state: 'LOADING', transitionView: true, view: LoadingPage },
+    { route: ROUTES.OVERVIEW, state: 'OVERVIEW', view: OverviewPage },
+    { route: ROUTES.SPLASH, state: 'SPLASH', view: SplashPage },
+    { route: ROUTES.STATE_MANAGEMENT, state: 'STATE_MANAGEMENT', view: StatePage },
+    { route: ROUTES.STYLING, state: 'STYLING', view: StylingPage },
+    { route: ROUTES.HTML, state: 'HTML', view: HtmlPage },
+    { route: ROUTES.CONFIG, state: 'CONFIG', view: ConfigPage },
   ],
 });

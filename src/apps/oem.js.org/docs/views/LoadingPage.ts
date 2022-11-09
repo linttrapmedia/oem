@@ -1,7 +1,7 @@
 import { LoadingSpinner } from '@core/components/LoadingSpinner';
 import { color, tags } from '../../config';
 
-export function LoadingView() {
+export function LoadingPage() {
   const { div } = tags;
   return div(
     ['style', 'backgroundColor', color('black')],

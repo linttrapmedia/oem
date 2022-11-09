@@ -6,7 +6,7 @@ import { Snippet } from './common/Snippet';
 
 const { div } = tags;
 
-export function OverviewView() {
+export function OverviewPage() {
   return Documentation({
     next: ['Concepts', ROUTES.CONCEPTS],
     prev: ['Home', '/'],
@@ -24,7 +24,7 @@ export function OverviewView() {
       }),
       Section({
         title: 'A Quick Example',
-        subtitle: 'A simple counter (State, Html, Styling and Logic in 15 LOC!!!)',
+        subtitle: 'A simple counter (State, Html, Styling and Logic in ~15 LOC!!!)',
       }),
       Section({
         content: CounterExample(),
@@ -36,8 +36,6 @@ export function OverviewView() {
   const { div, button } = Template.Html({
     on_click: Trait.OnClick,
     on_count: Trait.State(count, Trait.InnerText),
-    style: Trait.Style,
-    flex: Trait.Flex,
   });
 
   return div(['flex', 'row', 30])(

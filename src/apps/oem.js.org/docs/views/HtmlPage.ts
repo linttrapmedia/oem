@@ -6,7 +6,7 @@ import { Snippet } from './common/Snippet';
 
 const { div } = tags;
 
-export function HtmlView() {
+export function HtmlPage() {
   return Documentation({
     prev: ['Concepts', ROUTES.CONCEPTS],
     next: ['State', ROUTES.STATE_MANAGEMENT],

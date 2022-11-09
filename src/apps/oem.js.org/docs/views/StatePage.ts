@@ -4,7 +4,7 @@ import { Section } from './common/Section';
 import { Snippet } from './common/Snippet';
 const { div } = tags;
 
-export function StateView() {
+export function StatePage() {
   return Documentation({
     prev: ['Html', ROUTES.HTML],
     next: ['Styling', ROUTES.STYLING],
