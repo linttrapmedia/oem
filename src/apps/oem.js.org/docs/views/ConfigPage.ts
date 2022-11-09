@@ -5,7 +5,7 @@ import { Snippet } from './common/Snippet';
 
 const { div } = tags;
 
-export function ConfigView() {
+export function ConfigPage() {
   return Documentation({
     prev: ['Design System', ROUTES.DESIGN_SYSTEM],
     next: ['Contributing', ROUTES.CONTRIBUTING],

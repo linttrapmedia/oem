@@ -1,8 +1,8 @@
 import { Template } from '@core/framework/Template';
-import { Documentation } from '../views/common/Documentation';
-import { Section } from '../views/common/Section';
+import { Documentation } from './common/Documentation';
+import { Section } from './common/Section';
 
-export function ContributingView() {
+export function ContributingPage() {
   return Documentation({
     content: Template.Fragment(
       Section({

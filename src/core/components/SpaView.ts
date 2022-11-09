@@ -12,14 +12,12 @@ type SpaViewProps<T> = {
     state: T;
     breakpoint?: number;
     route?: string;
-    transitionView?: boolean;
   }[];
 };
 
 export function SpaView<T extends string>({ onReady, state, views }: SpaViewProps<T>) {
   const viewState = State.Atom<HTMLElement>(null);
   const width = State.Atom(0);
-  const transitionView = views.find((view) => view.transitionView);
 
   const { div } = Template.Html({
     'html@state': Trait.State(state, Trait.InnerHtml),
@@ -38,7 +36,6 @@ export function SpaView<T extends string>({ onReady, state, views }: SpaViewProp
 
   const setView = debounce((w: number = el.offsetWidth) => (width.set(w), viewState.set(getView())), {
     delay: 500,
-    onStart: () => (transitionView ? viewState.set(transitionView.view()) : null),
   });
 
   const el: HTMLElement = div(

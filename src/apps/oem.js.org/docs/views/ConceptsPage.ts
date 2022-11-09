@@ -6,7 +6,7 @@ import { Snippet } from './common/Snippet';
 import { TodoExample } from './common/TodoExample';
 const { div } = tags;
 
-export function ConceptsView() {
+export function ConceptsPage() {
   return Documentation({
     prev: ['Overview', ROUTES.OVERVIEW],
     next: ['Html', ROUTES.HTML],
@@ -35,7 +35,7 @@ div(['style', 'fontWeight', 'bold'])('Hello World')`,
       }),
       Section({
         title: 'Managing State',
-        subtitle: `Lastly, we control State with "Atoms", which are simple but powerful event buses.`,
+        subtitle: `Lastly, we control State with "Atoms", which are simple but powerful miniature event buses.`,
         description: `Atoms are miniature event buses. We can use the Atom trait to map it to our template and listen for changes, reacting just like you would in a virtual dom.`,
         content: Snippet(`const text = State.Atom('Hi');
 text.sub(console.log);  // subscribe to text changes`),
@@ -50,7 +50,7 @@ text.sub(console.log);  // subscribe to text changes`),
 const TodoExample = () => {
   // State
   const dones = State.Array<string>([]);
-  const todos = State.Array<string>(['Learn OEMs']);
+  const todos = State.Array<string>(['Learn OEM']);
 
   // Actions
   const action = (type: 'ADD' | 'TODO' | 'DONE', item?: string) => () => {

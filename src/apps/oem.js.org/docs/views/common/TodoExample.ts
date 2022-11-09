@@ -5,7 +5,7 @@ import { Trait } from '@core/framework/Trait';
 export const TodoExample = () => {
   // State
   const dones = State.Array<string>([]);
-  const todos = State.Array<string>(['Learn OEMs']);
+  const todos = State.Array<string>(['Learn OEM']);
 
   // actions
   const action = (type: 'ADD' | 'TODO' | 'DONE', item?: string) => () => {

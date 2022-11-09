@@ -4,7 +4,7 @@ import { Section } from './common/Section';
 import { Snippet } from './common/Snippet';
 const { div } = tags;
 
-export function StylingView() {
+export function StylingPage() {
   return Documentation({
     prev: ['State', ROUTES.STATE_MANAGEMENT],
     next: ['Design', ROUTES.DESIGN_SYSTEM],
