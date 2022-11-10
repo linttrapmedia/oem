@@ -16,7 +16,6 @@ export const TodoExample = () => {
 
   // Template
   const { input, div } = Template.Html({
-    on_click: Trait.OnClick,
     on_todos_change: Trait.State(todos, Trait.InnerHtml),
     on_dones_change: Trait.State(dones, Trait.InnerHtml),
   });

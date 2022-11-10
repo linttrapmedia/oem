@@ -123,7 +123,7 @@ export function SplashPage() {
           `OEM is a dependency-free UI/UX framework. It uses a isomorphic syntax to write declarative html, styling and behavior. The result is clean and expressive code that is easy to read.`,
         ),
       ),
-      div(['style', 'margin', '40px 20px'])(Button(ROUTES.OVERVIEW)('Docs'), Button(ROUTES.DESIGN_SYSTEM)('Design')),
+      div(['style', 'margin', '40px 20px'])(Button(ROUTES.QUICKSTART)('Docs'), Button(ROUTES.DESIGN_SYSTEM)('Design')),
       div(
         ['style', 'display', 'flex'],
         ['style', 'flexDirection', 'row'],

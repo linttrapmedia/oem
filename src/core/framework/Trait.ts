@@ -46,6 +46,21 @@ const Flex = (
 
 const Focus = (el: HTMLElement, condition?: Condition) => (check(condition) ? el.focus : null);
 
+const Grid = (
+  el: HTMLElement,
+  columns: CSSStyleDeclaration['gridTemplateColumns'] = 'auto',
+  rows: CSSStyleDeclaration['gridTemplateRows'] = 'auto',
+  gap: number = 0,
+  condition?: Condition,
+) => {
+  if (check(condition)) {
+    el.style.display = 'grid';
+    el.style.gridTemplateColumns = columns ?? 'auto';
+    el.style.gridTemplateRows = rows ?? 'auto';
+    el.style.gap = gap ? `${gap}px` : '0px';
+  }
+};
+
 const InnerHtml = (
   el: HTMLElement,
   html: () => HTMLElement | HTMLElement[] | DocumentFragment,
@@ -239,6 +254,7 @@ export const Trait = {
   Event,
   Flex,
   Focus,
+  Grid,
   InnerHtml,
   InnerText,
   OnChange,

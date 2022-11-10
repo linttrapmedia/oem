@@ -5,7 +5,12 @@ import { Types } from './Types';
 type DefTraits = {
   attr: typeof Trait.Attr;
   flex: typeof Trait.Flex;
+  grid: typeof Trait.Grid;
+  on_click: typeof Trait.OnClick;
   style: typeof Trait.Style;
+  style_on_hover: typeof Trait.StyleOnHover;
+  style_on_resize: typeof Trait.StyleOnResize;
+  style_on_win_resize: typeof Trait.StyleOnWinResize;
   styles: typeof Trait.Styles;
 };
 
@@ -16,6 +21,11 @@ function Html<Config extends Types.HtmlTemplateConfig>(config?: Config) {
   const _config: Types.HtmlTemplateConfig = {
     attr: config.attr || Trait.Attr,
     flex: config.flex || Trait.Flex,
+    grid: config.grid || Trait.Grid,
+    on_click: config.on_click || Trait.OnClick,
+    style_on_hover: config.style_on_hover || Trait.StyleOnHover,
+    style_on_resize: config.style_on_resize || Trait.StyleOnResize,
+    style_on_win_resize: config.style_on_win_resize || Trait.StyleOnWinResize,
     style: config.style || Trait.Style,
     styles: config.styles || Trait.Styles,
     ...config,

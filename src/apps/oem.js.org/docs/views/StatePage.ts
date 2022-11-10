@@ -41,22 +41,18 @@ msg.set('HELLO'); // outputs => 'HELLO'`),
         ),
       }),
       Section({
-        title: 'Application',
-        subtitle: `You can easily teach your html to have reactivity. Here's an example:`,
+        title: '`Trait.State`',
+        subtitle: 'With the `Trait.State` trait you can implement dom reactivity. Example:',
         content: Snippet(
           `const textAtom = State.Atom<string>(null);
 
 const html = Template.Html({
-  // map a text input listener
   on_text_input: Trait.OnTextInput,
-  // now use the Atom Trait to map the textAtom to the innerText Trait
   on_text_update: Trait.State(textAtom, Trait.InnerText), 
 });
 
 return html('div')(
-  // The textAtom is set on input
   html('input', ['on_text_input', textAtom.set])(),
-  // The innerText updates each time the textAtom changes
   html('div', ['on_text_update', textAtom.get])(),
 );`,
         ),
