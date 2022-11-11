@@ -1,4 +1,5 @@
 import { Template } from '@core/framework/Template';
+import { KeyFrames } from '@core/utils/keyframes';
 import { color, font, ROUTES, tags } from '../../config';
 const { a, div, img } = tags;
 const Button = (href: string) =>
@@ -6,7 +7,8 @@ const Button = (href: string) =>
     ['attr', 'href', href],
     ['style', 'fontSize', '12px'],
     ['style', 'fontWeight', 'bold'],
-    ['style', 'padding', '15px 20px'],
+    ['style', 'padding', '15px'],
+    ['style', 'width', '150px'],
     ['style', 'color', color('black', 0.8)],
     ['style', 'cursor', 'pointer'],
     ['style', 'margin', '0 5px'],
@@ -16,6 +18,7 @@ const Button = (href: string) =>
     ['style', 'textTransform', 'uppercase'],
     ['style', 'border', `3px solid ${color('black', 0.2)}`],
     ['style_on_hover', 'border', `3px solid ${color('black')}`, `3px solid ${color('black', 0.2)}`],
+    ['style', 'display', 'block'],
   );
 
 const Title = div(
@@ -24,21 +27,8 @@ const Title = div(
   ['style', 'textAlign', 'center'],
   ['style', 'textIndent', '18px'],
   ['style', 'lineHeight', '0.9'],
-  ['style', 'padding', '30px 0px 20px'],
   ['style', 'color', color('black')],
   ['style', 'fontFamily', font('Splash')],
-);
-
-const Subtitle = div(
-  ['style', 'letterSpacing', '2px'],
-  ['style', 'fontSize', '16px'],
-  ['style', 'textTransform', 'uppercase'],
-  ['style', 'textTransform', 'uppercase'],
-  ['style', 'textAlign', 'center'],
-  ['style', 'textIndent', '18px'],
-  ['style', 'lineHeight', '1.1'],
-  ['style', 'padding', '0px 20px 30px'],
-  ['style', 'color', color('black', 0.5)],
 );
 
 const superscript = div(
@@ -53,7 +43,7 @@ const superscript = div(
   ['style', 'color', color('white')],
   ['style', 'float', 'right'],
   ['style', 'verticalAlign', 'super'],
-  ['style', 'backgroundColor', color('black', 0.4)],
+  ['style', 'backgroundColor', color('black')],
   ['style', 'fontFamily', font('Monospace')],
   ['style', 'textTransform', 'uppercase'],
 );
@@ -65,7 +55,6 @@ const Tagline = div(
   ['style', 'fontWeight', 'bold'],
   ['style', 'textAlign', 'center'],
   ['style', 'lineHeight', '1.1'],
-  ['style', 'margin', '0 20px 30px'],
   ['style', 'color', color('white')],
   ['style', 'backgroundColor', color('black')],
   ['style', 'padding', '30px'],
@@ -82,8 +71,7 @@ const Description = div(
   ['style', 'lineHeight', 1.5],
 );
 
-const imageLink = (href: string) =>
-  a(['style', 'marginLeft', '10px'], ['attr', 'href', href], ['attr', 'target', '_blank']);
+const imageLink = (href: string) => a(['attr', 'href', href], ['attr', 'target', '_blank']);
 
 const Copyright = div(
   ['style', 'color', color('black', 0.3)],
@@ -95,7 +83,27 @@ const Copyright = div(
   ['style', 'letterSpacing', '2px'],
 );
 
+const animate = KeyFrames({
+  bg: [
+    [0, 'background-color', color('black', 0.25)],
+    [10, 'background-color', color('blue', 0.25)],
+    [20, 'background-color', color('brown', 0.25)],
+    [30, 'background-color', color('green', 0.25)],
+    [40, 'background-color', color('orange', 0.25)],
+    [50, 'background-color', color('purple', 0.25)],
+    [60, 'background-color', color('red', 0.25)],
+    [70, 'background-color', color('white', 0.25)],
+    [80, 'background-color', color('yellow', 0.25)],
+    [90, 'background-color', color('purple', 0.25)],
+    [100, 'background-color', color('black', 0.25)],
+  ],
+});
+
 const Wrapper = div(
+  ['style', 'animationName', animate('bg')],
+  ['style', 'animationDuration', `10s`],
+  ['style', 'animationIterationCount', 'infinite'],
+  ['style', 'animationTimingFunction', 'linear'],
   ['style', 'width', '100%'],
   ['style', 'padding', '50px 0'],
   ['style', 'minHeight', '100vh'],
@@ -108,28 +116,16 @@ const Wrapper = div(
 
 export function SplashPage() {
   return Wrapper(
-    div(
-      ['style', 'maxWidth', '500px'],
-      ['style', 'display', 'flex'],
-      ['style', 'justifyContent', 'center'],
-      ['style', 'alignItems', 'center'],
-      ['style', 'flexDirection', 'column'],
-    )(
+    div(['style', 'maxWidth', '500px'], ['flex', 'column', 20, 'center', 'center'])(
       Title(`oem`, superscript('beta')),
-      Subtitle('dependency-free web apps'),
       Tagline(`"dependencies": {}`),
       Description(
         Template.Markdown(
           `OEM is a dependency-free UI/UX framework. It uses a isomorphic syntax to write declarative html, styling and behavior. The result is clean and expressive code that is easy to read.`,
         ),
       ),
-      div(['style', 'margin', '40px 20px'])(Button(ROUTES.QUICKSTART)('Docs'), Button(ROUTES.DESIGN_SYSTEM)('Design')),
-      div(
-        ['style', 'display', 'flex'],
-        ['style', 'flexDirection', 'row'],
-        ['style', 'alignItems', 'center'],
-        ['style', 'paddingBottom', '20px'],
-      )(
+      div(['flex', 'row', 10])(Button(ROUTES.QUICKSTART)('Docs'), Button(ROUTES.DESIGN_SYSTEM)('Design')),
+      div(['flex', 'row', 5, 'center', 'center'])(
         imageLink('http://linttrap.media')(
           img(['attr', 'src', '/assets/gfx/lint-trap-logo.svg'], ['attr', 'width', 65])(),
         ),
