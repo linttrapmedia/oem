@@ -37,7 +37,7 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
 
   // Template
 
-  const { div, a } = Template.Html({
+  const { div, a, img } = Template.Html({
     attr: Trait.Attr,
     on_click: Trait.OnClick,
     on_resize: Trait.OnResize,
@@ -111,6 +111,8 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
     ['style', 'display', 'flex'],
     ['style', 'flexDirection', 'column'],
     ['style', 'gap', '30px'],
+    ['style', 'justifyContent', 'start'],
+    ['style', 'alignItems', 'center'],
   );
 
   const MenuWrapper = div(
@@ -133,6 +135,7 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
       ['style', 'display', 'block'],
       ['style_on_hover', 'color', color('black')],
       ['style', 'textDecoration', 'none'],
+      ['style', 'textAlign', 'center'],
     )(text);
   }
 
@@ -173,7 +176,7 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
 
   return Grid(
     MenuArea(
-      LogoWrapper(Logo('oem'), Hamburger('')),
+      LogoWrapper(Logo(img(['attr', 'src', '/assets/gfx/oem-logo.svg'], ['attr', 'width', 50])()), Hamburger('')),
       MenuWrapper(...menu.map(([text, route]) => MenuItem(text, route))),
     ),
     ContentArea(content, FooterNav),
