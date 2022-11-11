@@ -10,7 +10,7 @@ export type PageState =
   | 'CONTRIBUTING'
   | 'DESIGN_SYSTEM'
   | 'LOADING'
-  | 'OVERVIEW'
+  | 'QUICKSTART'
   | 'SPLASH'
   | 'STATE_MANAGEMENT'
   | 'STYLING'
@@ -24,7 +24,7 @@ export const ROUTES = {
   CONTRIBUTING: '/?page=contributing',
   DESIGN_SYSTEM: '/?page=design-system',
   LOADING: '/?page=loading',
-  OVERVIEW: '/?page=overview',
+  QUICKSTART: '/?page=quickstart',
   SPLASH: '/?page=slash',
   STATE_MANAGEMENT: '/?page=state-management',
   STYLING: '/?page=styling',

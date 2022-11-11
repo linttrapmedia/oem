@@ -20,72 +20,170 @@ export function HtmlPage() {
       }),
 
       Section({
-        title: 'Traits',
-        subtitle: 'You can create your own traits or use one of the many that ship with the framework.',
-        description:
-          'The syntax and structure of traits have been carefully crafted to keep a balance between readability, composability, troubleshooting, intellisense features and the power of declarative code.',
-        content: div(['flex', 'column', 10, 'start', 'start'])(
-          ...[
-            ['Attr', 'Adds an attribute to a dom element.'],
-            ['Event', 'Binds a callback to a dom event.'],
-            ['Flex', 'Add flexbox styles on one line'],
-            ['Focus', 'Listens for focus events on a dom element.'],
-            ['InnerHtml', 'Replaces html content of a dom element.'],
-            ['InnerText', 'Replaces text content of a dom element.'],
-            ['OnChange', 'Listens for change events on a dom element.'],
-            ['OnColorInput', 'Listens for change events on a HTMLSelectElement.'],
-            ['OnClick', 'Listens for click events on a dom element.'],
-            ['OnCreate', 'Listens for create events on a dom element.'],
-            ['OnLoad', 'Listens for load events on a dom element.'],
-            ['OnMouseOut', 'Listens for mouseout events on a dom element.'],
-            ['OnMouseOver', 'Listens for mouseover events on a dom element.'],
-            ['OnResize', 'Listens for resize events on a dom element.'],
-            ['OnSubmit', 'Listens for submit events on a dom element.'],
-            ['OnTextInput', 'Listens for textinput events on a HTMLInputElement element.'],
-            ['OnTextContentInput', 'Listens for textinput events on a dom element.'],
-            ['OnWinResize', 'Listens for winresize events on a dom element.'],
-            ['PrintStyle', 'Adds a style to a dom element in print mode'],
-            ['State', 'Calls a trait function when an atom changes'],
-            ['Style', 'Adds a style to a dom element.'],
-            ['StyleOnHover', 'Changes styles on a dom element on hover'],
-            ['StyleOnResize', 'Changes styles on a dom element on element resize'],
-            ['StyleOnWinResize', 'Changes styles on a dom element on window resize'],
-            ['Styles', 'Adds a list of styles to a dom element.'],
-            ['Value', 'Listens for value events on a dom element.'],
-          ].map(([k, v]) =>
-            div(['flex', 'row', 20], ['style', 'flexWrap', 'wrap'])(
-              div(['style', 'fontSize', '18px'])(k),
-              div(['style', 'fontSize', '14px'])(v),
-            ),
+        title: 'The Templating Engine',
+        subtitle: `To render html, you create a template. The template instance returns one functions per html tag name that you use to render it's element`,
+        description: `By default a template can only output html tags (no attributes, styles, behaviors, etc.)`,
+        content: Snippet(
+          `const { div, span, ul, li } = Template.Html();
+div(); // <div></div>
+span('Some text'); // <span>Some text</span>
+ul(li('one'), li('two')); // <ul><li>one</li><li>two</li></ul>
+`,
+          'typescript',
+        ),
+      }),
+
+      Section({
+        title: 'Adding Functionality',
+        subtitle: `The html tag functions allow you to map "Traits" which provide you with the mechanism to add functionality to your html. Each trait can be is applied one at a time as an array of the traits parameters. This creates a composable syntax that's easy to read and maintain as things scale. Example:`,
+        content: Snippet(
+          `const { div } = Template.Html();
+div(
+  ['attr','id', 'example'],
+  ['style', 'color', 'green'],
+  ['style', 'fontSize', '18px'],
+  ['style', 'fontWeight', 'bold'],
+  ['on_click', () => console.log('clicked')],
+)('Hello World'); 
+
+// <div id="example" style="color:green; font-size: 18px; font-weight: bold; ">Hello World</div>`,
+        ),
+      }),
+
+      Section({
+        title: 'Customization & Extensibility',
+        subtitle: `It's easy to create your own traits, just write a function with an HTMLElement as it's first argument and map it to your template engine. This opens the door for any kind behavior you can think of and becomes a very intuitive and powerful abstraction for controlling state and mixin features. Example:`,
+        content: Template.Fragment(
+          Snippet(
+            `const Suffixer = (el: HTMLElement, suffix: string) => { 
+  el.innerText = el.innerText + suffix; 
+}
+const { div } = Template.Html({ suffix = Suffixer; });
+div(['suffix','World!'])('Hello'); // <div>Hello World!<div>`,
           ),
         ),
       }),
+
       Section({
-        title: 'Writing a Custom Trait',
-        subtitle: `If you don't have a trait you need, write one! Writing a custom trait is easy. Here's an example:`,
-        content: Template.Fragment(
-          Snippet(
-            `// Define a trait function that takes in the HTMLElement as it's first param
-const MyCustomTrait = (
-  el: HTMLElement,
-  prop: string,
-  val: string
-) => el.dataset[prop] = val
-
-
-// Map it to a template
-const { div } = Template.Html({
-  my_custom_trait = MyCustomTrait
-})
-
-// Use it in a template tag function (where it will be intellisensed!)
-div(['my_custom_trait','id','1'])('Sup!')
-
-...
-
-// Output result
-<div data-id="1">Sup!<div>
-  `,
+        title: 'Trait Library',
+        subtitle: 'Every template instance includes the following traits by default.',
+        description:
+          'The syntax and structure of traits have been carefully crafted to keep a balance between readability, composability, troubleshooting, intellisense features and the power of declarative code.',
+        content: div(['flex', 'column', 30])(
+          ...[
+            [
+              'Attr',
+              '["attr", prop: string, val: string | number | undefined, condition?: Condition]',
+              'Adds an attribute to a dom element.',
+            ],
+            [
+              'Event',
+              '["event", event: Event, func: Callback, condition?: Condition]',
+              'Binds a callback to a dom event.',
+            ],
+            [
+              'Flex',
+              "[\"flex\", flexDirection: 'row' | 'column', gap: number, justifyContent?: 'center' | 'start' |'end', alignItems?: 'center' | 'start' | 'end', condition?: Condition],",
+              'Add flexbox styles on one line',
+            ],
+            ['Focus', '["focus", condition?: Condition]', 'Listens for focus events on a dom element.'],
+            [
+              'Grid',
+              "[\"grid\", columns: CSSStyleDeclaration['gridTemplateColumns'] = 'auto', rows: CSSStyleDeclaration['gridTemplateRows'] = 'auto', gap: number = 0, condition?: Condition,]",
+              'Add grid styles on one line',
+            ],
+            [
+              'InnerHtml',
+              '["inner_html", html: () => HTMLElement | HTMLElement[] | DocumentFragment, condition?: Condition]',
+              'Replaces html content of a dom element.',
+            ],
+            [
+              'InnerText',
+              '["inner_text", text: () => string | number, condition?: Condition]',
+              'Replaces text content of a dom element.',
+            ],
+            ['OnChange', '["on_change", cb: (e: MouseEvent) => void]', 'Listens for change events on a dom element.'],
+            [
+              'OnColorInput',
+              '["on_color_input", cb: (val: string) => void]',
+              'Listens for change events on a HTMLSelectElement.',
+            ],
+            [
+              'OnClick',
+              '["on_click", cb: (e: MouseEvent) => void, condition?: Condition]',
+              'Listens for click events on a dom element.',
+            ],
+            ['OnCreate', '["on_create", cb: (el: HTMLElement) => void]', 'Listens for create events on a dom element.'],
+            ['OnLoad', '["on_load", cb: (el: HTMLElement) => void]', 'Listens for load events on a dom element.'],
+            [
+              'OnMouseOut',
+              '["on_mouse_out", cb: (e: MouseEvent) => void]',
+              'Listens for mouseout events on a dom element.',
+            ],
+            [
+              'OnMouseOver',
+              '["on_mouse_over", cb: (e: MouseEvent) => void]',
+              'Listens for mouseover events on a dom element.',
+            ],
+            [
+              'OnResize',
+              '["on_resize", cb: ({ width, height }: { width: number; height: number }]',
+              'Listens for resize events on a dom element.',
+            ],
+            ['OnSubmit', '["on_submit", cb: () => void]', 'Listens for submit events on a dom element.'],
+            [
+              'OnTextInput',
+              '["on_text_input", cb: (val: string) => void]',
+              'Listens for textinput events on a HTMLInputElement element.',
+            ],
+            [
+              'OnTextContentInput',
+              '["on_text_content_input", cb: (val: string) => void]',
+              'Listens for textinput events on a dom element.',
+            ],
+            [
+              'OnWinResize',
+              '["on_win_resize", cb: ({ width, height }: { width: number; height: number }) => void]',
+              'Listens for winresize events on a dom element.',
+            ],
+            [
+              'PrintStyle',
+              '["print_style",  prop: keyof CSSStyleDeclaration, val: string | number | (() => string | number), condition?: Condition,]',
+              'Adds a style to a dom element in print mode',
+            ],
+            ['State', 'See State section for details', 'A trait that maps traits to state values.'],
+            [
+              'Style',
+              '["style", prop: keyof CSSStyleDeclaration, val: undefined | string | number | ((el: HTMLElement) => string | number), condition?: Condition]',
+              'Adds a style to a dom element.',
+            ],
+            [
+              'StyleOnHover',
+              '["style_on_hover", prop: keyof CSSStyleDeclaration, val: undefined | string | number | ((el: HTMLElement) => string | number), resetVal?: string | number, condition?: Condition]',
+              'Changes styles on a dom element on hover',
+            ],
+            [
+              'StyleOnResize',
+              '["style_on_resize", prop: keyof CSSStyleDeclaration, cb: ({ width, height }: { width: number; height: number }) => string]',
+              'Changes styles on a dom element on element resize',
+            ],
+            [
+              'StyleOnWinResize',
+              '["style_on_win_resize", prop: keyof CSSStyleDeclaration, cb: ({ width, height }: { width: number; height: number }) => string]',
+              'Changes styles on a dom element on window resize',
+            ],
+            [
+              'Styles',
+              '["styles", styles: [prop: keyof CSSStyleDeclaration, val: string | number][], condition?: Condition]',
+              'Adds a list of styles to a dom element.',
+            ],
+            ['Value', '["value", value: string | (() => string]', 'Listens for value events on a dom element.'],
+          ].map(([trait, example, desc]) =>
+            div(['flex', 'column', 10])(
+              div(['style', 'fontWeight', 'bold'])(trait),
+              div()(desc),
+              Snippet(example, 'typescript', true),
+            ),
           ),
         ),
       }),

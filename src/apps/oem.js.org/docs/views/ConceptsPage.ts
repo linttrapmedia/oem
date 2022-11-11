@@ -8,7 +8,7 @@ const { div } = tags;
 
 export function ConceptsPage() {
   return Documentation({
-    prev: ['Overview', ROUTES.OVERVIEW],
+    prev: ['Quickstart', ROUTES.QUICKSTART],
     next: ['Html', ROUTES.HTML],
     content: div(['flex', 'column', 40])(
       Section({
@@ -25,11 +25,11 @@ export function ConceptsPage() {
         content: Snippet(`const { div } = Template.Html();\ndiv('Hello World')`, 'typescript'),
       }),
       Section({
-        title: 'Adding Styling & Behavior',
-        subtitle: `You then add behaviors to the template by mapping "traits". In this example we add styling to the templating engine.`,
+        title: 'Behavior',
+        subtitle: `You then add behaviors to the template by mapping "traits". In this example we explicitly add styling to the templating engine.`,
         description: `Here we map the \`Trait.Style\` trait which will enable inline css.`,
         content: Snippet(
-          `const { div } = Template.Html({  style: Trait.Style });
+          `const { div } = Template.Html({ style: Trait.Style });
 div(['style', 'fontWeight', 'bold'])('Hello World')`,
         ),
       }),
@@ -42,7 +42,7 @@ text.sub(console.log);  // subscribe to text changes`),
       }),
       Section({
         title: `All Together`,
-        subtitle: `Here's a basic Todo list which implements: adding a new todo, marking a todo as done/not-done, sorting and styling in < 50 LOC.`,
+        subtitle: `Here's a basic Todo list which implements: adding a new todo, marking a todo as done/not-done, sorting and styling in < 50 LOC`,
         content: TodoExample(),
       }),
       Section({
@@ -61,7 +61,9 @@ const TodoExample = () => {
 
   // Template
   const { input, div } = Template.Html({
-    on_click: Trait.OnClick,
+    attr: Trait.Attr,
+    flex: Trait.Flex,
+    style: Trait.Style,
     on_todos_change: Trait.State(todos, Trait.InnerHtml),
     on_dones_change: Trait.State(dones, Trait.InnerHtml),
   });

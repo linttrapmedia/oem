@@ -17,8 +17,7 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
   const getResponsiveMode = () => (window.innerWidth < maxWidth ? 'MOBILE' : 'TABLET');
   const winSize = State.Atom<'MOBILE' | 'TABLET'>(getResponsiveMode());
   const menu = [
-    ['Overview', ROUTES.OVERVIEW],
-    ['Concepts', ROUTES.CONCEPTS],
+    ['Quickstart', ROUTES.QUICKSTART],
     ['Html', ROUTES.HTML],
     ['State', ROUTES.STATE_MANAGEMENT],
     ['Styling', ROUTES.STYLING],

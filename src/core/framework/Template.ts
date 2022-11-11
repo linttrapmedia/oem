@@ -4,9 +4,33 @@ import { Types } from './Types';
 
 type DefTraits = {
   attr: typeof Trait.Attr;
+  event: typeof Trait.Event;
   flex: typeof Trait.Flex;
+  focus: typeof Trait.Focus;
+  grid: typeof Trait.Grid;
+  inner_html: typeof Trait.InnerHtml;
+  inner_text: typeof Trait.InnerText;
+  on_change: typeof Trait.OnChange;
+  on_color_input: typeof Trait.OnColorInput;
+  on_click: typeof Trait.OnClick;
+  on_create: typeof Trait.OnCreate;
+  on_load: typeof Trait.OnLoad;
+  on_mouse_out: typeof Trait.OnMouseOut;
+  on_mouse_over: typeof Trait.OnMouseOver;
+  on_resize: typeof Trait.OnResize;
+  on_submit: typeof Trait.OnSubmit;
+  on_text_input: typeof Trait.OnTextInput;
+  on_text_content_input: typeof Trait.OnTextContentInput;
+  on_win_resize: typeof Trait.OnWinResize;
+  print_style: typeof Trait.PrintStyle;
+  src: typeof Trait.Src;
   style: typeof Trait.Style;
   styles: typeof Trait.Styles;
+  style_on_hover: typeof Trait.StyleOnHover;
+  style_on_resize: typeof Trait.StyleOnResize;
+  style_on_win_resize: typeof Trait.StyleOnWinResize;
+  svg_attr: typeof Trait.SvgAttr;
+  value: typeof Trait.Value;
 };
 
 function Html<Config extends DefTraits>(): Types.HtmlTemplateTagMap<Config>;
@@ -15,9 +39,33 @@ function Html<Config extends Types.HtmlTemplateConfig>(config?: Config) {
   // default traits
   const _config: Types.HtmlTemplateConfig = {
     attr: config.attr || Trait.Attr,
+    event: config.event || Trait.Event,
     flex: config.flex || Trait.Flex,
+    focus: config.focus || Trait.Focus,
+    grid: config.grid || Trait.Grid,
+    inner_html: config.inner_html || Trait.InnerHtml,
+    inner_text: config.inner_text || Trait.InnerText,
+    on_change: config.on_change || Trait.OnChange,
+    on_color_input: config.on_color_input || Trait.OnColorInput,
+    on_click: config.on_click || Trait.OnClick,
+    on_create: config.on_create || Trait.OnCreate,
+    on_load: config.on_load || Trait.OnLoad,
+    on_mouse_out: config.on_mouse_out || Trait.OnMouseOut,
+    on_mouse_over: config.on_mouse_over || Trait.OnMouseOver,
+    on_resize: config.on_resize || Trait.OnResize,
+    on_submit: config.on_submit || Trait.OnSubmit,
+    on_text_input: config.on_text_input || Trait.OnTextInput,
+    on_text_content_input: config.on_text_content_input || Trait.OnTextContentInput,
+    on_win_resize: config.on_win_resize || Trait.OnWinResize,
+    print_style: config.print_style || Trait.PrintStyle,
+    src: config.src || Trait.Src,
     style: config.style || Trait.Style,
     styles: config.styles || Trait.Styles,
+    style_on_hover: config.style_on_hover || Trait.StyleOnHover,
+    style_on_resize: config.style_on_resize || Trait.StyleOnResize,
+    style_on_win_resize: config.style_on_win_resize || Trait.StyleOnWinResize,
+    svg_attr: config.svg_attr || Trait.SvgAttr,
+    value: config.value || Trait.Value,
     ...config,
   };
 

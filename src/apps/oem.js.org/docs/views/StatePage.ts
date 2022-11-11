@@ -2,6 +2,7 @@ import { ROUTES, tags } from '../../config';
 import { Documentation } from './common/Documentation';
 import { Section } from './common/Section';
 import { Snippet } from './common/Snippet';
+import { StateExample } from './common/StateExample';
 const { div } = tags;
 
 export function StatePage() {
@@ -10,96 +11,102 @@ export function StatePage() {
     next: ['Styling', ROUTES.STYLING],
     content: div(['flex', 'column', 40])(
       Section({
-        title: `State.Atom<T>`,
-        subtitle: `The \`State.Atom\` is a miniature event bus.`,
-        content: Snippet(`// Create an atom
-const msg = State.Atom<string>('hello');
-
-// get an atom
-console.log(msg.get()); // outputs => 'hello'
-
-// subscribe to an atom
-msg.sub((val) => console.log(val));
-
-// set an atom (which calls all subscribers)
-msg.set('HELLO'); // outputs => 'HELLO'`),
+        title: `State`,
+        subtitle: `State is controlled by "Atoms" which are miniature event buses. The most basic type is the  \`State.Atom<T>\` atom.`,
+        content: Snippet(`const pieceOfState = State.Atom<string>('hello');`),
       }),
       Section({
-        subtitle: `Props`,
-        content: div(['flex', 'column', 10, 'start', 'start'])(
+        subtitle: 'Props',
+        content: div(['flex', 'column', 30, 'start', 'start'])(
           ...[
-            ['get', '(): T => _atom'],
+            ['get', '(): T => _atom', 'get the current value'],
             ['set', '(atom: T) => T', 'set the current value'],
             ['sub', '(cb: (atom: T) => any) => void', 'subscribe to changes'],
           ].map(([k, v, d]) =>
-            div(['flex', 'row', 20, 'center', 'center'], ['style', 'flexWrap', 'wrap'], ['style', 'fontSize', '14px'])(
-              div()(k),
-              div()(Snippet(v, 'typescript', true)),
+            div(['flex', 'column', 10])(
+              div(['style', 'fontWeight', 'bold'])(k),
               div()(d),
+              Snippet(v, 'typescript', true),
             ),
           ),
         ),
       }),
       Section({
-        title: 'Application',
-        subtitle: `You can easily teach your html to have reactivity. Here's an example:`,
-        content: Snippet(
-          `const textAtom = State.Atom<string>(null);
+        title: 'Trait.State',
+        subtitle:
+          "You can listen to changes to a State object with the `Trait.State` trait. This trait takes in the state object you're subscribing to and a trait you'd like you apply on change. You now have a reactive dom:",
+        content: div(['flex', 'column', 20])(
+          Snippet(
+            `function StateExample() {
+  const textAtom = State.Atom<string>(null);
 
-const html = Template.Html({
-  // map a text input listener
-  on_text_input: Trait.OnTextInput,
-  // now use the Atom Trait to map the textAtom to the innerText Trait
-  on_text_update: Trait.State(textAtom, Trait.InnerText), 
-});
+  const { div, input } = Template.Html({
+    on_text_input: Trait.OnTextInput,
+    on_text_update: Trait.State(textAtom, Trait.InnerText),
+  });
 
-return html('div')(
-  // The textAtom is set on input
-  html('input', ['on_text_input', textAtom.set])(),
-  // The innerText updates each time the textAtom changes
-  html('div', ['on_text_update', textAtom.get])(),
-);`,
-        ),
-      }),
-      Section({
-        title: `State.Array<T>`,
-        subtitle: `Using \`State.Array\` allows you to mutate the array value with most of the native array methods you're already familiar with.`,
-        content: div(['flex', 'column', 10, 'start', 'start'])(
-          ...[
-            ['get', '(): T => _atom'],
-            ['set', '(atom: T) => T', 'set the current value'],
-            ['sub', '(cb: (atom: T) => any) => void', 'subscribe to changes'],
-            ['at', '(index: number) => T'],
-            ['concat', '(...items: ConcatArray<T>[]) => T[]'],
-            ['copyWithin', '(target: number, start: number, end?: number) => T[]'],
-            ['entries', '() => IterableIterator<[number, T]>'],
-            ['every', '(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any) => boolean'],
-            ['fill', '(value: T, start?: number, end?: number) => T[]'],
-            ['filter', '(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any) => T[]'],
-            ['filterSet', '(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any) => T[]'],
-            ['find', '(predicate: (value: T, index: number, obj: T[]) => unknown, thisArg?: any) => T | undefined'],
-            ['findIndex', '(predicate: (value: T) => value is T, thisArg?: any) => number'],
-            ['flat', '(depth?: number) => T[]'],
-            ['flatSet', '(depth?: number) => T[]'],
-            ['pop', '() => T | undefined'],
-            ['push', '(...items: T[]) => number'],
-          ].map(([k, v, d]) =>
-            div(['flex', 'row', 20, 'center', 'center'], ['style', 'flexWrap', 'wrap'], ['style', 'fontSize', '14px'])(
-              div()(k),
-              div()(Snippet(v, 'typescript', true)),
-              div()(d),
-            ),
+  return div()(
+    input(['on_text_input', textAtom.set])(),
+    div(['on_text_update', textAtom.get])()
+  );
+}`,
           ),
+          StateExample(),
         ),
       }),
       Section({
-        title: 'Application',
-        subtitle: `Cutting down on boilerplate is a big part of the design philosophy of this library. Here's an example of how you can use \`State.Array\` to add, remove, and update items in a list.`,
-        content: Snippet(`const ary = State.Array<string>(['one']);
+        title: `Arrays`,
+        subtitle: `In addition to the basic \`State.Atom\` atom, there are atoms for Javascript's built-in objects. Here's an example of the \`State.Array\` atom which allows you to __MUTATE__ the array value with most of the native array methods you're already familiar with.`,
+        content: div(['flex', 'column', 30])(
+          Snippet(`const ary = State.Array<string>(['one']);
 ary.push('two', 'three'); // ['one', 'two', 'three']
 ary.filter((i) => i !== 'three'); // ['one', 'two']
 ary.pop(); // ['two']
 ...`),
+          div(['flex', 'column', 30, 'start', 'start'])(
+            ...[
+              ['get', '(): T => _atom'],
+              ['set', '(atom: T) => T', 'set the current value'],
+              ['sub', '(cb: (atom: T) => any) => void', 'subscribe to changes'],
+              ['at', '(index: number) => T'],
+              ['concat', '(...items: ConcatArray<T>[]) => T[]'],
+              ['copyWithin', '(target: number, start: number, end?: number) => T[]'],
+              ['entries', '() => IterableIterator<[number, T]>'],
+              ['every', '(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any) => boolean'],
+              ['fill', '(value: T, start?: number, end?: number) => T[]'],
+              ['filter', '(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any) => T[]'],
+              ['filterSet', '(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any) => T[]'],
+              ['find', '(predicate: (value: T, index: number, obj: T[]) => unknown, thisArg?: any) => T | undefined'],
+              ['findIndex', '(predicate: (value: T) => value is T, thisArg?: any) => number'],
+              ['flat', '(depth?: number) => T[]'],
+              ['flatSet', '(depth?: number) => T[]'],
+              ['pop', '() => T | undefined'],
+              ['push', '(...items: T[]) => number'],
+            ].map(([k, v, d]) =>
+              div(['flex', 'column', 10])(
+                div(['style', 'fontWeight', 'bold'])(k),
+                div()(d),
+                Snippet(v, 'typescript', true),
+              ),
+            ),
+          ),
+        ),
+      }),
+      Section({
+        title: `Object`,
+        subtitle: `...Coming Soon`,
+      }),
+      Section({
+        title: `Set`,
+        subtitle: `...Coming Soon`,
+      }),
+      Section({
+        title: `Map`,
+        subtitle: `...Coming Soon`,
+      }),
+      Section({
+        title: `Number`,
+        subtitle: `...Coming Soon`,
       }),
     ),
   });

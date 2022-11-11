@@ -16,21 +16,28 @@ export function StylingPage() {
           'All features and behaviors in OEM are handled by "Traits", this includes things normally accomplished with CSS.',
       }),
       Section({
+        title: 'Basic Styling:',
+        subtitle: 'Styles are inline css props and values. Example:',
+        content: Snippet(`const { div } = Template.Html();
+const hello = div(['style','fontWeight','bold'])('Hello World')`),
+      }),
+      Section({ content: div(['style', 'fontWeight', 'bold'])('Hello World') }),
+      Section({
         title: 'Conditional Styling:',
         subtitle:
-          "`Trait.Style` takes an optional boolean function or value as it's last argument which can be used for conditional rendering.",
-        content: Snippet(`const html = Template.Html({  style: Trait.Style });
+          "`Trait.Style` takes an optional boolean function or value as it's last argument which can be used for conditional rendering. Note there two entries for `fontWeight`, both of which are evaluated. This is the beauty of OEM's syntax which keeps things nice and clean as your code scales.",
+        content: Snippet(`const { div } = Template.Html();
 const hello = div(
   ['style','fontWeight','bold', isActive], // render if isActive is true
   ['style','fontWeight','normal', !isActive] // render if isActive is false
 )('Hello World')`),
       }),
+
       Section({
         title: 'Sharing Styles',
-        subtitle:
-          '`Trait.Styles` allows you to apply an array of styles which helps when sharing or propagating styles between components.',
+        subtitle: 'Common styles can be shared with the `Trait.Styles` trait.',
         content: div(['flex', 'column', 40])(
-          Snippet(`const html = Template.Html({  styles: Trait.Styles });
+          Snippet(`const { h1, h2 } = Template.Html();
 const headerStyles = [['fontWeight','bold'],['textDecoration','underline']];
 const headerOne = h1(['styles', headerStyles])('Main Header');
 const headerTwo = h2(['styles', headerStyles])('Sub Header');`),
@@ -39,38 +46,44 @@ const headerTwo = h2(['styles', headerStyles])('Sub Header');`),
       Section({
         title: 'On Hover',
         subtitle: '`Trait.StyleOnHover` allows you declare styling inline, eliminating the need for CSS selectors',
-        content: Snippet(`const html = Template.Html({  style_on_hover: Trait.StyleOnHover });
+        content: Snippet(`const { div } = Template.Html();
 const hello = div(['style_on_hover','color','red'])('Hello World')`),
       }),
+      Section({ content: div(['style_on_hover', 'color', 'red'])('Hello World') }),
       Section({
         title: 'Responsive Styles',
         subtitle:
           '`Trait.StyleOnWinResize` Allows you to define styles inline, eliminating the need for media queries.',
         content: div(['flex', 'column', 40])(
-          Snippet(`const html = Template.Html({  style_on_resize: Trait.StyleOnWinResize });
+          Snippet(`const { div } = Template.Html();
 const getFontSize = ({width}) => width < 800 ? '12px' : '24px';
-const hello = div(['style_on_resize','fontSize', getFontSize])('Hello Responsively Styled Text`),
-          div(['style_on_resize', 'fontSize', ({ width }) => (width < 800 ? '12px' : '24px')])(
-            'Hello Responsively Styled Text',
-          ),
+const hello = div(['style_on_resize','fontSize', getFontSize])('Resize the window!')`),
+          div(['style_on_resize', 'fontSize', ({ width }) => (width < 800 ? '12px' : '24px')])('Resize the window!'),
+        ),
+      }),
+      Section({ content: div(['style_on_hover', 'color', 'red'])('Hello World') }),
+
+      Section({
+        title: 'Print Styles',
+        subtitle: 'Apply a print-only style!',
+        content: div(['flex', 'column', 40])(
+          Snippet(`const { div } = Template.Html();
+const hello = div(
+  ['style', 'fontSize', '16px'],
+  ['style_on_print', 'fontSize', '60px']
+)('I\'m only 16px, but 60px when printed!')`),
         ),
       }),
       Section({
-        title: 'Print Styles',
-        subtitle: 'Apply a style on print!',
-        content: div(['flex', 'column', 40])(
-          Snippet(`const html = Template.Html({ style_on_print: Trait.PrintStyle });
-const hello = div(
-  ['style', 'fontSize', '24px'],
-  ['style_on_print', 'fontSize', '60px']
-)('Hello Print Styled Text')`),
-          div(['style', 'fontSize', '24px'], ['style_on_print', 'fontSize', '60px'])('Hello Print Styled Text'),
-        ),
+        content: div(
+          ['style', 'fontSize', '16px'],
+          ['style_on_print', 'fontSize', '60px'],
+        )("I'm only 16px, but 60px when printed!"),
       }),
       Section({
         title: `Theming`,
         subtitle:
-          'The theming engine works similarly to the templating engine. Create an instance and use the returned functions to control color and fonts.',
+          'The theming engine works similarly to the templating engine. Create an instance and use the returned functions to control colors and fonts.',
         content: Snippet(`const { color, font } = Theme();
 
 // output a solid black = HSLA(0, 0%, 0%, 1)
