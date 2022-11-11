@@ -98,10 +98,6 @@ const OnClick = (el: HTMLElement, cb: (e: MouseEvent) => void, condition?: Condi
   }
 };
 
-// const OnClickBind = <T extends (...args: any) => any, A extends Parameters<T>>(el: HTMLElement, cb: T, amount: A) => {
-//   el.addEventListener('click', () => cb(amount));
-// };
-
 const OnCreate = (el: HTMLElement, cb: (el: HTMLElement) => void) => cb(el);
 
 const OnLoad = (el: HTMLElement, cb: (el: HTMLElement) => void) => window.addEventListener('load', () => cb(el));

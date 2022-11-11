@@ -34,7 +34,6 @@ export function QuickstartPage() {
   const count = State.Number(0);
 
   const { div, button } = Template.Html({
-    on_click: Trait.OnClick,
     on_count: Trait.State(count, Trait.InnerText),
   });
 

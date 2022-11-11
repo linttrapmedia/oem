@@ -34,6 +34,6 @@ export const Snippet = (
       ['style', 'display', 'flex'],
       ['style', 'color', color('black', 0.5)],
       ['style', 'padding', inline ? '0px' : '20px'],
-    )(div(['style', 'whiteSpace', 'pre'], ['prism'])()),
+    )(div(['style', 'whiteSpace', inline ? 'unset' : 'pre'], ['prism'])()),
   );
 };
