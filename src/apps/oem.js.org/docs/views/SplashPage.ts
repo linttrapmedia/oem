@@ -117,7 +117,6 @@ const Wrapper = div(
 export function SplashPage() {
   return Wrapper(
     div(['style', 'maxWidth', '500px'], ['flex', 'column', 20, 'center', 'center'])(
-      img(['attr', 'src', '/assets/gfx/oem-logo.svg'], ['attr', 'width', 150])(),
       Title(`oem`, superscript('beta')),
       Tagline(`"dependencies": {}`),
       Description(
