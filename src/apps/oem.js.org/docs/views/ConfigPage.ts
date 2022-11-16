@@ -8,7 +8,7 @@ const { div } = tags;
 export function ConfigPage() {
   return Documentation({
     prev: ['Design System', ROUTES.DESIGN_SYSTEM],
-    next: ['Contributing', ROUTES.CONTRIBUTING],
+    next: ['Examples', ROUTES.EXAMPLES],
     content: div(['flex', 'column', 40])(
       Section({
         title: 'Config',

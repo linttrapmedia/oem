@@ -1,3 +1,5 @@
+import { Trait } from './Trait';
+
 export namespace Types {
   // Utilities
   export type OmitFirstArg<T> = T extends (x: any, ...args: infer P) => infer R ? (...args: P) => R : never;
@@ -36,7 +38,7 @@ export namespace Types {
     // ) => U[];
     // forEach: (callbackfn: (value: T, index: number, array: T[]) => void, thisArg?: any) => void;
     get: () => T[];
-    // includes: (searchElement: T, fromIndex?: number) => boolean;
+    includes: (searchElement: T, fromIndex?: number) => boolean;
     // indexOf: (searchElement: T, fromIndex?: number) => number;
     // join: (separator?: string) => string;
     // keys: () => IterableIterator<number>;
@@ -125,8 +127,39 @@ export namespace Types {
   // Traits
 
   export type TraitProp = string;
-  export type TraitFunc = (el: HTMLElement, ...a: any) => any;
+  export type TraitFunc = (el: HTMLElement | SVGElement, ...a: any) => any;
   export type TraitParams<T> = Parameters<OmitFirstArg<T>>;
+  export type TraitConfigDefault = {
+    attr: typeof Trait.Attr;
+    event: typeof Trait.Event;
+    flex: typeof Trait.Flex;
+    focus: typeof Trait.Focus;
+    grid: typeof Trait.Grid;
+    inner_html: typeof Trait.InnerHtml;
+    inner_text: typeof Trait.InnerText;
+    on_change: typeof Trait.OnChange;
+    on_color_input: typeof Trait.OnColorInput;
+    on_click: typeof Trait.OnClick;
+    on_create: typeof Trait.OnCreate;
+    on_load: typeof Trait.OnLoad;
+    on_mouse_out: typeof Trait.OnMouseOut;
+    on_mouse_over: typeof Trait.OnMouseOver;
+    on_resize: typeof Trait.OnResize;
+    on_submit: typeof Trait.OnSubmit;
+    on_text_input: typeof Trait.OnTextInput;
+    on_text_content_input: typeof Trait.OnTextContentInput;
+    on_win_resize: typeof Trait.OnWinResize;
+    print_style: typeof Trait.PrintStyle;
+    src: typeof Trait.Src;
+    style: typeof Trait.Style;
+    styles: typeof Trait.Styles;
+    style_on_hover: typeof Trait.StyleOnHover;
+    style_on_print: typeof Trait.PrintStyle;
+    style_on_resize: typeof Trait.StyleOnResize;
+    style_on_win_resize: typeof Trait.StyleOnWinResize;
+    svg_attr: typeof Trait.SvgAttr;
+    value: typeof Trait.Value;
+  };
 
   // Template
 

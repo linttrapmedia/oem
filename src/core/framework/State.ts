@@ -66,7 +66,7 @@ function ArrayAtom<T>(atom: T[] = []): Types.AtomArray<T> {
       return _atom;
     },
     forEach: _atom.forEach,
-    includes: _atom.includes,
+    includes: (searchElement: T, fromIndex?: number) => _atom.includes(searchElement, fromIndex),
     indexOf: _atom.indexOf,
     join: _atom.join,
     keys: _atom.keys,

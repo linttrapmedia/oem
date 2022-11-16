@@ -1,7 +1,6 @@
 import { State } from '@core/framework/State';
 import { Template } from '@core/framework/Template';
 import { Theme } from '@core/framework/Theme';
-import { Trait } from '@core/framework/Trait';
 
 // Interface
 
@@ -9,6 +8,7 @@ export type PageState =
   | 'CONCEPTS'
   | 'CONTRIBUTING'
   | 'DESIGN_SYSTEM'
+  | 'EXAMPLES'
   | 'LOADING'
   | 'QUICKSTART'
   | 'SPLASH'
@@ -23,6 +23,7 @@ export const ROUTES = {
   CONCEPTS: '/?page=concepts',
   CONTRIBUTING: '/?page=contributing',
   DESIGN_SYSTEM: '/?page=design-system',
+  EXAMPLES: '/?page=examples',
   LOADING: '/?page=loading',
   QUICKSTART: '/?page=quickstart',
   SPLASH: '/?page=slash',
@@ -42,14 +43,4 @@ export const { color, font } = Theme();
 
 // Template
 
-export const tags = Template.Html({
-  attr: Trait.Attr,
-  flex: Trait.Flex,
-  on_click: Trait.OnClick,
-  on_win_resize: Trait.OnWinResize,
-  style_on_hover: Trait.StyleOnHover,
-  style_on_print: Trait.PrintStyle,
-  style_on_resize: Trait.StyleOnWinResize,
-  style: Trait.Style,
-  styles: Trait.Styles,
-});
+export const tags = Template.Html();

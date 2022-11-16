@@ -22,8 +22,12 @@ const Attr = (el: HTMLElement, prop: string, val: string | number | undefined, c
   check(condition, val) ? el.setAttribute(prop, String(val)) : el.removeAttribute(prop);
 
 const Event =
-  <Callback extends (...args: A) => void, A extends any[]>(event: keyof GlobalEventHandlersEventMap, func: Callback) =>
-  (el: HTMLElement, ...props: Parameters<Callback>) => {
+  <Callback extends (...args: A) => void, A extends any[]>(
+    el: HTMLElement,
+    event: keyof GlobalEventHandlersEventMap,
+    func: Callback,
+  ) =>
+  (...props: Parameters<Callback>) => {
     el.addEventListener(event, () => func(...props));
   };
 

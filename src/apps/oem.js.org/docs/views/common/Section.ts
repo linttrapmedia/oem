@@ -10,7 +10,7 @@ type SectionProps = {
 };
 
 export const Section = ({ title, subtitle, content }: SectionProps) =>
-  section(['flex', 'column', 20], ['style', 'width', '100%'])(
+  section(['flex', 'column', 20], ['style', 'width', '100%'], ['style', 'marginBottom', '20px'])(
     title &&
       a(
         ['attr', 'href', `#${title}`],
