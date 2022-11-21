@@ -90,9 +90,14 @@ export namespace Types {
       | 'sqrt'
       | 'trunc'
     >]: () => void;
+  } & {
+    add: (amount: number) => void;
+    reset: () => void;
+    subtract: (amount: number) => void;
   };
 
   export interface AtomNumber extends AtomNumberMathMethods {
+    bind: <M extends keyof AtomNumberMathMethods>(method: M, ...args: Parameters<AtomNumberMathMethods[M]>) => any;
     get: () => number;
     reset: () => void;
     set: (atom: number) => void;
@@ -173,7 +178,7 @@ export namespace Types {
         [I in keyof KS]-?: [KS[I], ...Parameters<OmitFirstArg<Config[Extract<KS[I], keyof Config>]>>];
       }
     ) => (...children: HtmlChild[]) => HTMLElementTagNameMap[keyof HTMLElementTagNameMap]
-  >;
+  > & { fragment: (...children: Types.HtmlChild[]) => DocumentFragment };
 
   export type SvgTraitProp = string;
   export type SvgTraitFunc = (el: SVGElement, ...a: any) => any;

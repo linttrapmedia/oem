@@ -44,24 +44,29 @@ function Html<Config extends Types.HtmlTemplateConfig>(config?: Config) {
     value: Trait.Value,
     ...config,
   };
-  return tags.reduce((acc, tag) => {
-    acc[tag as keyof HTMLElementTagNameMap] =
-      <KS extends Array<keyof Config>>(
-        ...traits: {
-          [I in keyof KS]-?: [KS[I], ...Types.TraitParams<Config[Extract<KS[I], keyof Config>]>];
-        }
-      ) =>
-      (...children: Types.HtmlChild[]) => {
-        const el = document.createElementNS('http://www.w3.org/1999/xhtml', tag);
-        traits.forEach(([trait, ...args]) => _config[trait as string](el, ...args));
-        children.forEach((child) => {
-          if (child instanceof Node) el.appendChild(child);
-          if (typeof child === 'string' || typeof child === 'number') el.appendChild(CleanText(String(child)));
-        });
-        return el;
-      };
-    return acc;
-  }, {} as Types.HtmlTemplateTagMap<Config>);
+  return tags.reduce(
+    (acc, tag) => {
+      acc[tag as keyof HTMLElementTagNameMap] =
+        <KS extends Array<keyof Config>>(
+          ...traits: {
+            [I in keyof KS]-?: [KS[I], ...Types.TraitParams<Config[Extract<KS[I], keyof Config>]>];
+          }
+        ) =>
+        (...children: Types.HtmlChild[]) => {
+          const el = document.createElementNS('http://www.w3.org/1999/xhtml', tag);
+          traits.forEach(([trait, ...args]) => _config[trait as string](el, ...args));
+          children.forEach((child) => {
+            if (child instanceof Node) el.appendChild(child);
+            if (typeof child === 'string' || typeof child === 'number') el.appendChild(CleanText(String(child)));
+          });
+          return el;
+        };
+      return acc;
+    },
+    {
+      fragment: Fragment,
+    } as Types.HtmlTemplateTagMap<Config>,
+  );
 }
 
 function Fragment(...children: Types.HtmlChild[]) {

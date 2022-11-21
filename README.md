@@ -18,29 +18,21 @@ and http://localhost:3005/
 ## Example
 
 ```typescript
-// Counter.ts
 import { State } from '@core/framework/State';
 import { Template } from '@core/framework/Template';
 import { Trait } from '@core/framework/Trait';
 
 function CounterExample() {
-  // 1. declare and manage state
-  const count = State.Atom(0);
-  const inc = () => count.set(count.get() + 1);
-  const dec = () => count.set(count.get() - 1);
+  const count = State.Number(0);
 
-  // 2. declare and create your templating engine
   const { div, button } = Template.Html({
-    flex: Trait.Flex,
-    on_click: Trait.OnClick,
-    on_count: Trait.Atom(count, Trait.InnerText),
+    on_count: Trait.State(count, Trait.InnerText),
   });
 
-  // 3. declare and render your html
   return div(['flex', 'row', 30])(
-    button(['on_click', dec])('-'),
+    button(['on_click', count.bind('subtract', 1)])('-'),
     div(['on_count', count.get])(count.get()),
-    button(['on_click', inc])('+'),
+    button(['on_click', count.bind('add', 1)])('+'),
   );
 }
 ```

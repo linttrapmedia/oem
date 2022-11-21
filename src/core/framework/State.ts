@@ -98,7 +98,6 @@ function NumberAtom(atom: number): Types.AtomNumber {
   const _get = (): number => _atom;
   const _set = (atom: number) => ((_atom = atom), _subscribers.forEach((i) => i(_atom)));
   const _sub = (cb: (atom: number) => any) => _subscribers.push(cb);
-  const _reset = () => _set(originalAtom);
   const _extensions = {
     add: (amount: number) => _set(_atom + amount),
     abs: () => _set(Math.floor(_atom)),
@@ -114,13 +113,18 @@ function NumberAtom(atom: number): Types.AtomNumber {
     log1p: () => _set(Math.log1p(_atom)),
     log2: () => _set(Math.log2(_atom)),
     pow: (pow: number) => _set(Math.pow(_atom, pow)),
+    reset: () => _set(originalAtom),
     round: () => _set(Math.round(_atom)),
     sign: () => _set(Math.sign(_atom)),
     subtract: (amount: number) => _set(_atom - amount),
     sqrt: () => _set(Math.sqrt(_atom)),
     trunc: () => _set(Math.trunc(_atom)),
   };
-  return { get: _get, set: _set, sub: _sub, reset: _reset, ..._extensions };
+
+  const _bind = <M extends keyof typeof _extensions>(method: M, ...args: Parameters<typeof _extensions[M]>) =>
+    _extensions[method].bind(this, ...args);
+
+  return { bind: _bind, get: _get, set: _set, sub: _sub, ..._extensions };
 }
 
 function SetAtom<T>(atom: T): Types.AtomSet<T> {
