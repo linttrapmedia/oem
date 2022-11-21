@@ -12,16 +12,8 @@ export function HtmlPage() {
     next: ['State', ROUTES.STATE_MANAGEMENT],
     content: div(['flex', 'column', 40])(
       Section({
-        title: 'Html',
-        subtitle: `The core features and behavior of the template html come from the traits you add to it. This allows you to create your own domain specific language. `,
-        content: Template.Markdown(
-          `The Template engine is unique in that its behaviors are not universal. By declaring its properties and behaviors in a given config you are able specify varying degrees of abstraction for anything you can think of such as custom attributes, styling, event listeners, responsive behaviors, logging, etc. It also makes it incredibly easy to share functionality and behavior between templates, components, elements, functions and more.`,
-        ),
-      }),
-
-      Section({
-        title: 'The Templating Engine',
-        subtitle: `To render html, you create a template. The template instance returns one functions per html tag name that you use to render it's element`,
+        title: 'HTML',
+        subtitle: `To render html, you create a template. The template instance returns one function per html tag name which you use to render it's element`,
         description: `By default a template can only output html tags (no attributes, styles, behaviors, etc.)`,
         content: Snippet(
           `const { div, span, ul, li } = Template.Html();
@@ -34,8 +26,8 @@ ul(li('one'), li('two')); // <ul><li>one</li><li>two</li></ul>
       }),
 
       Section({
-        title: 'Adding Functionality',
-        subtitle: `The html tag functions allow you to map "Traits" which provide you with the mechanism to add functionality to your html. Each trait can be is applied one at a time as an array of the traits parameters. This creates a composable syntax that's easy to read and maintain as things scale. Example:`,
+        title: 'Traits',
+        subtitle: `The html tag functions allow you to map "Traits" which provide you with the mechanism to add functionality to your html. Each trait is applied one at a time as an array of the trait's parameters. This creates a composable cascading syntax that remains easy to read as things scale. Example:`,
         content: Snippet(
           `const { div } = Template.Html();
 div(
@@ -51,7 +43,7 @@ div(
       }),
 
       Section({
-        title: 'Customization & Extensibility',
+        title: 'Customization',
         subtitle: `It's easy to create your own traits, just write a function with an HTMLElement as it's first argument and map it to your template engine. This opens the door for any kind behavior you can think of and becomes a very intuitive and powerful abstraction for controlling state and mixin features. Example:`,
         content: Template.Fragment(
           Snippet(
