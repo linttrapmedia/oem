@@ -38,11 +38,12 @@ export function QuickstartPage() {
   });
 
   return div(['flex', 'row', 30])(
-    button(['on_click', () => count.subtract(1)])('-'),
+    button(['on_click', count.bind('subtract', 1)])('-'),
     div(['on_count', count.get])(count.get()),
-    button(['on_click', () => count.add(1)])('+'),
+    button(['on_click', count.bind('add', 1)])('+'),
   );
-}`),
+}
+`),
       }),
     ),
   });

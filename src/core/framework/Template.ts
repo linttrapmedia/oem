@@ -2,76 +2,50 @@ import { markdown } from '@core/utils/markdown';
 import { Trait } from './Trait';
 import { Types } from './Types';
 
-type DefTraits = {
-  attr: typeof Trait.Attr;
-  event: typeof Trait.Event;
-  flex: typeof Trait.Flex;
-  focus: typeof Trait.Focus;
-  grid: typeof Trait.Grid;
-  inner_html: typeof Trait.InnerHtml;
-  inner_text: typeof Trait.InnerText;
-  on_change: typeof Trait.OnChange;
-  on_color_input: typeof Trait.OnColorInput;
-  on_click: typeof Trait.OnClick;
-  on_create: typeof Trait.OnCreate;
-  on_load: typeof Trait.OnLoad;
-  on_mouse_out: typeof Trait.OnMouseOut;
-  on_mouse_over: typeof Trait.OnMouseOver;
-  on_resize: typeof Trait.OnResize;
-  on_submit: typeof Trait.OnSubmit;
-  on_text_input: typeof Trait.OnTextInput;
-  on_text_content_input: typeof Trait.OnTextContentInput;
-  on_win_resize: typeof Trait.OnWinResize;
-  print_style: typeof Trait.PrintStyle;
-  src: typeof Trait.Src;
-  style: typeof Trait.Style;
-  styles: typeof Trait.Styles;
-  style_on_hover: typeof Trait.StyleOnHover;
-  style_on_resize: typeof Trait.StyleOnResize;
-  style_on_win_resize: typeof Trait.StyleOnWinResize;
-  svg_attr: typeof Trait.SvgAttr;
-  value: typeof Trait.Value;
-};
+const tags =
+  'a,abbr,address,area,article,aside,audio,b,base,bdi,bdo,blockquote,body,br,button,canvas,caption,cite,code,col,colgroup,data,datalist,dd,del,details,dfn,dialog,div,dl,dt,em,embed,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6,head,header,hgroup,hr,html,i,iframe,img,input,ins,kbd,label,legend,li,link,main,map,mark,menu,meta,meter,nav,noscript,object,ol,optgroup,option,output,p,picture,pre,progress,q,rp,rt,ruby,s,samp,script,section,select,slot,small,source,span,strong,style,sub,summary,sup,table,tbody,td,template,textarea,tfoot,th,thead,time,title,tr,track,u,ul,var,video,wbr'.split(
+    ',',
+  );
 
-function Html<Config extends DefTraits>(): Types.HtmlTemplateTagMap<Config>;
-function Html<Config extends Types.HtmlTemplateConfig>(config?: Config): Types.HtmlTemplateTagMap<Config & DefTraits>;
+function Html(): Types.HtmlTemplateTagMap<Types.TraitConfigDefault>;
+function Html<Config extends Types.HtmlTemplateConfig>(
+  config?: Config,
+): Types.HtmlTemplateTagMap<Config & Types.TraitConfigDefault>;
 function Html<Config extends Types.HtmlTemplateConfig>(config?: Config) {
-  // default traits
   const _config: Types.HtmlTemplateConfig = {
-    attr: config.attr || Trait.Attr,
-    event: config.event || Trait.Event,
-    flex: config.flex || Trait.Flex,
-    focus: config.focus || Trait.Focus,
-    grid: config.grid || Trait.Grid,
-    inner_html: config.inner_html || Trait.InnerHtml,
-    inner_text: config.inner_text || Trait.InnerText,
-    on_change: config.on_change || Trait.OnChange,
-    on_color_input: config.on_color_input || Trait.OnColorInput,
-    on_click: config.on_click || Trait.OnClick,
-    on_create: config.on_create || Trait.OnCreate,
-    on_load: config.on_load || Trait.OnLoad,
-    on_mouse_out: config.on_mouse_out || Trait.OnMouseOut,
-    on_mouse_over: config.on_mouse_over || Trait.OnMouseOver,
-    on_resize: config.on_resize || Trait.OnResize,
-    on_submit: config.on_submit || Trait.OnSubmit,
-    on_text_input: config.on_text_input || Trait.OnTextInput,
-    on_text_content_input: config.on_text_content_input || Trait.OnTextContentInput,
-    on_win_resize: config.on_win_resize || Trait.OnWinResize,
-    print_style: config.print_style || Trait.PrintStyle,
-    src: config.src || Trait.Src,
-    style: config.style || Trait.Style,
-    styles: config.styles || Trait.Styles,
-    style_on_hover: config.style_on_hover || Trait.StyleOnHover,
-    style_on_resize: config.style_on_resize || Trait.StyleOnResize,
-    style_on_win_resize: config.style_on_win_resize || Trait.StyleOnWinResize,
-    svg_attr: config.svg_attr || Trait.SvgAttr,
-    value: config.value || Trait.Value,
+    attr: Trait.Attr,
+    event: Trait.Event,
+    flex: Trait.Flex,
+    focus: Trait.Focus,
+    grid: Trait.Grid,
+    inner_html: Trait.InnerHtml,
+    inner_text: Trait.InnerText,
+    on_change: Trait.OnChange,
+    on_color_input: Trait.OnColorInput,
+    on_click: Trait.OnClick,
+    on_create: Trait.OnCreate,
+    on_load: Trait.OnLoad,
+    on_mouse_out: Trait.OnMouseOut,
+    on_mouse_over: Trait.OnMouseOver,
+    on_resize: Trait.OnResize,
+    on_submit: Trait.OnSubmit,
+    on_text_input: Trait.OnTextInput,
+    on_text_content_input: Trait.OnTextContentInput,
+    on_win_resize: Trait.OnWinResize,
+    print_style: Trait.PrintStyle,
+    src: Trait.Src,
+    style: Trait.Style,
+    styles: Trait.Styles,
+    style_on_hover: Trait.StyleOnHover,
+    style_on_print: Trait.PrintStyle,
+    style_on_resize: Trait.StyleOnResize,
+    style_on_win_resize: Trait.StyleOnWinResize,
+    svg_attr: Trait.SvgAttr,
+    value: Trait.Value,
     ...config,
   };
-
-  return 'a,abbr,address,area,article,aside,audio,b,base,bdi,bdo,blockquote,body,br,button,canvas,caption,cite,code,col,colgroup,data,datalist,dd,del,details,dfn,dialog,div,dl,dt,em,embed,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6,head,header,hgroup,hr,html,i,iframe,img,input,ins,kbd,label,legend,li,link,main,map,mark,menu,meta,meter,nav,noscript,object,ol,optgroup,option,output,p,picture,pre,progress,q,rp,rt,ruby,s,samp,script,section,select,slot,small,source,span,strong,style,sub,summary,sup,table,tbody,td,template,textarea,tfoot,th,thead,time,title,tr,track,u,ul,var,video,wbr'
-    .split(',')
-    .reduce((acc, tag) => {
+  return tags.reduce(
+    (acc, tag) => {
       acc[tag as keyof HTMLElementTagNameMap] =
         <KS extends Array<keyof Config>>(
           ...traits: {
@@ -88,7 +62,11 @@ function Html<Config extends Types.HtmlTemplateConfig>(config?: Config) {
           return el;
         };
       return acc;
-    }, {} as Types.HtmlTemplateTagMap<Config>);
+    },
+    {
+      fragment: Fragment,
+    } as Types.HtmlTemplateTagMap<Config>,
+  );
 }
 
 function Fragment(...children: Types.HtmlChild[]) {

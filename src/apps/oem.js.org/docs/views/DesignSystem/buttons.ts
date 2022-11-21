@@ -1,6 +1,6 @@
 import { color, tags } from '@apps/oem.js.org/config';
 import { Button } from '@core/components/Button';
-import { Snippet } from '../../docs/views/common/Snippet';
+import { Snippet } from '../common/Snippet';
 
 const { div } = tags;
 

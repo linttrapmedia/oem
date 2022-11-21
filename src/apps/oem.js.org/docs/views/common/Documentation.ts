@@ -23,6 +23,7 @@ export const Documentation = ({ content, next, prev }: DocumentationProps) => {
     ['Styling', ROUTES.STYLING],
     ['Design', ROUTES.DESIGN_SYSTEM],
     ['Config', ROUTES.CONFIG],
+    ['Examples', ROUTES.EXAMPLES],
     ['Contributing', ROUTES.CONTRIBUTING],
   ];
 

@@ -9,7 +9,7 @@ export const TodoExample = () => {
 
   // actions
   const action = (type: 'ADD' | 'TODO' | 'DONE', item?: string) => () => {
-    if (type === 'ADD') Input.value && todos.push(Input.value), (Input.value = '');
+    if (type === 'ADD') Input.value && !todos.includes(Input.value) && todos.push(Input.value), (Input.value = '');
     if (type === 'TODO') dones.filter((i) => i !== item), todos.push(item);
     if (type === 'DONE') todos.filter((i) => i !== item), dones.push(item);
   };
@@ -21,7 +21,7 @@ export const TodoExample = () => {
   });
 
   // Html
-  const Input = input(['attr', 'type', 'text'], ['attr', 'placeholder', 'Enter Something'])() as HTMLInputElement;
+  const Input = input(['attr', 'placeholder', 'Enter Something'])() as HTMLInputElement;
 
   const Content = () =>
     div(['flex', 'column', 20])(

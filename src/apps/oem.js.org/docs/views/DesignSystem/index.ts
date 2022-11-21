@@ -1,6 +1,6 @@
+import { ROUTES, tags } from '@apps/oem.js.org/config';
 import { Documentation } from '@apps/oem.js.org/docs/views/common/Documentation';
 import { Section } from '@apps/oem.js.org/docs/views/common/Section';
-import { ROUTES, tags } from '../../config';
 
 import { Buttons } from './buttons';
 import { Colors } from './colors';
@@ -8,8 +8,8 @@ const { div, a } = tags;
 
 export function DesignSystemPage() {
   return Documentation({
-    prev: ['State', ROUTES.STATE_MANAGEMENT],
-    next: ['Config', ROUTES.CONFIG],
+    prev: ['Config', ROUTES.CONFIG],
+    next: ['Contributing', ROUTES.CONTRIBUTING],
     content: div(['flex', 'column', 40])(
       Section({
         title: `Design System`,
