@@ -48,6 +48,14 @@ const Flex = (
   }
 };
 
+const flex = (
+  flexDirection: 'row' | 'column',
+  gap: number,
+  justifyContent?: 'center' | 'start' | 'end',
+  alignItems?: 'center' | 'start' | 'end',
+  condition?: Condition,
+) => ['flex', flexDirection, gap, justifyContent, alignItems, condition] as const;
+
 const Focus = (el: HTMLElement, condition?: Condition) => (check(condition) ? el.focus : null);
 
 const Grid = (
