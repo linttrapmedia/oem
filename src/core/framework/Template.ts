@@ -117,8 +117,6 @@ const Svg =
     return el;
   };
 
-// Helpers
-
 const CleanText = (text: string) => {
   const el = document.createElement('template');
   const htmlAmp = /&/g;
