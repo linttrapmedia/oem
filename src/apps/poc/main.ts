@@ -1,16 +1,18 @@
-import { root } from './Document';
-import { button, div } from './Element';
-import { number } from './Number';
-import { on_click, row, style } from './Traits';
+import { useRoot } from './Document';
+import { useElement } from './Element';
+import { useNumber } from './Number';
+import { useTrait } from './Traits';
 
 function CounterExample() {
-  const count = number(1);
-  return div(row(30), style('fontSize', '32px'))(
-    button(on_click(count.dec, 1))('-'),
-    div(on_click(count.reset))(count.val),
+  const count = useNumber(1);
+  const { button, div } = useElement();
+  const { padding, on_click, row, fontSize } = useTrait();
+
+  return div(row(30), fontSize(50))(
+    button(on_click(count.dec, 1), padding(10), padding(20))('-'),
+    div()(count.val),
     button(on_click(count.inc, 1))('+'),
-    div()(() => count.val() + 'asdf'),
   );
 }
 
-root(CounterExample());
+useRoot(CounterExample);

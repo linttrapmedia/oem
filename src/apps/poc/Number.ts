@@ -19,4 +19,4 @@ export function NumberState(atom: number): State<number> & {
   return { val: _val, set: _set, sub: _sub, ..._extensions };
 }
 
-export const number = NumberState;
+export const useNumber = NumberState;

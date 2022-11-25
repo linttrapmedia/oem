@@ -1,5 +1,6 @@
-export const root = (el: Node, select = 'body') => {
+export const useRoot = (el: Node | (() => Node), select = 'body') => {
   window.addEventListener('DOMContentLoaded', () => {
-    document.querySelector(select).appendChild(el);
+    const node = typeof el === 'function' ? el() : el;
+    document.querySelector(select).appendChild(node);
   });
 };
