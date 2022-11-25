@@ -1,6 +1,6 @@
 import { State } from './Types';
 
-export function NumberAtom(atom: number): State<number> & {
+export function NumberState(atom: number): State<number> & {
   dec: (amount: number) => void;
   inc: (amount: number) => void;
 } {
@@ -18,3 +18,5 @@ export function NumberAtom(atom: number): State<number> & {
   _val.prototype = { sub: _sub, atom: 'Number' };
   return { val: _val, set: _set, sub: _sub, ..._extensions };
 }
+
+export const number = NumberState;
