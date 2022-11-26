@@ -66,7 +66,7 @@ export function CreateTrait<T extends string, F extends Trait>(
 }
 
 export const useTrait = () => ({
-  fontSize: CreateTrait('fontSize', StyleFontSize),
+  font_size: CreateTrait('fontSize', StyleFontSize),
   padding: CreateTrait('padding', StylePadding),
   inner_html: CreateTrait('inner_html', InnerHtml),
   inner_text: CreateTrait('inner_text', InnerText),
