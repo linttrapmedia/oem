@@ -6,7 +6,7 @@ render(
   DIV.column(10).innerHtml(
     H1.innerText('Counter'),
     BUTTON.onClick(num.inc, 1).innerText('Increment'),
-    DIV.innerText(num.val),
-    BUTTON.innerText('Decrement'),
+    DIV.innerText(num.get),
+    BUTTON.onClick(num.dec, 2).innerText('Decrement'),
   ),
 );

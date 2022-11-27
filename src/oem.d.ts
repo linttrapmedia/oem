@@ -1,11 +1,4 @@
 declare namespace OEM {
-  export interface Element {
-    column(gap: number, align?: 'start' | 'center' | 'end', justify?: 'start' | 'center' | 'end'): OEM.Element;
-    innerHtml(...nodes: Node[]): HTMLElement;
-    innerText(...txt: (string | number)[]): HTMLElement;
-    onClick<F extends (...args: any[]) => any>(func: F, ...args: Parameters<F>): OEM.Element;
-    row(gap: number, align?: 'start' | 'center' | 'end', justify?: 'start' | 'center' | 'end'): OEM.Element;
-  }
   export interface Number {
     get: () => number;
     set(n: number): OEM.Number;
@@ -13,6 +6,13 @@ declare namespace OEM {
     dec: (n: number) => OEM.Number;
     val: number;
     sub: (cb: (n: number) => any) => void;
+  }
+  export interface Element {
+    column(gap: number, align?: 'start' | 'center' | 'end', justify?: 'start' | 'center' | 'end'): OEM.Element;
+    innerHtml(...nodes: Node[]): HTMLElement;
+    innerText(...txt: (string | number | OEM.Number['get'])[]): HTMLElement;
+    onClick<F extends (...args: any[]) => any>(func: F, ...args: Parameters<F>): OEM.Element;
+    row(gap: number, align?: 'start' | 'center' | 'end', justify?: 'start' | 'center' | 'end'): OEM.Element;
   }
 }
 

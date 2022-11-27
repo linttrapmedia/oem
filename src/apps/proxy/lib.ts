@@ -16,8 +16,10 @@ class Element implements OEM.Element {
     nodes.forEach((node) => this.#el.appendChild(node));
     return this.#el;
   }
-  innerText(...txt: string[]) {
-    this.#el.innerText = txt.join('');
+  innerText(txt: string | number | OEM.Number['get']) {
+    const run = () => (this.#el.innerText = String(typeof txt === 'function' ? txt() : txt));
+    if (typeof txt === 'function' && txt.prototype.sub) txt.prototype.sub(run);
+    run();
     return this.#el;
   }
   onClick<F extends (...args: any[]) => any>(func: F, ...args: Parameters<F>) {
@@ -54,7 +56,6 @@ class Number implements OEM.Number {
     return this.#n;
   }
   inc(n: number) {
-    console.log('inc', this);
     this.set(this.#n + n);
     return this;
   }
@@ -70,6 +71,7 @@ class Number implements OEM.Number {
     return this.#n;
   }
 }
+
 Object.defineProperty(window, 'NUMBER', {
   get: () => {
     const num = new Number();
@@ -78,6 +80,9 @@ Object.defineProperty(window, 'NUMBER', {
     num.set = num.set.bind(num);
     num.sub = num.sub.bind(num);
     num.get = num.get.bind(num);
+    num.get.prototype = {
+      sub: num.sub,
+    };
     return num;
   },
 });
