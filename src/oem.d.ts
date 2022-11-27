@@ -9,15 +9,20 @@ declare namespace OEM {
   }
   export interface Element {
     column(gap: number, align?: 'start' | 'center' | 'end', justify?: 'start' | 'center' | 'end'): OEM.Element;
-    innerHtml(...nodes: Node[]): HTMLElement;
+    innerHtml(...nodes: HTMLElement[]): HTMLElement;
     innerText(...txt: (string | number | OEM.Number['get'])[]): HTMLElement;
     onClick<F extends (...args: any[]) => any>(func: F, ...args: Parameters<F>): OEM.Element;
     row(gap: number, align?: 'start' | 'center' | 'end', justify?: 'start' | 'center' | 'end'): OEM.Element;
   }
+
+  type Component = (cb: () => HTMLElement, ...buses: any[]) => HTMLElement;
 }
 
 // Declare Number
 declare const NUMBER: OEM.Number;
+
+// Declare Helpers
+declare const COMP: OEM.Component;
 
 // Declare Elements
 declare const A: OEM.Element;

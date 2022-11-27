@@ -11,7 +11,7 @@ class Element implements OEM.Element {
     this.#el.style.justifyContent = justify;
     return this;
   }
-  innerHtml(...nodes: Node[]) {
+  innerHtml(...nodes: HTMLElement[]) {
     this.#el.innerHTML = '';
     nodes.forEach((node) => this.#el.appendChild(node));
     return this.#el;
@@ -85,6 +85,16 @@ Object.defineProperty(window, 'NUMBER', {
     };
     return num;
   },
+});
+
+const COMP: OEM.Component = (cb: () => HTMLElement, ...buses: any[]): HTMLElement => {
+  const el = cb();
+  buses.forEach((bus) => bus.sub(() => (el.innerHTML = cb().innerHTML)));
+  return el;
+};
+
+Object.defineProperty(window, 'COMP', {
+  get: () => COMP,
 });
 
 export const render = (app: HTMLElement) => {
