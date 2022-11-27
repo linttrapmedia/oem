@@ -4,7 +4,7 @@ module.exports = {
   },
   typescript: {
     'dist/oem.js.org/main-1.0.0.js': 'src/apps/oem.js.org/main.ts',
-    'dist/poc/main.js': 'src/apps/poc/main.ts',
+    'dist/proxy/main-1.0.0.js': 'src/apps/proxy/main.ts',
   },
   html: {
     'dist/oem.js.org/index.html': {
@@ -12,14 +12,14 @@ module.exports = {
       title: 'OEM | The Dependency-Free UI Framework',
       bundle: 'main-1.0.0.js',
     },
-    'dist/poc/index.html': {
-      template: 'src/apps/poc/poc.html',
+    'dist/proxy/index.html': {
+      template: 'src/core/templates/html/main.html',
       title: 'OEM | The Dependency-Free UI Framework',
-      bundle: 'main.js',
+      bundle: 'main-1.0.0.js',
     },
   },
   devServers: {
     'dist/oem.js.org': 3005,
-    'dist/poc': 3006,
+    'dist/proxy': 3006,
   },
 };

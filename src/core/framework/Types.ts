@@ -139,12 +139,14 @@ export namespace Types {
     event: typeof Trait.Event;
     flex: typeof Trait.Flex;
     focus: typeof Trait.Focus;
+    font_size: typeof Trait.FontSize;
     grid: typeof Trait.Grid;
     inner_html: typeof Trait.InnerHtml;
     inner_text: typeof Trait.InnerText;
     on_change: typeof Trait.OnChange;
     on_color_input: typeof Trait.OnColorInput;
     on_click: typeof Trait.OnClick;
+    on_click_bind: typeof Trait.OnClickBind;
     on_create: typeof Trait.OnCreate;
     on_load: typeof Trait.OnLoad;
     on_mouse_out: typeof Trait.OnMouseOut;

@@ -9,9 +9,9 @@ export function CounterExample() {
     on_count: Trait.State(count, Trait.InnerText),
   });
 
-  return div(['flex', 'row', 30], ['style', 'fontSize', '36px'])(
-    button(['on_click', count.bind('subtract', 1)], ['style', 'cursor', 'pointer'])('-'),
-    div(['on_count', count.get], ['on_click', count.bind('reset')])(count.get()),
-    button(['on_click', count.bind('add', 1)], ['style', 'cursor', 'pointer'])('+'),
+  return div(['flex', 'row', 30], ['font_size', 30])(
+    button(['on_click_bind', count.subtract, '1'])('-'),
+    div(['on_count', count.get])(count.get()),
+    button(['on_click_bind', count.add, 1])('+'),
   );
 }

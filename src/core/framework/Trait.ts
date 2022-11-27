@@ -48,15 +48,33 @@ const Flex = (
   }
 };
 
-const flex = (
-  flexDirection: 'row' | 'column',
+const FlexRow = (
+  el: HTMLElement,
   gap: number,
   justifyContent?: 'center' | 'start' | 'end',
   alignItems?: 'center' | 'start' | 'end',
   condition?: Condition,
-) => ['flex', flexDirection, gap, justifyContent, alignItems, condition] as const;
+) => {
+  if (check(condition)) {
+    el.style.display = 'flex';
+    el.style.flexDirection = 'row';
+    el.style.justifyContent = justifyContent ?? 'start';
+    el.style.alignItems = alignItems ?? 'start';
+    el.style.gap = gap ? `${gap}px` : '0px';
+  }
+};
 
 const Focus = (el: HTMLElement, condition?: Condition) => (check(condition) ? el.focus : null);
+
+const FontSize = (
+  el: HTMLElement,
+  fontSize: number | `${number}px` | `${number}rem` | `${number}em`,
+  condition?: Condition,
+) => {
+  if (check(condition)) {
+    el.style.fontSize = typeof fontSize === 'number' ? `${fontSize}px` : fontSize;
+  }
+};
 
 const Grid = (
   el: HTMLElement,
@@ -108,6 +126,10 @@ const OnClick = (el: HTMLElement, cb: (e: MouseEvent) => void, condition?: Condi
   if (check(condition, cb)) {
     el.addEventListener('click', cb);
   }
+};
+
+const OnClickBind = <F extends (...args: any[]) => void>(el: HTMLElement, cb: F, ...args: Parameters<F>) => {
+  el.addEventListener('click', cb.bind(cb, ...args));
 };
 
 const OnCreate = (el: HTMLElement, cb: (el: HTMLElement) => void) => cb(el);
@@ -261,13 +283,16 @@ export const Trait = {
   Attr,
   Event,
   Flex,
+  FlexRow,
   Focus,
+  FontSize,
   Grid,
   InnerHtml,
   InnerText,
   OnChange,
   OnColorInput,
   OnClick,
+  OnClickBind,
   OnCreate,
   OnLoad,
   OnMouseOut,
