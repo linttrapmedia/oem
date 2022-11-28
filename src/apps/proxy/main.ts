@@ -1,6 +1,5 @@
 import { Counter } from './Counter';
-import { container } from './oem';
+import { APP } from './oem';
 import { Todo } from './Todo';
 
-const app = DIV.column(50).innerHtml(Counter, Todo);
-container(app, 'body');
+APP(DIV.column(50).append(Counter, Todo), 'body');

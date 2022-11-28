@@ -1,24 +1,18 @@
-import { container } from './oem';
+import { COMP } from './oem';
 
-const todo = STRING('');
-const todos = ARRAY<string>(['todo1', 'todo2', 'todo3']);
-const dones = ARRAY<string>(['done']);
+export const Todo = COMP(() => {
+  // state
+  const todo = STRING('');
+  const todos = ARRAY<string>(['todo1', 'todo2', 'todo3']);
+  const dones = ARRAY<string>(['done']);
 
-todo.sub(console.log);
-
-const List = COMP(
-  () =>
-    DIV.column(10).innerHtml(
-      ...todos.val.map((item) => DIV.innerText(item)),
-      ...dones.val.map((item) => DIV.innerText(item)),
+  return DIV.column(10).append(
+    H1.innerText('Todo'),
+    DIV.row(10).append(
+      INPUT.onInput(todo.set).value(todo.get),
+      BUTTON.onClick(todos.push, todo.get).onClick(todo.reset).innerText('Add'),
     ),
-  todos,
-  dones,
-);
-
-const Input = DIV.row(10).innerHtml(
-  INPUT.onInput(todo.set).render(),
-  BUTTON.onClick(todos.push, todo.get).onClick(todo.reset).innerText('Add'),
-);
-
-export const Todo = container(DIV.column(10).innerHtml(H1.innerText('Todo'), Input, List));
+    DIV.column(10).map(DIV.onClick(alert, 1).innerText, todos.get),
+    DIV.column(10).map(DIV.onClick(alert, 1).innerText, dones.get),
+  );
+});

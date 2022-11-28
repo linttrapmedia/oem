@@ -1,14 +1,10 @@
-import { container } from './oem';
+import { COMP } from './oem';
 
-const num = NUMBER(1);
-
-export const Counter = container(
-  DIV.column(10).innerHtml(
-    H1.innerText('Counter'),
-    DIV.row(10).innerHtml(
-      BUTTON.onClick(num.dec, 2).innerText('–'),
-      DIV.innerText(num.get),
-      BUTTON.onClick(num.inc, 1).innerText('+'),
-    ),
-  ),
-);
+export const Counter = COMP(() => {
+  const num = NUMBER(1);
+  return DIV.row(10).append(
+    BUTTON.onClick(num.dec, 2).innerText('–'),
+    DIV.innerText(num.get, num),
+    BUTTON.onClick(num.inc, 1).innerText('+'),
+  );
+});

@@ -26,18 +26,52 @@ declare namespace OEM {
     val: T[];
   }
 
+  export type BUSES = STRING | NUMBER | ARRAY<any>;
+
   export interface ELEMENT<E extends HTMLElement> {
-    column(gap: number, align?: 'start' | 'center' | 'end', justify?: 'start' | 'center' | 'end'): OEM.ELEMENT<E>;
-    innerHtml(...nodes: HTMLElement[]): E;
-    innerText(...txt: (string | number | OEM.NUMBER['get'])[]): E;
-    onClick<F extends (...args: any[]) => any>(func: F, ...args: Parameters<F>): OEM.ELEMENT<E>;
+    // ATTRIBUTES
+    column(
+      gap: number,
+      align?: 'start' | 'center' | 'end',
+      justify?: 'start' | 'center' | 'end',
+    ): OEM.ELEMENT<E>;
+    onClick<F extends (...args: any[]) => any>(
+      func: F,
+      ...args: Parameters<F>
+    ): OEM.ELEMENT<E>;
     onInput(func: (val: any) => void): OEM.ELEMENT<E>;
+    row(
+      gap: number,
+      align?: 'start' | 'center' | 'end',
+      justify?: 'start' | 'center' | 'end',
+    ): OEM.ELEMENT<E>;
+    style<P extends keyof CSSStyleDeclaration>(
+      prop: P,
+      val: CSSStyleDeclaration[P],
+    ): OEM.ELEMENT<E>;
+    // RENDERERS
+    append(...nodes: (string | Node)[]): E;
+    innerText(
+      txt: (string | number) | (() => string | number),
+      ...buses: BUSES[]
+    ): E;
+    innerHtml(node: HTMLElement | (() => HTMLElement), ...buses: BUSES[]): E;
+    map: <I extends any[], II extends () => any[]>(
+      cb: (i: I[0] | ReturnType<II>[0]) => any,
+      items: I | II,
+      ...buses: BUSES[]
+    ) => E;
+    value(
+      val: (string | number) | (() => string | number),
+      ...buses: BUSES[]
+    ): E;
     render(): E;
-    row(gap: number, align?: 'start' | 'center' | 'end', justify?: 'start' | 'center' | 'end'): OEM.ELEMENT<E>;
-    value(val: string): E;
   }
 
-  export type COMPONENT = (cb: () => HTMLElement, ...buses: any[]) => HTMLElement;
+  export type COMPONENT = (
+    cb: () => HTMLElement,
+    ...buses: any[]
+  ) => HTMLElement;
 }
 
 // Declare Number
