@@ -18,6 +18,8 @@ declare namespace OEM {
 
   export interface ARRAY<T> {
     get: () => T[];
+    includes: (searchElement: T, fromIndex?: number) => boolean;
+    filter: (cb: (item: T) => boolean) => OEM.ARRAY<T>;
     pop: () => OEM.ARRAY<T>;
     push: (x: T | (() => T)) => OEM.ARRAY<T>;
     set(x: T[]): OEM.ARRAY<T>;
@@ -80,7 +82,7 @@ declare const NUMBER: (n: number) => OEM.NUMBER;
 declare const STRING: (s: string) => OEM.STRING;
 
 // Declare Helpers
-declare const COMP: OEM.COMPONENT;
+declare const COMPONENT: OEM.COMPONENT;
 
 // Declare Elements
 declare const A: OEM.ELEMENT<HTMLAnchorElement>;

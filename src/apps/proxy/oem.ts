@@ -204,6 +204,13 @@ class ARRAY<T extends any[]> implements OEM.ARRAY<T> {
   get val() {
     return this.#ary;
   }
+  filter(cb: (item: T) => boolean) {
+    this.set(this.#ary.filter(cb));
+    return this;
+  }
+  includes(searchElement: T, fromIndex: number = 0) {
+    return this.#ary.includes(searchElement, fromIndex);
+  }
   pop() {
     this.set(this.#ary.slice(0, -1));
     return this;
@@ -272,7 +279,7 @@ Object.defineProperty(window, 'STRING', {
   get: () => (s: string) => new STRING(s),
 });
 
-export const COMP: OEM.COMPONENT = (
+export const COMPONENT: OEM.COMPONENT = (
   cb: () => HTMLElement,
   ...buses: any[]
 ): HTMLElement => {
