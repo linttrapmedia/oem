@@ -4,6 +4,7 @@
     "paths": {
       "@apps/*": ["src/apps/*"],
       "@core/*": ["src/core/*"],
+      "@oem": ["src/core-beta/index.ts"],
       "@services/*": ["src/services/*"]
     },
     "esModuleInterop": true,

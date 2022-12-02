@@ -1,5 +1,3 @@
-import { COMPONENT } from '../../core-beta';
-
 export const TodoExample = COMPONENT(() => {
   // state
   const input = STRING('');

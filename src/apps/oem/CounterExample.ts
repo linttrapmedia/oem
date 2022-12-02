@@ -1,5 +1,3 @@
-import { COMPONENT } from '../../core-beta';
-
 export const CounterExample = COMPONENT(() => {
   const count = NUMBER(1);
   return DIV.column(10).append(

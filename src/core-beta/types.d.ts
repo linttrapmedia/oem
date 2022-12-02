@@ -30,7 +30,6 @@ declare namespace OEM {
   }
 
   // BROWSER
-
   export interface LOCATION {
     get: () => LOCATION['val'];
     set(href: string, title?: string, state?: string): LOCATION['val'];
@@ -98,22 +97,24 @@ declare namespace OEM {
     render(): E;
   }
 
+  // FUNCS
+  export type APP = (app: HTMLElement, options?: { container: string }) => void;
   export type COMPONENT = (
     cb: () => HTMLElement,
     ...buses: any[]
   ) => HTMLElement;
 }
 
-// GLOBAL DECLARATIONS
+// DECLARATIONS
+
+// Declare Functions
+declare const COMPONENT: OEM.COMPONENT;
 
 // Declare Objects
 declare const ARRAY: <T>(ary: T[]) => OEM.ARRAY<T>;
 declare const LOCATION: () => OEM.LOCATION;
 declare const NUMBER: (n: number) => OEM.NUMBER;
 declare const STRING: (s: string) => OEM.STRING;
-
-// Declare Helpers
-declare const COMPONENT: OEM.COMPONENT;
 
 // Declare Elements
 declare const A: OEM.ELEMENT<HTMLAnchorElement>;

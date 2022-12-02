@@ -1,9 +1,9 @@
-import { APP } from '../../core-beta';
+import OEM from '@oem';
 import { CounterExample } from './CounterExample';
 import { LocationExample } from './LocationExample';
 import { TodoExample } from './TodoExample';
 
-APP(
+OEM(
   DIV.column(30).append(
     H2.innerText('Examples'),
     H3.innerText('Todo'),

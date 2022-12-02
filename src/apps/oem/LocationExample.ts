@@ -1,5 +1,3 @@
-import { COMPONENT } from '../../core-beta';
-
 export const LocationExample = COMPONENT(() => {
   const location = LOCATION();
 
