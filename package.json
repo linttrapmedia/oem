@@ -1,0 +1,30 @@
+{
+  "name": "OEM",
+  "version": "1.0.0",
+  "description": "The Own Your Own Framework Framework",
+  "main": "index.js",
+  "scripts": {
+    "build": "node tasks/build",
+    "clean:nuke": "rm -rf ./dist node_modules",
+    "clean": "rm -rf dist && rm -rf docs",
+    "deploy:gh": "sh ./tasks/deploy.sh",
+    "deploy": "echo TODO",
+    "start": "node tasks/dev",
+    "lint": "eslint ./src --ext .ts",
+    "scaffold": "node tasks/scaffold"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kvnlnt/xscape.space.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kvnlnt/xscape.space/issues"
+  },
+  "homepage": "https://github.com/kvnlnt/xscape.space#readme",
+  "devDependencies": {
+    "esbuild": "^0.14.27",
+    "prettier": "2.7.1"
+  }
+}

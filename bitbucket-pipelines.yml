@@ -1,0 +1,25 @@
+# This is a sample build configuration for JavaScript.
+# Check our guides at https://confluence.atlassian.com/x/14UWN for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: node
+
+pipelines:
+  default:
+    - step:
+        name: Deploy to production
+        deployment: production
+        script:
+          - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          - unzip awscliv2.zip
+          - ./aws/install
+          - npm i
+          - npm run build
+          - cd dist
+          - ls -al
+          - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+          - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+          - aws s3 sync ./andthegospel.org s3://andthegospel.org/ --delete
+          - aws s3 sync ./eltool.io s3://eltool.io/ --delete
+          - aws s3 sync ./linttrap.media s3://linttrap.media/ --delete
