@@ -11,6 +11,7 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
   #attrs: [string, string][] = [];
   #funcs: [string, (...args: any[]) => any][] = [];
   #styles: [string, string][] = [];
+  #stylesOnHover: [string, string][] = [];
   #classes: string[] = [];
   constructor(tag: string) {
     this.#tag = tag;
@@ -30,6 +31,12 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     this.#el = document.createElement(this.#tag) as T;
     this.#attrs.forEach(([key, val]) => this.#el.setAttribute(key, val));
     this.#styles.forEach(([prop, val]) => ((<any>this.#el).style[prop] = val));
+    this.#stylesOnHover.forEach(([prop, val]) => {
+      const oVal = (<any>this.#el).style[prop];
+      const set = (p: string, v: string) => ((<any>this.#el).style[p] = v);
+      this.#el.addEventListener('mouseenter', set.bind(null, prop, val));
+      this.#el.addEventListener('mouseleave', set.bind(null, prop, oVal));
+    });
     this.#funcs.forEach(([event, func]) =>
       this.#el.addEventListener(event, func),
     );
@@ -88,6 +95,13 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     val: CSSStyleDeclaration[P],
   ) {
     this.#styles.push([prop as string, val as string]);
+    return this;
+  }
+  styleOnHover<P extends keyof CSSStyleDeclaration>(
+    prop: P,
+    val: CSSStyleDeclaration[P],
+  ) {
+    this.#stylesOnHover.push([prop as string, val as string]);
     return this;
   }
   styles(propsAndVals: [keyof CSSStyleDeclaration, string][]) {

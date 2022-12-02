@@ -48,23 +48,7 @@ declare namespace OEM {
     };
   }
 
-  // CSS
-  export interface STYLES {
-    prop: (key: string, val: string) => OEM.STYLES;
-    rule: (
-      key: string,
-      prop: keyof CSSStyleDeclaration,
-      val: string,
-    ) => OEM.STYLES;
-    attach: () => {
-      prop: (key: string) => `var(--${string})`;
-      class: (key: string) => string;
-    };
-  }
-
-  // STYLES
-
-  export type BUSES = ARRAY<any> | LOCATION | NUMBER | STRING | STYLES;
+  export type BUSES = ARRAY<any> | LOCATION | NUMBER | STRING;
 
   // ELEMENTS
   export interface ELEMENT<E extends HTMLElement> {
@@ -87,6 +71,10 @@ declare namespace OEM {
       justify?: 'start' | 'center' | 'end',
     ): OEM.ELEMENT<E>;
     style<P extends keyof CSSStyleDeclaration>(
+      prop: P,
+      val: CSSStyleDeclaration[P],
+    ): OEM.ELEMENT<E>;
+    styleOnHover<P extends keyof CSSStyleDeclaration>(
       prop: P,
       val: CSSStyleDeclaration[P],
     ): OEM.ELEMENT<E>;
@@ -123,7 +111,6 @@ declare const ARRAY: <T>(ary: T[]) => OEM.ARRAY<T>;
 declare const LOCATION: () => OEM.LOCATION;
 declare const NUMBER: (n: number) => OEM.NUMBER;
 declare const STRING: (s: string) => OEM.STRING;
-declare const STYLES: OEM.STYLES;
 
 // Declare Helpers
 declare const COMPONENT: OEM.COMPONENT;
