@@ -1,3 +1,4 @@
+import { CounterExample } from './components/CounterExample';
 import { HSLA, PAGE_WIDTH } from './config';
 import { hsla } from './util';
 
@@ -7,13 +8,12 @@ declare module Prism {
 }
 
 const heroSnippet = Prism.highlight(
-  `function Counter() {
-    const count = NUMBER(1);
-    return DIV.append(
-        BUTTON.onClick(count.dec, 2).innerText('–'),
-        DIV.innerText(count.get, count),
-        BUTTON.onClick(count.inc, 1).innerText('+'),
-    );
+  `function CounterExample() {
+      const count = NUMBER(100);
+      return DIV.onClick(count.inc, 1)
+          .style('fontSize', '24px')
+          .style('cursor', 'pointer')
+          .innerText(count.get, count);
   }`,
   Prism.languages[`typescript`],
 );
@@ -94,17 +94,18 @@ export const HomePage = () => {
         ),
 
       // Hero Section
-      DIV.row(50, 'center', 'center')
+      DIV.row(100, 'center', 'center')
         .padding(30, 50, 70)
         .style('maxWidth', PAGE_WIDTH + 'px')
         .append(
-          DIV.column(40, 'center', 'center')
+          DIV.column(40, 'start', 'start')
             .color(HSLA.white)
             .style('width', '100%')
             .append(
               DIV.style('fontSize', '48px')
                 .style('fontWeight', 'bold')
                 .style('lineHeight', '0.9')
+                .style('textTransform', 'uppercase')
                 .innerText('Build apps that will stand the test of time'),
               DIV.color(HSLA.white, 0.5)
                 .style('fontSize', '20px')
@@ -141,10 +142,18 @@ export const HomePage = () => {
                   .innerText('Design'),
               ),
             ),
-          DIV.backgroundColor(HSLA.black, 0.3)
-            .padding(50)
-            .style('borderRadius', '10px')
-            .innerHtml(heroSnippetEl),
+          DIV.column(20).append(
+            DIV.backgroundColor(HSLA.black, 0.3)
+              .padding(40)
+              .style('borderRadius', '10px')
+              .innerHtml(heroSnippetEl),
+            DIV.backgroundColor(HSLA.black, 0.1)
+              .color(HSLA.white, 0.5)
+              .padding(40)
+              .width('100%')
+              .style('borderRadius', '10px')
+              .innerHtml(CounterExample()),
+          ),
         ),
 
       // Clean Code Section
