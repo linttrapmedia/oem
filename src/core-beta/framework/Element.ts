@@ -17,7 +17,9 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     this.#tag = tag;
     this.#styles = [...(defaultStyles[tag] ?? [])];
     this.append = this.append.bind(this);
+    this.attr = this.attr.bind(this);
     this.column = this.column.bind(this);
+    this.color = this.color.bind(this);
     this.createElement = this.createElement.bind(this);
     this.innerHtml = this.innerHtml.bind(this);
     this.innerText = this.innerText.bind(this);
@@ -26,6 +28,7 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     this.render = this.render.bind(this);
     this.row = this.row.bind(this);
     this.value = this.value.bind(this);
+    this.width = this.width.bind(this);
   }
   private createElement() {
     this.#el = document.createElement(this.#tag) as T;
@@ -44,8 +47,30 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     return this.#el;
   }
   // ATTRIBUTES
+  attr(name: string, value?: string) {
+    this.#attrs.push([name, value]);
+    return this;
+  }
+  backgroundColor(hsla: number[], opacity: number = 1, lightness: number = 0) {
+    const h = hsla[0];
+    const s = hsla[1];
+    const l = hsla[2] + lightness;
+    const a = hsla[3] * opacity;
+    const color = `hsla(${h}, ${s}%, ${l}%, ${a})`;
+    this.#styles.push(['backgroundColor', color]);
+    return this;
+  }
   class(...classes: string[]) {
     this.#classes.push(...classes);
+    return this;
+  }
+  color(hsla: number[], opacity: number = 1, lightness: number = 0) {
+    const h = hsla[0];
+    const s = hsla[1];
+    const l = hsla[2] + lightness;
+    const a = hsla[3] * opacity;
+    const color = `hsla(${h}, ${s}%, ${l}%, ${a})`;
+    this.#styles.push(['color', color]);
     return this;
   }
   column(
@@ -58,6 +83,10 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     this.#styles.push(['gap', `${gap}px`]);
     this.#styles.push(['alignItems', align]);
     this.#styles.push(['justifyContent', justify]);
+    return this;
+  }
+  margin(...margin: (string | number)[]) {
+    this.#styles.push(['margin', margin.map((m) => `${m}px`).join(' ')]);
     return this;
   }
   onClick<F extends (...args: any[]) => any>(func: F, ...args: Parameters<F>) {
@@ -78,10 +107,14 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     ]);
     return this;
   }
+  padding(...padding: (string | number)[]) {
+    this.#styles.push(['padding', padding.map((p) => `${p}px`).join(' ')]);
+    return this;
+  }
   row(
     gap: number,
     align: 'start' | 'center' | 'end' = 'start',
-    justify: 'start' | 'center' | 'end' = 'start',
+    justify: 'start' | 'center' | 'end' | 'space-between' = 'start',
   ) {
     this.#styles.push(['display', 'flex']);
     this.#styles.push(['flexDirection', 'row']);
@@ -108,8 +141,8 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     propsAndVals.forEach(([prop, val]) => this.style(prop, val));
     return this;
   }
-  setAttribute(key: string, val: string) {
-    this.#attrs.push([key, val]);
+  width(w: number | `${string}%`) {
+    this.#styles.push(['width', `${w}`]);
     return this;
   }
   // RENDERERS

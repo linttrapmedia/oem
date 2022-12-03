@@ -1,6 +1,7 @@
 module.exports = {
   asset: {
     'dist/oem.js.org/assets': 'src/apps/oem.js.org/assets',
+    'dist/oem/assets': 'src/apps/oem/assets',
   },
   typescript: {
     'dist/oem.js.org/main-1.0.0.js': 'src/apps/oem.js.org/main.ts',
@@ -13,7 +14,7 @@ module.exports = {
       bundle: 'main-1.0.0.js',
     },
     'dist/oem/index.html': {
-      template: 'src/core/templates/html/main.html',
+      template: 'src/apps/oem/main.html',
       title: 'OEM | The Dependency-Free UI Framework',
       bundle: 'main-1.0.0.js',
     },

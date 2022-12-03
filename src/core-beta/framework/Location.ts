@@ -9,6 +9,7 @@ export class OEM_LOCATION implements OEM.LOCATION {
     port: string;
     protocol: string;
     params: Record<string, string | number>;
+    urlParams: URLSearchParams;
   };
   #subs: ((location: OEM_LOCATION['val']) => any)[] = [];
   constructor() {
@@ -37,6 +38,7 @@ export class OEM_LOCATION implements OEM.LOCATION {
       port: window.location.port,
       protocol: window.location.protocol,
       params: {},
+      urlParams: new URLSearchParams(window.location.search),
     };
     this.#subs.forEach((cb) => cb(this.val));
   }

@@ -44,6 +44,7 @@ declare namespace OEM {
       port: string;
       protocol: string;
       params: Record<string, string | number>;
+      urlParams: URLSearchParams;
     };
   }
 
@@ -52,49 +53,68 @@ declare namespace OEM {
   // ELEMENTS
   export interface ELEMENT<E extends HTMLElement> {
     // ATTRIBUTES
+    attr: (name: string, value?: string) => OEM.ELEMENT<E>;
+    backgroundColor: (
+      hsla: number[],
+      opacity?: number,
+      lightness?: number,
+    ) => OEM.ELEMENT<E>;
     class: (...classes: string[]) => OEM.ELEMENT<E>;
-    column(
+    column: (
       gap: number,
       align?: 'start' | 'center' | 'end',
       justify?: 'start' | 'center' | 'end',
-    ): OEM.ELEMENT<E>;
-    onClick<F extends (...args: any[]) => any>(
+    ) => OEM.ELEMENT<E>;
+    color: (
+      hsla: number[],
+      opacity?: number,
+      lightness?: number,
+    ) => OEM.ELEMENT<E>;
+    margin: (...margins: (string | number)[]) => OEM.ELEMENT<E>;
+    onClick: <F extends (...args: any[]) => any>(
       func: F,
       ...args: Parameters<F>
-    ): OEM.ELEMENT<E>;
-    onInput(func: (val: any) => void): OEM.ELEMENT<E>;
-    onSubmit(func?: () => void): OEM.ELEMENT<E>;
-    row(
+    ) => OEM.ELEMENT<E>;
+    onInput: (func: (val: any) => void) => OEM.ELEMENT<E>;
+    onSubmit: (func?: () => void) => OEM.ELEMENT<E>;
+    padding: (...paddings: (string | number)[]) => OEM.ELEMENT<E>;
+    row: (
       gap: number,
       align?: 'start' | 'center' | 'end',
-      justify?: 'start' | 'center' | 'end',
-    ): OEM.ELEMENT<E>;
-    style<P extends keyof CSSStyleDeclaration>(
+      justify?: 'start' | 'center' | 'end' | 'space-between',
+    ) => OEM.ELEMENT<E>;
+    style: <P extends keyof CSSStyleDeclaration>(
       prop: P,
       val: CSSStyleDeclaration[P],
-    ): OEM.ELEMENT<E>;
-    styleOnHover<P extends keyof CSSStyleDeclaration>(
+    ) => OEM.ELEMENT<E>;
+    styleOnHover: <P extends keyof CSSStyleDeclaration>(
       prop: P,
       val: CSSStyleDeclaration[P],
-    ): OEM.ELEMENT<E>;
-    styles(propsAndVals: [keyof CSSStyleDeclaration, any][]): OEM.ELEMENT<E>;
+    ) => OEM.ELEMENT<E>;
+    styles: (
+      propsAndVals: [keyof CSSStyleDeclaration, any][],
+    ) => OEM.ELEMENT<E>;
+    width: (w: number | `${string}%`) => OEM.ELEMENT<E>;
     // RENDERERS
-    append(...nodes: (string | Node)[]): E;
-    innerText(
+    append: (...nodes: (string | Node)[]) => E;
+    innerText: (
       txt: (string | number) | (() => string | number),
       ...buses: BUSES[]
-    ): E;
-    innerHtml(node: HTMLElement | (() => HTMLElement), ...buses: BUSES[]): E;
+    ) => E;
+    innerHtml: (
+      node: HTMLElement | (() => HTMLElement),
+      ...buses: BUSES[]
+    ) => E;
     map: <I extends any[], II extends () => any[]>(
       cb: (i: I[0] | ReturnType<II>[0]) => any,
       items: I | II,
       ...buses: BUSES[]
     ) => E;
-    value(
+    value: (
       val: (string | number) | (() => string | number),
       ...buses: BUSES[]
-    ): E;
-    render(): E;
+    ) => E;
+    render: () => E;
   }
 
   // FUNCS
