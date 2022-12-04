@@ -23,6 +23,7 @@ declare namespace OEM {
     filter: (cb: (item: T) => boolean) => OEM.ARRAY<T>;
     pop: () => OEM.ARRAY<T>;
     push: (x: T | (() => T)) => OEM.ARRAY<T>;
+    reset: () => OEM.ARRAY<T>;
     set(x: T[]): OEM.ARRAY<T>;
     shift: () => OEM.ARRAY<T>;
     sub: (cb: (n: T[]) => any) => void;

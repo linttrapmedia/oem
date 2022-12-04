@@ -1,11 +1,14 @@
 export class OEM_ARRAY<T extends any[]> implements OEM.ARRAY<T> {
   #ary: T[] = [];
+  #oary: T[] = [];
   #subs: ((ary: T[]) => any)[] = [];
   constructor(ary: T[] = []) {
     this.#ary = ary;
+    this.#oary = ary;
     this.get = this.get.bind(this);
     this.pop = this.pop.bind(this);
     this.push = this.push.bind(this);
+    this.reset = this.reset.bind(this);
     this.shift = this.shift.bind(this);
     this.set = this.set.bind(this);
     this.sub = this.sub.bind(this);
@@ -34,6 +37,10 @@ export class OEM_ARRAY<T extends any[]> implements OEM.ARRAY<T> {
     const i = typeof item === 'function' ? item() : item;
     if (i.length === 0) return this;
     this.set(this.#ary.concat(i));
+    return this;
+  }
+  reset() {
+    this.set(this.#oary);
     return this;
   }
   shift() {
