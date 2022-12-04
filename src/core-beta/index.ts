@@ -38,3 +38,7 @@ Object.defineProperty(window, 'STRING', {
       get: () => new OEM_ELEMENT<HTMLElementTagNameMap[typeof tag]>(tag),
     });
   });
+
+Object.defineProperty(window, 'COMMENT', {
+  get: () => (comment: string) => document.createComment(comment),
+});

@@ -1,5 +1,4 @@
-export const TodoExample = COMPONENT(() => {
-  // state
+function TodoExample() {
   const input = STRING('');
   const todo = ARRAY<string>(['todo1', 'todo2']);
   const done = ARRAY<string>(['todo3']);
@@ -37,4 +36,4 @@ export const TodoExample = COMPONENT(() => {
         done,
       ),
     );
-});
+}

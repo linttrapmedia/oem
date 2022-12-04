@@ -7,21 +7,69 @@ declare module Prism {
   const languages: any;
 }
 
-const heroSnippet = Prism.highlight(
-  `function CounterExample() {
+const counterSnippet = Prism.highlight(
+  `function Counter() {
       const count = NUMBER(100);
-      return DIV.onClick(count.inc, 1)
+      return DIV
+          .onClick(count.inc, 1)
           .style('fontSize', '24px')
           .style('cursor', 'pointer')
           .innerText(count.get, count);
   }`,
   Prism.languages[`typescript`],
 );
-const heroSnippetEl = document.createElement('div');
-heroSnippetEl.style.whiteSpace = 'pre';
-heroSnippetEl.style.color = 'white';
-heroSnippetEl.style.lineHeight = '1.5em';
-heroSnippetEl.innerHTML = heroSnippet;
+
+const counterSnippetEl = document.createElement('div');
+counterSnippetEl.style.whiteSpace = 'pre';
+counterSnippetEl.style.color = 'white';
+counterSnippetEl.style.lineHeight = '1.5em';
+counterSnippetEl.innerHTML = counterSnippet;
+
+const todoSnippet = Prism.highlight(
+  `function TodoExample() {
+    const input = STRING('');
+    const todo = ARRAY<string>(['todo1', 'todo2']);
+    const done = ARRAY<string>(['todo3']);
+  
+    return FORM.onSubmit()
+      .column(10)
+      .append(
+        DIV.row(10).append(
+          INPUT.onInput(input.set).value(input.get),
+          BUTTON.onClick(todo.push, input.get)
+            .onClick(input.reset)
+            .innerText('Add'),
+        ),
+        DIV.column(10).map(
+          (item) =>
+            DIV.style('cursor', 'pointer')
+              .onClick((item) => todo.filter((i) => i !== item), item)
+              .onClick((item) => done.push(item), item)
+              .innerText(item),
+          todo.get,
+          todo,
+        ),
+        DIV.column(10).map(
+          (item) =>
+            DIV.style('cursor', 'pointer')
+              .style('textDecoration', 'line-through')
+              .style('color', 'red')
+              .onClick((item) => done.filter((i) => i !== item), item)
+              .onClick((item) => todo.push(item), item)
+              .innerText(item),
+          done.get,
+          done,
+        ),
+      );
+  }
+  `,
+  Prism.languages[`typescript`],
+);
+const todoSnippetEl = document.createElement('div');
+todoSnippetEl.style.whiteSpace = 'pre';
+todoSnippetEl.style.color = 'white';
+todoSnippetEl.style.lineHeight = '1.5em';
+todoSnippetEl.innerHTML = todoSnippet;
 
 export const HomePage = () => {
   return DIV.backgroundColor(HSLA.primary)
@@ -29,7 +77,7 @@ export const HomePage = () => {
     .style('minHeight', '100vh')
     .style('fontFamily', 'sans-serif')
     .append(
-      // Banner Section
+      COMMENT('Banner Section'),
       DIV.row(20, 'start', 'center')
         .padding(20)
         .backgroundColor(HSLA.secondary, 0.05)
@@ -56,7 +104,7 @@ export const HomePage = () => {
             ),
         ),
 
-      // Menu Section
+      COMMENT('Menu Section'),
       DIV.row(50, 'center', 'space-between')
         .padding(20)
         .style('maxWidth', PAGE_WIDTH + 'px')
@@ -66,7 +114,8 @@ export const HomePage = () => {
             DIV.color(HSLA.white)
               .style('fontWeight', 'bold')
               .style('fontSize', '28px')
-              .style('letterSpacing', '-2px')
+              .style('textTransform', 'uppercase')
+              .style('fontFamily', 'Courier')
               .innerText('oem'),
             DIV.color(HSLA.secondary, 0.5)
               .style('fontWeight', 'bold')
@@ -93,8 +142,8 @@ export const HomePage = () => {
           ),
         ),
 
-      // Hero Section
-      DIV.row(100, 'center', 'center')
+      COMMENT('Hero Section'),
+      DIV.row(50, 'center', 'center')
         .padding(30, 50, 70)
         .style('maxWidth', PAGE_WIDTH + 'px')
         .append(
@@ -142,21 +191,31 @@ export const HomePage = () => {
                   .innerText('Design'),
               ),
             ),
+          COMMENT('Example'),
           DIV.column(20).append(
-            DIV.backgroundColor(HSLA.black, 0.3)
+            DIV.backgroundColor(HSLA.black, 0.2)
               .padding(40)
               .style('borderRadius', '10px')
-              .innerHtml(heroSnippetEl),
-            DIV.backgroundColor(HSLA.black, 0.1)
-              .color(HSLA.white, 0.5)
-              .padding(40)
-              .width('100%')
+              .append(counterSnippetEl),
+            DIV.row(20, 'center', 'space-between')
               .style('borderRadius', '10px')
-              .innerHtml(CounterExample()),
+              .append(
+                DIV.style('borderRadius', '10px')
+                  .backgroundColor(HSLA.accent, 0.05)
+                  .color(HSLA.white, 0.25)
+                  .padding(20)
+                  .append(CounterExample()),
+                DIV.row(10, 'center', 'center')
+                  .color(HSLA.white, 0.25)
+                  .append(
+                    SPAN.style('fontSize', '24px').innerText('👈'),
+                    SPAN.innerText('Click to increment'),
+                  ),
+              ),
           ),
         ),
 
-      // Clean Code Section
+      COMMENT('Clean Code Section'),
       DIV.backgroundColor(HSLA.white, 0.05)
         .padding(100, 0)
         .column(50, 'center', 'center')
@@ -176,7 +235,52 @@ export const HomePage = () => {
                 .style('textAlign', 'center')
                 .style('fontSize', '26px')
                 .innerText(
-                  'No more one library for the dom, another for your css and another for components, routing, forms, validations with a neverending chain of stackoverflow threads, deprecations, etc...',
+                  'No more library for this or library for that, no more layers of abstractions, endless documentation and stackoverflow threads. Just clean code, clean architecture and clean components well documented with simple usage patterns and concepts.',
+                ),
+              DIV.backgroundColor(HSLA.black, 0.5)
+                .width('100%')
+                .style('borderRadius', '10px')
+                .row(0)
+                .append(
+                  DIV.column(0)
+                    .padding(30, 0)
+                    .style('borderTopLeftRadius', '10px')
+                    .style('borderBottomLeftRadius', '10px')
+                    .style('height', '100%')
+                    .map(
+                      ([fileName, isCurrent]) =>
+                        DIV.row(10, 'center')
+                          .style('cursor', 'pointer')
+                          .padding(10, 30)
+                          .styleOnHover(
+                            'backgroundColor',
+                            hsla(HSLA.white, 0.05),
+                          )
+                          .width('100%')
+                          .append(
+                            DIV.style('fontSize', '8px')
+                              .backgroundColor(HSLA.secondary, 1, -15)
+                              .color(HSLA.black)
+                              .style('borderRadius', '2px')
+                              .padding(3)
+                              .innerText('TS'),
+                            DIV.color(HSLA.white, 0.35).innerText(fileName),
+                          ),
+                      [
+                        ['Main.ts', true],
+                        ['Form.ts'],
+                        ['TodoList.ts'],
+                        ['DoneList.ts'],
+                      ],
+                    ),
+                  DIV.padding(30)
+                    .style('height', '100%')
+                    .backgroundColor(HSLA.black, 0.4)
+                    .append(todoSnippetEl),
+                  DIV.padding(30)
+                    .style('flex', '1')
+                    .style('height', '100%')
+                    .innerText('result'),
                 ),
             ),
         ),

@@ -157,6 +157,7 @@ declare const CITE: OEM.ELEMENT<HTMLElement>;
 declare const CODE: OEM.ELEMENT<HTMLElement>;
 declare const COL: OEM.ELEMENT<HTMLTableColElement>;
 declare const COLGROUP: OEM.ELEMENT<HTMLTableColElement>;
+declare const COMMENT: (comment: string) => Comment;
 declare const DATA: OEM.ELEMENT<HTMLDataElement>;
 declare const DATALIST: OEM.ELEMENT<HTMLDataListElement>;
 declare const DD: OEM.ELEMENT<HTMLElement>;
