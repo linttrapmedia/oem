@@ -1,6 +1,7 @@
 import { HSLA } from '../config';
 import { Banner } from './Banner';
 import { CleanCode } from './CleanCode';
+import { GoEasy } from './GoEasy';
 import { Hero } from './Hero';
 import { Menu } from './Menu';
 
@@ -18,5 +19,7 @@ export const HomePage = () => {
       Hero(),
       COMMENT('Clean Code Section'),
       CleanCode(),
+      COMMENT('Go Easy Section'),
+      GoEasy(),
     );
 };

@@ -118,6 +118,7 @@ export const CleanCode = () =>
             .style('alignItems', 'stretch')
             .style('alignContent', 'stretch')
             .style('flex', '1 1 auto')
+            .style('height', '500px')
             .append(
               DIV.column(0)
                 .padding(30, 0)
@@ -156,9 +157,11 @@ export const CleanCode = () =>
               DIV.padding(30)
                 .style('flex', '1')
                 .backgroundColor(HSLA.black, 0.2)
+                .style('overflow', 'auto')
                 .innerHtml(() => Snippet(currentSnippet.val), currentSnippet),
               DIV.padding(30)
-                .style('flex', '1')
+                .style('flex', '1fr')
+                .style('overflow', 'auto')
                 .style('position', 'relative')
                 .append(
                   TodoExample(),

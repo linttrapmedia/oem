@@ -14,4 +14,4 @@ export const HSLA = {
   black: [0, 0, 0, 1],
 };
 
-export const PAGE_WIDTH = 960;
+export const PAGE_WIDTH = 1200;
