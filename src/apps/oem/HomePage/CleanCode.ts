@@ -63,8 +63,8 @@ const ListsSnippet = `function DoneList(
         .style('textDecoration', 'line-through')
         .style('opacity', '0.3')
         .innerText(item),
-      done.get,
-      done,
+      done.get, // list of items to render
+      done, // listen for changes
     );
   }
   
@@ -80,8 +80,8 @@ const ListsSnippet = `function DoneList(
         .onClick((item) => done.push(item), item)
         .style('cursor', 'pointer')
         .innerText(item),
-      todo.get,
-      todo,
+      todo.get, // list of items to render
+      todo, // listen for changes
     );
   }
   `;
@@ -107,7 +107,7 @@ export function CleanCode() {
             .style('textAlign', 'center')
             .style('fontSize', '26px')
             .innerText(
-              'No more library for this or library for that, no more layers of abstractions, endless documentation and stackoverflow threads. Just clean code, clean architecture and clean components well documented with simple usage patterns and concepts.',
+              'No more library for this or library for that, no more layers of abstractions, endless documentation and stackoverflow threads. Just clean code, clean architecture, clean components and a set of easy-to-use modules, patterns and concepts.',
             ),
           DIV.row(0)
             .backgroundColor(HSLA.black, 0.2)
