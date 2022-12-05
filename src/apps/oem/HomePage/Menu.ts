@@ -17,7 +17,7 @@ export function Menu() {
           .style('fontWeight', 'bold')
           .style('fontSize', '10px')
           .style('textTransform', 'uppercase')
-          .innerText('beta'),
+          .innerText('alpha'),
       ),
       DIV.row(50).map(
         ([label, href]) =>

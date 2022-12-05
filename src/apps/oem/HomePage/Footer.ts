@@ -1,14 +1,17 @@
+import { hsla } from '@oem';
+import { Snippet } from '../components/Snippet';
 import { HSLA, PAGE_WIDTH } from '../config';
 
 export function Footer() {
-  return DIV.column(20, 'center')
-    .width('100%')
+  return DIV.column(0, 'center', 'start')
+    .width(100)
     .backgroundColor(HSLA.secondary, 0.3, -70)
     .append(
-      DIV.padding(50)
-        .row(20, 'center', 'center')
-        .width('100%')
+      DIV.padding(50, 0)
+        .row(50, 'center', 'center')
+        .width(100)
         .style('maxWidth', PAGE_WIDTH + 'px')
+        .style('borderBottom', `1px solid ${hsla(HSLA.white, 0.1)}`)
         .append(
           DIV.append(
             DIV.color(HSLA.white)
@@ -24,13 +27,67 @@ export function Footer() {
                 A.attr('href', '').color(HSLA.white).innerText('Design System'),
               ),
           ),
-          DIV.backgroundColor(HSLA.white, 0.2)
+          CODE.backgroundColor(HSLA.white, 0.2)
             .padding(30)
+            .style('opacity', '0.5')
+            .style('whiteSpace', 'pre-wrap')
             .style('borderRadius', '10px')
             .style('flex', '1')
-            .innerText('install'),
+            .append(
+              Snippet(`git clone http://github.com/linttrap/oem
+npm i
+npm start`),
+            ),
         ),
-      DIV.row(20, 'center', 'center').innerText('Newsletter'),
+
+      DIV.style('maxWidth', PAGE_WIDTH + 'px')
+        .padding(50, 0)
+        .width(100)
+        .style('borderBottom', `1px solid ${hsla(HSLA.white, 0.1)}`)
+        .column(20, 'start', 'start')
+        .append(
+          DIV.color(HSLA.white).innerText('Newsletter'),
+          DIV.row(50, 'start', 'space-between')
+            .width(100)
+            .append(
+              DIV.row(20)
+                .style('alignItems', 'stretch')
+                .style('alignContent', 'stretch')
+                .width(100)
+                .style('flex', '1')
+                .append(
+                  INPUT.padding(20)
+                    .color(HSLA.white)
+                    .backgroundColor(HSLA.white, 0.1)
+                    .style('borderRadius', '5px')
+                    .style('border', 'none')
+                    .style('fontSize', '16px')
+                    .style('flex', '1')
+                    .attr('placeholder', 'Email')
+                    .render(),
+                  BUTTON.backgroundColor(HSLA.black, 0.2)
+                    .style('border', 'none')
+                    .padding(0, 50)
+                    .color(HSLA.secondary)
+                    .style('fontSize', '16px')
+                    .style('cursor', 'pointer')
+                    .style('borderRadius', '10px')
+                    .styleOnHover('backgroundColor', hsla(HSLA.black, 0.3))
+                    .innerText('Subscribe'),
+                ),
+              DIV.column(10, 'end', 'start')
+                .color(HSLA.white, 0.2)
+                .append(
+                  DIV.innerText(
+                    'Subscribe to our newsletter to get the latest news and updates. *Spam-free*.',
+                  ),
+                  DIV.row(10).append(
+                    DIV.color(HSLA.white).innerText('Coming Soon:'),
+                    DIV.color(HSLA.accent).innerText('Design System'),
+                  ),
+                ),
+            ),
+        ),
       DIV.row(20, 'center', 'center').innerText('Copyright'),
       DIV.row(20, 'center', 'center').innerText('Logos'),
     );

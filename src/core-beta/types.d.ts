@@ -64,7 +64,7 @@ declare namespace OEM {
     column: (
       gap: number,
       align?: 'start' | 'center' | 'end',
-      justify?: 'start' | 'center' | 'end',
+      justify?: 'start' | 'center' | 'end' | 'space-between',
     ) => OEM.ELEMENT<E>;
     color: (
       hsla: number[],

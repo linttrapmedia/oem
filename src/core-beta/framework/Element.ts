@@ -74,19 +74,29 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     return this;
   }
   column(
-    gap: number,
+    gap: number | string,
     align: 'start' | 'center' | 'end' = 'start',
     justify: 'start' | 'center' | 'end' = 'start',
   ) {
     this.#styles.push(['display', 'flex']);
     this.#styles.push(['flexDirection', 'column']);
-    this.#styles.push(['gap', `${gap}px`]);
+    this.#styles.push(['gap', typeof gap === 'number' ? `${gap}px` : gap]);
     this.#styles.push(['alignItems', align]);
     this.#styles.push(['justifyContent', justify]);
     return this;
   }
+  fontSize(size: number | string) {
+    this.#styles.push([
+      'fontSize',
+      typeof size === 'number' ? `${size}px` : size,
+    ]);
+    return this;
+  }
   margin(...margin: (string | number)[]) {
-    this.#styles.push(['margin', margin.map((m) => `${m}px`).join(' ')]);
+    this.#styles.push([
+      'margin',
+      margin.map((m) => (typeof m === 'number' ? `${m}px` : m)).join(' '),
+    ]);
     return this;
   }
   onClick<F extends (...args: any[]) => any>(func: F, ...args: Parameters<F>) {
@@ -108,17 +118,20 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     return this;
   }
   padding(...padding: (string | number)[]) {
-    this.#styles.push(['padding', padding.map((p) => `${p}px`).join(' ')]);
+    this.#styles.push([
+      'padding',
+      padding.map((p) => (typeof p === 'number' ? `${p}px` : p)).join(' '),
+    ]);
     return this;
   }
   row(
-    gap: number,
+    gap: number | string,
     align: 'start' | 'center' | 'end' = 'start',
     justify: 'start' | 'center' | 'end' | 'space-between' = 'start',
   ) {
     this.#styles.push(['display', 'flex']);
     this.#styles.push(['flexDirection', 'row']);
-    this.#styles.push(['gap', `${gap}px`]);
+    this.#styles.push(['gap', typeof gap === 'number' ? `${gap}px` : gap]);
     this.#styles.push(['alignItems', align]);
     this.#styles.push(['justifyContent', justify]);
     return this;
@@ -141,8 +154,8 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     propsAndVals.forEach(([prop, val]) => this.style(prop, val));
     return this;
   }
-  width(w: number | `${string}%`) {
-    this.#styles.push(['width', `${w}`]);
+  width(w: number | `${string}%` | `${string}px` = '100%') {
+    this.#styles.push(['width', typeof w === 'number' ? `${w}%` : w]);
     return this;
   }
   // RENDERERS

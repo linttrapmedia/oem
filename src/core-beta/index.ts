@@ -1,3 +1,5 @@
+export * from './framework/Color';
+export * from './framework/Markdown';
 import { OEM_APP } from './framework/App';
 import { OEM_ARRAY } from './framework/Array';
 import { OEM_COMPONENT } from './framework/Component';
@@ -5,7 +7,6 @@ import { OEM_ELEMENT } from './framework/Element';
 import { OEM_LOCATION } from './framework/Location';
 import { OEM_NUMBER } from './framework/Number';
 import { OEM_STRING } from './framework/String';
-
 export default OEM_APP;
 
 Object.defineProperty(window, 'COMPONENT', {

@@ -1,5 +1,5 @@
+import { hsla, Markdown } from '@oem';
 import { HSLA, PAGE_WIDTH } from '../config';
-import { hsla } from '../util';
 
 export function GoEasy() {
   return DIV.padding(100, 0)
@@ -16,8 +16,10 @@ export function GoEasy() {
         .style('maxWidth', '80%')
         .style('textAlign', 'center')
         .style('fontSize', '26px')
-        .innerText(
-          'Easy on the eyes, easy on the brain and even easier on the business.',
+        .innerHtml(
+          Markdown(
+            'Easy on the eyes, easy on the brain and even easier on the *business*.',
+          ),
         ),
       DIV.row(20, 'center', 'center')
         .style('flexWrap', 'wrap')
@@ -47,7 +49,7 @@ export function GoEasy() {
             ],
             [
               'Scale With Ease',
-              'OEM is so simple, any architectural pattern will work such as the tried and true MVC pattern.',
+              'OEM is so simple any architectural pattern will work such as the tried and true MVC pattern.',
             ],
             [
               'Save Time',
@@ -63,7 +65,7 @@ export function GoEasy() {
             ],
             [
               'Write Clean Code',
-              'Good engineering makes everybody happy and helps keep the focus on solving real world problems.',
+              'Good engineering makes everybody happy and helps keep the focus on moving the business forward.',
             ],
           ],
         ),

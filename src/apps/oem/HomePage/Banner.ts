@@ -1,16 +1,33 @@
+import { hsla } from '@oem';
 import { HSLA, PAGE_WIDTH } from '../config';
-import { hsla } from '../util';
 
 export function Banner() {
   return DIV.row(20, 'start', 'center')
     .padding(20)
     .backgroundColor(HSLA.secondary, 0.05)
-    .style('width', '100%')
+    .width(100)
     .append(
       DIV.row(20, 'center', 'end')
-        .width('100%')
+        .width(100)
         .style('maxWidth', PAGE_WIDTH + 'px')
         .append(
+          DIV.column(0, 'center', 'center')
+            .backgroundColor(HSLA.secondary, 0.6, -70)
+            .padding(100, 50, 10)
+            .style('textAlign', 'center')
+            .style('position', 'fixed')
+            .style('top', '-75px')
+            .style('left', '-85px')
+            .style('rotate', '-45deg')
+            .style('fontSize', '11px')
+            .style('textTransform', 'uppercase')
+            .append(
+              DIV.style('rotate', '0deg')
+                .style('fontSize', '20px')
+                .innerText('🧪💥'),
+              DIV.color(HSLA.white, 0.35).innerText("Don't Use"),
+              DIV.color(HSLA.white, 0.25).innerText('Experimental'),
+            ),
           A.color(HSLA.secondary, 0.5)
             .attr('href', 'http://github.com/linttrapmedia/oem')
             .style('textDecoration', 'none')

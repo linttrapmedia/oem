@@ -1,7 +1,7 @@
+import { hsla } from '@oem';
 import { CounterExample } from '../components/CounterExample';
 import { Snippet } from '../components/Snippet';
 import { HSLA, PAGE_WIDTH } from '../config';
-import { hsla } from '../util';
 
 export function Hero() {
   return DIV.row(50, 'center', 'center')

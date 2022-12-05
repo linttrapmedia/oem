@@ -1,7 +1,7 @@
+import { hsla } from '@oem';
 import { Snippet } from '../components/Snippet';
 import { done, input, todo, TodoExample } from '../components/TodoExample';
 import { HSLA, PAGE_WIDTH } from '../config';
-import { hsla } from '../util';
 
 const IndexSnippet = `const input = STRING('');
 const todo = ARRAY<string>(['Call mom', 'Buy milk']);
@@ -22,7 +22,6 @@ const FormSnippet = `function Form(input: OEM.STRING, todo: OEM.ARRAY<string>) {
   
     // Wrapper
   return DIV.row(10)
-    .width('100%')
     .append(
 
         // Input field
@@ -112,13 +111,13 @@ export function CleanCode() {
             ),
           DIV.row(0)
             .backgroundColor(HSLA.black, 0.2)
-            .width('100%')
             .style('borderRadius', '10px')
             .style('minHeight', '0')
             .style('alignItems', 'stretch')
             .style('alignContent', 'stretch')
             .style('flex', '1 1 auto')
             .style('height', '500px')
+            .width(100)
             .append(
               DIV.column(0)
                 .padding(30, 0)
@@ -137,7 +136,6 @@ export function CleanCode() {
                           : 'transparent',
                       )
                       .styleOnHover('backgroundColor', hsla(HSLA.white, 0.05))
-                      .width('100%')
                       .append(
                         DIV.style('fontSize', '8px')
                           .backgroundColor(HSLA.secondary, 1, -15)
