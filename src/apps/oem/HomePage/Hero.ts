@@ -3,8 +3,8 @@ import { Snippet } from '../components/Snippet';
 import { HSLA, PAGE_WIDTH } from '../config';
 import { hsla } from '../util';
 
-export const Hero = () =>
-  DIV.row(50, 'center', 'center')
+export function Hero() {
+  return DIV.row(50, 'center', 'center')
     .padding(30, 50, 70)
     .style('maxWidth', PAGE_WIDTH + 'px')
     .append(
@@ -58,12 +58,12 @@ export const Hero = () =>
           .style('borderRadius', '10px')
           .append(
             Snippet(`function Counter() {
-    const count = NUMBER(100);
-    return DIV
-        .onClick(count.inc, 1)
-        .style('fontSize', '24px')
-        .style('cursor', 'pointer')
-        .innerText(count.get, count);
+  const count = NUMBER(100);
+  return DIV
+      .onClick(count.inc, 1)
+      .style('fontSize', '24px')
+      .style('cursor', 'pointer')
+      .innerText(count.get, count);
 }`),
           ),
         DIV.row(20, 'center', 'space-between')
@@ -84,3 +84,4 @@ export const Hero = () =>
           ),
       ),
     );
+}

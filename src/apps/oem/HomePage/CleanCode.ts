@@ -88,8 +88,8 @@ const ListsSnippet = `function DoneList(
   `;
 const currentSnippet = STRING(IndexSnippet);
 
-export const CleanCode = () =>
-  DIV.backgroundColor(HSLA.white, 0.05)
+export function CleanCode() {
+  return DIV.backgroundColor(HSLA.white, 0.05)
     .padding(100, 0)
     .column(50, 'center', 'center')
     .color(HSLA.white)
@@ -179,3 +179,4 @@ export const CleanCode = () =>
             ),
         ),
     );
+}

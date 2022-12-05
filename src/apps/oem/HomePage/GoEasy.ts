@@ -1,8 +1,8 @@
 import { HSLA, PAGE_WIDTH } from '../config';
 import { hsla } from '../util';
 
-export const GoEasy = () =>
-  DIV.padding(100, 0)
+export function GoEasy() {
+  return DIV.padding(100, 0)
     .column(50, 'center', 'center')
     .color(HSLA.white)
     .style('width', '100%')
@@ -68,3 +68,4 @@ export const GoEasy = () =>
           ],
         ),
     );
+}

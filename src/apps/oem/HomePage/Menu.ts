@@ -1,7 +1,7 @@
 import { HSLA, PAGE_WIDTH } from '../config';
 
-export const Menu = () =>
-  DIV.row(50, 'center', 'space-between')
+export function Menu() {
+  return DIV.row(50, 'center', 'space-between')
     .padding(20)
     .style('maxWidth', PAGE_WIDTH + 'px')
     .style('width', '100%')
@@ -37,3 +37,4 @@ export const Menu = () =>
         ],
       ),
     );
+}

@@ -1,8 +1,8 @@
 import { HSLA, PAGE_WIDTH } from '../config';
 import { hsla } from '../util';
 
-export const Banner = () =>
-  DIV.row(20, 'start', 'center')
+export function Banner() {
+  return DIV.row(20, 'start', 'center')
     .padding(20)
     .backgroundColor(HSLA.secondary, 0.05)
     .style('width', '100%')
@@ -27,3 +27,4 @@ export const Banner = () =>
             .innerText('Learn More'),
         ),
     );
+}
