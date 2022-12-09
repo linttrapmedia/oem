@@ -1,23 +1,34 @@
+import Model from '@apps/oem/models/Model';
 import { hsla } from '@oem';
-import { CounterExample } from '../components/CounterExample';
-import { Snippet } from '../components/Snippet';
-import { HSLA, PAGE_WIDTH } from '../config';
+import { CounterExample } from '../../components/CounterExample';
+import { Snippet } from '../../components/Snippet';
+import { HSLA, PAGE_WIDTH } from '../../config';
 
 export function Hero() {
   return DIV.row(50, 'center', 'center')
+    .styleOnWidth('flexDirection', 'column', 0, Model.winsize)
+    .styleOnWidth('flexDirection', 'row', 960, Model.winsize)
     .padding(30, 50, 70)
     .style('maxWidth', PAGE_WIDTH + 'px')
     .append(
       DIV.column(40, 'start', 'start')
+        .styleOnWidth('alignItems', 'center', 0, Model.winsize)
+        .styleOnWidth('alignItems', 'start', 960, Model.winsize)
         .color(HSLA.white)
         .style('width', '100%')
         .append(
           DIV.style('fontSize', '64px')
             .style('fontWeight', 'bold')
             .style('lineHeight', '0.9')
+            .styleOnWidth('textAlign', 'center', 0, Model.winsize)
+            .styleOnWidth('textAlign', 'left', 960, Model.winsize)
+            .styleOnWidth('fontSize', '48px', 0, Model.winsize)
+            .styleOnWidth('fontSize', '64px', 960, Model.winsize)
             .innerText('Build apps that will stand the test of time'),
           DIV.color(HSLA.white, 0.5)
             .style('fontSize', '20px')
+            .styleOnWidth('textAlign', 'center', 0, Model.winsize)
+            .styleOnWidth('textAlign', 'left', 960, Model.winsize)
             .innerText(
               'OEM is a dependency-free UI/UX framework that allows you to write complex html, css and javascript in a single declarative syntax that’s easy on the eyes and easy on the brain.',
             ),

@@ -1,6 +1,6 @@
 import { hsla } from '@oem';
-import { Snippet } from '../components/Snippet';
-import { HSLA, PAGE_WIDTH } from '../config';
+import { Snippet } from '../../components/Snippet';
+import { HSLA, PAGE_WIDTH } from '../../config';
 
 export function Footer() {
   return DIV.column(0, 'center', 'start')

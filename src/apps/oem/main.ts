@@ -1,11 +1,3 @@
 import OEM from '@oem';
-import { ROUTER } from './config';
-
-const location = LOCATION();
-
-OEM(
-  COMPONENT(
-    () => ROUTER[location.val.urlParams.get('page') ?? 'home'](),
-    location,
-  ),
-);
+import { Controller } from './controllers/Controller';
+OEM(Controller);

@@ -1,5 +1,5 @@
-import { HomePage } from './HomePage';
-import { OverviewPage } from './OverviewPage';
+import { HomePage } from './views/HomePage';
+import { OverviewPage } from './views/OverviewPage';
 
 export const ROUTER: Record<string, any> = {
   home: HomePage,

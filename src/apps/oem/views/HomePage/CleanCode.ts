@@ -1,7 +1,7 @@
 import { hsla } from '@oem';
-import { Snippet } from '../components/Snippet';
-import { done, input, todo, TodoExample } from '../components/TodoExample';
-import { HSLA, PAGE_WIDTH } from '../config';
+import { Snippet } from '../../components/Snippet';
+import { done, input, todo, TodoExample } from '../../components/TodoExample';
+import { HSLA, PAGE_WIDTH } from '../../config';
 
 const IndexSnippet = `const input = STRING('');
 const todo = ARRAY<string>(['Call mom', 'Buy milk']);

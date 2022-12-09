@@ -3,11 +3,16 @@ export * from './framework/Markdown';
 import { OEM_APP } from './framework/App';
 import { OEM_ARRAY } from './framework/Array';
 import { OEM_COMPONENT } from './framework/Component';
+import { OEM_CONTAINER_QUERY } from './framework/ContainerQuery';
 import { OEM_ELEMENT } from './framework/Element';
 import { OEM_LOCATION } from './framework/Location';
 import { OEM_NUMBER } from './framework/Number';
 import { OEM_STRING } from './framework/String';
 export default OEM_APP;
+
+Object.defineProperty(window, 'ARRAY', {
+  get: () => (ary: any[]) => new OEM_ARRAY(ary),
+});
 
 Object.defineProperty(window, 'COMPONENT', {
   get:
@@ -16,8 +21,8 @@ Object.defineProperty(window, 'COMPONENT', {
       OEM_COMPONENT(...args),
 });
 
-Object.defineProperty(window, 'ARRAY', {
-  get: () => (ary: any[]) => new OEM_ARRAY(ary),
+Object.defineProperty(window, 'CONTAINER_QUERY', {
+  get: () => (container: string) => new OEM_CONTAINER_QUERY(container),
 });
 
 Object.defineProperty(window, 'LOCATION', {

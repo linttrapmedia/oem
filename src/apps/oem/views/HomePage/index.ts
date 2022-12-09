@@ -1,4 +1,4 @@
-import { HSLA } from '../config';
+import { HSLA } from '../../config';
 import { Banner } from './Banner';
 import { CleanCode } from './CleanCode';
 import { Footer } from './Footer';

@@ -1,5 +1,6 @@
+import Model from '@apps/oem/models/Model';
 import { hsla } from '@oem';
-import { HSLA, PAGE_WIDTH } from '../config';
+import { HSLA, PAGE_WIDTH } from '../../config';
 
 export function Banner() {
   return DIV.row(20, 'start', 'center')
@@ -22,10 +23,11 @@ export function Banner() {
             .style('fontSize', '11px')
             .style('textTransform', 'uppercase')
             .append(
-              DIV.style('rotate', '0deg')
-                .style('fontSize', '20px')
-                .innerText('🧪💥'),
-              DIV.color(HSLA.white, 0.35).innerText("Don't Use"),
+              DIV.style('rotate', '0deg').style('fontSize', '20px').innerText('🧪💥'),
+              DIV.color(HSLA.white, 0.35)
+                .styleOnWidth('display', 'none', 0, Model.winsize)
+                .styleOnWidth('display', 'block', 920, Model.winsize)
+                .innerText("Don't Use"),
               DIV.color(HSLA.white, 0.25).innerText('Experimental'),
             ),
           A.color(HSLA.secondary, 0.5)

@@ -1,5 +1,5 @@
 import { hsla, Markdown } from '@oem';
-import { HSLA, PAGE_WIDTH } from '../config';
+import { HSLA, PAGE_WIDTH } from '../../config';
 
 export function GoEasy() {
   return DIV.padding(100, 0)

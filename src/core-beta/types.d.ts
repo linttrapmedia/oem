@@ -1,36 +1,44 @@
 declare namespace OEM {
-  // OBJECTS
+  // HELPERS
+  type ValueOf<T> = T[keyof T];
+
+  // BUSES
+
+  export interface ARRAY<T> {
+    get: () => T[];
+    includes: (searchElement: T, fromIndex?: number) => boolean;
+    filter: (cb: (item: T) => boolean) => ARRAY<T>;
+    pop: () => ARRAY<T>;
+    push: (x: T | (() => T)) => ARRAY<T>;
+    reset: () => ARRAY<T>;
+    set(x: T[]): ARRAY<T>;
+    shift: () => ARRAY<T>;
+    sub: (cb: (n: T[]) => any) => void;
+    val: T[];
+  }
+
+  export interface CONTAINER_QUERY {
+    get: () => { height: number; width: number };
+    sub: (cb: (size: { height: number; width: number }) => any) => void;
+    val: { height: number; width: number };
+  }
   export interface NUMBER {
-    dec: (n: number) => OEM.NUMBER;
+    dec: (n: number) => NUMBER;
     get: () => number;
-    inc: (n: number) => OEM.NUMBER;
-    set(n: number): OEM.NUMBER;
+    inc: (n: number) => NUMBER;
+    set(n: number): NUMBER;
     sub: (cb: (n: number) => any) => void;
     val: number;
   }
 
   export interface STRING {
     get: () => string;
-    set(s: string): OEM.STRING;
-    reset(): OEM.STRING;
+    set(s: string): STRING;
+    reset(): STRING;
     sub: (cb: (s: string) => any) => void;
     val: string;
   }
 
-  export interface ARRAY<T> {
-    get: () => T[];
-    includes: (searchElement: T, fromIndex?: number) => boolean;
-    filter: (cb: (item: T) => boolean) => OEM.ARRAY<T>;
-    pop: () => OEM.ARRAY<T>;
-    push: (x: T | (() => T)) => OEM.ARRAY<T>;
-    reset: () => OEM.ARRAY<T>;
-    set(x: T[]): OEM.ARRAY<T>;
-    shift: () => OEM.ARRAY<T>;
-    sub: (cb: (n: T[]) => any) => void;
-    val: T[];
-  }
-
-  // BROWSER
   export interface LOCATION {
     get: () => LOCATION['val'];
     set(href: string, title?: string, state?: string): LOCATION['val'];
@@ -49,81 +57,65 @@ declare namespace OEM {
     };
   }
 
-  export type BUSES = ARRAY<any> | LOCATION | NUMBER | STRING;
+  export type BUSES = ARRAY<any> | CONTAINER_QUERY | LOCATION | NUMBER | STRING;
 
-  // ELEMENTS
+  // ELEMENT
+
+  type FlexAlign =
+    | 'center'
+    | 'end'
+    | 'space-around'
+    | 'space-between'
+    | 'space-evenly'
+    | 'start'
+    | 'stretch';
+  type FlexDirection = 'row' | 'row-reverse' | 'column' | 'column-reverse';
+  type SizingUnits = 'px' | 'em' | 'rem' | 'vh' | 'vw' | 'vmin' | 'vmax' | '%';
+  type SizingValues = number | 'auto' | 'max-content' | 'min-content';
+  type CssProp = keyof CSSStyleDeclaration;
+  type Sizing = number | `${number}${SizingUnits}` | `${SizingValues}`;
+  type Attr<E extends HTMLElement, P extends [...args: any]> = (...args: P) => ELEMENT<E>;
+  type Render<E extends HTMLElement, P extends [...args: any]> = (...args: P) => E;
+
   export interface ELEMENT<E extends HTMLElement> {
     // ATTRIBUTES
-    attr: (name: string, value?: string) => OEM.ELEMENT<E>;
-    backgroundColor: (
-      hsla: number[],
-      opacity?: number,
-      lightness?: number,
-    ) => OEM.ELEMENT<E>;
-    class: (...classes: string[]) => OEM.ELEMENT<E>;
-    column: (
-      gap: number,
-      align?: 'start' | 'center' | 'end',
-      justify?: 'start' | 'center' | 'end' | 'space-between',
-    ) => OEM.ELEMENT<E>;
-    color: (
-      hsla: number[],
-      opacity?: number,
-      lightness?: number,
-    ) => OEM.ELEMENT<E>;
-    margin: (...margins: (string | number)[]) => OEM.ELEMENT<E>;
-    onClick: <F extends (...args: any[]) => any>(
-      func: F,
-      ...args: Parameters<F>
-    ) => OEM.ELEMENT<E>;
-    onInput: (func: (val: any) => void) => OEM.ELEMENT<E>;
-    onSubmit: (func?: () => void) => OEM.ELEMENT<E>;
-    padding: (...paddings: (string | number)[]) => OEM.ELEMENT<E>;
-    row: (
-      gap: number,
-      align?: 'start' | 'center' | 'end',
-      justify?: 'start' | 'center' | 'end' | 'space-between',
-    ) => OEM.ELEMENT<E>;
-    style: <P extends keyof CSSStyleDeclaration>(
-      prop: P,
-      val: CSSStyleDeclaration[P],
-    ) => OEM.ELEMENT<E>;
-    styleOnHover: <P extends keyof CSSStyleDeclaration>(
-      prop: P,
-      val: CSSStyleDeclaration[P],
-    ) => OEM.ELEMENT<E>;
-    styles: (
-      propsAndVals: [keyof CSSStyleDeclaration, any][],
-    ) => OEM.ELEMENT<E>;
-    width: (w: number | `${string}%`) => OEM.ELEMENT<E>;
+    attr: Attr<E, [name: string, value?: string]>;
+    backgroundColor: Attr<E, [hsla: number[], opacity?: number, lightness?: number]>;
+    class: Attr<E, [...classes: string[]]>;
+    column: Attr<E, [gap: number, align?: FlexAlign, justify?: FlexAlign]>;
+    color: Attr<E, [hsla: number[], opacity?: number, lightness?: number]>;
+    flex: Attr<E, [direction: FlexDirection, gap: number, align?: FlexAlign, justify?: FlexAlign]>;
+    fontSize: Attr<E, [s: SizingValues, u?: SizingUnits]>;
+    height: Attr<E, [w: SizingValues, u?: SizingUnits]>;
+    margin: Attr<E, [...margins: Sizing[]]>;
+    onClick: <F extends (...args: any[]) => any>(func: F, ...args: Parameters<F>) => ELEMENT<E>;
+    onInput: Attr<E, [func: (val: any) => void]>;
+    onSubmit: Attr<E, [func?: () => void]>;
+    padding: Attr<E, [...paddings: Sizing[]]>;
+    row: Attr<E, [gap: number, align?: FlexAlign, justify?: FlexAlign]>;
+    style: Attr<E, [prop: CssProp, val: any]>;
+    styleOnHeight: Attr<E, [prop: CssProp, val: any, breakpoint: number, cq: CONTAINER_QUERY]>;
+    styleOnWidth: Attr<E, [prop: CssProp, val: any, breakpoint: number, cq: CONTAINER_QUERY]>;
+    styleOnHover: Attr<E, [prop: CssProp, val: any]>;
+    styles: Attr<E, [propsAndVals: [CssProp, any][]]>;
+    width: Attr<E, [h: SizingValues, u?: SizingUnits]>;
+
     // RENDERERS
-    append: (...nodes: (string | Node)[]) => E;
-    innerText: (
-      txt: (string | number) | (() => string | number),
-      ...buses: BUSES[]
-    ) => E;
-    innerHtml: (
-      node: HTMLElement | (() => HTMLElement),
-      ...buses: BUSES[]
-    ) => E;
+    append: Render<E, [...nodes: (string | Node)[]]>;
+    innerText: Render<E, [txt: (string | number) | (() => string | number), ...buses: BUSES[]]>;
+    innerHtml: Render<E, [node: HTMLElement | (() => HTMLElement), ...buses: BUSES[]]>;
     map: <I extends any[], II extends () => any[]>(
       cb: (i: I[0] | ReturnType<II>[0]) => any,
       items: I | II,
       ...buses: BUSES[]
     ) => E;
-    value: (
-      val: (string | number) | (() => string | number),
-      ...buses: BUSES[]
-    ) => E;
-    render: () => E;
+    value: Render<E, [val: (string | number) | (() => string | number), ...buses: BUSES[]]>;
+    render: Render<E, []>;
   }
 
   // FUNCS
   export type APP = (app: HTMLElement, options?: { container: string }) => void;
-  export type COMPONENT = (
-    cb: () => HTMLElement,
-    ...buses: any[]
-  ) => HTMLElement;
+  export type COMPONENT = (cb: () => HTMLElement, ...buses: any[]) => HTMLElement;
 }
 
 // DECLARATIONS
@@ -133,6 +125,7 @@ declare const COMPONENT: OEM.COMPONENT;
 
 // Declare Objects
 declare const ARRAY: <T>(ary: T[]) => OEM.ARRAY<T>;
+declare const CONTAINER_QUERY: (container?: string) => OEM.CONTAINER_QUERY;
 declare const LOCATION: () => OEM.LOCATION;
 declare const NUMBER: (n: number) => OEM.NUMBER;
 declare const STRING: (s: string) => OEM.STRING;
