@@ -6,9 +6,7 @@
 
 [oem.js.org](https://oem.js.org)
 
-## The Dependency-Free UI Framework
-
-OEM is a dependency-free UI/UX framework and platform. It uses a unique declarative syntax to control style and behavior which is easy to read at scale. The core framework is only a handful of modules that are easy to grok while the _extended_ framework includes a library of take-it-or-leave it features which **includes a full-blown design system**. The overall architecture includes a set of highly configurable dev tasks which allows you to manage multiple apps as a monorepo and/or microfrontend.
+OEM is a dependency-free UI/UX framework and platform. It uses a unique declarative syntax to control the dom, css and behavior. This syntax follows intuitive naming conventions based on the javascript and css you already know and the formulaic nature of it gives intellisense and AI a leg up.
 
 ## Setup
 
