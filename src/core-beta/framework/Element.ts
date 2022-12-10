@@ -1,13 +1,10 @@
 export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
-  #el: T;
-  #tag: string = 'div';
   #attrs: [string, string][] = [];
-  #funcs: [string, (...args: any[]) => any][] = [];
-  #styles: [string, string][] = [];
-  #stylesOnHeight: [string, string, number, OEM.CONTAINER_QUERY][] = [];
-  #stylesOnWidth: [string, string, number, OEM.CONTAINER_QUERY][] = [];
-  #stylesOnHover: [string, string][] = [];
   #classes: string[] = [];
+  #el: T;
+  #funcs: [string, (...args: any[]) => any][] = [];
+  #styles: [keyof CSSStyleDeclaration, string, OEM.Condition?][] = [];
+  #tag: string = 'div';
   constructor(tag: string) {
     this.#tag = tag;
     this.#styles = [];
@@ -29,22 +26,18 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     this.width = this.width.bind(this);
   }
   private createElement() {
+    const cond = (condition: OEM.Condition, apply: () => void) => {
+      if (typeof condition === 'string') return this.#el.addEventListener(condition, apply);
+      if (typeof condition === 'boolean') return apply();
+      if (typeof condition === 'function') return condition() ? apply() : null;
+      if (typeof condition === 'object' && Object.keys(condition).includes('sub'))
+        condition.sub((c) => (c ? apply() : null));
+    };
+
     this.#el = document.createElement(this.#tag) as T;
     this.#attrs.forEach(([key, val]) => this.#el.setAttribute(key, val));
-    this.#styles.forEach(([prop, val]) => ((<any>this.#el).style[prop] = val));
-    this.#stylesOnHover.forEach(([prop, val]) => {
-      const _val = (<any>this.#el).style[prop];
-      const set = (p: string, v: string) => ((<any>this.#el).style[p] = v);
-      this.#el.addEventListener('mouseenter', set.bind(null, prop, val));
-      this.#el.addEventListener('mouseleave', set.bind(null, prop, _val));
-    });
-    this.#stylesOnHeight.forEach(([prop, val, breakpoint, cq]) => {
-      const set = (p: string, v: string) => ((<any>this.#el).style[p] = v);
-      cq.sub((size) => (size.height >= breakpoint ? set(prop, val) : null));
-    });
-    this.#stylesOnWidth.forEach(([prop, val, breakpoint, cq]) => {
-      const set = (p: string, v: string) => ((<any>this.#el).style[p] = v);
-      cq.sub((size) => (size.width >= breakpoint ? set(prop, val) : null));
+    this.#styles.forEach(([prop, val, condition = true]) => {
+      cond(condition, () => ((<any>this.#el).style[prop] = val));
     });
     this.#funcs.forEach(([event, func]) => this.#el.addEventListener(event, func));
     this.#classes.forEach((cls) => this.#el.classList.add(cls));
@@ -154,25 +147,11 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     return this;
   }
   style(...props: Parameters<OEM.ELEMENT<T>['style']>) {
-    const [prop, val] = props;
-    this.#styles.push([prop as string, val as string]);
+    const [prop, val, condition] = props;
+    this.#styles.push([prop, val, condition]);
     return this;
   }
-  styleOnHeight(...props: Parameters<OEM.ELEMENT<T>['styleOnHeight']>) {
-    const [prop, val, breakpoint, cq] = props;
-    this.#stylesOnHeight.push([prop as string, val as string, breakpoint, cq]);
-    return this;
-  }
-  styleOnWidth(...props: Parameters<OEM.ELEMENT<T>['styleOnWidth']>) {
-    const [prop, val, breakpoint, cq] = props;
-    this.#stylesOnWidth.push([prop as string, val as string, breakpoint, cq]);
-    return this;
-  }
-  styleOnHover(...props: Parameters<OEM.ELEMENT<T>['styleOnHover']>) {
-    const [prop, val] = props;
-    this.#stylesOnHover.push([prop as string, val as string]);
-    return this;
-  }
+
   styles(...props: Parameters<OEM.ELEMENT<T>['styles']>) {
     const [styles] = props;
     styles.forEach(([prop, val]) => this.style(prop, val));

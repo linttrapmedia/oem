@@ -3,8 +3,8 @@ import { HSLA, PAGE_WIDTH } from '../../config';
 
 export function Menu() {
   return DIV.row(50, 'center', 'space-between')
-    .styleOnWidth('justifyContent', 'center', 0, Model.winsize)
-    .styleOnWidth('justifyContent', 'space-between', 960, Model.winsize)
+    .style('justifyContent', 'center', Model.mobileBreakpoint)
+    .style('justifyContent', 'space-between', Model.tabletBreakpoint)
     .padding(20, 50)
     .style('maxWidth', PAGE_WIDTH + 'px')
     .style('width', '100%')
@@ -13,8 +13,8 @@ export function Menu() {
         DIV.color(HSLA.white)
           .style('fontWeight', 'bold')
           .style('fontSize', '28px')
-          .styleOnWidth('fontSize', '48px', 0, Model.winsize)
-          .styleOnWidth('fontSize', '28px', 960, Model.winsize)
+          .style('fontSize', '48px', Model.mobileBreakpoint)
+          .style('fontSize', '28px', Model.tabletBreakpoint)
           .style('textTransform', 'uppercase')
           .style('fontFamily', 'Courier')
           .innerText('oem'),
@@ -25,8 +25,8 @@ export function Menu() {
           .innerText('alpha'),
       ),
       DIV.row(50)
-        .styleOnWidth('display', 'none', 0, Model.winsize)
-        .styleOnWidth('display', 'flex', 960, Model.winsize)
+        .style('display', 'none', Model.mobileBreakpoint)
+        .style('display', 'flex', Model.tabletBreakpoint)
         .map(
           ([label, href]) =>
             A.attr('href', href)
@@ -35,7 +35,7 @@ export function Menu() {
               .style('textTransform', 'uppercase')
               .style('fontWeight', 'bold')
               .style('whiteSpace', 'nowrap')
-              .styleOnHover('opacity', '0.5')
+              .style('opacity', '0.5', 'mouseenter')
               .innerText(label),
           [
             ['Get Started', 'menulink'],

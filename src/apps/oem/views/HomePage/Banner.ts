@@ -3,6 +3,44 @@ import { hsla } from '@oem';
 import { HSLA, PAGE_WIDTH } from '../../config';
 
 export function Banner() {
+  const Disclaimer = DIV.column(0, 'center', 'center')
+    .backgroundColor(HSLA.secondary, 0.6, -70)
+    .padding(100, 50, 10)
+    .style('textAlign', 'center')
+    .style('position', 'fixed')
+    .style('top', '-75px')
+    .style('left', '-85px')
+    .style('rotate', '-45deg')
+    .style('fontSize', '11px')
+    .style('textTransform', 'uppercase')
+    .append(
+      DIV.style('rotate', '0deg').style('fontSize', '20px').innerText('🧪💥'),
+      DIV.color(HSLA.white, 0.35)
+        .style('display', 'none', Model.mobileBreakpoint)
+        .style('display', 'block', Model.tabletBreakpoint)
+        .innerText("Don't Use"),
+      DIV.color(HSLA.white, 0.25).innerText('Experimental'),
+    );
+
+  const Contributor = A.color(HSLA.secondary, 0.5)
+    .attr('href', 'http://github.com/linttrapmedia/oem')
+    .style('textDecoration', 'none')
+    .style('color', hsla(HSLA.white), 'mouseenter')
+    .style('color', hsla(HSLA.secondary, 0.5), 'mouseleave')
+    .innerText('Become a contributor 💡');
+
+  const LearnMoreButton = BUTTON.backgroundColor(HSLA.secondary, 0.15)
+    .color(HSLA.secondary)
+    .padding(5, 10)
+    .style('border', '0')
+    .style('borderRadius', '3px')
+    .style('cursor', 'pointer')
+    .style('color', hsla(HSLA.white), 'mouseenter')
+    .style('color', hsla(HSLA.secondary), 'mouseleave')
+    .style('backgroundColor', hsla(HSLA.white, 0.3), 'mouseenter')
+    .style('backgroundColor', hsla(HSLA.secondary, 0.15), 'mouseleave')
+    .innerText('Learn More');
+
   return DIV.row(20, 'start', 'center')
     .padding(20)
     .backgroundColor(HSLA.secondary, 0.05)
@@ -11,39 +49,6 @@ export function Banner() {
       DIV.row(20, 'center', 'end')
         .width(100)
         .style('maxWidth', PAGE_WIDTH + 'px')
-        .append(
-          DIV.column(0, 'center', 'center')
-            .backgroundColor(HSLA.secondary, 0.6, -70)
-            .padding(100, 50, 10)
-            .style('textAlign', 'center')
-            .style('position', 'fixed')
-            .style('top', '-75px')
-            .style('left', '-85px')
-            .style('rotate', '-45deg')
-            .style('fontSize', '11px')
-            .style('textTransform', 'uppercase')
-            .append(
-              DIV.style('rotate', '0deg').style('fontSize', '20px').innerText('🧪💥'),
-              DIV.color(HSLA.white, 0.35)
-                .styleOnWidth('display', 'none', 0, Model.winsize)
-                .styleOnWidth('display', 'block', 920, Model.winsize)
-                .innerText("Don't Use"),
-              DIV.color(HSLA.white, 0.25).innerText('Experimental'),
-            ),
-          A.color(HSLA.secondary, 0.5)
-            .attr('href', 'http://github.com/linttrapmedia/oem')
-            .style('textDecoration', 'none')
-            .styleOnHover('color', hsla(HSLA.white))
-            .innerText('Become a contributor 💡'),
-          BUTTON.backgroundColor(HSLA.secondary, 0.15)
-            .color(HSLA.secondary)
-            .padding(5, 10)
-            .style('border', '0')
-            .style('borderRadius', '3px')
-            .style('cursor', 'pointer')
-            .styleOnHover('color', hsla(HSLA.white))
-            .styleOnHover('backgroundColor', hsla(HSLA.white, 0.3))
-            .innerText('Learn More'),
-        ),
+        .append(Disclaimer, Contributor, LearnMoreButton),
     );
 }

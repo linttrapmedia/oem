@@ -4,31 +4,34 @@ import { CounterExample } from '../../components/CounterExample';
 import { Snippet } from '../../components/Snippet';
 import { HSLA, PAGE_WIDTH } from '../../config';
 
+const mobile = BREAKPOINT(0);
+const tablet = BREAKPOINT(800);
+
 export function Hero() {
   return DIV.row(50, 'center', 'center')
-    .styleOnWidth('flexDirection', 'column', 0, Model.winsize)
-    .styleOnWidth('flexDirection', 'row', 960, Model.winsize)
+    .style('flexDirection', 'column', Model.mobileBreakpoint)
+    .style('flexDirection', 'row', Model.tabletBreakpoint)
     .padding(30, 50, 70)
     .style('maxWidth', PAGE_WIDTH + 'px')
     .append(
       DIV.column(40, 'start', 'start')
-        .styleOnWidth('alignItems', 'center', 0, Model.winsize)
-        .styleOnWidth('alignItems', 'start', 960, Model.winsize)
+        .style('alignItems', 'center', Model.mobileBreakpoint)
+        .style('alignItems', 'start', Model.tabletBreakpoint)
         .color(HSLA.white)
         .style('width', '100%')
         .append(
           DIV.style('fontSize', '64px')
             .style('fontWeight', 'bold')
             .style('lineHeight', '0.9')
-            .styleOnWidth('textAlign', 'center', 0, Model.winsize)
-            .styleOnWidth('textAlign', 'left', 960, Model.winsize)
-            .styleOnWidth('fontSize', '48px', 0, Model.winsize)
-            .styleOnWidth('fontSize', '64px', 960, Model.winsize)
+            .style('textAlign', 'center', Model.mobileBreakpoint)
+            .style('textAlign', 'left', Model.tabletBreakpoint)
+            .style('fontSize', '48px', Model.mobileBreakpoint)
+            .style('fontSize', '64px', Model.tabletBreakpoint)
             .innerText('Build apps that will stand the test of time'),
           DIV.color(HSLA.white, 0.5)
             .style('fontSize', '20px')
-            .styleOnWidth('textAlign', 'center', 0, Model.winsize)
-            .styleOnWidth('textAlign', 'left', 960, Model.winsize)
+            .style('textAlign', 'center', Model.mobileBreakpoint)
+            .style('textAlign', 'left', Model.tabletBreakpoint)
             .innerText(
               'OEM is a dependency-free UI/UX framework that allows you to write complex html, css and javascript in a single declarative syntax that’s easy on the eyes and easy on the brain.',
             ),
@@ -44,7 +47,7 @@ export function Hero() {
               .style('textTransform', 'uppercase')
               .style('letterSpacing', '1px')
               .style('fontWeight', 'bold')
-              .styleOnHover('backgroundColor', hsla(HSLA.white))
+              .style('backgroundColor', hsla(HSLA.white), 'mouseenter')
               .innerText('Docs'),
             BUTTON.backgroundColor(HSLA.black, 0.2)
               .color(HSLA.secondary)
@@ -58,7 +61,7 @@ export function Hero() {
               .style('textTransform', 'uppercase')
               .style('letterSpacing', '1px')
               .style('fontWeight', 'bold')
-              .styleOnHover('color', hsla(HSLA.white))
+              .style('color', hsla(HSLA.white), 'mouseenter')
               .innerText('Design'),
           ),
         ),
@@ -83,7 +86,7 @@ export function Hero() {
             DIV.style('borderRadius', '10px')
               .backgroundColor(HSLA.accent, 0.05)
               .color(HSLA.white, 0.25)
-              .styleOnHover('color', hsla(HSLA.white))
+              .style('color', hsla(HSLA.white), 'mouseenter')
               .padding(20)
               .append(CounterExample()),
             DIV.row(10, 'center', 'center')

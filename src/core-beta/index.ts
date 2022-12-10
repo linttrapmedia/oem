@@ -2,8 +2,8 @@ export * from './framework/Color';
 export * from './framework/Markdown';
 import { OEM_APP } from './framework/App';
 import { OEM_ARRAY } from './framework/Array';
+import { OEM_BREAKPOINT } from './framework/Breakpoint';
 import { OEM_COMPONENT } from './framework/Component';
-import { OEM_CONTAINER_QUERY } from './framework/ContainerQuery';
 import { OEM_ELEMENT } from './framework/Element';
 import { OEM_LOCATION } from './framework/Location';
 import { OEM_NUMBER } from './framework/Number';
@@ -14,15 +14,18 @@ Object.defineProperty(window, 'ARRAY', {
   get: () => (ary: any[]) => new OEM_ARRAY(ary),
 });
 
+Object.defineProperty(window, 'BREAKPOINT', {
+  get:
+    () =>
+    (breakpoint: number = 0, dimension: 'height' | 'width' = 'width', container: string) =>
+      new OEM_BREAKPOINT(breakpoint, dimension, container),
+});
+
 Object.defineProperty(window, 'COMPONENT', {
   get:
     () =>
     (...args: Parameters<OEM.COMPONENT>) =>
       OEM_COMPONENT(...args),
-});
-
-Object.defineProperty(window, 'CONTAINER_QUERY', {
-  get: () => (container: string) => new OEM_CONTAINER_QUERY(container),
 });
 
 Object.defineProperty(window, 'LOCATION', {

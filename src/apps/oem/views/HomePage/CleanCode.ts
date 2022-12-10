@@ -131,11 +131,9 @@ export function CleanCode() {
                       .padding(10, 30)
                       .style(
                         'backgroundColor',
-                        currentSnippet.val === snippet
-                          ? hsla(HSLA.black, 0.2)
-                          : 'transparent',
+                        currentSnippet.val === snippet ? hsla(HSLA.black, 0.2) : 'transparent',
                       )
-                      .styleOnHover('backgroundColor', hsla(HSLA.white, 0.05))
+                      .style('backgroundColor', hsla(HSLA.white, 0.05), 'mouseenter')
                       .append(
                         DIV.style('fontSize', '8px')
                           .backgroundColor(HSLA.secondary, 1, -15)
@@ -168,7 +166,7 @@ export function CleanCode() {
                     .style('right', '20px')
                     .style('cursor', 'pointer')
                     .color(HSLA.white, 0.25)
-                    .styleOnHover('color', hsla(HSLA.white))
+                    .style('color', hsla(HSLA.white), 'mouseenter')
                     .onClick(todo.reset)
                     .onClick(done.reset)
                     .onClick(input.reset)

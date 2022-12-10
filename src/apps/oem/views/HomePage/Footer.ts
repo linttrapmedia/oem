@@ -14,9 +14,7 @@ export function Footer() {
         .style('borderBottom', `1px solid ${hsla(HSLA.white, 0.1)}`)
         .append(
           DIV.append(
-            DIV.color(HSLA.white)
-              .style('fontSize', '28px')
-              .innerText('Get Started in 3,2,1...'),
+            DIV.color(HSLA.white).style('fontSize', '28px').innerText('Get Started in 3,2,1...'),
             DIV.row(5)
               .style('fontSize', '18px')
               .color(HSLA.white, 0.4)
@@ -72,7 +70,7 @@ npm start`),
                     .style('fontSize', '16px')
                     .style('cursor', 'pointer')
                     .style('borderRadius', '10px')
-                    .styleOnHover('backgroundColor', hsla(HSLA.black, 0.3))
+                    .style('backgroundColor', hsla(HSLA.black, 0.3), 'mouseenter')
                     .innerText('Subscribe'),
                 ),
               DIV.column(10, 'end', 'start')

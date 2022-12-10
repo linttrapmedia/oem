@@ -1,8 +1,124 @@
 declare namespace OEM {
-  // HELPERS
+  // UTILS
+  type AnyFunc = (...args: any[]) => any;
+  type Condition = boolean | (() => boolean) | BUS<boolean> | ElementEvents;
+  type ElementEvents =
+    | 'abort'
+    | 'animationcancel'
+    | 'animationend'
+    | 'animationiteration'
+    | 'animationstart'
+    | 'auxclick'
+    | 'beforeinput'
+    | 'blur'
+    | 'canplay'
+    | 'canplaythrough'
+    | 'change'
+    | 'click'
+    | 'close'
+    | 'compositionend'
+    | 'compositionstart'
+    | 'compositionupdate'
+    | 'contextmenu'
+    | 'cuechange'
+    | 'dblclick'
+    | 'drag'
+    | 'dragend'
+    | 'dragenter'
+    | 'dragleave'
+    | 'dragover'
+    | 'dragstart'
+    | 'drop'
+    | 'durationchange'
+    | 'emptied'
+    | 'ended'
+    | 'error'
+    | 'focus'
+    | 'focusin'
+    | 'focusout'
+    | 'formdata'
+    | 'gotpointercapture'
+    | 'input'
+    | 'invalid'
+    | 'keydown'
+    | 'keypress'
+    | 'keyup'
+    | 'load'
+    | 'loadeddata'
+    | 'loadedmetadata'
+    | 'loadstart'
+    | 'lostpointercapture'
+    | 'mousedown'
+    | 'mouseenter'
+    | 'mouseleave'
+    | 'mousemove'
+    | 'mouseout'
+    | 'mouseover'
+    | 'mouseup'
+    | 'pause'
+    | 'play'
+    | 'playing'
+    | 'pointercancel'
+    | 'pointerdown'
+    | 'pointerenter'
+    | 'pointerleave'
+    | 'pointermove'
+    | 'pointerout'
+    | 'pointerover'
+    | 'pointerup'
+    | 'progress'
+    | 'ratechange'
+    | 'reset'
+    | 'resize'
+    | 'scroll'
+    | 'securitypolicyviolation'
+    | 'seeked'
+    | 'seeking'
+    | 'select'
+    | 'selectionchange'
+    | 'selectstart'
+    | 'slotchange'
+    | 'stalled'
+    | 'submit'
+    | 'suspend'
+    | 'timeupdate'
+    | 'toggle'
+    | 'touchcancel'
+    | 'touchend'
+    | 'touchmove'
+    | 'touchstart'
+    | 'transitioncancel'
+    | 'transitionend'
+    | 'transitionrun'
+    | 'transitionstart'
+    | 'volumechange'
+    | 'waiting'
+    | 'wheel';
+  type FlexAlign =
+    | 'center'
+    | 'end'
+    | 'space-around'
+    | 'space-between'
+    | 'space-evenly'
+    | 'start'
+    | 'stretch';
+  type Attr<E extends HTMLElement, P extends [...args: any]> = (...args: P) => ELEMENT<E>;
+  type CssProp = keyof CSSStyleDeclaration;
+  type FlexDir = 'row' | 'row-reverse' | 'column' | 'column-reverse';
+  type Render<E extends HTMLElement, P extends [...args: any]> = (...args: P) => E;
+  type Sizing = number | `${number}${SizingUnits}` | `${SizingVals}`;
+  type SizingUnits = 'px' | 'em' | 'rem' | 'vh' | 'vw' | 'vmin' | 'vmax' | '%';
+  type SizingVals = number | 'auto' | 'max-content' | 'min-content';
   type ValueOf<T> = T[keyof T];
 
   // BUSES
+
+  export interface BUS<T> {
+    get: () => T;
+    set(...args: any): BUS<T>;
+    sub: (cb: (x: T) => any) => void;
+    val: T;
+  }
 
   export interface ARRAY<T> {
     get: () => T[];
@@ -17,11 +133,10 @@ declare namespace OEM {
     val: T[];
   }
 
-  export interface CONTAINER_QUERY {
-    get: () => { height: number; width: number };
-    sub: (cb: (size: { height: number; width: number }) => any) => void;
-    val: { height: number; width: number };
+  export interface BREAKPOINT extends BUS<boolean> {
+    isGTEbreakpoint: () => boolean;
   }
+
   export interface NUMBER {
     dec: (n: number) => NUMBER;
     get: () => number;
@@ -57,25 +172,9 @@ declare namespace OEM {
     };
   }
 
-  export type BUSES = ARRAY<any> | CONTAINER_QUERY | LOCATION | NUMBER | STRING;
+  export type BUSES = ARRAY<any> | LOCATION | NUMBER | STRING;
 
   // ELEMENT
-
-  type FlexAlign =
-    | 'center'
-    | 'end'
-    | 'space-around'
-    | 'space-between'
-    | 'space-evenly'
-    | 'start'
-    | 'stretch';
-  type FlexDirection = 'row' | 'row-reverse' | 'column' | 'column-reverse';
-  type SizingUnits = 'px' | 'em' | 'rem' | 'vh' | 'vw' | 'vmin' | 'vmax' | '%';
-  type SizingValues = number | 'auto' | 'max-content' | 'min-content';
-  type CssProp = keyof CSSStyleDeclaration;
-  type Sizing = number | `${number}${SizingUnits}` | `${SizingValues}`;
-  type Attr<E extends HTMLElement, P extends [...args: any]> = (...args: P) => ELEMENT<E>;
-  type Render<E extends HTMLElement, P extends [...args: any]> = (...args: P) => E;
 
   export interface ELEMENT<E extends HTMLElement> {
     // ATTRIBUTES
@@ -84,31 +183,24 @@ declare namespace OEM {
     class: Attr<E, [...classes: string[]]>;
     column: Attr<E, [gap: number, align?: FlexAlign, justify?: FlexAlign]>;
     color: Attr<E, [hsla: number[], opacity?: number, lightness?: number]>;
-    flex: Attr<E, [direction: FlexDirection, gap: number, align?: FlexAlign, justify?: FlexAlign]>;
-    fontSize: Attr<E, [s: SizingValues, u?: SizingUnits]>;
-    height: Attr<E, [w: SizingValues, u?: SizingUnits]>;
+    flex: Attr<E, [direction: FlexDir, gap: number, align?: FlexAlign, justify?: FlexAlign]>;
+    fontSize: Attr<E, [s: SizingVals, u?: SizingUnits]>;
+    height: Attr<E, [w: SizingVals, u?: SizingUnits]>;
     margin: Attr<E, [...margins: Sizing[]]>;
-    onClick: <F extends (...args: any[]) => any>(func: F, ...args: Parameters<F>) => ELEMENT<E>;
+    onClick: Attr<E, [func: AnyFunc, ...args: any[]]>;
     onInput: Attr<E, [func: (val: any) => void]>;
     onSubmit: Attr<E, [func?: () => void]>;
     padding: Attr<E, [...paddings: Sizing[]]>;
     row: Attr<E, [gap: number, align?: FlexAlign, justify?: FlexAlign]>;
-    style: Attr<E, [prop: CssProp, val: any]>;
-    styleOnHeight: Attr<E, [prop: CssProp, val: any, breakpoint: number, cq: CONTAINER_QUERY]>;
-    styleOnWidth: Attr<E, [prop: CssProp, val: any, breakpoint: number, cq: CONTAINER_QUERY]>;
-    styleOnHover: Attr<E, [prop: CssProp, val: any]>;
+    style: Attr<E, [prop: CssProp, val: any, condition?: Condition]>;
     styles: Attr<E, [propsAndVals: [CssProp, any][]]>;
-    width: Attr<E, [h: SizingValues, u?: SizingUnits]>;
+    width: Attr<E, [h: SizingVals, u?: SizingUnits]>;
 
     // RENDERERS
     append: Render<E, [...nodes: (string | Node)[]]>;
     innerText: Render<E, [txt: (string | number) | (() => string | number), ...buses: BUSES[]]>;
     innerHtml: Render<E, [node: HTMLElement | (() => HTMLElement), ...buses: BUSES[]]>;
-    map: <I extends any[], II extends () => any[]>(
-      cb: (i: I[0] | ReturnType<II>[0]) => any,
-      items: I | II,
-      ...buses: BUSES[]
-    ) => E;
+    map: Render<E, [cb: AnyFunc, item: any, ...buses: BUSES[]]>;
     value: Render<E, [val: (string | number) | (() => string | number), ...buses: BUSES[]]>;
     render: Render<E, []>;
   }
@@ -123,8 +215,13 @@ declare namespace OEM {
 // Declare Functions
 declare const COMPONENT: OEM.COMPONENT;
 
-// Declare Objects
+// Declare Buses
 declare const ARRAY: <T>(ary: T[]) => OEM.ARRAY<T>;
+declare const BREAKPOINT: (
+  breakpoint: number,
+  dimension?: 'height' | 'width',
+  container?: string,
+) => OEM.BREAKPOINT;
 declare const CONTAINER_QUERY: (container?: string) => OEM.CONTAINER_QUERY;
 declare const LOCATION: () => OEM.LOCATION;
 declare const NUMBER: (n: number) => OEM.NUMBER;
