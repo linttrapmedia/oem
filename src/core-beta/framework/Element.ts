@@ -22,11 +22,18 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     this.onInput = this.onInput.bind(this);
     this.render = this.render.bind(this);
     this.row = this.row.bind(this);
+    this.style = this.style.bind(this);
     this.value = this.value.bind(this);
     this.width = this.width.bind(this);
   }
   private createElement() {
     const cond = (condition: OEM.Condition, apply: () => void) => {
+      if (condition === 'hover') {
+        const reset = this.#el.style.cssText;
+        this.#el.addEventListener('mouseenter', apply);
+        this.#el.addEventListener('mouseleave', () => (this.#el.style.cssText = reset));
+        return;
+      }
       if (typeof condition === 'string') return this.#el.addEventListener(condition, apply);
       if (typeof condition === 'boolean') return apply();
       if (typeof condition === 'function') return condition() ? apply() : null;

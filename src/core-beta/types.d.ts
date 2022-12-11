@@ -43,6 +43,7 @@ declare namespace OEM {
     | 'focusout'
     | 'formdata'
     | 'gotpointercapture'
+    | 'hover'
     | 'input'
     | 'invalid'
     | 'keydown'
@@ -123,7 +124,10 @@ declare namespace OEM {
   // BUSES
 
   export interface BUS<T> {
+    eq: (val: T) => boolean;
     get: () => T;
+    neq: (val: T) => boolean;
+    reset: () => BUS<T>;
     set(...args: any): BUS<T>;
     sub: (cb: (x: T) => any) => void;
     val: T;
@@ -155,12 +159,8 @@ declare namespace OEM {
     val: number;
   }
 
-  export interface STRING {
-    get: () => string;
-    set(s: string): STRING;
-    reset(): STRING;
-    sub: (cb: (s: string) => any) => void;
-    val: string;
+  export interface STRING extends BUS<string> {
+    cb: (func: 'eq' | 'neq', ...args: any) => () => any;
   }
 
   export interface LOCATION {
