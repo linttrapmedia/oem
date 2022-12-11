@@ -89,7 +89,7 @@ const currentSnippet = STRING(IndexSnippet);
 
 export function CleanCode() {
   return DIV.backgroundColor(HSLA.white, 0.05)
-    .padding(100, 0)
+    .padding(100, 50)
     .column(50, 'center', 'center')
     .color(HSLA.white)
     .style('width', '100%')
@@ -119,21 +119,29 @@ export function CleanCode() {
             .style('height', '500px')
             .width(100)
             .append(
-              DIV.column(0)
+              DIV.column(0, 'stretch')
                 .padding(30, 0)
                 .style('borderTopLeftRadius', '10px')
                 .style('borderBottomLeftRadius', '10px')
                 .map(
                   ([fileName, snippet]) =>
-                    DIV.row(10, 'center')
+                    DIV.row(10)
                       .onClick(() => currentSnippet.set(snippet))
-                      .style('cursor', 'pointer')
                       .padding(10, 30)
                       .style(
                         'backgroundColor',
-                        currentSnippet.val === snippet ? hsla(HSLA.black, 0.2) : 'transparent',
+                        hsla(HSLA.black, 0.2),
+                        currentSnippet.val === snippet,
                       )
                       .style('backgroundColor', hsla(HSLA.white, 0.05), 'mouseenter')
+                      .style(
+                        'backgroundColor',
+                        () =>
+                          currentSnippet.get() === snippet ? hsla(HSLA.black, 0.2) : 'transparent',
+                        'mouseleave',
+                      )
+
+                      .style('cursor', 'pointer')
                       .append(
                         DIV.style('fontSize', '8px')
                           .backgroundColor(HSLA.secondary, 1, -15)

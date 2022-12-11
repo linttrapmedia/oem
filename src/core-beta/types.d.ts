@@ -2,6 +2,11 @@ declare namespace OEM {
   // UTILS
   type AnyFunc = (...args: any[]) => any;
   type Condition = boolean | (() => boolean) | BUS<boolean> | ElementEvents;
+  type Concat<T> = T extends [infer A, ...infer Rest]
+    ? A extends any[]
+      ? [...A, ...Concat<Rest>]
+      : A
+    : T;
   type ElementEvents =
     | 'abort'
     | 'animationcancel'
@@ -102,9 +107,13 @@ declare namespace OEM {
     | 'space-evenly'
     | 'start'
     | 'stretch';
-  type Attr<E extends HTMLElement, P extends [...args: any]> = (...args: P) => ELEMENT<E>;
+  type AnyArgs = [];
+  type Attr<E extends HTMLElement, P extends [...args: any]> = (
+    ...args: Concat<[P, [condition?: Condition]]>
+  ) => ELEMENT<E>;
   type CssProp = keyof CSSStyleDeclaration;
   type FlexDir = 'row' | 'row-reverse' | 'column' | 'column-reverse';
+  type Method<E extends HTMLElement, P extends [...args: any]> = (...args: P) => ELEMENT<E>;
   type Render<E extends HTMLElement, P extends [...args: any]> = (...args: P) => E;
   type Sizing = number | `${number}${SizingUnits}` | `${SizingVals}`;
   type SizingUnits = 'px' | 'em' | 'rem' | 'vh' | 'vw' | 'vmin' | 'vmax' | '%';
@@ -180,19 +189,29 @@ declare namespace OEM {
     // ATTRIBUTES
     attr: Attr<E, [name: string, value?: string]>;
     backgroundColor: Attr<E, [hsla: number[], opacity?: number, lightness?: number]>;
-    class: Attr<E, [...classes: string[]]>;
+    class: Attr<E, [classname: string]>;
     column: Attr<E, [gap: number, align?: FlexAlign, justify?: FlexAlign]>;
     color: Attr<E, [hsla: number[], opacity?: number, lightness?: number]>;
     flex: Attr<E, [direction: FlexDir, gap: number, align?: FlexAlign, justify?: FlexAlign]>;
     fontSize: Attr<E, [s: SizingVals, u?: SizingUnits]>;
     height: Attr<E, [w: SizingVals, u?: SizingUnits]>;
-    margin: Attr<E, [...margins: Sizing[]]>;
-    onClick: Attr<E, [func: AnyFunc, ...args: any[]]>;
-    onInput: Attr<E, [func: (val: any) => void]>;
-    onSubmit: Attr<E, [func?: () => void]>;
-    padding: Attr<E, [...paddings: Sizing[]]>;
+    margin: Attr<
+      E,
+      [top: Sizing, right?: Sizing, bottom?: Sizing, left?: Sizing, unit?: SizingUnits]
+    >;
+    marginX: Attr<E, [marginX: Sizing, unit?: SizingUnits]>;
+    marginY: Attr<E, [marginY: Sizing, unit?: SizingUnits]>;
+    onClick: Method<E, [func: AnyFunc, ...args: any[]]>;
+    onInput: Method<E, [func: (val: any) => void]>;
+    onSubmit: Method<E, [func?: () => void]>;
+    padding: Attr<
+      E,
+      [top: Sizing, right?: Sizing, bottom?: Sizing, left?: Sizing, unit?: SizingUnits]
+    >;
+    paddingX: Attr<E, [paddingX: Sizing, unit?: SizingUnits]>;
+    paddingY: Attr<E, [paddingY: Sizing, unit?: SizingUnits]>;
     row: Attr<E, [gap: number, align?: FlexAlign, justify?: FlexAlign]>;
-    style: Attr<E, [prop: CssProp, val: any, condition?: Condition]>;
+    style: Attr<E, [prop: CssProp, val: any]>;
     styles: Attr<E, [propsAndVals: [CssProp, any][]]>;
     width: Attr<E, [h: SizingVals, u?: SizingUnits]>;
 

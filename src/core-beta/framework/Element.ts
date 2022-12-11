@@ -1,6 +1,6 @@
 export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
-  #attrs: [string, string][] = [];
-  #classes: string[] = [];
+  #attrs: [string, string, OEM.Condition?][] = [];
+  #classes: [string, OEM.Condition?][] = [];
   #el: T;
   #funcs: [string, (...args: any[]) => any][] = [];
   #styles: [keyof CSSStyleDeclaration, string, OEM.Condition?][] = [];
@@ -45,68 +45,84 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
   }
   // ATTRIBUTES
   attr(...props: Parameters<OEM.ELEMENT<T>['attr']>) {
-    const [name, value] = props;
-    this.#attrs.push([name, value]);
+    const [name, value, condition = true] = props;
+    this.#attrs.push([name, value, condition]);
     return this;
   }
   backgroundColor(...props: Parameters<OEM.ELEMENT<T>['backgroundColor']>) {
-    const [hsla, opacity = 1, lightness = 0] = props;
+    const [hsla, opacity = 1, lightness = 0, condition = true] = props;
     const h = hsla[0];
     const s = hsla[1];
     const l = hsla[2] + lightness;
     const a = hsla[3] * opacity;
     const color = `hsla(${h}, ${s}%, ${l}%, ${a})`;
-    this.#styles.push(['backgroundColor', color]);
+    this.#styles.push(['backgroundColor', color, condition]);
     return this;
   }
-  class(...classes: Parameters<OEM.ELEMENT<T>['class']>) {
-    this.#classes.push(...classes);
+  class(...props: Parameters<OEM.ELEMENT<T>['class']>) {
+    const [classname, condition = true] = props;
+    this.#classes.push([classname, condition]);
     return this;
   }
   color(...props: Parameters<OEM.ELEMENT<T>['color']>) {
-    const [hsla, opacity = 1, lightness = 0] = props;
+    const [hsla, opacity = 1, lightness = 0, condition = true] = props;
     const h = hsla[0];
     const s = hsla[1];
     const l = hsla[2] + lightness;
     const a = hsla[3] * opacity;
     const color = `hsla(${h}, ${s}%, ${l}%, ${a})`;
-    this.#styles.push(['color', color]);
+    this.#styles.push(['color', color, condition]);
     return this;
   }
   column(...props: Parameters<OEM.ELEMENT<T>['column']>) {
-    const [gap, align = 'start', justify = 'end'] = props;
-    this.#styles.push(['display', 'flex']);
-    this.#styles.push(['flexDirection', 'column']);
-    this.#styles.push(['gap', typeof gap === 'number' ? `${gap}px` : gap]);
-    this.#styles.push(['alignItems', align]);
-    this.#styles.push(['justifyContent', justify]);
+    const [gap, align = 'start', justify = 'start', condition = true] = props;
+    this.#styles.push(['display', 'flex', condition]);
+    this.#styles.push(['flexDirection', 'column', condition]);
+    this.#styles.push(['gap', typeof gap === 'number' ? `${gap}px` : gap, condition]);
+    this.#styles.push(['alignItems', align, condition]);
+    this.#styles.push(['justifyContent', justify, condition]);
     return this;
   }
   flex(...props: Parameters<OEM.ELEMENT<T>['flex']>) {
-    const [direction = 'row', gap = 0, align = 'start', justify = 'start'] = props;
-    this.#styles.push(['display', 'flex']);
-    this.#styles.push(['flexDirection', direction]);
-    this.#styles.push(['gap', typeof gap === 'number' ? `${gap}px` : gap]);
-    this.#styles.push(['alignItems', align]);
-    this.#styles.push(['justifyContent', justify]);
+    const [dir = 'row', gap = 0, align = 'start', justify = 'start', condition = true] = props;
+    this.#styles.push(['display', 'flex', condition]);
+    this.#styles.push(['flexDirection', dir, condition]);
+    this.#styles.push(['gap', typeof gap === 'number' ? `${gap}px` : gap, condition]);
+    this.#styles.push(['alignItems', align, condition]);
+    this.#styles.push(['justifyContent', justify, condition]);
     return this;
   }
   fontSize(...props: Parameters<OEM.ELEMENT<T>['fontSize']>) {
-    const [size, unit = 'px'] = props;
-    this.#styles.push(['fontSize', `${size}${unit}`]);
+    const [size, unit = 'px', condition = true] = props;
+    this.#styles.push(['fontSize', `${size}${unit}`, condition]);
     return this;
   }
   height(...props: Parameters<OEM.ELEMENT<T>['height']>) {
-    const [h, u = '%'] = props;
-    this.#styles.push(['height', `${h}${u}`]);
+    const [h, u = '%', condition = true] = props;
+    this.#styles.push(['height', `${h}${u}`, condition]);
     return this;
   }
   margin(...props: Parameters<OEM.ELEMENT<T>['margin']>) {
-    const margin = props;
-    this.#styles.push([
-      'margin',
-      margin.map((m) => (typeof m === 'number' ? `${m}px` : m)).join(' '),
-    ]);
+    const [top, right, bottom, left, unit = 'px', condition = true] = props;
+    const margin = [top, right, bottom, left]
+      .filter((v) => v !== undefined)
+      .map((v) => (typeof v === 'number' ? `${v}${unit}` : v))
+      .join(' ');
+    this.#styles.push(['margin', margin, condition]);
+    return this;
+  }
+  marginX(...props: Parameters<OEM.ELEMENT<T>['marginX']>) {
+    const [x, unit = 'px', condition = true] = props;
+    const margin = typeof x === 'number' ? `${x}${unit}` : x;
+    this.#styles.push(['marginLeft', margin, condition]);
+    this.#styles.push(['marginRight', margin, condition]);
+    return this;
+  }
+  marginY(...props: Parameters<OEM.ELEMENT<T>['marginX']>) {
+    const [y, unit = 'px', condition = true] = props;
+    const margin = typeof y === 'number' ? `${y}${unit}` : y;
+    this.#styles.push(['marginTop', margin, condition]);
+    this.#styles.push(['marginBottom', margin, condition]);
     return this;
   }
   onClick<F extends (...args: any[]) => any>(func: F, ...args: Parameters<F>) {
@@ -130,36 +146,50 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     return this;
   }
   padding(...props: Parameters<OEM.ELEMENT<T>['padding']>) {
-    const padding = props;
-    this.#styles.push([
-      'padding',
-      padding.map((p) => (typeof p === 'number' ? `${p}px` : p)).join(' '),
-    ]);
+    const [top, right, bottom, left, unit = 'px', condition = true] = props;
+    const padding = [top, right, bottom, left]
+      .filter((v) => v !== undefined)
+      .map((v) => (typeof v === 'number' ? `${v}${unit}` : v))
+      .join(' ');
+    this.#styles.push(['padding', padding, condition]);
+    return this;
+  }
+  paddingX(...props: Parameters<OEM.ELEMENT<T>['paddingX']>) {
+    const [x, unit = 'px', condition = true] = props;
+    const padding = typeof x === 'number' ? `${x}${unit}` : x;
+    this.#styles.push(['paddingLeft', padding, condition]);
+    this.#styles.push(['paddingRight', padding, condition]);
+    return this;
+  }
+  paddingY(...props: Parameters<OEM.ELEMENT<T>['paddingX']>) {
+    const [y, unit = 'px', condition = true] = props;
+    const padding = typeof y === 'number' ? `${y}${unit}` : y;
+    this.#styles.push(['paddingTop', padding, condition]);
+    this.#styles.push(['paddingBottom', padding, condition]);
     return this;
   }
   row(...props: Parameters<OEM.ELEMENT<T>['row']>) {
-    const [gap, align = 'start', justify = 'end'] = props;
-    this.#styles.push(['display', 'flex']);
-    this.#styles.push(['flexDirection', 'row']);
-    this.#styles.push(['gap', typeof gap === 'number' ? `${gap}px` : gap]);
-    this.#styles.push(['alignItems', align]);
-    this.#styles.push(['justifyContent', justify]);
+    const [gap, align = 'start', justify = 'start', condition = true] = props;
+    this.#styles.push(['display', 'flex', condition]);
+    this.#styles.push(['flexDirection', 'row', condition]);
+    this.#styles.push(['gap', typeof gap === 'number' ? `${gap}px` : gap, condition]);
+    this.#styles.push(['alignItems', align, condition]);
+    this.#styles.push(['justifyContent', justify, condition]);
     return this;
   }
   style(...props: Parameters<OEM.ELEMENT<T>['style']>) {
-    const [prop, val, condition] = props;
+    const [prop, val, condition = true] = props;
     this.#styles.push([prop, val, condition]);
     return this;
   }
-
   styles(...props: Parameters<OEM.ELEMENT<T>['styles']>) {
-    const [styles] = props;
-    styles.forEach(([prop, val]) => this.style(prop, val));
+    const [styles, condition = true] = props;
+    styles.forEach(([prop, val]) => this.style(prop, val, condition));
     return this;
   }
   width(...props: Parameters<OEM.ELEMENT<T>['width']>) {
-    const [w, u = '%'] = props;
-    this.#styles.push(['width', `${w}${u}`]);
+    const [w, u = '%', condition = true] = props;
+    this.#styles.push(['width', `${w}${u}`, condition]);
     return this;
   }
   // RENDERERS

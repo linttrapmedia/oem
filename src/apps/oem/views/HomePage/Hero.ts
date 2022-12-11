@@ -4,20 +4,17 @@ import { CounterExample } from '../../components/CounterExample';
 import { Snippet } from '../../components/Snippet';
 import { HSLA, PAGE_WIDTH } from '../../config';
 
-const mobile = BREAKPOINT(0);
-const tablet = BREAKPOINT(800);
-
 export function Hero() {
   return DIV.row(50, 'center', 'center')
+    .padding(30, 50, 70)
     .style('flexDirection', 'column', Model.mobileBreakpoint)
     .style('flexDirection', 'row', Model.tabletBreakpoint)
-    .padding(30, 50, 70)
     .style('maxWidth', PAGE_WIDTH + 'px')
     .append(
       DIV.column(40, 'start', 'start')
+        .color(HSLA.white)
         .style('alignItems', 'center', Model.mobileBreakpoint)
         .style('alignItems', 'start', Model.tabletBreakpoint)
-        .color(HSLA.white)
         .style('width', '100%')
         .append(
           DIV.style('fontSize', '64px')
@@ -36,8 +33,7 @@ export function Hero() {
               'OEM is a dependency-free UI/UX framework that allows you to write complex html, css and javascript in a single declarative syntax that’s easy on the eyes and easy on the brain.',
             ),
           DIV.row(20).append(
-            BUTTON.backgroundColor(HSLA.secondary)
-              .style('border', 'none')
+            BUTTON.style('border', 'none')
               .style('width', '200px')
               .style('height', '60px')
               .style('fontSize', '18px')
@@ -47,7 +43,9 @@ export function Hero() {
               .style('textTransform', 'uppercase')
               .style('letterSpacing', '1px')
               .style('fontWeight', 'bold')
+              .style('backgroundColor', hsla(HSLA.secondary))
               .style('backgroundColor', hsla(HSLA.white), 'mouseenter')
+              .style('backgroundColor', hsla(HSLA.secondary), 'mouseleave')
               .innerText('Docs'),
             BUTTON.backgroundColor(HSLA.black, 0.2)
               .color(HSLA.secondary)
