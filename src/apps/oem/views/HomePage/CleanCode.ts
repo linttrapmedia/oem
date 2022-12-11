@@ -129,19 +129,13 @@ export function CleanCode() {
                     DIV.row(10)
                       .onClick(() => currFile.set(i))
                       .padding(10, 30)
-                      .style(
-                        'backgroundColor',
-                        currFile.val === i ? hsla(HSLA.black, 0.2) : 'transparent',
-                      )
-                      .style('backgroundColor', hsla(HSLA.white, 0.05), 'mouseenter')
-                      .style(
-                        'backgroundColor',
-                        currFile.val === i ? hsla(HSLA.black, 0.2) : 'transparent',
-                        'mouseleave',
-                      )
+                      .backgroundColor(HSLA.black, 0.2, 0, 'mouseenter')
+                      .backgroundColor(HSLA.black, 0, 0, 'mouseleave')
+                      .backgroundColor(HSLA.black, 0.2, 0, () => currFile.val === i)
+                      .backgroundColor(HSLA.black, 0, 0, () => currFile.val !== i)
                       .style('cursor', 'pointer')
                       .append(
-                        DIV.style('fontSize', '8px')
+                        DIV.fontSize(8)
                           .backgroundColor(HSLA.secondary, 1, -15)
                           .color(HSLA.black)
                           .style('borderRadius', '2px')
