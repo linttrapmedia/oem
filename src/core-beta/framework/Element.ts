@@ -3,7 +3,7 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
   #classes: [string, OEM.Condition?][] = [];
   #el: T;
   #funcs: [string, (...args: any[]) => any][] = [];
-  #styles: [keyof CSSStyleDeclaration, string, OEM.Condition?][] = [];
+  #styles: [keyof CSSStyleDeclaration, string | (() => string), OEM.Condition?][] = [];
   #tag: string = 'div';
   constructor(tag: string) {
     this.#tag = tag;
@@ -37,10 +37,15 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     this.#el = document.createElement(this.#tag) as T;
     this.#attrs.forEach(([key, val]) => this.#el.setAttribute(key, val));
     this.#styles.forEach(([prop, val, condition = true]) => {
-      cond(condition, () => ((<any>this.#el).style[prop] = val));
+      cond(
+        condition,
+        () => ((<any>this.#el).style[prop] = typeof val === 'function' ? val() : val),
+      );
     });
     this.#funcs.forEach(([event, func]) => this.#el.addEventListener(event, func));
-    this.#classes.forEach((cls) => this.#el.classList.add(cls));
+    this.#classes.forEach(([cls, condition = true]) => {
+      cond(condition, () => this.#el.classList.add(cls));
+    });
     return this.#el;
   }
   // ATTRIBUTES

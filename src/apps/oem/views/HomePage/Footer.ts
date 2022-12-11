@@ -4,14 +4,13 @@ import { HSLA, PAGE_WIDTH } from '../../config';
 
 export function Footer() {
   return DIV.column(0, 'center', 'start')
+    .padding(50)
     .width(100)
     .backgroundColor(HSLA.secondary, 0.3, -70)
     .append(
-      DIV.padding(50, 0)
-        .row(50, 'center', 'center')
+      DIV.row(50, 'center', 'center')
         .width(100)
         .style('maxWidth', PAGE_WIDTH + 'px')
-        .style('borderBottom', `1px solid ${hsla(HSLA.white, 0.1)}`)
         .append(
           DIV.append(
             DIV.color(HSLA.white).style('fontSize', '28px').innerText('Get Started in 3,2,1...'),
@@ -20,9 +19,17 @@ export function Footer() {
               .color(HSLA.white, 0.4)
               .append(
                 SPAN.innerText('Don’t forget to checkout the '),
-                A.attr('href', '').color(HSLA.white).innerText('Docs'),
+                A.attr('href', '')
+                  .color(HSLA.white)
+                  .color(HSLA.white, 0.5, 0, 'mouseenter')
+                  .color(HSLA.white, 1, 0, 'mouseleave')
+                  .innerText('Docs'),
                 SPAN.innerText('and'),
-                A.attr('href', '').color(HSLA.white).innerText('Design System'),
+                A.attr('href', '')
+                  .color(HSLA.white)
+                  .color(HSLA.white, 0.5, 0, 'mouseenter')
+                  .color(HSLA.white, 1, 0, 'mouseleave')
+                  .innerText('Design System'),
               ),
           ),
           CODE.backgroundColor(HSLA.white, 0.2)
@@ -41,7 +48,6 @@ npm start`),
       DIV.style('maxWidth', PAGE_WIDTH + 'px')
         .padding(50, 0)
         .width(100)
-        .style('borderBottom', `1px solid ${hsla(HSLA.white, 0.1)}`)
         .column(20, 'start', 'start')
         .append(
           DIV.color(HSLA.white).innerText('Newsletter'),
@@ -67,6 +73,8 @@ npm start`),
                     .style('border', 'none')
                     .padding(0, 50)
                     .color(HSLA.secondary)
+                    .color(HSLA.white, 0.5, 0, 'mouseenter')
+                    .color(HSLA.secondary, 1, 0, 'mouseleave')
                     .style('fontSize', '16px')
                     .style('cursor', 'pointer')
                     .style('borderRadius', '10px')

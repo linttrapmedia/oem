@@ -85,7 +85,8 @@ const ListsSnippet = `function DoneList(
     );
   }
   `;
-const currentSnippet = STRING(IndexSnippet);
+
+const currFile = STRING(IndexSnippet);
 
 export function CleanCode() {
   return DIV.backgroundColor(HSLA.white, 0.05)
@@ -124,23 +125,20 @@ export function CleanCode() {
                 .style('borderTopLeftRadius', '10px')
                 .style('borderBottomLeftRadius', '10px')
                 .map(
-                  ([fileName, snippet]) =>
+                  ([fileName, i]) =>
                     DIV.row(10)
-                      .onClick(() => currentSnippet.set(snippet))
+                      .onClick(() => currFile.set(i))
                       .padding(10, 30)
                       .style(
                         'backgroundColor',
-                        hsla(HSLA.black, 0.2),
-                        currentSnippet.val === snippet,
+                        currFile.val === i ? hsla(HSLA.black, 0.2) : 'transparent',
                       )
                       .style('backgroundColor', hsla(HSLA.white, 0.05), 'mouseenter')
                       .style(
                         'backgroundColor',
-                        () =>
-                          currentSnippet.get() === snippet ? hsla(HSLA.black, 0.2) : 'transparent',
+                        currFile.val === i ? hsla(HSLA.black, 0.2) : 'transparent',
                         'mouseleave',
                       )
-
                       .style('cursor', 'pointer')
                       .append(
                         DIV.style('fontSize', '8px')
@@ -156,13 +154,13 @@ export function CleanCode() {
                     ['Form.ts', FormSnippet],
                     ['Lists.ts', ListsSnippet],
                   ],
-                  currentSnippet,
+                  currFile,
                 ),
               DIV.padding(30)
                 .style('flex', '1')
                 .backgroundColor(HSLA.black, 0.2)
                 .style('overflow', 'auto')
-                .innerHtml(() => Snippet(currentSnippet.val), currentSnippet),
+                .innerHtml(() => Snippet(currFile.val), currFile),
               DIV.padding(30)
                 .style('flex', '1fr')
                 .style('overflow', 'auto')
