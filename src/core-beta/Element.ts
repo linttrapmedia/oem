@@ -10,6 +10,7 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     this.#styles = [];
     this.append = this.append.bind(this);
     this.attr = this.attr.bind(this);
+    this.backgroundColor = this.backgroundColor.bind(this);
     this.column = this.column.bind(this);
     this.color = this.color.bind(this);
     this.createElement = this.createElement.bind(this);

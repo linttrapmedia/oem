@@ -1,13 +1,13 @@
-export * from './framework/Color';
-export * from './framework/Markdown';
-import { OEM_APP } from './framework/App';
-import { OEM_ARRAY } from './framework/Array';
-import { OEM_BREAKPOINT } from './framework/Breakpoint';
-import { OEM_COMPONENT } from './framework/Component';
-import { OEM_ELEMENT } from './framework/Element';
-import { OEM_LOCATION } from './framework/Location';
-import { OEM_NUMBER } from './framework/Number';
-import { OEM_STRING } from './framework/String';
+export * from './Color';
+export * from './Markdown';
+import { OEM_APP } from './App';
+import { OEM_ARRAY } from './Array';
+import { OEM_BREAKPOINT } from './Breakpoint';
+import { OEM_COMPONENT } from './Component';
+import { OEM_ELEMENT } from './Element';
+import { OEM_LOCATION } from './Location';
+import { OEM_NUMBER } from './Number';
+import { OEM_STRING } from './String';
 export default OEM_APP;
 
 Object.defineProperty(window, 'ARRAY', {
@@ -51,3 +51,11 @@ Object.defineProperty(window, 'STRING', {
 Object.defineProperty(window, 'COMMENT', {
   get: () => (comment: string) => document.createComment(comment),
 });
+
+export const NUMBER2 = (n: number) => new OEM_NUMBER(n);
+
+const OEM = {
+  NUMBER2,
+};
+
+Object.defineProperty(window, 'OEM', { get: () => OEM });

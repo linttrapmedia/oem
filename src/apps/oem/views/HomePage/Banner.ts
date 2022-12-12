@@ -1,6 +1,8 @@
 import Model from '@apps/oem/models/Model';
-import { hsla } from '@oem';
+import { hsla, NUMBER2 } from '@oem';
 import { HSLA, PAGE_WIDTH } from '../../config';
+
+const num = NUMBER2(0);
 
 export function Banner() {
   const Disclaimer = DIV.column(0, 'center', 'center')

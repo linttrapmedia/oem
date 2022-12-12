@@ -241,7 +241,6 @@ declare const BREAKPOINT: (
   dimension?: 'height' | 'width',
   container?: string,
 ) => OEM.BREAKPOINT;
-declare const CONTAINER_QUERY: (container?: string) => OEM.CONTAINER_QUERY;
 declare const LOCATION: () => OEM.LOCATION;
 declare const NUMBER: (n: number) => OEM.NUMBER;
 declare const STRING: (s: string) => OEM.STRING;
