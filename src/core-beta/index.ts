@@ -8,54 +8,140 @@ import { OEM_ELEMENT } from './Element';
 import { OEM_LOCATION } from './Location';
 import { OEM_NUMBER } from './Number';
 import { OEM_STRING } from './String';
-export default OEM_APP;
 
-Object.defineProperty(window, 'ARRAY', {
-  get: () => (ary: any[]) => new OEM_ARRAY(ary),
-});
+export const A = new OEM_ELEMENT<HTMLAnchorElement>('a');
+export const ABBRADDRESS = new OEM_ELEMENT<HTMLElement>('abbraddress');
+export const AREA = new OEM_ELEMENT<HTMLAreaElement>('area');
+export const ARTICLE = new OEM_ELEMENT<HTMLElement>('article');
+export const ASIDE = new OEM_ELEMENT<HTMLElement>('aside');
+export const AUDIO = new OEM_ELEMENT<HTMLAudioElement>('audio');
+export const B = new OEM_ELEMENT<HTMLElement>('b');
+export const BASE = new OEM_ELEMENT<HTMLBaseElement>('base');
+export const BDI = new OEM_ELEMENT<HTMLElement>('bdi');
+export const BDO = new OEM_ELEMENT<HTMLElement>('bdo');
+export const BLOCKQUOTE = new OEM_ELEMENT<HTMLQuoteElement>('blockquote');
+export const BODY = new OEM_ELEMENT<HTMLBodyElement>('body');
+export const BR = new OEM_ELEMENT<HTMLBRElement>('br');
+export const BUTTON = new OEM_ELEMENT<HTMLButtonElement>('button');
+export const CANVAS = new OEM_ELEMENT<HTMLCanvasElement>('canvas');
+export const CAPTION = new OEM_ELEMENT<HTMLTableCaptionElement>('caption');
+export const CITE = new OEM_ELEMENT<HTMLElement>('cite');
+export const CODE = new OEM_ELEMENT<HTMLElement>('code');
+export const COL = new OEM_ELEMENT<HTMLTableColElement>('col');
+export const COLGROUP = new OEM_ELEMENT<HTMLTableColElement>('colgroup');
+export const DATA = new OEM_ELEMENT<HTMLDataElement>('data');
+export const DATALIST = new OEM_ELEMENT<HTMLDataListElement>('datalist');
+export const DD = new OEM_ELEMENT<HTMLElement>('dd');
+export const DEL = new OEM_ELEMENT<HTMLModElement>('del');
+export const DETAILS = new OEM_ELEMENT<HTMLDetailsElement>('details');
+export const DFN = new OEM_ELEMENT<HTMLElement>('dfn');
+export const DIALOG = new OEM_ELEMENT<HTMLDialogElement>('dialog');
 
-Object.defineProperty(window, 'BREAKPOINT', {
-  get:
-    () =>
-    (breakpoint: number = 0, dimension: 'height' | 'width' = 'width', container: string) =>
-      new OEM_BREAKPOINT(breakpoint, dimension, container),
-});
-
-Object.defineProperty(window, 'COMPONENT', {
-  get:
-    () =>
-    (...args: Parameters<OEM.COMPONENT>) =>
-      OEM_COMPONENT(...args),
-});
-
-Object.defineProperty(window, 'LOCATION', {
-  get: () => () => new OEM_LOCATION(),
-});
-
-Object.defineProperty(window, 'NUMBER', {
-  get: () => (n: number) => new OEM_NUMBER(n),
-});
-
-Object.defineProperty(window, 'STRING', {
-  get: () => (s: string) => new OEM_STRING(s),
-});
-
-'a,abbr,address,area,article,aside,audio,b,base,bdi,bdo,blockquote,body,br,button,canvas,caption,cite,code,col,colgroup,data,datalist,dd,del,details,dfn,dialog,div,dl,dt,em,embed,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6,head,header,hgroup,hr,html,i,iframe,img,input,ins,kbd,label,legend,li,link,main,map,mark,menu,meta,meter,nav,noscript,object,ol,optgroup,option,output,p,picture,pre,progress,q,rp,rt,ruby,s,samp,script,section,select,slot,small,source,span,strong,style,sub,summary,sup,table,tbody,td,template,textarea,tfoot,th,thead,time,title,tr,track,u,ul,var,video,wbr'
-  .split(',')
-  .forEach((tag: keyof HTMLElementTagNameMap) => {
-    Object.defineProperty(window, tag.toUpperCase(), {
-      get: () => new OEM_ELEMENT<HTMLElementTagNameMap[typeof tag]>(tag),
-    });
+const createProxyEl = <T extends HTMLElement>(tag: keyof HTMLElementTagNameMap) =>
+  new Proxy({} as OEM_ELEMENT<T>, {
+    get: (_, key) => {
+      return Reflect.get(new OEM_ELEMENT<T>(tag), key);
+    },
   });
 
-Object.defineProperty(window, 'COMMENT', {
-  get: () => (comment: string) => document.createComment(comment),
-});
+export const DIV = createProxyEl<HTMLDivElement>('div');
+export const DL = createProxyEl<HTMLDListElement>('dl');
+export const DT = createProxyEl<HTMLElement>('dt');
+export const EM = createProxyEl<HTMLElement>('em');
+export const EMBED = createProxyEl<HTMLEmbedElement>('embed');
+export const FIELDSET = createProxyEl<HTMLFieldSetElement>('fieldset');
+export const FIGCAPTION = createProxyEl<HTMLElement>('figcaption');
+export const FIGURE = createProxyEl<HTMLElement>('figure');
+export const FOOTER = createProxyEl<HTMLElement>('footer');
+export const FORM = createProxyEl<HTMLFormElement>('form');
+export const H1 = createProxyEl<HTMLHeadElement>('h1');
+export const H2 = createProxyEl<HTMLHeadElement>('h2');
+export const H3 = createProxyEl<HTMLHeadElement>('h3');
+export const H4 = createProxyEl<HTMLHeadElement>('h4');
+export const H5 = createProxyEl<HTMLHeadElement>('h5');
+export const H6 = createProxyEl<HTMLHeadElement>('h6');
+export const HEAD = createProxyEl<HTMLHeadElement>('head');
+export const HEADER = createProxyEl<HTMLElement>('header');
+export const HGROUP = createProxyEl<HTMLElement>('hgroup');
+export const HR = createProxyEl<HTMLHRElement>('hr');
+export const HTML = createProxyEl<HTMLElement>('html');
+export const I = createProxyEl<HTMLElement>('i');
+export const IFRAME = createProxyEl<HTMLElement>('iframe');
+export const IMG = createProxyEl<HTMLElement>('img');
+export const INPUT = createProxyEl<HTMLInputElement>('input');
+export const INS = createProxyEl<HTMLElement>('ins');
+export const KBD = createProxyEl<HTMLElement>('kbd');
+export const LABEL = createProxyEl<HTMLElement>('label');
+export const LEGEND = createProxyEl<HTMLElement>('legend');
+export const LI = createProxyEl<HTMLElement>('li');
+export const LINK = createProxyEl<HTMLElement>('link');
+export const MAIN = createProxyEl<HTMLElement>('main');
+export const MAP = createProxyEl<HTMLElement>('map');
+export const MARK = createProxyEl<HTMLElement>('mark');
+export const MENU = createProxyEl<HTMLElement>('menu');
+export const META = createProxyEl<HTMLElement>('meta');
+export const METER = createProxyEl<HTMLElement>('meter');
+export const NAV = createProxyEl<HTMLElement>('nav');
+export const NOSCRIPT = createProxyEl<HTMLElement>('noscript');
+export const OBJECT = createProxyEl<HTMLElement>('object');
+export const OL = createProxyEl<HTMLElement>('ol');
+export const OPTGROUP = createProxyEl<HTMLElement>('optgroup');
+export const OPTION = createProxyEl<HTMLElement>('option');
+export const OUTPUT = createProxyEl<HTMLElement>('output');
+export const P = createProxyEl<HTMLElement>('p');
+export const PICTURE = createProxyEl<HTMLElement>('picture');
+export const PRE = createProxyEl<HTMLElement>('pre');
+export const PROGRESS = createProxyEl<HTMLElement>('progress');
+export const Q = createProxyEl<HTMLElement>('q');
+export const RP = createProxyEl<HTMLElement>('rp');
+export const RT = createProxyEl<HTMLElement>('rt');
+export const RUBY = createProxyEl<HTMLElement>('ruby');
+export const S = createProxyEl<HTMLElement>('s');
+export const SAMP = createProxyEl<HTMLElement>('samp');
+export const SCRIPT = createProxyEl<HTMLElement>('script');
+export const SECTION = createProxyEl<HTMLElement>('section');
+export const SELECT = createProxyEl<HTMLElement>('select');
+export const SLOT = createProxyEl<HTMLElement>('slot');
+export const SMALL = createProxyEl<HTMLElement>('small');
+export const SOURCE = createProxyEl<HTMLElement>('source');
+export const SPAN = createProxyEl<HTMLElement>('span');
+export const STRONG = createProxyEl<HTMLElement>('strong');
+export const STYLE = createProxyEl<HTMLElement>('style');
+export const SUB = createProxyEl<HTMLElement>('sub');
+export const SUMMARY = createProxyEl<HTMLElement>('summary');
+export const SUP = createProxyEl<HTMLElement>('sup');
+export const TABLE = createProxyEl<HTMLElement>('table');
+export const TBODY = createProxyEl<HTMLElement>('tbody');
+export const TD = createProxyEl<HTMLElement>('td');
+export const TEMPLATE = createProxyEl<HTMLElement>('template');
+export const TEXTAREA = createProxyEl<HTMLElement>('textarea');
+export const TFOOT = createProxyEl<HTMLElement>('tfoot');
+export const TH = createProxyEl<HTMLElement>('th');
+export const THEAD = createProxyEl<HTMLElement>('thead');
+export const TIME = createProxyEl<HTMLElement>('time');
+export const TITLE = createProxyEl<HTMLElement>('title');
+export const TR = createProxyEl<HTMLElement>('tr');
+export const TRACK = createProxyEl<HTMLElement>('track');
+export const U = createProxyEl<HTMLElement>('u');
+export const UL = createProxyEl<HTMLElement>('ul');
+export const VAR = createProxyEl<HTMLElement>('var');
+export const VIDEO = createProxyEl<HTMLElement>('video');
+export const WBR = createProxyEl<HTMLElement>('wbr');
 
-export const NUMBER2 = (n: number) => new OEM_NUMBER(n);
+export const APP = OEM_APP;
+export const ARRAY = (ary: any[]) => new OEM_ARRAY(ary);
+export const BREAKPOINT = (
+  breakpoint: number = 0,
+  dimension?: 'height' | 'width',
+  container?: string,
+) => new OEM_BREAKPOINT(breakpoint, dimension ?? 'width', container);
+export const COMPONENT = (...args: Parameters<OEM.COMPONENT>) => OEM_COMPONENT(...args);
+export const LOCATION = () => new OEM_LOCATION();
+export const STRING = (s: string) => new OEM_STRING(s);
+export const NUMBER = (n: number) => new OEM_NUMBER(n);
+export const COMMENT = (comment: string) => document.createComment(comment);
 
-const OEM = {
-  NUMBER2,
-};
-
-Object.defineProperty(window, 'OEM', { get: () => OEM });
+// export const OEM = {
+//   NUMBER,
+//   DIV,
+// };

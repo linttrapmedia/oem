@@ -1,3 +1,4 @@
-import OEM from '@oem';
+import { APP } from '@oem';
 import { Controller } from './controllers/Controller';
-OEM(Controller);
+
+APP(Controller);

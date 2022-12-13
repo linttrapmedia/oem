@@ -1,8 +1,5 @@
-import Model from '@apps/oem/models/Model';
-import { hsla, NUMBER2 } from '@oem';
+import { A, BUTTON, DIV, hsla } from '@oem';
 import { HSLA, PAGE_WIDTH } from '../../config';
-
-const num = NUMBER2(0);
 
 export function Banner() {
   const Disclaimer = DIV.column(0, 'center', 'center')
@@ -18,8 +15,8 @@ export function Banner() {
     .append(
       DIV.style('rotate', '0deg').style('fontSize', '20px').innerText('🧪💥'),
       DIV.color(HSLA.white, 0.35)
-        .style('display', 'none', Model.mobileBreakpoint)
-        .style('display', 'block', Model.tabletBreakpoint)
+        .style('display', 'none')
+        .style('display', 'block')
         .innerText("Don't Use"),
       DIV.color(HSLA.white, 0.25).innerText('Experimental'),
     );

@@ -1,3 +1,4 @@
+import { COMPONENT } from '@oem';
 import { ROUTER } from '../config';
 import model from '../models/Model';
 
