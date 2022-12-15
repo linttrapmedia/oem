@@ -1,3 +1,4 @@
+import Model from '@apps/oem/models/Model';
 import { A, BUTTON, DIV, hsla } from '@oem';
 import { HSLA, PAGE_WIDTH } from '../../config';
 
@@ -12,6 +13,8 @@ export function Banner() {
     .style('rotate', '-45deg')
     .style('fontSize', '11px')
     .style('textTransform', 'uppercase')
+    .style('display', 'none', Model.mobileBreakpoint)
+    .style('display', 'block', Model.tabletBreakpoint)
     .append(
       DIV.style('rotate', '0deg').style('fontSize', '20px').innerText('🧪💥'),
       DIV.color(HSLA.white, 0.35)

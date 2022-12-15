@@ -124,10 +124,10 @@ declare namespace OEM {
   // BUSES
 
   export interface BUS<T> {
-    eq: (val: T) => boolean;
+    eq?: (val: T) => boolean;
     get: () => T;
-    neq: (val: T) => boolean;
-    reset: () => BUS<T>;
+    neq?: (val: T) => boolean;
+    reset?: () => BUS<T>;
     set(...args: any): BUS<T>;
     sub: (cb: (x: T) => any) => void;
     val: T;
@@ -184,6 +184,8 @@ declare namespace OEM {
   export type BUSES = ARRAY<any> | LOCATION | NUMBER | STRING;
 
   // ELEMENT
+
+  export type Attrs = [prop: 'id', val: string] | [prop: 'onclick', val: () => void];
 
   export interface ELEMENT<E extends HTMLElement> {
     // ATTRIBUTES

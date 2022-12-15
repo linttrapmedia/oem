@@ -1,6 +1,7 @@
 import { DIV } from '@oem';
 import { HSLA } from '../../config';
 import { Banner } from './Banner';
+import { Menu } from './Menu';
 
 export const HomePage = () => {
   return DIV.backgroundColor(HSLA.primary)
@@ -9,7 +10,7 @@ export const HomePage = () => {
     .style('fontFamily', 'sans-serif')
     .append(
       Banner(),
-      // Menu(),
+      Menu(),
       // Hero(),
       // CleanCode(),
       // GoEasy(),
