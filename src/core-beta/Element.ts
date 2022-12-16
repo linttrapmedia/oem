@@ -11,6 +11,13 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     this.append = this.append.bind(this);
     this.attr = this.attr.bind(this);
     this.backgroundColor = this.backgroundColor.bind(this);
+    this.border = this.border.bind(this);
+    this.borderTop = this.borderTop.bind(this);
+    this.borderRight = this.borderRight.bind(this);
+    this.borderLeft = this.borderLeft.bind(this);
+    this.borderBottom = this.borderBottom.bind(this);
+    this.borderRadius = this.borderRadius.bind(this);
+    this.colorizer = this.colorizer.bind(this);
     this.column = this.column.bind(this);
     this.color = this.color.bind(this);
     this.createElement = this.createElement.bind(this);
@@ -24,15 +31,15 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     this.render = this.render.bind(this);
     this.row = this.row.bind(this);
     this.style = this.style.bind(this);
-    this.value = this.value.bind(this);
     this.width = this.width.bind(this);
   }
+
+  // Private functions
   private createElement() {
-    const cond = (condition: OEM.Condition, apply: () => void) => {
+    const cond = (condition: OEM.Condition, apply: () => void, reset: () => void) => {
       if (condition === 'hover') {
-        const reset = this.#el.style.cssText;
         this.#el.addEventListener('mouseenter', apply);
-        this.#el.addEventListener('mouseleave', () => (this.#el.style.cssText = reset));
+        this.#el.addEventListener('mouseleave', reset);
         return;
       }
       if (typeof condition === 'string') return this.#el.addEventListener(condition, apply);
@@ -45,17 +52,28 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     this.#el = document.createElement(this.#tag) as T;
     this.#attrs.forEach(([key, val]) => this.#el.setAttribute(key, val));
     this.#styles.forEach(([prop, val, condition = true]) => {
+      const originalVal = (<any>this.#el).style[prop];
       cond(
         condition,
         () => ((<any>this.#el).style[prop] = typeof val === 'function' ? val() : val),
+        () => ((<any>this.#el).style[prop] = originalVal),
       );
     });
     this.#funcs.forEach(([event, func]) => this.#el.addEventListener(event, func));
     this.#classes.forEach(([cls, condition = true]) => {
-      cond(condition, () => this.#el.classList.add(cls));
+      cond(
+        condition,
+        () => this.#el.classList.add(cls),
+        () => this.#el.classList.remove(cls),
+      );
     });
     return this.#el;
   }
+
+  private colorizer(color: string, opacity: number, lightness: number) {
+    return color;
+  }
+
   // ATTRIBUTES
   attr(...props: Parameters<OEM.ELEMENT<T>['attr']>) {
     const [name, value, condition = true] = props;
@@ -63,13 +81,49 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     return this;
   }
   backgroundColor(...props: Parameters<OEM.ELEMENT<T>['backgroundColor']>) {
-    const [hsla, opacity = 1, lightness = 0, condition = true] = props;
-    const h = hsla[0];
-    const s = hsla[1];
-    const l = hsla[2] + lightness;
-    const a = hsla[3] * opacity;
-    const color = `hsla(${h}, ${s}%, ${l}%, ${a})`;
-    this.#styles.push(['backgroundColor', color, condition]);
+    const [color, opacity = 1, lightness = 0, condition = true] = props;
+    this.#styles.push(['backgroundColor', this.colorizer(color, opacity, lightness), condition]);
+    return this;
+  }
+  border(...props: Parameters<OEM.ELEMENT<T>['border']>) {
+    const [_width, style, _color, opacity, lightness, condition = true] = props;
+    const width = typeof _width === 'number' ? `${_width}px` : _width;
+    const color = this.colorizer(_color, opacity, lightness);
+    this.#styles.push(['border', `${width} ${style} ${color}`, condition]);
+    return this;
+  }
+  borderTop(...props: Parameters<OEM.ELEMENT<T>['borderTop']>) {
+    const [_width, style, _color, opacity, lightness, condition = true] = props;
+    const width = typeof _width === 'number' ? `${_width}px` : _width;
+    const color = this.colorizer(_color, opacity, lightness);
+    this.#styles.push(['borderTop', `${width} ${style} ${color}`, condition]);
+    return this;
+  }
+  borderRight(...props: Parameters<OEM.ELEMENT<T>['borderRight']>) {
+    const [_width, style, _color, opacity, lightness, condition = true] = props;
+    const width = typeof _width === 'number' ? `${_width}px` : _width;
+    const color = this.colorizer(_color, opacity, lightness);
+    this.#styles.push(['borderRight', `${width} ${style} ${color}`, condition]);
+    return this;
+  }
+  borderBottom(...props: Parameters<OEM.ELEMENT<T>['borderBottom']>) {
+    const [_width, style, _color, opacity, lightness, condition = true] = props;
+    const width = typeof _width === 'number' ? `${_width}px` : _width;
+    const color = this.colorizer(_color, opacity, lightness);
+    this.#styles.push(['borderBottom', `${width} ${style} ${color}`, condition]);
+    return this;
+  }
+  borderLeft(...props: Parameters<OEM.ELEMENT<T>['borderLeft']>) {
+    const [_width, style, _color, opacity, lightness, condition = true] = props;
+    const width = typeof _width === 'number' ? `${_width}px` : _width;
+    const color = this.colorizer(_color, opacity, lightness);
+    this.#styles.push(['borderLeft', `${width} ${style} ${color}`, condition]);
+    return this;
+  }
+  borderRadius(...props: Parameters<OEM.ELEMENT<T>['borderRadius']>) {
+    const [_size, condition = true] = props;
+    const size = typeof _size === 'number' ? `${_size}px` : _size;
+    this.#styles.push(['borderRadius', size, condition]);
     return this;
   }
   class(...props: Parameters<OEM.ELEMENT<T>['class']>) {
@@ -78,13 +132,8 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     return this;
   }
   color(...props: Parameters<OEM.ELEMENT<T>['color']>) {
-    const [hsla, opacity = 1, lightness = 0, condition = true] = props;
-    const h = hsla[0];
-    const s = hsla[1];
-    const l = hsla[2] + lightness;
-    const a = hsla[3] * opacity;
-    const color = `hsla(${h}, ${s}%, ${l}%, ${a})`;
-    this.#styles.push(['color', color, condition]);
+    const [color, opacity = 1, lightness = 0, condition = true] = props;
+    this.#styles.push(['color', this.colorizer(color, opacity, lightness), condition]);
     return this;
   }
   column(...props: Parameters<OEM.ELEMENT<T>['column']>) {
@@ -106,34 +155,37 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     return this;
   }
   fontSize(...props: Parameters<OEM.ELEMENT<T>['fontSize']>) {
-    const [size, unit = 'px', condition = true] = props;
-    this.#styles.push(['fontSize', `${size}${unit}`, condition]);
+    const [_size, condition = true] = props;
+    const size = typeof _size === 'number' ? _size + 'px' : _size;
+    this.#styles.push(['fontSize', size, condition]);
     return this;
   }
   height(...props: Parameters<OEM.ELEMENT<T>['height']>) {
-    const [h, u = '%', condition = true] = props;
-    this.#styles.push(['height', `${h}${u}`, condition]);
+    const [_h, condition = true] = props;
+    const h = typeof _h === 'number' ? _h + '%' : _h;
+    this.#styles.push(['height', h, condition]);
     return this;
   }
   margin(...props: Parameters<OEM.ELEMENT<T>['margin']>) {
-    const [top, right, bottom, left, unit = 'px', condition = true] = props;
-    const margin = [top, right, bottom, left]
-      .filter((v) => v !== undefined)
-      .map((v) => (typeof v === 'number' ? `${v}${unit}` : v))
-      .join(' ');
+    const [_top, _right, _bottom, _left, condition = true] = props;
+    const top = typeof _top === 'number' ? _top + 'px' : _top;
+    const right = typeof _right === 'number' ? _right + 'px' : _right;
+    const bottom = typeof _bottom === 'number' ? _bottom + 'px' : _bottom;
+    const left = typeof _left === 'number' ? _left + 'px' : _left;
+    const margin = [top, right, bottom, left].filter((v) => v !== undefined).join(' ');
     this.#styles.push(['margin', margin, condition]);
     return this;
   }
   marginX(...props: Parameters<OEM.ELEMENT<T>['marginX']>) {
-    const [x, unit = 'px', condition = true] = props;
-    const margin = typeof x === 'number' ? `${x}${unit}` : x;
+    const [x, condition = true] = props;
+    const margin = typeof x === 'number' ? `${x}px` : x;
     this.#styles.push(['marginLeft', margin, condition]);
     this.#styles.push(['marginRight', margin, condition]);
     return this;
   }
   marginY(...props: Parameters<OEM.ELEMENT<T>['marginX']>) {
-    const [y, unit = 'px', condition = true] = props;
-    const margin = typeof y === 'number' ? `${y}${unit}` : y;
+    const [y, condition = true] = props;
+    const margin = typeof y === 'number' ? `${y}px` : y;
     this.#styles.push(['marginTop', margin, condition]);
     this.#styles.push(['marginBottom', margin, condition]);
     return this;
@@ -159,11 +211,12 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     return this;
   }
   padding(...props: Parameters<OEM.ELEMENT<T>['padding']>) {
-    const [top, right, bottom, left, unit = 'px', condition = true] = props;
-    const padding = [top, right, bottom, left]
-      .filter((v) => v !== undefined)
-      .map((v) => (typeof v === 'number' ? `${v}${unit}` : v))
-      .join(' ');
+    const [_top, _right, _bottom, _left, condition = true] = props;
+    const top = typeof _top === 'number' ? _top + 'px' : _top;
+    const right = typeof _right === 'number' ? _right + 'px' : _right;
+    const bottom = typeof _bottom === 'number' ? _bottom + 'px' : _bottom;
+    const left = typeof _left === 'number' ? _left + 'px' : _left;
+    const padding = [top, right, bottom, left].filter((v) => v !== undefined).join(' ');
     this.#styles.push(['padding', padding, condition]);
     return this;
   }
@@ -201,8 +254,9 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     return this;
   }
   width(...props: Parameters<OEM.ELEMENT<T>['width']>) {
-    const [w, u = '%', condition = true] = props;
-    this.#styles.push(['width', `${w}${u}`, condition]);
+    const [_w, condition = true] = props;
+    const w = typeof _w === 'number' ? `${_w}%` : _w;
+    this.#styles.push(['width', w, condition]);
     return this;
   }
   // RENDERERS
@@ -252,14 +306,6 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
   }
   render(): T {
     this.createElement();
-    return this.#el;
-  }
-  value(...props: Parameters<OEM.ELEMENT<T>['value']>) {
-    const [val] = props;
-    this.createElement();
-    const run = () => ((<any>this.#el).value = String(typeof val === 'function' ? val() : val));
-    if (typeof val === 'function' && val.prototype.sub) val.prototype.sub(run);
-    run();
     return this.#el;
   }
 }

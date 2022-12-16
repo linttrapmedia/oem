@@ -7,11 +7,11 @@ export const ROUTER: Record<string, any> = {
 };
 
 export const HSLA = {
-  primary: [40, 3, 17, 1],
-  secondary: [205, 81, 76, 1],
-  accent: [313, 100, 72, 1],
-  white: [0, 0, 100, 1],
-  black: [0, 0, 0, 1],
+  primary: 'hsla(40, 3%, 17%, 1)',
+  secondary: 'hsla(205, 81%, 76%, 1)',
+  accent: 'hsla(313, 100%, 72%, 1)',
+  white: 'hsla(0, 0, 100%, 1)',
+  black: 'hsla(0, 0%, 0%, 1)',
 };
 
 export const PAGE_WIDTH = 1200;

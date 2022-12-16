@@ -9,34 +9,6 @@ import { OEM_LOCATION } from './Location';
 import { OEM_NUMBER } from './Number';
 import { OEM_STRING } from './String';
 
-export const A = new OEM_ELEMENT<HTMLAnchorElement>('a');
-export const ABBRADDRESS = new OEM_ELEMENT<HTMLElement>('abbraddress');
-export const AREA = new OEM_ELEMENT<HTMLAreaElement>('area');
-export const ARTICLE = new OEM_ELEMENT<HTMLElement>('article');
-export const ASIDE = new OEM_ELEMENT<HTMLElement>('aside');
-export const AUDIO = new OEM_ELEMENT<HTMLAudioElement>('audio');
-export const B = new OEM_ELEMENT<HTMLElement>('b');
-export const BASE = new OEM_ELEMENT<HTMLBaseElement>('base');
-export const BDI = new OEM_ELEMENT<HTMLElement>('bdi');
-export const BDO = new OEM_ELEMENT<HTMLElement>('bdo');
-export const BLOCKQUOTE = new OEM_ELEMENT<HTMLQuoteElement>('blockquote');
-export const BODY = new OEM_ELEMENT<HTMLBodyElement>('body');
-export const BR = new OEM_ELEMENT<HTMLBRElement>('br');
-export const BUTTON = new OEM_ELEMENT<HTMLButtonElement>('button');
-export const CANVAS = new OEM_ELEMENT<HTMLCanvasElement>('canvas');
-export const CAPTION = new OEM_ELEMENT<HTMLTableCaptionElement>('caption');
-export const CITE = new OEM_ELEMENT<HTMLElement>('cite');
-export const CODE = new OEM_ELEMENT<HTMLElement>('code');
-export const COL = new OEM_ELEMENT<HTMLTableColElement>('col');
-export const COLGROUP = new OEM_ELEMENT<HTMLTableColElement>('colgroup');
-export const DATA = new OEM_ELEMENT<HTMLDataElement>('data');
-export const DATALIST = new OEM_ELEMENT<HTMLDataListElement>('datalist');
-export const DD = new OEM_ELEMENT<HTMLElement>('dd');
-export const DEL = new OEM_ELEMENT<HTMLModElement>('del');
-export const DETAILS = new OEM_ELEMENT<HTMLDetailsElement>('details');
-export const DFN = new OEM_ELEMENT<HTMLElement>('dfn');
-export const DIALOG = new OEM_ELEMENT<HTMLDialogElement>('dialog');
-
 const createProxyEl = <T extends HTMLElement>(tag: keyof HTMLElementTagNameMap) =>
   new Proxy({} as OEM_ELEMENT<T>, {
     get: (_, key) => {
@@ -44,6 +16,33 @@ const createProxyEl = <T extends HTMLElement>(tag: keyof HTMLElementTagNameMap) 
     },
   });
 
+export const A = createProxyEl<HTMLAnchorElement>('a');
+export const ABBRADDRESS = createProxyEl<HTMLElement>('abbraddress');
+export const AREA = createProxyEl<HTMLAreaElement>('area');
+export const ARTICLE = createProxyEl<HTMLElement>('article');
+export const ASIDE = createProxyEl<HTMLElement>('aside');
+export const AUDIO = createProxyEl<HTMLAudioElement>('audio');
+export const B = createProxyEl<HTMLElement>('b');
+export const BASE = createProxyEl<HTMLBaseElement>('base');
+export const BDI = createProxyEl<HTMLElement>('bdi');
+export const BDO = createProxyEl<HTMLElement>('bdo');
+export const BLOCKQUOTE = createProxyEl<HTMLQuoteElement>('blockquote');
+export const BODY = createProxyEl<HTMLBodyElement>('body');
+export const BR = createProxyEl<HTMLBRElement>('br');
+export const BUTTON = createProxyEl<HTMLButtonElement>('button');
+export const CANVAS = createProxyEl<HTMLCanvasElement>('canvas');
+export const CAPTION = createProxyEl<HTMLTableCaptionElement>('caption');
+export const CITE = createProxyEl<HTMLElement>('cite');
+export const CODE = createProxyEl<HTMLElement>('code');
+export const COL = createProxyEl<HTMLTableColElement>('col');
+export const COLGROUP = createProxyEl<HTMLTableColElement>('colgroup');
+export const DATA = createProxyEl<HTMLDataElement>('data');
+export const DATALIST = createProxyEl<HTMLDataListElement>('datalist');
+export const DD = createProxyEl<HTMLElement>('dd');
+export const DEL = createProxyEl<HTMLModElement>('del');
+export const DETAILS = createProxyEl<HTMLDetailsElement>('details');
+export const DFN = createProxyEl<HTMLElement>('dfn');
+export const DIALOG = createProxyEl<HTMLDialogElement>('dialog');
 export const DIV = createProxyEl<HTMLDivElement>('div');
 export const DL = createProxyEl<HTMLDListElement>('dl');
 export const DT = createProxyEl<HTMLElement>('dt');

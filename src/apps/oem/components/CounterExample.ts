@@ -1,3 +1,5 @@
+import { DIV, NUMBER } from '@oem';
+
 export function CounterExample() {
   const count = NUMBER(100);
   return DIV.onClick(count.inc, 1)

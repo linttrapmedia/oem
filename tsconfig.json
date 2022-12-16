@@ -19,7 +19,8 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "allowJs": true,
-    "lib": ["ES2022", "dom", "ES2022.Array"]
+    "lib": ["ES2022", "dom", "ES2022.Array"],
+    "noErrorTruncation": true
   },
   "include": ["**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]

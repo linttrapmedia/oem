@@ -1,5 +1,5 @@
 import Model from '@apps/oem/models/Model';
-import { hsla } from '@oem';
+import { BUTTON, COMMENT, DIV, hsla, SPAN } from '@oem';
 import { CounterExample } from '../../components/CounterExample';
 import { Snippet } from '../../components/Snippet';
 import { HSLA, PAGE_WIDTH } from '../../config';
@@ -49,6 +49,7 @@ export function Hero() {
               .innerText('Docs'),
             BUTTON.backgroundColor(HSLA.black, 0.2)
               .color(HSLA.secondary)
+              .color(HSLA.white, 1, 1, 'hover')
               .style('border', 'none')
               .style('width', '200px')
               .style('height', '60px')
@@ -59,7 +60,6 @@ export function Hero() {
               .style('textTransform', 'uppercase')
               .style('letterSpacing', '1px')
               .style('fontWeight', 'bold')
-              .style('color', hsla(HSLA.white), 'mouseenter')
               .innerText('Design'),
           ),
         ),

@@ -4,18 +4,17 @@ import { HSLA, PAGE_WIDTH } from '../../config';
 
 export function Menu() {
   return DIV.row(50, 'center', 'space-between')
+    .padding(20, 50)
     .style('justifyContent', 'center', Model.mobileBreakpoint)
     .style('justifyContent', 'space-between', Model.tabletBreakpoint)
-    .padding(20, 50)
     .style('maxWidth', PAGE_WIDTH + 'px')
     .style('width', '100%')
     .append(
       DIV.row(10, 'center').append(
         DIV.color(HSLA.white)
+          .fontSize(48, Model.mobileBreakpoint)
+          .fontSize(28, Model.tabletBreakpoint)
           .style('fontWeight', 'bold')
-          .style('fontSize', '28px')
-          .style('fontSize', '48px', Model.mobileBreakpoint)
-          .style('fontSize', '28px', Model.tabletBreakpoint)
           .style('textTransform', 'uppercase')
           .style('fontFamily', 'Courier')
           .innerText('oem'),

@@ -1,13 +1,13 @@
 declare namespace OEM {
   // UTILS
   type AnyFunc = (...args: any[]) => any;
-  type Condition = boolean | (() => boolean) | BUS<boolean> | ElementEvents;
+  type Condition = boolean | (() => boolean) | BUS<boolean> | Event;
   type Concat<T> = T extends [infer A, ...infer Rest]
     ? A extends any[]
       ? [...A, ...Concat<Rest>]
       : A
     : T;
-  type ElementEvents =
+  type Event =
     | 'abort'
     | 'animationcancel'
     | 'animationend'
@@ -116,9 +116,9 @@ declare namespace OEM {
   type FlexDir = 'row' | 'row-reverse' | 'column' | 'column-reverse';
   type Method<E extends HTMLElement, P extends [...args: any]> = (...args: P) => ELEMENT<E>;
   type Render<E extends HTMLElement, P extends [...args: any]> = (...args: P) => E;
-  type Sizing = number | `${number}${SizingUnits}` | `${SizingVals}`;
-  type SizingUnits = 'px' | 'em' | 'rem' | 'vh' | 'vw' | 'vmin' | 'vmax' | '%';
-  type SizingVals = number | 'auto' | 'max-content' | 'min-content';
+  type Size = number | `${number}${SizeUnits}` | `${SizeVals}`;
+  type SizeUnits = 'px' | 'em' | 'rem' | 'vh' | 'vw' | 'vmin' | 'vmax' | '%';
+  type SizeVals = number | 'auto' | 'max-content' | 'min-content';
   type ValueOf<T> = T[keyof T];
 
   // BUSES
@@ -190,39 +190,53 @@ declare namespace OEM {
   export interface ELEMENT<E extends HTMLElement> {
     // ATTRIBUTES
     attr: Attr<E, [name: string, value?: string]>;
-    backgroundColor: Attr<E, [hsla: number[], opacity?: number, lightness?: number]>;
+    backgroundColor: Attr<E, [color: string, opacity?: number, lightness?: number]>;
+    border: Attr<
+      E,
+      [width: Size, style?: string, color?: string, opacity?: number, lightness?: number]
+    >;
+    borderBottom: Attr<
+      E,
+      [width: Size, style?: string, color?: string, opacity?: number, lightness?: number]
+    >;
+    borderLeft: Attr<
+      E,
+      [width: Size, style?: string, color?: string, opacity?: number, lightness?: number]
+    >;
+    borderRight: Attr<
+      E,
+      [width: Size, style?: string, color?: string, opacity?: number, lightness?: number]
+    >;
+    borderTop: Attr<
+      E,
+      [width: Size, style?: string, color?: string, opacity?: number, lightness?: number]
+    >;
+    borderRadius: Attr<E, [radius: Size]>;
     class: Attr<E, [classname: string]>;
     column: Attr<E, [gap: number, align?: FlexAlign, justify?: FlexAlign]>;
-    color: Attr<E, [hsla: number[], opacity?: number, lightness?: number]>;
+    color: Attr<E, [color: string, opacity?: number, lightness?: number]>;
     flex: Attr<E, [direction: FlexDir, gap: number, align?: FlexAlign, justify?: FlexAlign]>;
-    fontSize: Attr<E, [s: SizingVals, u?: SizingUnits]>;
-    height: Attr<E, [w: SizingVals, u?: SizingUnits]>;
-    margin: Attr<
-      E,
-      [top: Sizing, right?: Sizing, bottom?: Sizing, left?: Sizing, unit?: SizingUnits]
-    >;
-    marginX: Attr<E, [marginX: Sizing, unit?: SizingUnits]>;
-    marginY: Attr<E, [marginY: Sizing, unit?: SizingUnits]>;
+    fontSize: Attr<E, [s: Size]>;
+    height: Attr<E, [height: Size]>;
+    margin: Attr<E, [top: Size, right?: Size, bottom?: Size, left?: Size]>;
+    marginX: Attr<E, [marginX: Size]>;
+    marginY: Attr<E, [marginY: Size]>;
     onClick: Method<E, [func: AnyFunc, ...args: any[]]>;
     onInput: Method<E, [func: (val: any) => void]>;
     onSubmit: Method<E, [func?: () => void]>;
-    padding: Attr<
-      E,
-      [top: Sizing, right?: Sizing, bottom?: Sizing, left?: Sizing, unit?: SizingUnits]
-    >;
-    paddingX: Attr<E, [paddingX: Sizing, unit?: SizingUnits]>;
-    paddingY: Attr<E, [paddingY: Sizing, unit?: SizingUnits]>;
+    padding: Attr<E, [top: Size, right?: Size, bottom?: Size, left?: Size]>;
+    paddingX: Attr<E, [paddingX: Size]>;
+    paddingY: Attr<E, [paddingY: Size]>;
     row: Attr<E, [gap: number, align?: FlexAlign, justify?: FlexAlign]>;
     style: Attr<E, [prop: CssProp, val: any]>;
     styles: Attr<E, [propsAndVals: [CssProp, any][]]>;
-    width: Attr<E, [h: SizingVals, u?: SizingUnits]>;
+    width: Attr<E, [width: Size]>;
 
     // RENDERERS
     append: Render<E, [...nodes: (string | Node)[]]>;
     innerText: Render<E, [txt: (string | number) | (() => string | number), ...buses: BUSES[]]>;
     innerHtml: Render<E, [node: HTMLElement | (() => HTMLElement), ...buses: BUSES[]]>;
     map: Render<E, [cb: AnyFunc, item: any, ...buses: BUSES[]]>;
-    value: Render<E, [val: (string | number) | (() => string | number), ...buses: BUSES[]]>;
     render: Render<E, []>;
   }
 

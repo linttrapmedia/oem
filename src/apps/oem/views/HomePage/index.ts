@@ -1,6 +1,7 @@
 import { DIV } from '@oem';
 import { HSLA } from '../../config';
 import { Banner } from './Banner';
+import { Hero } from './Hero';
 import { Menu } from './Menu';
 
 export const HomePage = () => {
@@ -11,7 +12,7 @@ export const HomePage = () => {
     .append(
       Banner(),
       Menu(),
-      // Hero(),
+      Hero(),
       // CleanCode(),
       // GoEasy(),
       // Footer(),
