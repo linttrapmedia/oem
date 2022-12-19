@@ -4,14 +4,14 @@
   "description": "The Own Your Own Framework Framework",
   "main": "index.js",
   "scripts": {
-    "build": "node tasks/build",
+    "build": "node scripts/build",
     "clean:nuke": "rm -rf ./dist node_modules",
     "clean": "rm -rf dist && rm -rf docs",
-    "deploy:gh": "sh ./tasks/deploy.sh",
+    "deploy:gh": "sh ./scripts/deploy.sh",
     "deploy": "echo TODO",
-    "start": "node tasks/dev",
+    "start": "node scripts/dev",
     "lint": "eslint ./src --ext .ts",
-    "scaffold": "node tasks/scaffold"
+    "scaffold": "node scripts/scaffold"
   },
   "repository": {
     "type": "git",

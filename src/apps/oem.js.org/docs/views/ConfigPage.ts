@@ -14,7 +14,7 @@ export function ConfigPage() {
         title: 'Config',
         subtitle: `OEM can be configured to operate as a SPA (Single Page Application), a MPA (Multi-Page Application), a Library, a static site generator and any combination thereof. The assets, typescript to be compiled, html and dev servers are all configured separately. This keeps both the config and tasks code clean.`,
         description: 'See the `./oem.js` file for details',
-        content: Snippet(`// config.js
+        content: Snippet(`// oem.js
         
 module.exports = {
   // copy asset folders

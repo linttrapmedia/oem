@@ -1,5 +1,5 @@
 export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
-  #attrs: [string, string, OEM.Condition?][] = [];
+  #attrs: [string, string | (() => string), OEM.Condition?][] = [];
   #classes: [string, OEM.Condition?][] = [];
   #el: T;
   #funcs: [string, (...args: any[]) => any][] = [];
@@ -50,7 +50,9 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     };
 
     this.#el = document.createElement(this.#tag) as T;
-    this.#attrs.forEach(([key, val]) => this.#el.setAttribute(key, val));
+    this.#attrs.forEach(([key, val]) =>
+      this.#el.setAttribute(key, typeof val === 'function' ? val() : val),
+    );
     this.#styles.forEach(([prop, val, condition = true]) => {
       const originalVal = (<any>this.#el).style[prop];
       cond(
@@ -71,6 +73,18 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
   }
 
   private colorizer(color: string, opacity: number, lightness: number) {
+    const colorType = color.slice(0, 3).toUpperCase();
+
+    if (colorType === 'HSL') {
+      const colorValue = color.replace(/[hsla()]/g, '').split(',');
+      const [h, s, l, a = 1] = colorValue.map((v) => parseInt(v));
+      return `hsla(${h}, ${s}%, ${l + lightness}%, ${opacity})`;
+    }
+    if (colorType === 'RGB') {
+      const colorValue = color.replace(/[hsla()]/g, '').split(',');
+      const [r, g, b, a = 1] = colorValue.map((v) => parseInt(v));
+      return `rgba(${r + lightness}, ${g + lightness}%, ${b + lightness}%, ${a})`;
+    }
     return color;
   }
 

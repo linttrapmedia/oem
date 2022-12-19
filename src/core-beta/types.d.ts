@@ -186,10 +186,11 @@ declare namespace OEM {
   // ELEMENT
 
   export type Attrs = [prop: 'id', val: string] | [prop: 'onclick', val: () => void];
+  type Val<T> = T | (() => T);
 
   export interface ELEMENT<E extends HTMLElement> {
     // ATTRIBUTES
-    attr: Attr<E, [name: string, value?: string]>;
+    attr: Attr<E, [name: string, value?: Val<string>]>;
     backgroundColor: Attr<E, [color: string, opacity?: number, lightness?: number]>;
     border: Attr<
       E,
@@ -228,7 +229,7 @@ declare namespace OEM {
     paddingX: Attr<E, [paddingX: Size]>;
     paddingY: Attr<E, [paddingY: Size]>;
     row: Attr<E, [gap: number, align?: FlexAlign, justify?: FlexAlign]>;
-    style: Attr<E, [prop: CssProp, val: any]>;
+    style: Attr<E, [prop: CssProp, val: Val<string>]>;
     styles: Attr<E, [propsAndVals: [CssProp, any][]]>;
     width: Attr<E, [width: Size]>;
 
