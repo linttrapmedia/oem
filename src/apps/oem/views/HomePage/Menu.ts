@@ -1,5 +1,5 @@
 import Model from '@apps/oem/models/Model';
-import { A, DIV, hsla } from '@oem';
+import { A, DIV } from '@oem';
 import { HSLA, PAGE_WIDTH } from '../../config';
 
 export function Menu() {
@@ -30,9 +30,9 @@ export function Menu() {
         .map(
           ([label, href]) =>
             A.attr('href', href)
-              .style('color', hsla(HSLA.white))
-              .style('color', hsla(HSLA.white, 0.5), 'mouseover')
-              .style('color', hsla(HSLA.white), 'mouseout')
+              .color(HSLA.white)
+              .color(HSLA.secondary, 0.5, 0, 'mouseenter')
+              .color(HSLA.white, 1, 0, 'mouseleave')
               .style('textDecoration', 'none')
               .style('textTransform', 'uppercase')
               .style('fontWeight', 'bold')

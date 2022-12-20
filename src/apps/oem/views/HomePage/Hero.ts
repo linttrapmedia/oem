@@ -1,5 +1,5 @@
 import Model from '@apps/oem/models/Model';
-import { BUTTON, COMMENT, DIV, hsla, SPAN } from '@oem';
+import { BUTTON, COMMENT, DIV, SPAN } from '@oem';
 import { CounterExample } from '../../components/CounterExample';
 import { Snippet } from '../../components/Snippet';
 import { HSLA, PAGE_WIDTH } from '../../config';
@@ -43,9 +43,9 @@ export function Hero() {
               .style('textTransform', 'uppercase')
               .style('letterSpacing', '1px')
               .style('fontWeight', 'bold')
-              .style('backgroundColor', hsla(HSLA.secondary))
-              .style('backgroundColor', hsla(HSLA.white), 'mouseenter')
-              .style('backgroundColor', hsla(HSLA.secondary), 'mouseleave')
+              .style('backgroundColor', HSLA.secondary)
+              .style('backgroundColor', HSLA.white, 'mouseenter')
+              .style('backgroundColor', HSLA.secondary, 'mouseleave')
               .innerText('Docs'),
             BUTTON.backgroundColor(HSLA.black, 0.2)
               .color(HSLA.secondary)
@@ -84,7 +84,7 @@ export function Hero() {
             DIV.style('borderRadius', '10px')
               .backgroundColor(HSLA.accent, 0.05)
               .color(HSLA.white, 0.25)
-              .style('color', hsla(HSLA.white), 'mouseenter')
+              .style('color', HSLA.white, 'mouseenter')
               .padding(20)
               .append(CounterExample()),
             DIV.row(10, 'center', 'center')

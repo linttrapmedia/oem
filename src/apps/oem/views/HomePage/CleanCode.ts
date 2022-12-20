@@ -1,4 +1,4 @@
-import { hsla } from '@oem';
+import { DIV, STRING } from '@oem';
 import { Snippet } from '../../components/Snippet';
 import { done, input, todo, TodoExample } from '../../components/TodoExample';
 import { HSLA, PAGE_WIDTH } from '../../config';
@@ -165,7 +165,7 @@ export function CleanCode() {
                     .style('right', '20px')
                     .style('cursor', 'pointer')
                     .color(HSLA.white, 0.25)
-                    .style('color', hsla(HSLA.white), 'mouseenter')
+                    .style('color', HSLA.white, 'mouseenter')
                     .onClick(todo.reset)
                     .onClick(done.reset)
                     .onClick(input.reset)

@@ -1,8 +1,6 @@
-export function DoneList(
-  input: OEM.STRING,
-  todo: OEM.ARRAY<string>,
-  done: OEM.ARRAY<string>,
-) {
+import { DIV } from '@oem';
+
+export function DoneList(input: OEM.STRING, todo: OEM.ARRAY<string>, done: OEM.ARRAY<string>) {
   return DIV.column(10).map(
     (item) =>
       DIV.style('cursor', 'pointer')
@@ -16,11 +14,7 @@ export function DoneList(
   );
 }
 
-export function TodoList(
-  input: OEM.STRING,
-  todo: OEM.ARRAY<string>,
-  done: OEM.ARRAY<string>,
-) {
+export function TodoList(input: OEM.STRING, todo: OEM.ARRAY<string>, done: OEM.ARRAY<string>) {
   return DIV.column(10).map(
     (item) =>
       DIV.style('cursor', 'pointer')

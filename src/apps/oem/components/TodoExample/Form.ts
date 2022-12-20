@@ -6,6 +6,7 @@ export function Form(input: OEM.STRING, todo: OEM.ARRAY<string>) {
     .width(100)
     .append(
       INPUT.attr('value', input.get())
+        .border(1, 'solid', HSLA.white, 0.2)
         .style('background', 'transparent')
         .style('border', `1px solid ${HSLA.white}`)
         .style('borderRadius', '5px')

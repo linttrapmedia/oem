@@ -1,3 +1,4 @@
+import { ARRAY, FORM, STRING } from '@oem';
 import { Form } from './Form';
 import { DoneList, TodoList } from './Lists';
 
@@ -8,9 +9,5 @@ export const done = ARRAY<string>(['Learn OEM']);
 export function TodoExample() {
   return FORM.onSubmit()
     .column(10)
-    .append(
-      Form(input, todo),
-      TodoList(input, todo, done),
-      DoneList(input, todo, done),
-    );
+    .append(Form(input, todo), TodoList(input, todo, done), DoneList(input, todo, done));
 }

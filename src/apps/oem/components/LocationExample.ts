@@ -1,3 +1,5 @@
+import { COMPONENT, DIV, LI, LOCATION, UL } from '@oem';
+
 export const LocationExample = COMPONENT(() => {
   const location = LOCATION();
 

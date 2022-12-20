@@ -17,7 +17,7 @@ const createProxyEl = <T extends HTMLElement>(tag: keyof HTMLElementTagNameMap) 
   });
 
 export const A = createProxyEl<HTMLAnchorElement>('a');
-export const ABBRADDRESS = createProxyEl<HTMLElement>('abbraddress');
+// export const ABBRADDRESS = createProxyEl<HTMLElement>('abbraddress');
 export const AREA = createProxyEl<HTMLAreaElement>('area');
 export const ARTICLE = createProxyEl<HTMLElement>('article');
 export const ASIDE = createProxyEl<HTMLElement>('aside');
@@ -128,7 +128,7 @@ export const VIDEO = createProxyEl<HTMLElement>('video');
 export const WBR = createProxyEl<HTMLElement>('wbr');
 
 export const APP = OEM_APP;
-export const ARRAY = (ary: any[]) => new OEM_ARRAY(ary);
+export const ARRAY = <T extends any>(ary: T[]) => new OEM_ARRAY<T>(ary);
 export const BREAKPOINT = (
   breakpoint: number = 0,
   dimension?: 'height' | 'width',

@@ -28,6 +28,8 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     this.innerText = this.innerText.bind(this);
     this.onClick = this.onClick.bind(this);
     this.onInput = this.onInput.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+    this.padding = this.padding.bind(this);
     this.render = this.render.bind(this);
     this.row = this.row.bind(this);
     this.style = this.style.bind(this);
@@ -100,7 +102,7 @@ export class OEM_ELEMENT<T extends HTMLElement> implements OEM.ELEMENT<T> {
     return this;
   }
   border(...props: Parameters<OEM.ELEMENT<T>['border']>) {
-    const [_width, style, _color, opacity, lightness, condition = true] = props;
+    const [_width, style, _color, opacity = 1, lightness = 0, condition = true] = props;
     const width = typeof _width === 'number' ? `${_width}px` : _width;
     const color = this.colorizer(_color, opacity, lightness);
     this.#styles.push(['border', `${width} ${style} ${color}`, condition]);

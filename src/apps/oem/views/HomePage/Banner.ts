@@ -1,5 +1,5 @@
 import Model from '@apps/oem/models/Model';
-import { A, BUTTON, DIV, hsla } from '@oem';
+import { A, BUTTON, DIV } from '@oem';
 import { HSLA, PAGE_WIDTH } from '../../config';
 
 export function Banner() {
@@ -26,21 +26,19 @@ export function Banner() {
 
   const Contributor = A.color(HSLA.secondary, 0.5)
     .attr('href', 'http://github.com/linttrapmedia/oem')
+    .color(HSLA.white, 0.5)
+    .color(HSLA.secondary, 0.5, 1, 'hover')
     .style('textDecoration', 'none')
-    .style('color', hsla(HSLA.white), 'mouseenter')
-    .style('color', hsla(HSLA.secondary, 0.5), 'mouseleave')
     .innerText('Become a contributor 💡');
 
-  const LearnMoreButton = BUTTON.backgroundColor(HSLA.secondary, 0.15)
-    .color(HSLA.secondary)
+  const LearnMoreButton = BUTTON.backgroundColor(HSLA.white, 0.3)
+    .backgroundColor(HSLA.secondary, 0.15, 1, 'hover')
+    .color(HSLA.white)
+    .color(HSLA.secondary, 0.5, 1, 'hover')
     .padding(5, 10)
     .style('border', '0')
     .style('borderRadius', '3px')
     .style('cursor', 'pointer')
-    .style('color', hsla(HSLA.white), 'mouseenter')
-    .style('color', hsla(HSLA.secondary), 'mouseleave')
-    .style('backgroundColor', hsla(HSLA.white, 0.3), 'mouseenter')
-    .style('backgroundColor', hsla(HSLA.secondary, 0.15), 'mouseleave')
     .innerText('Learn More');
 
   return DIV.row(20, 'start', 'center')

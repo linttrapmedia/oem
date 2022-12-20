@@ -1,4 +1,4 @@
-export class OEM_ARRAY<T extends any[]> implements OEM.ARRAY<T> {
+export class OEM_ARRAY<T extends any> implements OEM.ARRAY<T> {
   #ary: T[] = [];
   #oary: T[] = [];
   #subs: ((ary: T[]) => any)[] = [];

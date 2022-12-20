@@ -1,6 +1,9 @@
 import { DIV } from '@oem';
 import { HSLA } from '../../config';
 import { Banner } from './Banner';
+import { CleanCode } from './CleanCode';
+import { Footer } from './Footer';
+import { GoEasy } from './GoEasy';
 import { Hero } from './Hero';
 import { Menu } from './Menu';
 
@@ -9,12 +12,5 @@ export const HomePage = () => {
     .column(20, 'center', 'start')
     .style('minHeight', '100vh')
     .style('fontFamily', 'sans-serif')
-    .append(
-      Banner(),
-      Menu(),
-      Hero(),
-      // CleanCode(),
-      // GoEasy(),
-      // Footer(),
-    );
+    .append(Banner(), Menu(), Hero(), CleanCode(), GoEasy(), Footer());
 };

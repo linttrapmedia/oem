@@ -1,4 +1,4 @@
-import { hsla, Markdown } from '@oem';
+import { DIV, Markdown } from '@oem';
 import { HSLA, PAGE_WIDTH } from '../../config';
 
 export function GoEasy() {
@@ -17,9 +17,7 @@ export function GoEasy() {
         .style('textAlign', 'center')
         .style('fontSize', '26px')
         .innerHtml(
-          Markdown(
-            'Easy on the eyes, easy on the brain and even easier on the *business*.',
-          ),
+          Markdown('Easy on the eyes, easy on the brain and even easier on the *business*.'),
         ),
       DIV.row(20, 'center', 'center')
         .style('flexWrap', 'wrap')
@@ -35,11 +33,11 @@ export function GoEasy() {
               .append(
                 DIV.style('textAlign', 'center')
                   .style('fontSize', '24px')
-                  .style('color', hsla(HSLA.white))
+                  .style('color', HSLA.white)
                   .innerText(title),
-                DIV.style('textAlign', 'center')
+                DIV.color(HSLA.white, 0.4)
+                  .style('textAlign', 'center')
                   .style('fontSize', '16px')
-                  .style('color', hsla(HSLA.white, 0.4))
                   .innerText(text),
               ),
           [

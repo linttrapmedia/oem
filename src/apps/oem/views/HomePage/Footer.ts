@@ -1,4 +1,4 @@
-import { hsla } from '@oem';
+import { A, BUTTON, CODE, DIV, INPUT, SPAN } from '@oem';
 import { Snippet } from '../../components/Snippet';
 import { HSLA, PAGE_WIDTH } from '../../config';
 
@@ -78,7 +78,6 @@ npm start`),
                     .style('fontSize', '16px')
                     .style('cursor', 'pointer')
                     .style('borderRadius', '10px')
-                    .style('backgroundColor', hsla(HSLA.black, 0.3), 'mouseenter')
                     .innerText('Subscribe'),
                 ),
               DIV.column(10, 'end', 'start')
