@@ -1,16 +1,21 @@
 import { DIV } from '@oem';
-import { HSLA } from '../../config';
+import { THEME } from '../../config';
 import { Banner } from './Banner';
-import { CleanCode } from './CleanCode';
-import { Footer } from './Footer';
-import { GoEasy } from './GoEasy';
-import { Hero } from './Hero';
-import { Menu } from './Menu';
 
 export const HomePage = () => {
-  return DIV.backgroundColor(HSLA.primary)
-    .column(20, 'center', 'start')
+  return DIV
+    .style('display', 'flex')
+    .style('flexDirection', 'column')
+    .style('gap', '20px')
+    .style('backgroundColor', THEME.primary.get)
     .style('minHeight', '100vh')
     .style('fontFamily', 'sans-serif')
-    .append(Banner(), Menu(), Hero(), CleanCode(), GoEasy(), Footer());
+    .append(
+      Banner(),
+      // Menu(), 
+      // Hero(), 
+      // CleanCode(), 
+      // GoEasy(), 
+      // Footer()
+    );
 };

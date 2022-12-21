@@ -4,8 +4,8 @@ declare namespace OEM {
   type Condition = boolean | (() => boolean) | BUS<boolean> | Event;
   type Concat<T> = T extends [infer A, ...infer Rest]
     ? A extends any[]
-      ? [...A, ...Concat<Rest>]
-      : A
+    ? [...A, ...Concat<Rest>]
+    : A
     : T;
   type Event =
     | 'abort'
@@ -150,6 +150,12 @@ declare namespace OEM {
     isGTEbreakpoint: () => boolean;
   }
 
+  export interface COLOR extends BUS<string> {
+    alpha: (a: number) => string;
+    darken: (p: number) => string;
+    lighten: (p: number) => string;
+  }
+
   export interface NUMBER {
     dec: (n: number) => NUMBER;
     get: () => number;
@@ -161,6 +167,16 @@ declare namespace OEM {
 
   export interface STRING extends BUS<string> {
     cb: (func: 'eq' | 'neq', ...args: any) => () => any;
+  }
+
+  export interface ENUM<T> {
+    eq?: (val: T) => boolean;
+    get: () => T;
+    neq?: (val: T) => boolean;
+    reset?: () => BUS<T>;
+    set(...args: any): BUS<T>;
+    sub: (cb: (x: T) => any) => void;
+    val: T;
   }
 
   export interface LOCATION {
@@ -191,47 +207,13 @@ declare namespace OEM {
   export interface ELEMENT<E extends HTMLElement> {
     // ATTRIBUTES
     attr: Attr<E, [name: string, value?: Val<string>]>;
-    backgroundColor: Attr<E, [color: string, opacity?: number, lightness?: number]>;
-    border: Attr<
-      E,
-      [width: Size, style?: string, color?: string, opacity?: number, lightness?: number]
-    >;
-    borderBottom: Attr<
-      E,
-      [width: Size, style?: string, color?: string, opacity?: number, lightness?: number]
-    >;
-    borderLeft: Attr<
-      E,
-      [width: Size, style?: string, color?: string, opacity?: number, lightness?: number]
-    >;
-    borderRight: Attr<
-      E,
-      [width: Size, style?: string, color?: string, opacity?: number, lightness?: number]
-    >;
-    borderTop: Attr<
-      E,
-      [width: Size, style?: string, color?: string, opacity?: number, lightness?: number]
-    >;
-    borderRadius: Attr<E, [radius: Size]>;
     class: Attr<E, [classname: string]>;
-    column: Attr<E, [gap: number, align?: FlexAlign, justify?: FlexAlign]>;
-    color: Attr<E, [color: string, opacity?: number, lightness?: number]>;
-    flex: Attr<E, [direction: FlexDir, gap: number, align?: FlexAlign, justify?: FlexAlign]>;
-    fontSize: Attr<E, [s: Size]>;
-    height: Attr<E, [height: Size]>;
-    margin: Attr<E, [top: Size, right?: Size, bottom?: Size, left?: Size]>;
-    marginX: Attr<E, [marginX: Size]>;
-    marginY: Attr<E, [marginY: Size]>;
+    eventListener: Attr<E, [event: Event, func: AnyFunc]>;
     onClick: Method<E, [func: AnyFunc, ...args: any[]]>;
     onInput: Method<E, [func: (val: any) => void]>;
     onSubmit: Method<E, [func?: () => void]>;
-    padding: Attr<E, [top: Size, right?: Size, bottom?: Size, left?: Size]>;
-    paddingX: Attr<E, [paddingX: Size]>;
-    paddingY: Attr<E, [paddingY: Size]>;
-    row: Attr<E, [gap: number, align?: FlexAlign, justify?: FlexAlign]>;
     style: Attr<E, [prop: CssProp, val: Val<string>]>;
     styles: Attr<E, [propsAndVals: [CssProp, any][]]>;
-    width: Attr<E, [width: Size]>;
 
     // RENDERERS
     append: Render<E, [...nodes: (string | Node)[]]>;

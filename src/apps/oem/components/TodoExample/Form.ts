@@ -1,4 +1,4 @@
-import { HSLA } from '@apps/oem/config';
+import { HSLA, THEME } from '@apps/oem/config';
 import { BUTTON, DIV, INPUT } from '@oem';
 
 export function Form(input: OEM.STRING, todo: OEM.ARRAY<string>) {
@@ -12,7 +12,7 @@ export function Form(input: OEM.STRING, todo: OEM.ARRAY<string>) {
         .style('borderRadius', '5px')
         .style('width', '100%')
         .style('flex', '1')
-        .color(HSLA.white)
+        .style('color', THEME.white.get)
         .padding(10)
         .onInput(input.set)
         .render(),

@@ -1,6 +1,6 @@
 import { A, BUTTON, CODE, DIV, INPUT, SPAN } from '@oem';
 import { Snippet } from '../../components/Snippet';
-import { HSLA, PAGE_WIDTH } from '../../config';
+import { HSLA, PAGE_WIDTH, THEME } from '../../config';
 
 export function Footer() {
   return DIV.column(0, 'center', 'start')
@@ -13,22 +13,20 @@ export function Footer() {
         .style('maxWidth', PAGE_WIDTH + 'px')
         .append(
           DIV.append(
-            DIV.color(HSLA.white).style('fontSize', '28px').innerText('Get Started in 3,2,1...'),
+            DIV.style('color', THEME.white.get).style('fontSize', '28px').innerText('Get Started in 3,2,1...'),
             DIV.row(5)
               .style('fontSize', '18px')
-              .color(HSLA.white, 0.4)
+              .style('color', THEME.white.alpha(0.4))
               .append(
                 SPAN.innerText('Don’t forget to checkout the '),
                 A.attr('href', '')
-                  .color(HSLA.white)
-                  .color(HSLA.white, 0.5, 0, 'mouseenter')
-                  .color(HSLA.white, 1, 0, 'mouseleave')
+                  .style('color', THEME.white.alpha(0.5))
+                  .style('color', THEME.white.get, 'hover')
                   .innerText('Docs'),
                 SPAN.innerText('and'),
                 A.attr('href', '')
-                  .color(HSLA.white)
-                  .color(HSLA.white, 0.5, 0, 'mouseenter')
-                  .color(HSLA.white, 1, 0, 'mouseleave')
+                  .style('color', THEME.white.alpha(0.5))
+                  .style('color', THEME.white.get, 'hover')
                   .innerText('Design System'),
               ),
           ),
@@ -50,7 +48,7 @@ npm start`),
         .width(100)
         .column(20, 'start', 'start')
         .append(
-          DIV.color(HSLA.white).innerText('Newsletter'),
+          DIV.style("color", THEME.white.get).innerText('Newsletter'),
           DIV.row(50, 'start', 'space-between')
             .width(100)
             .append(
@@ -61,7 +59,7 @@ npm start`),
                 .style('flex', '1')
                 .append(
                   INPUT.padding(20)
-                    .color(HSLA.white)
+                    .style('color', THEME.white.get)
                     .backgroundColor(HSLA.white, 0.1)
                     .style('borderRadius', '5px')
                     .style('border', 'none')
@@ -72,23 +70,22 @@ npm start`),
                   BUTTON.backgroundColor(HSLA.black, 0.2)
                     .style('border', 'none')
                     .padding(0, 50)
-                    .color(HSLA.secondary)
-                    .color(HSLA.white, 0.5, 0, 'mouseenter')
-                    .color(HSLA.secondary, 1, 0, 'mouseleave')
+                    .style('color', THEME.secondary.get)
+                    .style('color', THEME.white.alpha(0.5), 'hover')
                     .style('fontSize', '16px')
                     .style('cursor', 'pointer')
                     .style('borderRadius', '10px')
                     .innerText('Subscribe'),
                 ),
               DIV.column(10, 'end', 'start')
-                .color(HSLA.white, 0.2)
+                .style('color', THEME.white.alpha(0.2))
                 .append(
                   DIV.innerText(
                     'Subscribe to our newsletter to get the latest news and updates. *Spam-free*.',
                   ),
                   DIV.row(10).append(
-                    DIV.color(HSLA.white).innerText('Coming Soon:'),
-                    DIV.color(HSLA.accent).innerText('Design System'),
+                    DIV.style('color', THEME.white.get).innerText('Coming Soon:'),
+                    DIV.style('color', THEME.accent.get).innerText('Design System'),
                   ),
                 ),
             ),

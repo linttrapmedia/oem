@@ -1,7 +1,7 @@
 import { DIV, STRING } from '@oem';
 import { Snippet } from '../../components/Snippet';
 import { done, input, todo, TodoExample } from '../../components/TodoExample';
-import { HSLA, PAGE_WIDTH } from '../../config';
+import { HSLA, PAGE_WIDTH, THEME } from '../../config';
 
 const IndexSnippet = `const input = STRING('');
 const todo = ARRAY<string>(['Call mom', 'Buy milk']);
@@ -26,7 +26,7 @@ const FormSnippet = `function Form(input: OEM.STRING, todo: OEM.ARRAY<string>) {
 
         // Input field
         INPUT
-        .color(HSLA.white)
+        .style('color', THEME.white.get)
         .padding(10)
         .onInput(input.set)
         .style('background', 'transparent')
@@ -92,7 +92,7 @@ export function CleanCode() {
   return DIV.backgroundColor(HSLA.white, 0.05)
     .padding(100, 50)
     .column(50, 'center', 'center')
-    .color(HSLA.white)
+    .style('color', THEME.white.get)
     .style('width', '100%')
     .append(
       DIV.column(50, 'center', 'center')
@@ -103,7 +103,8 @@ export function CleanCode() {
             .style('fontWeight', 'bold')
             .style('textAlign', 'center')
             .innerText('Clean Code'),
-          DIV.color(HSLA.white, 0.5)
+          DIV
+            .style('color', THEME.white.alpha(0.5))
             .style('maxWidth', '80%')
             .style('textAlign', 'center')
             .style('fontSize', '26px')
@@ -136,11 +137,11 @@ export function CleanCode() {
                       .append(
                         DIV.fontSize(8)
                           .backgroundColor(HSLA.secondary, 1, -15)
-                          .color(HSLA.black)
+                          .style('color', THEME.black.get)
                           .style('borderRadius', '2px')
                           .padding(3)
                           .innerText('TS'),
-                        DIV.color(HSLA.white, 0.35).innerText(fileName),
+                        DIV.style('color', THEME.white.alpha(0.35)).innerText(fileName),
                       ),
                   [
                     ['index.ts', IndexSnippet],
@@ -164,8 +165,8 @@ export function CleanCode() {
                     .style('bottom', '20px')
                     .style('right', '20px')
                     .style('cursor', 'pointer')
-                    .color(HSLA.white, 0.25)
-                    .style('color', HSLA.white, 'mouseenter')
+                    .style('color', THEME.white.alpha(0.25))
+                    .style('color', THEME.white.get, 'hover')
                     .onClick(todo.reset)
                     .onClick(done.reset)
                     .onClick(input.reset)

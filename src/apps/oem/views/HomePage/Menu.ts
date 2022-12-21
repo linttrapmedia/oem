@@ -1,6 +1,6 @@
 import Model from '@apps/oem/models/Model';
 import { A, DIV } from '@oem';
-import { HSLA, PAGE_WIDTH } from '../../config';
+import { HSLA, PAGE_WIDTH, THEME } from '../../config';
 
 export function Menu() {
   return DIV.row(50, 'center', 'space-between')
@@ -11,7 +11,8 @@ export function Menu() {
     .style('width', '100%')
     .append(
       DIV.row(10, 'center').append(
-        DIV.color(HSLA.white)
+        DIV
+          .style('color', THEME.white.get)
           .fontSize(48, Model.mobileBreakpoint)
           .fontSize(28, Model.tabletBreakpoint)
           .style('fontWeight', 'bold')
@@ -30,9 +31,8 @@ export function Menu() {
         .map(
           ([label, href]) =>
             A.attr('href', href)
-              .color(HSLA.white)
-              .color(HSLA.secondary, 0.5, 0, 'mouseenter')
-              .color(HSLA.white, 1, 0, 'mouseleave')
+              .style('color', THEME.secondary.alpha(0.5))
+              .style('color', THEME.white.get, 'hover')
               .style('textDecoration', 'none')
               .style('textTransform', 'uppercase')
               .style('fontWeight', 'bold')

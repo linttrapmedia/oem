@@ -3,8 +3,10 @@ export * from './Markdown';
 import { OEM_APP } from './App';
 import { OEM_ARRAY } from './Array';
 import { OEM_BREAKPOINT } from './Breakpoint';
+import { OEM_COLOR } from './Color';
 import { OEM_COMPONENT } from './Component';
 import { OEM_ELEMENT } from './Element';
+import { OEM_ENUM } from './Enum';
 import { OEM_LOCATION } from './Location';
 import { OEM_NUMBER } from './Number';
 import { OEM_STRING } from './String';
@@ -129,12 +131,14 @@ export const WBR = createProxyEl<HTMLElement>('wbr');
 
 export const APP = OEM_APP;
 export const ARRAY = <T extends any>(ary: T[]) => new OEM_ARRAY<T>(ary);
+export const COLOR = (color: `hsl(${string})` | `rgb(${string})` | `#${string}`) => new OEM_COLOR(color);
 export const BREAKPOINT = (
   breakpoint: number = 0,
   dimension?: 'height' | 'width',
   container?: string,
 ) => new OEM_BREAKPOINT(breakpoint, dimension ?? 'width', container);
 export const COMPONENT = (...args: Parameters<OEM.COMPONENT>) => OEM_COMPONENT(...args);
+export const ENUM = <T extends string>(val: T) => new OEM_ENUM<T>(val);
 export const LOCATION = () => new OEM_LOCATION();
 export const STRING = (s: string) => new OEM_STRING(s);
 export const NUMBER = (n: number) => new OEM_NUMBER(n);

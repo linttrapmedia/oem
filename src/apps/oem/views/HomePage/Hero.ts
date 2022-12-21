@@ -2,7 +2,7 @@ import Model from '@apps/oem/models/Model';
 import { BUTTON, COMMENT, DIV, SPAN } from '@oem';
 import { CounterExample } from '../../components/CounterExample';
 import { Snippet } from '../../components/Snippet';
-import { HSLA, PAGE_WIDTH } from '../../config';
+import { HSLA, PAGE_WIDTH, THEME } from '../../config';
 
 export function Hero() {
   return DIV.row(50, 'center', 'center')
@@ -12,7 +12,7 @@ export function Hero() {
     .style('maxWidth', PAGE_WIDTH + 'px')
     .append(
       DIV.column(40, 'start', 'start')
-        .color(HSLA.white)
+        .style('color', THEME.white.get)
         .style('alignItems', 'center', Model.mobileBreakpoint)
         .style('alignItems', 'start', Model.tabletBreakpoint)
         .style('width', '100%')
@@ -25,7 +25,8 @@ export function Hero() {
             .style('fontSize', '48px', Model.mobileBreakpoint)
             .style('fontSize', '64px', Model.tabletBreakpoint)
             .innerText('Build apps that will stand the test of time'),
-          DIV.color(HSLA.white, 0.5)
+          DIV
+            .style('color', THEME.white.alpha(0.5))
             .style('fontSize', '20px')
             .style('textAlign', 'center', Model.mobileBreakpoint)
             .style('textAlign', 'left', Model.tabletBreakpoint)
@@ -48,8 +49,8 @@ export function Hero() {
               .style('backgroundColor', HSLA.secondary, 'mouseleave')
               .innerText('Docs'),
             BUTTON.backgroundColor(HSLA.black, 0.2)
-              .color(HSLA.secondary)
-              .color(HSLA.white, 1, 1, 'hover')
+              .style('color', THEME.secondary.get)
+              .style('color', THEME.white.get, 'hover')
               .style('border', 'none')
               .style('width', '200px')
               .style('height', '60px')
@@ -83,12 +84,12 @@ export function Hero() {
           .append(
             DIV.style('borderRadius', '10px')
               .backgroundColor(HSLA.accent, 0.05)
-              .color(HSLA.white, 0.25)
-              .style('color', HSLA.white, 'mouseenter')
+              .style('color', THEME.white.alpha(0.25))
+              .style('color', THEME.white.get, 'hover')
               .padding(20)
               .append(CounterExample()),
             DIV.row(10, 'center', 'center')
-              .color(HSLA.white, 0.25)
+              .style('color', THEME.white.get)
               .append(
                 SPAN.style('fontSize', '24px').innerText('👈'),
                 SPAN.innerText('Click to increment'),
