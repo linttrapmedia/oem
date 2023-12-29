@@ -1,9 +1,9 @@
 {
-  "name": "@linttrap/oem-core",
+  "name": "@linttrap/oem",
   "author": "@linttrapmedia",
-  "title": "OEM Core",
+  "title": "OEM",
   "version": "0.0.1",
-  "description": "Core OEM library",
+  "description": "A novel UI library for writing reactive html with vanilla javascript",
   "type": "module",
   "exports": {
     ".": {
@@ -14,13 +14,13 @@
   "module": "./src/index.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/linttrapmedia/oem-core.git"
+    "url": "git+https://github.com/linttrapmedia/oem.git"
   },
-  "license": "ISC",
+  "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/linttrapmedia/oem-core/issues"
+    "url": "https://github.com/linttrapmedia/oem/issues"
   },
-  "homepage": "https://github.com/linttrapmedia/oem-core#readme",
+  "homepage": "https://oem.js.org",
   "devDependencies": {
     "@types/node": "^18.13.0",
     "esbuild": "^0.14.27",
