@@ -27,7 +27,7 @@ const count_inc = count.reduce((i) => i + 1);
 const count_text = () => `#${count.get()}`;
 const count_color = () => (count.get() % 2 === 0 ? 'red' : 'black');
 
-const { div } = Template({
+const { div } = HTML({
   'text:count': useInnerText(count),
   'click:event': useEventListener('click'),
   'click:style': useEventStyle('click'),
