@@ -1,5 +1,8 @@
 # oem 
+## A novel UI library for writing reactive html with vanilla javascript
+
 [oem.js.org →](https://oem.js.org)
+
 
 ## Why?
 I wanted a standards-compliant, reliable, unchanging, lightweight reactive dom library that could serve as a layer one utility library to build out a suite of self-contained web components.
