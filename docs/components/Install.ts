@@ -1,5 +1,4 @@
-import { div } from '@docs/config';
-import { Code } from './Code';
+import { a, div } from '@docs/config';
 
 export const Install = () =>
   div(
@@ -51,6 +50,13 @@ export const Install = () =>
       div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('Install'),
       div(['style', 'opacity', 0.5], ['style', 'textAlign', 'center'])('(Install the typescript library.)'),
       div(['prism'])(`npm i @linttrap/oem`),
-      div()('Also available on CND at unpkg:', Code('https://unpkg.com/@linttrap/oem/dist/oem.min.js')),
+      div(
+        ['style', 'opacity', 0.35],
+        ['style', 'fontSize', '14px'],
+        ['style', 'textAlign', 'center'],
+      )(
+        'Also available on CDN at ',
+        a(['attr', 'href', 'https://unpkg.com/@linttrap/oem/dist/oem.min.js'], ['attr', 'target', '_blank'])('unpkg'),
+      ),
     ),
   );
