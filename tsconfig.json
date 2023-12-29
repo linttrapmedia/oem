@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@apps/*": ["src/apps/*"],
+      "@core/*": ["src/core/*"],
+      "@services/*": ["src/services/*"]
+    },
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "downlevelIteration": true,
+    "target": "ESNext",
+    "outDir": "./dist",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "strictNullChecks": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "allowJs": true,
+    "lib": ["ES2022", "dom", "ES2022.Array"]
+  },
+  "include": ["**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}

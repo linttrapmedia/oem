@@ -1,0 +1,30 @@
+{
+  "name": "@linttrap/oem-core",
+  "author": "@linttrapmedia",
+  "title": "OEM Core",
+  "version": "0.0.1",
+  "description": "Core OEM library",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    }
+  },
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/linttrapmedia/oem-core.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/linttrapmedia/oem-core/issues"
+  },
+  "homepage": "https://github.com/linttrapmedia/oem-core#readme",
+  "devDependencies": {
+    "@types/node": "^18.13.0",
+    "esbuild": "^0.14.27",
+    "jsdom": "^21.1.0",
+    "prettier": "2.7.1"
+  }
+}
