@@ -1,4 +1,4 @@
-import { HtmlReturnType } from 'src/typings';
+import { HtmlReturnType } from '@oem/types';
 
 function HtmlTag(tag: keyof HTMLElementTagNameMap, traits: any[] = [], config: any = {}) {
   const ns = 'http://www.w3.org/1999/xhtml';
@@ -14,7 +14,7 @@ function HtmlTag(tag: keyof HTMLElementTagNameMap, traits: any[] = [], config: a
   return fn;
 }
 
-export function Template<P extends Record<string, any>>(config?: P) {
+export function HTML<P extends Record<string, any>>(config?: P) {
   return new Proxy(
     {},
     {
@@ -25,7 +25,3 @@ export function Template<P extends Record<string, any>>(config?: P) {
     },
   ) as HtmlReturnType<P>;
 }
-
-export default {
-  Template,
-};

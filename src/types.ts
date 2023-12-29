@@ -9,11 +9,9 @@ export type StateType<T> = {
   unsub: (cb: (atom: T) => any) => void;
 };
 
-export type HtmlTraitFunc<Args extends any[]> = (el: HTMLElement, ...args: Args) => HTMLElement;
-
-export type HtmlTraitConfig = <Config extends any[]>(...config: Config) => HtmlTraitFunc<any>;
+type HtmlTraitFunc<Args extends any[]> = (el: HTMLElement, ...args: Args) => HTMLElement;
+type HtmlTraitConfig = <Config extends any[]>(...config: Config) => HtmlTraitFunc<any>;
 type HtmlTags = keyof HTMLElementTagNameMap;
-
 export type HtmlReturnType<P extends Record<string, HtmlTraitFunc<any>>> = Record<
   HtmlTags,
   <K extends Array<keyof P>>(
@@ -23,11 +21,9 @@ export type HtmlReturnType<P extends Record<string, HtmlTraitFunc<any>>> = Recor
   ) => (...nodes: any[]) => HTMLElement
 >;
 
-export type SvgTraitFunc<Args extends any[]> = (el: HTMLElement, ...args: Args) => HTMLElement;
-
-export type SvgTraitConfig = <Config extends any[]>(...config: Config) => SvgTraitFunc<any>;
+type SvgTraitFunc<Args extends any[]> = (el: HTMLElement, ...args: Args) => HTMLElement;
+type SvgTraitConfig = <Config extends any[]>(...config: Config) => SvgTraitFunc<any>;
 type SvgTags = keyof SVGElementTagNameMap;
-
 export type SvgReturnType<P extends Record<string, SvgTraitFunc<any>>> = Record<
   SvgTags,
   <K extends Array<keyof P>>(
@@ -36,3 +32,8 @@ export type SvgReturnType<P extends Record<string, SvgTraitFunc<any>>> = Record<
     }
   ) => (...nodes: any[]) => SVGElement
 >;
+
+export type Test = (sandbox?: HTMLElement) => {
+  pass: boolean;
+  message?: string;
+};

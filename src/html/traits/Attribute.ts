@@ -1,4 +1,4 @@
-import { StateType } from 'src/typings';
+import { StateType } from '@oem/types';
 
 export const useAttribute =
   (state?: StateType<any>) =>

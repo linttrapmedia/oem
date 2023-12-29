@@ -1,4 +1,4 @@
-import { StateType } from 'src/typings';
+import { StateType } from 'src/types';
 
 export const useStyle =
   (state?: StateType<any>) =>

@@ -1,5 +1,11 @@
-import * as HTML from './html/HTML';
-import * as State from './state/State';
-import * as SVG from './svg/SVG';
-import * as Types from './typings';
-export { HTML, SVG, State, Types };
+export { HTML } from './html/HTML';
+export { SVG } from './html/SVG';
+export { useAttribute } from './html/traits/Attribute';
+export { useBreakpointStyle } from './html/traits/BreakpointStyle';
+export { useClassName } from './html/traits/ClassName';
+export { useEventListener } from './html/traits/EventListener';
+export { useEventStyle } from './html/traits/EventStyle';
+export { useInnerText } from './html/traits/InnerText';
+export { usePrintStyle } from './html/traits/PrintStyle';
+export { useStyle } from './html/traits/Style';
+export { State } from './state/State';

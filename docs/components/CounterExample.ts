@@ -1,18 +1,18 @@
-import { div } from 'docs/config';
-import { Template } from 'src/html/HTML';
-import { useBreakpointStyle } from 'src/html/traits/BreakpointStyle';
-import { useEventListener } from 'src/html/traits/EventListener';
-import { useEventStyle } from 'src/html/traits/EventStyle';
-import { useInnerText } from 'src/html/traits/InnerText';
-import State from 'src/state/State';
+import { HTML } from '@oem/html/HTML';
+import { useBreakpointStyle } from '@oem/html/traits/BreakpointStyle';
+import { useEventListener } from '@oem/html/traits/EventListener';
+import { useEventStyle } from '@oem/html/traits/EventStyle';
+import { useInnerText } from '@oem/html/traits/InnerText';
+import { State } from '@oem/state/State';
+import { div } from '../config';
 
 const Counter = () => {
   const count = State(1);
-  const count_inc = count.reduce((i) => i + 1);
+  const count_inc = count.reduce((i: number) => i + 1);
   const count_text = () => `#${count.get()}`;
   const count_color = () => (count.get() % 2 === 0 ? 'red' : 'black');
 
-  const { div } = Template({
+  const { div } = HTML({
     'text:count': useInnerText(count),
     'click:event': useEventListener('click'),
     'click:style': useEventStyle('click'),

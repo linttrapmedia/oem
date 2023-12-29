@@ -1,4 +1,5 @@
-import { Template } from './HTML';
+import { Test } from '@oem/types';
+import { HTML } from './HTML';
 import { useAttribute } from './traits/Attribute';
 import { useClassName } from './traits/ClassName';
 import { useEventListener } from './traits/EventListener';
@@ -7,7 +8,7 @@ import { usePrintStyle } from './traits/PrintStyle';
 import { useStyle } from './traits/Style';
 
 export const CanApplyAttributeTraitToHtml: Test = () => {
-  const { div } = Template({
+  const { div } = HTML({
     attr: useAttribute(),
   });
   const e1 = div(['attr', 'id', 'test'])();
@@ -16,7 +17,7 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
 };
 
 export const CanApplyClassNameTraitToHtml: Test = () => {
-  const { div } = Template({
+  const { div } = HTML({
     className: useClassName(),
   });
   const e1 = div(['className', 'n1 n2'])();
@@ -25,7 +26,7 @@ export const CanApplyClassNameTraitToHtml: Test = () => {
 };
 
 export const CanApplyEventListenerTraitToHtml: Test = () => {
-  const { div } = Template({
+  const { div } = HTML({
     click: useEventListener('click'),
   });
   let clicked = false;
@@ -37,7 +38,7 @@ export const CanApplyEventListenerTraitToHtml: Test = () => {
 };
 
 export const CanApplyInnerTextTraitToHtml: Test = () => {
-  const { div } = Template({
+  const { div } = HTML({
     text: useInnerText(),
   });
   const e1 = div(['text', 'test'])();
@@ -46,7 +47,7 @@ export const CanApplyInnerTextTraitToHtml: Test = () => {
 };
 
 export const CanApplyPrintStyleTraitToHtml: Test = () => {
-  const { div } = Template({
+  const { div } = HTML({
     printStyle: usePrintStyle(),
   });
   const e1 = div(['printStyle', 'fontSize', '12px'])();
@@ -56,7 +57,7 @@ export const CanApplyPrintStyleTraitToHtml: Test = () => {
 };
 
 export const CanApplyStyleTraitToHtml: Test = () => {
-  const { div } = Template({
+  const { div } = HTML({
     style: useStyle(),
   });
   const e1 = div(['style', 'fontSize', '12px'])();
@@ -65,7 +66,7 @@ export const CanApplyStyleTraitToHtml: Test = () => {
 };
 
 export const CanApplyMultipleTraitsToHtml: Test = () => {
-  const { div } = Template({
+  const { div } = HTML({
     attr: useAttribute(),
     text: useInnerText(),
   });
@@ -75,20 +76,20 @@ export const CanApplyMultipleTraitsToHtml: Test = () => {
 };
 
 export const CanCreateBasicHtmlTagWithText: Test = () => {
-  const { div } = Template();
+  const { div } = HTML();
   const test = div()('test');
   const t1 = test.outerHTML === '<div>test</div>';
   return { pass: t1 };
 };
 
 export const CanCreateEmptyHtmlTag: Test = () => {
-  const { div } = Template();
+  const { div } = HTML();
   const t1 = div()().outerHTML === '<div></div>';
   return { pass: t1 };
 };
 
 export const HasValidHtmlNamespace: Test = () => {
-  const { div } = Template({
+  const { div } = HTML({
     attr: useAttribute(),
   });
   const t1 = div(['attr', 'id', '1'])().namespaceURI === 'http://www.w3.org/1999/xhtml';

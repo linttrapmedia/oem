@@ -1,4 +1,4 @@
-import { div } from 'docs/config';
+import { div } from '@docs/config';
 import { Code } from './Code';
 
 const Header = (txt: string) => div(['style', 'backgroundColor', 'rgba(0,0,0,0.1)'], ['style', 'padding', '10px'])(txt);
@@ -50,7 +50,7 @@ export const FAQ = () =>
         Cell('Why is it said to be "AI friendly"?'),
         Cell('The formulaic and declarative nature of it makes it easy to parse and understand'),
         Cell('Does it support SVG?'),
-        Cell('Yep, just use the ', Code('@linttrap/SVG'), ' template and traits'),
+        Cell('Yep, just use ', Code('SVG'), ' instead of ', Code('HTML'), ' as your template function'),
       ),
     ),
   );

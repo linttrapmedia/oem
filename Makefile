@@ -22,7 +22,8 @@ help:
 # TASKS
 
 build: ## Run build scripts
-	@echo $(STATUS) Building...
+	@rm -rf ./dist
+	@echo $(STATUS) Building docs...
 	@npx esbuild \
 		./docs/app.ts \
 		--bundle \
@@ -31,6 +32,17 @@ build: ## Run build scripts
 		--sourcemap \
 		--target=es2015 \
 		--outfile=./docs/bundle.min.js
+	# @echo $(STATUS) Building lib dist...
+	# @tsc
+	# @echo $(STATUS) Building cdn dist...
+	# @npx esbuild \
+	# 	./src/index.ts \
+	# 	--bundle \
+	# 	--minify-whitespace \
+	# 	--minify-syntax \
+	# 	--sourcemap \
+	# 	--target=es2015 \
+	# 	--outfile=./dist/cdn/index.min.js
 
 clean: ## Clean the project
 	@echo $(STATUS) Cleaning...

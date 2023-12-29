@@ -1,4 +1,4 @@
-import { StateType } from 'src/typings';
+import { StateType } from 'src/types';
 
 export const useInnerText =
   (state?: StateType<any>) =>

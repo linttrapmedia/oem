@@ -1,4 +1,4 @@
-import { div } from 'docs/config';
+import { div } from '@docs/config';
 
 const Header = (txt: string) => div(['style', 'backgroundColor', 'rgba(0,0,0,0.1)'], ['style', 'padding', '10px'])(txt);
 const Cell = (txt: string) =>

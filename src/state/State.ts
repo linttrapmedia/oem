@@ -1,6 +1,6 @@
-import { StateType } from 'src/typings';
+import { StateType } from '@oem/types';
 
-export default function State<T>(param: T): StateType<T> {
+export function State<T>(param: T): StateType<T> {
   const originalParam: T = param;
   let _param: T = param;
   const _subscribers: ((param: T) => any)[] = [];

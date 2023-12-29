@@ -1,4 +1,4 @@
-import { SvgReturnType } from 'src/typings';
+import { SvgReturnType } from '@oem/types';
 
 function SvgTag(tag: keyof SVGElementTagNameMap, traits: any[] = [], config: any = {}) {
   const ns = 'http://www.w3.org/1999/xhtml';
@@ -14,7 +14,7 @@ function SvgTag(tag: keyof SVGElementTagNameMap, traits: any[] = [], config: any
   return fn;
 }
 
-export function Template<P extends Record<string, any>>(config?: P) {
+export function SVG<P extends Record<string, any>>(config?: P) {
   return new Proxy(
     {},
     {
@@ -25,7 +25,3 @@ export function Template<P extends Record<string, any>>(config?: P) {
     },
   ) as SvgReturnType<P>;
 }
-
-export default {
-  Template,
-};

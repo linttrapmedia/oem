@@ -1,6 +1,6 @@
-import * as html from 'src/html/HTML.test';
-import * as state from 'src/state/State.test';
-import * as svg from 'src/svg/SVG.test';
+import * as html from '@oem/html/HTML.test';
+import * as svg from '@oem/html/SVG.test';
+import * as state from '@oem/state/State.test';
 import { runner } from './runner';
 
 window.addEventListener('DOMContentLoaded', () => {

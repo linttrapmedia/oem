@@ -1,4 +1,4 @@
-import { div } from 'docs/config';
+import { div } from '@docs/config';
 import { Code } from './Code';
 
 const Header = (txt: string) => div(['style', 'backgroundColor', 'rgba(0,0,0,0.1)'], ['style', 'padding', '10px'])(txt);
@@ -50,7 +50,7 @@ const useMyFlexBox = (el: HTMLElement, dir: 'row' | 'column') => {
       )(
         `You attach the trait to your template like so. In this case 'flex' is user-defined and will be the name of your trait available to you in your tag function`,
       ),
-      div(['prism'])(`const { div } = Template({
+      div(['prism'])(`const { div } = HTML({
   'flex': useMyFlexBox,
 });`),
       div(['style', 'fontSize', '21px'], ['style', 'textAlign', 'center'])('Step 3: Using The Trait'),

@@ -1,4 +1,5 @@
-import { Template } from './SVG';
+import { Test } from '@oem/types';
+import { SVG } from './SVG';
 import { useAttribute } from './traits/Attribute';
 import { useClassName } from './traits/ClassName';
 import { useEventListener } from './traits/EventListener';
@@ -7,7 +8,7 @@ import { usePrintStyle } from './traits/PrintStyle';
 import { useStyle } from './traits/Style';
 
 export const CanApplyAttributeTraitToHtml: Test = () => {
-  const { circle } = Template({
+  const { circle } = SVG({
     attr: useAttribute(),
   });
   const e1 = circle(['attr', 'id', 'test'])();
@@ -16,7 +17,7 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
 };
 
 export const CanApplyClassNameTraitToHtml: Test = () => {
-  const { circle } = Template({
+  const { circle } = SVG({
     className: useClassName(),
   });
   const e1 = circle(['className', 'n1 n2'])();
@@ -25,7 +26,7 @@ export const CanApplyClassNameTraitToHtml: Test = () => {
 };
 
 export const CanApplyEventListenerTraitToHtml: Test = () => {
-  const { circle } = Template({
+  const { circle } = SVG({
     click: useEventListener('click'),
   });
   let clicked = false;
@@ -37,7 +38,7 @@ export const CanApplyEventListenerTraitToHtml: Test = () => {
 };
 
 export const CanApplyInnerTextTraitToHtml: Test = () => {
-  const { circle } = Template({
+  const { circle } = SVG({
     text: useInnerText(),
   });
   const e1 = circle(['text', 'test'])();
@@ -46,7 +47,7 @@ export const CanApplyInnerTextTraitToHtml: Test = () => {
 };
 
 export const CanApplyPrintStyleTraitToHtml: Test = () => {
-  const { circle } = Template({
+  const { circle } = SVG({
     printStyle: usePrintStyle(),
   });
   const e1 = circle(['printStyle', 'fontSize', '12px'])();
@@ -56,7 +57,7 @@ export const CanApplyPrintStyleTraitToHtml: Test = () => {
 };
 
 export const CanApplyStyleTraitToHtml: Test = () => {
-  const { circle } = Template({
+  const { circle } = SVG({
     style: useStyle(),
   });
   const e1 = circle(['style', 'fontSize', '12px'])();
@@ -65,7 +66,7 @@ export const CanApplyStyleTraitToHtml: Test = () => {
 };
 
 export const CanApplyMultipleTraitsToHtml: Test = () => {
-  const { circle } = Template({
+  const { circle } = SVG({
     attr: useAttribute(),
     text: useInnerText(),
   });
@@ -75,20 +76,20 @@ export const CanApplyMultipleTraitsToHtml: Test = () => {
 };
 
 export const CanCreateBasicHtmlTagWithText: Test = () => {
-  const { circle } = Template();
+  const { circle } = SVG();
   const test = circle()('test');
   const t1 = test.outerHTML === '<circle>test</circle>';
   return { pass: t1 };
 };
 
 export const CanCreateEmptyHtmlTag: Test = () => {
-  const { circle } = Template();
+  const { circle } = SVG();
   const t1 = circle()().outerHTML === '<circle></circle>';
   return { pass: t1 };
 };
 
 export const HasValidHtmlNamespace: Test = () => {
-  const { circle } = Template({
+  const { circle } = SVG({
     attr: useAttribute(),
   });
   const t1 = circle(['attr', 'id', '1'])().namespaceURI === 'http://www.w3.org/1999/xhtml';

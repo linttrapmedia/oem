@@ -1,4 +1,5 @@
-import State from './State';
+import { Test } from 'src/types';
+import { State } from './State';
 
 export const CanCreateState: Test = () => {
   const num = State(1);

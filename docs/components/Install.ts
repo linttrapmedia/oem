@@ -1,4 +1,4 @@
-import { div } from 'docs/config';
+import { div } from '@docs/config';
 import { Code } from './Code';
 
 export const Install = () =>

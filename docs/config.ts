@@ -1,7 +1,7 @@
-import { Template } from 'src/html/HTML';
-import { useAttribute } from 'src/html/traits/Attribute';
-import { useBreakpointStyle } from 'src/html/traits/BreakpointStyle';
-import { useEventStyle } from 'src/html/traits/EventStyle';
+import { HTML } from '@oem/html/HTML';
+import { useAttribute } from '@oem/html/traits/Attribute';
+import { useBreakpointStyle } from '@oem/html/traits/BreakpointStyle';
+import { useEventStyle } from '@oem/html/traits/EventStyle';
 
 declare module Prism {
   const highlight: any;
@@ -34,7 +34,7 @@ export const usePrism = () => (el: HTMLElement) => {
   return el;
 };
 
-export const { a, button, code, div, img, pre, span } = Template({
+export const { a, button, code, div, img, pre, span } = HTML({
   attr: useAttribute(),
   on_click: useEventStyle('click'),
   prism: usePrism(),
