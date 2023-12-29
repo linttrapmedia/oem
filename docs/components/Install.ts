@@ -49,12 +49,8 @@ export const Install = () =>
       ['style:tablet', 'borderBottom', 'none'],
     )(
       div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('Install'),
-      div(['style', 'opacity', 0.5], ['style', 'textAlign', 'center'])(
-        '(Install the typescript library. Or via CDN @ ',
-        Code('unpkg.com/@linttrap/oem'),
-        ' more details below',
-        ')',
-      ),
+      div(['style', 'opacity', 0.5], ['style', 'textAlign', 'center'])('(Install the typescript library.)'),
       div(['prism'])(`npm i @linttrap/oem`),
+      div()('Also available on CND at unpkg:', Code('https://unpkg.com/@linttrap/oem/dist/oem.min.js')),
     ),
   );
