@@ -27,9 +27,11 @@ export const Install = () =>
       ['style', 'width', '100%'],
     )(
       div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('Why?'),
-      div(['style', 'padding', '20px 0'], ['style', 'opacity', 0.5])(
-        `Are you sick of modern UI libraries' false promises of simplicity only to open up a codebase and find hell on earth? And what about the source code of those frameworks? Got those down? Can we not use simple software patterns to do the same things? Yep, we can, it's called `,
-        Code('oem'),
+      div(
+        ['style', 'padding', '20px 0'],
+        ['style', 'opacity', 0.5],
+      )(
+        `I wanted a standards-compliant, reliable, unchanging, lightweight reactive dom library that could serve as a layer one utility library to build out a suite of self-contained web components.`,
       ),
     ),
     div(

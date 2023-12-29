@@ -33,7 +33,7 @@ export const Traits = () =>
         ['style', 'opacity', 0.5],
         ['style', 'textAlign', 'center'],
       )(
-        `Traits are small, composable, atomic functions that are responsible for attaching a single behavior and/or trait to an html element. The following is a list of all the standard traits that come with OEM by default.`,
+        `Traits are functions that are responsible for attaching a single behavior and/or trait to an html element. The following is a list of all the standard traits that come with OEM by default.`,
       ),
       div(
         ['style', 'borderRadius', '5px'],

@@ -16,19 +16,19 @@ const Counter = () => {
     'text:count': useInnerText(count),
     'click:event': useEventListener('click'),
     'click:style': useEventStyle('click'),
-    'style:mobile': useBreakpointStyle(0),
-    'style:tablet': useBreakpointStyle(960),
+    'mobile:style': useBreakpointStyle(0),
+    'tablet:style': useBreakpointStyle(960),
   });
 
   return div(
     ['text:count', count_text],
     ['click:event', count_inc],
     ['click:style', 'color', count_color],
-    ['style:mobile', 'cursor', 'pointer'],
-    ['style:mobile', 'display', 'flex'],
-    ['style:mobile', 'gap', '10px'],
-    ['style:mobile', 'fontSize', '50px'],
-    ['style:tablet', 'fontSize', '80px'],
+    ['mobile:style', 'cursor', 'pointer'],
+    ['mobile:style', 'display', 'flex'],
+    ['mobile:style', 'gap', '10px'],
+    ['mobile:style', 'fontSize', '50px'],
+    ['tablet:style', 'fontSize', '80px'],
   )();
 };
 

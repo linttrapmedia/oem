@@ -24,7 +24,7 @@ export const CustomTrait = () =>
       ['style', 'justifyContent', 'center'],
       ['style', 'width', '100%'],
     )(
-      div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('Custom Trait'),
+      div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('Custom Traits'),
       div(
         ['style', 'opacity', 0.5],
         ['style', 'textAlign', 'center'],
