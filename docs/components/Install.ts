@@ -56,7 +56,10 @@ export const Install = () =>
         ['style', 'textAlign', 'center'],
       )(
         'Also available on CDN at ',
-        a(['attr', 'href', 'https://unpkg.com/@linttrap/oem/dist/oem.min.js'], ['attr', 'target', '_blank'])('unpkg'),
+        a(
+          ['attr', 'href', 'https://unpkg.com/@linttrap/oem@latest/dist/oem.min.js'],
+          ['attr', 'target', '_blank'],
+        )('unpkg'),
       ),
     ),
   );
