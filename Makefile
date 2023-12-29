@@ -54,6 +54,7 @@ deploy: ## Deploy the project
 	@git checkout -b gh-pages
 	@git merge main --no-commit --no-ff
 	@make clean
+	@npm i
 	@make build
 	@git add .
 	@git commit -m 'deploy'
