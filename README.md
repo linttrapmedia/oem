@@ -17,6 +17,13 @@ I wanted a standards-compliant, reliable, unchanging, lightweight reactive dom l
 - 🧪 100% Test Coverage
 - 💩 No Virtual DOM
 
+## Quick Start
+```
+npm i @linttrap/oem
+```
+
+Also available via CDN [unpkg](https://unpkg.com/@linttrap/oem@latest/dist/oem.min.js)
+
 ## How It Works
 OEM works by introducing the idea of creating your own template engine(s) which exist as a middle layer between your state and your DOM. The result is code that is highly expressive, easy to read, and easy to maintain.
 
@@ -50,6 +57,8 @@ div(
   ['tablet:style', 'fontSize', '80px'],
 )()
 ```
+
+Note: If you're using the CDN dist file all functions are available on the `window.oem` object. Example `oem.State`, `oem.HTML`, etc.
 
 ## Standard Traits
 Traits are functions that are responsible for attaching a single behavior and/or trait to an html element. The following is a list of all the standard traits that come with OEM by default.
