@@ -14,7 +14,7 @@
     "type": "git",
     "url": "git+https://github.com/linttrapmedia/oem.git"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/linttrapmedia/oem/issues"
   },
