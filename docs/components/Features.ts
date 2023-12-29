@@ -16,7 +16,7 @@ export const Features = () =>
     ['style', 'backgroundColor', 'black'],
   )(
     ...[
-      ['🪶', 'less than 1kb'],
+      ['🪶', 'flyweight size'],
       ['🕊️', 'No Dependencies'],
       ['💫', 'Reactive DOM'],
       ['💅', 'Responsive Styles'],
