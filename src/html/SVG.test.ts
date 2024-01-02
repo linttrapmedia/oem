@@ -2,10 +2,9 @@ import { Test } from '@oem/types';
 import { SVG } from './SVG';
 import { useAttribute } from './traits/Attribute';
 import { useClassName } from './traits/ClassName';
-import { useEventListener } from './traits/EventListener';
-import { useInnerText } from './traits/InnerText';
-import { usePrintStyle } from './traits/PrintStyle';
+import { useEvent } from './traits/Event';
 import { useStyle } from './traits/Style';
+import { useText } from './traits/Text';
 
 export const CanApplyAttributeTraitToHtml: Test = () => {
   const { circle } = SVG({
@@ -27,7 +26,7 @@ export const CanApplyClassNameTraitToHtml: Test = () => {
 
 export const CanApplyEventListenerTraitToHtml: Test = () => {
   const { circle } = SVG({
-    click: useEventListener('click'),
+    click: useEvent('click'),
   });
   let clicked = false;
   const handleClick = () => (clicked = true);
@@ -39,7 +38,7 @@ export const CanApplyEventListenerTraitToHtml: Test = () => {
 
 export const CanApplyInnerTextTraitToHtml: Test = () => {
   const { circle } = SVG({
-    text: useInnerText(),
+    text: useText(),
   });
   const e1 = circle(['text', 'test'])();
   const t1 = e1.outerHTML === '<circle>test</circle>';
@@ -48,7 +47,7 @@ export const CanApplyInnerTextTraitToHtml: Test = () => {
 
 export const CanApplyPrintStyleTraitToHtml: Test = () => {
   const { circle } = SVG({
-    printStyle: usePrintStyle(),
+    printStyle: useStyle({ mediaType: 'print' }),
   });
   const e1 = circle(['printStyle', 'fontSize', '12px'])();
   // can't test if style is applied to document with jsdom
@@ -68,7 +67,7 @@ export const CanApplyStyleTraitToHtml: Test = () => {
 export const CanApplyMultipleTraitsToHtml: Test = () => {
   const { circle } = SVG({
     attr: useAttribute(),
-    text: useInnerText(),
+    text: useText(),
   });
   const e1 = circle(['attr', 'id', 'test'], ['text', 'test'])();
   const t1 = e1.outerHTML === '<circle id="test">test</circle>';

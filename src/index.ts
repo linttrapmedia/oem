@@ -1,11 +1,8 @@
 export { HTML } from './html/HTML';
 export { SVG } from './html/SVG';
 export { useAttribute } from './html/traits/Attribute';
-export { useBreakpointStyle } from './html/traits/BreakpointStyle';
 export { useClassName } from './html/traits/ClassName';
-export { useEventListener } from './html/traits/EventListener';
-export { useEventStyle } from './html/traits/EventStyle';
-export { useInnerText } from './html/traits/InnerText';
-export { usePrintStyle } from './html/traits/PrintStyle';
+export { useEvent } from './html/traits/Event';
 export { useStyle } from './html/traits/Style';
+export { useText } from './html/traits/Text';
 export { State } from './state/State';

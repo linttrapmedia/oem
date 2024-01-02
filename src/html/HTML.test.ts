@@ -2,10 +2,9 @@ import { Test } from '@oem/types';
 import { HTML } from './HTML';
 import { useAttribute } from './traits/Attribute';
 import { useClassName } from './traits/ClassName';
-import { useEventListener } from './traits/EventListener';
-import { useInnerText } from './traits/InnerText';
-import { usePrintStyle } from './traits/PrintStyle';
+import { useEvent } from './traits/Event';
 import { useStyle } from './traits/Style';
+import { useText } from './traits/Text';
 
 export const CanApplyAttributeTraitToHtml: Test = () => {
   const { div } = HTML({
@@ -27,7 +26,7 @@ export const CanApplyClassNameTraitToHtml: Test = () => {
 
 export const CanApplyEventListenerTraitToHtml: Test = () => {
   const { div } = HTML({
-    click: useEventListener('click'),
+    click: useEvent('click'),
   });
   let clicked = false;
   const handleClick = () => (clicked = true);
@@ -39,7 +38,7 @@ export const CanApplyEventListenerTraitToHtml: Test = () => {
 
 export const CanApplyInnerTextTraitToHtml: Test = () => {
   const { div } = HTML({
-    text: useInnerText(),
+    text: useText(),
   });
   const e1 = div(['text', 'test'])();
   const t1 = e1.outerHTML === '<div>test</div>';
@@ -48,7 +47,7 @@ export const CanApplyInnerTextTraitToHtml: Test = () => {
 
 export const CanApplyPrintStyleTraitToHtml: Test = () => {
   const { div } = HTML({
-    printStyle: usePrintStyle(),
+    printStyle: useStyle({ mediaType: 'print' }),
   });
   const e1 = div(['printStyle', 'fontSize', '12px'])();
   // can't test if style is applied to document with jsdom
@@ -68,7 +67,7 @@ export const CanApplyStyleTraitToHtml: Test = () => {
 export const CanApplyMultipleTraitsToHtml: Test = () => {
   const { div } = HTML({
     attr: useAttribute(),
-    text: useInnerText(),
+    text: useText(),
   });
   const e1 = div(['attr', 'id', 'test'], ['text', 'test'])();
   const t1 = e1.outerHTML === '<div id="test">test</div>';

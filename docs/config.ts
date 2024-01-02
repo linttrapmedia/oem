@@ -1,7 +1,6 @@
 import { HTML } from '@oem/html/HTML';
 import { useAttribute } from '@oem/html/traits/Attribute';
-import { useBreakpointStyle } from '@oem/html/traits/BreakpointStyle';
-import { useEventStyle } from '@oem/html/traits/EventStyle';
+import { useEvent, useStyle } from '@oem/index';
 
 declare module Prism {
   const highlight: any;
@@ -36,10 +35,10 @@ export const usePrism = () => (el: HTMLElement) => {
 
 export const { a, button, code, div, img, pre, span } = HTML({
   attr: useAttribute(),
-  on_click: useEventStyle('click'),
+  on_click: useEvent('click'),
   prism: usePrism(),
-  style: useBreakpointStyle(0),
-  'style:tablet': useBreakpointStyle(960),
-  'style:mouseover': useEventStyle('mouseover'),
-  'style:mouseout': useEventStyle('mouseout'),
+  style: useStyle(),
+  'style:tablet': useStyle({ mediaMinWidth: 960 }),
+  'style:mouseover': useStyle({ event: 'mouseover' }),
+  'style:mouseout': useStyle({ event: 'mouseout' }),
 });

@@ -1,8 +1,7 @@
 import { HTML } from '@oem/html/HTML';
-import { useBreakpointStyle } from '@oem/html/traits/BreakpointStyle';
-import { useEventListener } from '@oem/html/traits/EventListener';
-import { useEventStyle } from '@oem/html/traits/EventStyle';
-import { useInnerText } from '@oem/html/traits/InnerText';
+import { useEvent } from '@oem/html/traits/Event';
+import { useText } from '@oem/html/traits/Text';
+import { useStyle } from '@oem/index';
 import { State } from '@oem/state/State';
 import { div } from '../config';
 
@@ -13,11 +12,11 @@ const Counter = () => {
   const count_color = () => (count.get() % 2 === 0 ? 'red' : 'black');
 
   const { div } = HTML({
-    'text:count': useInnerText(count),
-    'click:event': useEventListener('click'),
-    'click:style': useEventStyle('click'),
-    'mobile:style': useBreakpointStyle(0),
-    'tablet:style': useBreakpointStyle(960),
+    'text:count': useText(count),
+    'click:event': useEvent('click'),
+    'click:style': useStyle({ event: 'click' }),
+    'mobile:style': useStyle({ mediaMinWidth: 0 }),
+    'tablet:style': useStyle({ mediaMinWidth: 960 }),
   });
 
   return div(

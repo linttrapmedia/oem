@@ -1,6 +1,6 @@
-import { StateType } from 'src/types';
+import { StateType } from '@oem/types';
 
-export const useInnerText =
+export const useText =
   (state?: StateType<any>) =>
   (
     el: HTMLElement,
