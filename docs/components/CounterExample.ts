@@ -34,7 +34,7 @@ const Counter = () => {
 export const Example = () =>
   div(
     ['style', 'alignItems', 'center'],
-    ['style', 'backgroundColor', 'rgba(255,255,255,0.1)'],
+    ['style', 'backgroundColor', 'rgba(255,255,255,0.2)'],
     ['style', 'boxSizing', 'border-box'],
     ['style', 'borderRadius', '5px'],
     ['style', 'display', 'flex'],
