@@ -16,11 +16,11 @@ export const Features = () =>
     ['style', 'backgroundColor', 'black'],
   )(
     ...[
-      ['🪶', 'flyweight size'],
-      ['🕊️', 'No Dependencies'],
       ['💫', 'Reactive DOM'],
       ['💅', 'Responsive Styles'],
       ['📼', 'State Management'],
+      ['🕊️', 'No Dependencies'],
+      ['🪶', 'Flyweight Size'],
       ['🧱', 'Isomorphic Syntax'],
       ['🧩', 'Typescript'],
       ['🤖', 'AI-Friendly'],
