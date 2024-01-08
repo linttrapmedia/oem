@@ -65,6 +65,6 @@ export const Header = () =>
         ['style', 'textAlign', 'center'],
         ['style', 'fontSize', '32px'],
         ['style:tablet', 'fontSize', '52px'],
-      )('A novel UI library for writing reactive html with vanilla javascript'),
+      )('A novel UI library for writing reactive html in vanilla javascript'),
     ),
   );
