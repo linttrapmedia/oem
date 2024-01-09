@@ -10,13 +10,13 @@ I wanted a standards-compliant, reliable, unchanging, lightweight reactive dom l
 
 ## Features:
 
-- 🪶 less than 1kb
 - 🕊️ No Dependencies
 - 💫 Reactive DOM
 - 💅 Responsive Styles
 - 📼 State Management
-- 🧱 Isomorphic Syntax
 - 🧩 Typescript
+- 🧱 Isomorphic Syntax
+- 🪶 Flyweight Size
 - 🤖 AI-Friendly
 - 🔒 Secure
 - 🧪 100% Test Coverage
