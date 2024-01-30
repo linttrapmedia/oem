@@ -1,4 +1,4 @@
-import { StateType } from '@oem/types';
+import { StateType } from '../../types';
 
 type UseAttributeProps = {
   event?: keyof GlobalEventHandlersEventMap | null;

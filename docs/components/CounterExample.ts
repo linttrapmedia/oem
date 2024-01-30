@@ -1,8 +1,8 @@
-import { HTML } from '@oem/html/HTML';
-import { useEvent } from '@oem/html/traits/Event';
-import { useText } from '@oem/html/traits/Text';
-import { useStyle } from '@oem/index';
-import { State } from '@oem/state/State';
+import { HTML } from '../../src/html/HTML';
+import { useEvent } from '../../src/html/traits/Event';
+import { useText } from '../../src/html/traits/Text';
+import { useStyle } from '../../src/index';
+import { State } from '../../src/state/State';
 import { div } from '../config';
 
 const Counter = () => {
@@ -12,7 +12,7 @@ const Counter = () => {
   const count_color = () => (count.get() % 2 === 0 ? 'red' : 'black');
 
   const { div } = HTML({
-    'text:count': useText(count),
+    'text:count': useText({ state: count }),
     'click:event': useEvent('click'),
     'click:style': useStyle({ event: 'click' }),
     'mobile:style': useStyle({ mediaMinWidth: 0 }),

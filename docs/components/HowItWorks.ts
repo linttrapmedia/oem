@@ -1,4 +1,4 @@
-import { div, pre } from '@docs/config';
+import { div, pre } from '..//config';
 
 export const HowItWorks = () =>
   div(
@@ -48,7 +48,7 @@ const count_text = () => \`#\${count.get()}\`;
 const count_color = () => (count.get() % 2 === 0 ? 'red' : 'black');
 
 const { div } = HTML({
-  'text:count': useText(count),
+  'text:count': useText({state: count}),
   'click:event': useEvent('click'),
   'click:style': useStyle({ event: 'click' }),
   'mobile:style': useStyle({ mediaMinWidth: 0 }),

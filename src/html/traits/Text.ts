@@ -1,4 +1,4 @@
-import { StateType } from '@oem/types';
+import { StateType } from '../../types';
 
 type UseTextProps = {
   state?: StateType<any> | null;

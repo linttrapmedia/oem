@@ -1,4 +1,4 @@
-import { StateType } from '@oem/types';
+import { StateType } from '../types';
 
 export function State<T>(param: T): StateType<T> {
   const originalParam: T = param;

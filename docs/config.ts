@@ -1,6 +1,6 @@
-import { HTML } from '@oem/html/HTML';
-import { useAttribute } from '@oem/html/traits/Attribute';
-import { useEvent, useStyle } from '@oem/index';
+import { HTML } from '../src/html/HTML';
+import { useAttribute } from '../src/html/traits/Attribute';
+import { useEvent, useStyle } from '../src/index';
 
 declare module Prism {
   const highlight: any;

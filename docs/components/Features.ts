@@ -1,4 +1,4 @@
-import { div, span } from '@docs/config';
+import { div, span } from '..//config';
 
 export const Features = () =>
   div(

@@ -1,4 +1,4 @@
-import { Test } from 'src/types';
+import { Test } from '../types';
 import { State } from './State';
 
 export const CanCreateState: Test = () => {

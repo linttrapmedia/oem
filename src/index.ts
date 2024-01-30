@@ -6,3 +6,4 @@ export { useEvent } from './html/traits/Event';
 export { useStyle } from './html/traits/Style';
 export { useText } from './html/traits/Text';
 export { State } from './state/State';
+export * from './types';

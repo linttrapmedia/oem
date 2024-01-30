@@ -1,4 +1,4 @@
-import { HtmlReturnType } from '@oem/types';
+import { HtmlReturnType } from '../types';
 
 function HtmlTag(tag: keyof HTMLElementTagNameMap, traits: any[] = [], config: any = {}) {
   const ns = 'http://www.w3.org/1999/xhtml';

@@ -1,4 +1,4 @@
-import { SvgReturnType } from '@oem/types';
+import { SvgReturnType } from '../types';
 
 function SvgTag(tag: keyof SVGElementTagNameMap, traits: any[] = [], config: any = {}) {
   const ns = 'http://www.w3.org/1999/xhtml';

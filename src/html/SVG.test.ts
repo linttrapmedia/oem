@@ -1,4 +1,4 @@
-import { Test } from '@oem/types';
+import { Test } from '../types';
 import { SVG } from './SVG';
 import { useAttribute } from './traits/Attribute';
 import { useClassName } from './traits/ClassName';

@@ -1,4 +1,4 @@
-import { span } from '@docs/config';
+import { span } from '../config';
 
 export const Code = (txt: string) =>
   span(
