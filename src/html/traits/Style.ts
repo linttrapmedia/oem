@@ -27,7 +27,7 @@ export const useStyle = ({
     style.id = printId;
     style.setAttribute('type', 'text/css');
     style.setAttribute('media', 'print');
-    document.getElementsByTagName('head')[0].appendChild(style);
+    if (mediaType === 'print') document.getElementsByTagName('head')[0].appendChild(style);
   }
   const sheet = style.sheet as CSSStyleSheet;
   return (
