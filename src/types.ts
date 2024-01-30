@@ -10,7 +10,6 @@ export type StateType<T> = {
 };
 
 type HtmlTraitFunc<Args extends any[]> = (el: HTMLElement, ...args: Args) => HTMLElement;
-type HtmlTraitConfig = <Config extends any[]>(...config: Config) => HtmlTraitFunc<any>;
 type HtmlTags = keyof HTMLElementTagNameMap;
 export type HtmlReturnType<P extends Record<string, HtmlTraitFunc<any>>> = Record<
   HtmlTags,
@@ -22,7 +21,6 @@ export type HtmlReturnType<P extends Record<string, HtmlTraitFunc<any>>> = Recor
 >;
 
 type SvgTraitFunc<Args extends any[]> = (el: HTMLElement, ...args: Args) => HTMLElement;
-type SvgTraitConfig = <Config extends any[]>(...config: Config) => SvgTraitFunc<any>;
 type SvgTags = keyof SVGElementTagNameMap;
 export type SvgReturnType<P extends Record<string, SvgTraitFunc<any>>> = Record<
   SvgTags,

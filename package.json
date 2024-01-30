@@ -2,13 +2,14 @@
   "name": "@linttrap/oem",
   "author": "@linttrapmedia",
   "title": "oem",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A novel UI library for writing reactive html with vanilla javascript",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
   "main": "./src/index.ts",
+  "types": "./src/types.ts",
   "module": "./src/index.ts",
   "repository": {
     "type": "git",

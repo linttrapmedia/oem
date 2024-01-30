@@ -1,7 +1,11 @@
 import { StateType } from '@oem/types';
 
+type UseTextProps = {
+  state?: StateType<any> | null;
+};
+
 export const useText =
-  (state?: StateType<any>) =>
+  ({ state }: UseTextProps = {}) =>
   (
     el: HTMLElement,
     text: ((...args: any) => string | number) | (string | number),
