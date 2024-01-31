@@ -15,6 +15,15 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
   return { pass: t1 };
 };
 
+export const CanRemoveAttributeTraitToHtml: Test = () => {
+  const { div } = HTML({
+    attr: useAttribute(),
+  });
+  const e1 = div(['attr', 'disabled', 'false'])();
+  const t1 = e1.outerHTML === '<div></div>';
+  return { pass: t1 };
+};
+
 export const CanApplyClassNameTraitToHtml: Test = () => {
   const { div } = HTML({
     className: useClassName(),

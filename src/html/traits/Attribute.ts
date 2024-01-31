@@ -3,6 +3,7 @@ import { StateType } from '../../types';
 type UseAttributeProps = {
   event?: keyof GlobalEventHandlersEventMap | null;
   eventElement?: HTMLElement | Window;
+  hideOnFalse?: boolean;
   invokeImmediately?: boolean;
   mediaMaxWidth?: number;
   mediaMinWidth?: number;
@@ -13,6 +14,7 @@ type UseAttributeProps = {
 export const useAttribute = ({
   event = null,
   eventElement = window,
+  hideOnFalse = true,
   invokeImmediately = true,
   mediaMinWidth = 0,
   mediaMaxWidth = Infinity,
@@ -21,7 +23,7 @@ export const useAttribute = ({
   return (
     el: HTMLElement,
     prop: string,
-    val: (() => string | number) | (string | number),
+    val: (() => string | number | boolean) | (string | number | boolean),
     condition?: boolean | (() => boolean),
   ) => {
     // application
@@ -29,7 +31,13 @@ export const useAttribute = ({
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
       const _val = String(typeof val === 'function' ? val() : val);
-      (typeof condition === 'function' ? condition() : condition ?? true) ? el.setAttribute(prop, _val) : null;
+      const _condition = typeof condition === 'function' ? condition() : condition ?? true;
+      if (!_condition) return;
+      if (hideOnFalse && _val === 'false') {
+        el.removeAttribute(prop);
+      } else {
+        el.setAttribute(prop, _val);
+      }
     };
 
     // handle state changes
