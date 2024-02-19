@@ -1,0 +1,1 @@
+- Make content optionally a call back function with "rest" params that are states that trigger redraws
