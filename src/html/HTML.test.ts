@@ -3,6 +3,7 @@ import { HTML } from './HTML';
 import { useAttribute } from './traits/Attribute';
 import { useClassName } from './traits/ClassName';
 import { useEvent } from './traits/Event';
+import { useInnerHTML } from './traits/InnerHTML';
 import { useStyle } from './traits/Style';
 import { useText } from './traits/Text';
 
@@ -53,6 +54,21 @@ export const CanApplyEventListenerTraitToHtml: Test = () => {
   e1.click();
   const t1 = clicked;
   return { pass: t1 };
+};
+
+export const CanApplyInnerHTMLTraitToHtml: Test = () => {
+  const { div } = HTML({
+    html: useInnerHTML(),
+  });
+  const e1 = div(['html', () => 'asdf'])();
+  const t1 = e1.outerHTML === '<div>asdf</div>';
+  const e2 = div(['html', () => ['one', 'two']])();
+  const t2 = e2.outerHTML === '<div>onetwo</div>';
+  const e3 = div(['html', () => div()('one')])();
+  const t3 = e3.outerHTML === '<div><div>one</div></div>';
+  const e4 = div(['html', () => [div()('one'), div()('two')]])();
+  const t4 = e4.outerHTML === '<div><div>one</div><div>two</div></div>';
+  return { pass: t1 && t2 && t3 && t4 };
 };
 
 export const CanApplyInnerTextTraitToHtml: Test = () => {

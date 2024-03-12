@@ -67,6 +67,13 @@ export const Traits = () =>
         Cell('Attach event listener'),
         Cell(
           a(
+            ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/html/traits/InnerHTML.ts'],
+            ['attr', 'target', '_blank'],
+          )('useInnerHTML'),
+        ),
+        Cell('Attach event listener'),
+        Cell(
+          a(
             ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/html/traits/Text.ts'],
             ['attr', 'target', '_blank'],
           )('useText'),

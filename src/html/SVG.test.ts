@@ -10,7 +10,7 @@ export const CanAdoptElement: Test = () => {
   const { el } = SVG({
     style: useStyle(),
   });
-  const myCircle = document.createElement('circle');
+  const myCircle = document.createElement('circle') as unknown as SVGCircleElement;
   const e1 = el(myCircle)(['style', 'color', 'red'])();
   const t1 = e1.outerHTML === '<circle style="color: red;"></circle>';
   return { pass: t1 };
@@ -39,9 +39,14 @@ export const CanApplyEventListenerTraitToHtml: Test = () => {
     click: useEvent('click'),
   });
   let clicked = false;
+  var clickEvent = new MouseEvent('click', {
+    view: window,
+    bubbles: true,
+    cancelable: false,
+  });
   const handleClick = () => (clicked = true);
   const e1 = circle(['click', handleClick])();
-  (<any>e1).click();
+  e1.dispatchEvent(clickEvent);
   const t1 = clicked;
   return { pass: t1 };
 };
@@ -101,6 +106,6 @@ export const HasValidHtmlNamespace: Test = () => {
   const { circle } = SVG({
     attr: useAttribute(),
   });
-  const t1 = circle(['attr', 'id', '1'])().namespaceURI === 'http://www.w3.org/1999/xhtml';
+  const t1 = circle(['attr', 'id', '1'])().namespaceURI === 'http://www.w3.org/2000/svg';
   return { pass: t1 };
 };

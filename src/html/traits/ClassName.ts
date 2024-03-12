@@ -24,7 +24,7 @@ export const useClassName = ({
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
       const _className = String(typeof className === 'function' ? className() : className);
-      (typeof condition === 'function' ? condition() : condition ?? true) ? (el.className = _className) : null;
+      (typeof condition === 'function' ? condition() : condition ?? true) ? el.setAttribute('class', _className) : null;
     };
 
     // handle state changes

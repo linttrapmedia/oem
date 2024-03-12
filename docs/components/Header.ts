@@ -1,3 +1,4 @@
+import pkg from '../../package.json';
 import { a, div, img, span } from '../config';
 
 export const Header = () =>
@@ -55,7 +56,7 @@ export const Header = () =>
           ['style', 'fontWeight', 'bold'],
           ['style', 'fontFamily', 'monospace'],
           ['style', 'letterSpacing', '0'],
-        )('beta'),
+        )(pkg.version),
       ),
       div(
         ['style', 'fontSize', '52px'],
