@@ -1,4 +1,4 @@
-import { a, div } from '..//config';
+import { a, div } from '../config';
 
 const date = new Date();
 

@@ -58,13 +58,13 @@ export const useStyle = ({
     // handle state changes
     if (state) state.sub(apply);
 
+    // handle resize changes
+    window.addEventListener('resize', apply);
+
     // handle event changes
     if (event) (el ?? eventElement).addEventListener(event, apply);
 
-    // handle breakpoint changes
-    window.addEventListener('resize', apply);
-
     // apply immediately
-    if (invokeImmediately) apply();
+    if (invokeImmediately && !event) apply();
   };
 };

@@ -1,7 +1,7 @@
-import { div } from '../config';
+import { a, div } from '../config';
 
 const Header = (txt: string) => div(['style', 'backgroundColor', 'rgba(0,0,0,0.1)'], ['style', 'padding', '10px'])(txt);
-const Cell = (txt: string) =>
+const Cell = (txt: HTMLElement | string) =>
   div(
     ['style', 'padding', '10px'],
     ['style', 'borderBottom', '1px solid rgba(0,0,0,0.1)'],
@@ -28,12 +28,12 @@ export const Traits = () =>
       ['style', 'justifyContent', 'center'],
       ['style', 'width', '100%'],
     )(
-      div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('Standard Traits'),
+      div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])(`It's All About "Traits"`),
       div(
         ['style', 'opacity', 0.5],
         ['style', 'textAlign', 'center'],
       )(
-        `Traits are functions that are responsible for attaching a single behavior and/or trait to an html element. The following is a list of all the standard traits that come with OEM by default.`,
+        `Traits are small testable functions that are responsible for attaching behaviors to html elements. OEM comes with a handful of traits out of the box, but you can easily write your own.`,
       ),
       div(
         ['style', 'borderRadius', '5px'],
@@ -44,15 +44,40 @@ export const Traits = () =>
       )(
         Header('Trait'),
         Header('Description'),
-        Cell('useAttribute'),
+        Cell(
+          a(
+            ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/html/traits/Style.ts'],
+            ['attr', 'target', '_blank'],
+          )('useAttribute'),
+        ),
         Cell('Apply attributes'),
-        Cell('useClassName'),
+        Cell(
+          a(
+            ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/html/traits/ClassName.ts'],
+            ['attr', 'target', '_blank'],
+          )('useClassName'),
+        ),
         Cell('Apply class names'),
-        Cell('useEvent'),
+        Cell(
+          a(
+            ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/html/traits/Event.ts'],
+            ['attr', 'target', '_blank'],
+          )('useEvent'),
+        ),
         Cell('Attach event listener'),
-        Cell('useText'),
+        Cell(
+          a(
+            ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/html/traits/Text.ts'],
+            ['attr', 'target', '_blank'],
+          )('useText'),
+        ),
         Cell('Apply inner text'),
-        Cell('useStyle'),
+        Cell(
+          a(
+            ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/html/traits/Style.ts'],
+            ['attr', 'target', '_blank'],
+          )('useStyle'),
+        ),
         Cell('Apply styles'),
       ),
     ),

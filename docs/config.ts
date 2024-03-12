@@ -1,6 +1,6 @@
 import { HTML } from '../src/html/HTML';
 import { useAttribute } from '../src/html/traits/Attribute';
-import { useEvent, useStyle } from '../src/index';
+import { SVG, useEvent, useStyle } from '../src/index';
 
 declare module Prism {
   const highlight: any;
@@ -33,12 +33,20 @@ export const usePrism = () => (el: HTMLElement) => {
   return el;
 };
 
-export const { a, button, code, div, img, pre, span } = HTML({
+export const { a, button, code, div, el, img, pre, span } = HTML({
   attr: useAttribute(),
-  on_click: useEvent('click'),
+  click: useEvent('click'),
   prism: usePrism(),
   style: useStyle(),
   'style:tablet': useStyle({ mediaMinWidth: 960 }),
+  'style:mouseover': useStyle({ event: 'mouseover' }),
+  'style:mouseout': useStyle({ event: 'mouseout' }),
+});
+
+export const svg = SVG({
+  attr: useAttribute(),
+  style: useStyle(),
+  click: useEvent('click'),
   'style:mouseover': useStyle({ event: 'mouseover' }),
   'style:mouseout': useStyle({ event: 'mouseout' }),
 });

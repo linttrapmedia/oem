@@ -1,4 +1,4 @@
-import { div, pre } from '..//config';
+import { a, div, pre } from '../config';
 
 export const HowItWorks = () =>
   div(
@@ -20,11 +20,9 @@ export const HowItWorks = () =>
       ['style', 'width', '100%'],
     )(
       div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('How It Works'),
-      div(
-        ['style', 'opacity', 0.5],
-        ['style', 'textAlign', 'center'],
-      )(
-        `OEM works by introducing the idea of creating your own template engine(s) which exist as a middle layer between your state and your DOM. The result is small units of code that follow the Locality of Behavior principle; units of code whose behaviors are obvious.`,
+      div(['style', 'opacity', 0.5], ['style', 'textAlign', 'center'])(
+        `OEM works by introducing the idea of creating your own template engine(s) which exist as a middle layer between your state and your DOM. The result is small units of code that follow the "Locality of Behavior" principle (code behavior is defined close to where it is used). `,
+        a(['attr', 'href', 'https://htmx.org/essays/locality-of-behaviour/'], ['attr', 'target', '_blank'])('🏹 LOB'),
       ),
       div(
         ['style', 'boxSizing', 'border-box'],

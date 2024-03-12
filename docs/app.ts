@@ -1,3 +1,4 @@
+import { Adopt } from './components/Adopt';
 import { Example } from './components/CounterExample';
 import { CustomTrait } from './components/CustomTrait';
 import { FAQ } from './components/FAQ';
@@ -6,6 +7,7 @@ import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { HowItWorks } from './components/HowItWorks';
 import { Install } from './components/Install';
+import { Svg } from './components/Svg';
 import { Traits } from './components/Traits';
 import { div } from './config';
 
@@ -18,7 +20,7 @@ function App() {
     ['style', 'padding', '20px 20px 100px'],
     ['style', 'margin', 'auto'],
     ['style', 'maxWidth', '1024px'],
-  )(Header(), Features(), Install(), Example(), HowItWorks(), Traits(), CustomTrait(), FAQ(), Footer());
+  )(Header(), Features(), Install(), Example(), HowItWorks(), Traits(), CustomTrait(), Adopt(), Svg(), FAQ(), Footer());
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -1,4 +1,4 @@
-import { a, div, img, span } from '..//config';
+import { a, div, img, span } from '../config';
 
 export const Header = () =>
   div(

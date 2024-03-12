@@ -17,6 +17,7 @@ window.addEventListener('DOMContentLoaded', () => {
       ['can apply multiple traits', html.CanApplyMultipleTraitsToHtml],
       ['can create basic tag with text', html.CanCreateBasicHtmlTagWithText],
       ['has valid namespace', html.HasValidHtmlNamespace],
+      ['can adopt existing element', html.CanAdoptElement],
     ],
     [
       'SVG',
@@ -29,6 +30,7 @@ window.addEventListener('DOMContentLoaded', () => {
       ['can apply multiple traits', svg.CanApplyMultipleTraitsToHtml],
       ['can create basic tag with text', svg.CanCreateBasicHtmlTagWithText],
       ['has valid namespace', svg.HasValidHtmlNamespace],
+      ['can adopt existing element', svg.CanAdoptElement],
     ],
     [
       'State',

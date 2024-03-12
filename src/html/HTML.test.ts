@@ -6,6 +6,16 @@ import { useEvent } from './traits/Event';
 import { useStyle } from './traits/Style';
 import { useText } from './traits/Text';
 
+export const CanAdoptElement: Test = () => {
+  const { el } = HTML({
+    style: useStyle(),
+  });
+  const myDiv = document.createElement('div');
+  const e1 = el(myDiv)(['style', 'color', 'red'])('test');
+  const t1 = e1.outerHTML === '<div style="color: red;">test</div>';
+  return { pass: t1 };
+};
+
 export const CanApplyAttributeTraitToHtml: Test = () => {
   const { div } = HTML({
     attr: useAttribute(),

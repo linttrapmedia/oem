@@ -6,6 +6,16 @@ import { useEvent } from './traits/Event';
 import { useStyle } from './traits/Style';
 import { useText } from './traits/Text';
 
+export const CanAdoptElement: Test = () => {
+  const { el } = SVG({
+    style: useStyle(),
+  });
+  const myCircle = document.createElement('circle');
+  const e1 = el(myCircle)(['style', 'color', 'red'])();
+  const t1 = e1.outerHTML === '<circle style="color: red;"></circle>';
+  return { pass: t1 };
+};
+
 export const CanApplyAttributeTraitToHtml: Test = () => {
   const { circle } = SVG({
     attr: useAttribute(),

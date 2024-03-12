@@ -1,4 +1,4 @@
-import { div } from '..//config';
+import { div } from '../config';
 import { Code } from './Code';
 
 const Header = (txt: string) => div(['style', 'backgroundColor', 'rgba(0,0,0,0.1)'], ['style', 'padding', '10px'])(txt);
@@ -24,7 +24,10 @@ export const CustomTrait = () =>
       ['style', 'justifyContent', 'center'],
       ['style', 'width', '100%'],
     )(
-      div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('Custom Traits'),
+      div(
+        ['style', 'fontSize', '32px'],
+        ['style', 'textAlign', 'center'],
+      )('You Can Write Your Own Traits (And You Should!)'),
       div(
         ['style', 'opacity', 0.5],
         ['style', 'textAlign', 'center'],
@@ -38,8 +41,7 @@ export const CustomTrait = () =>
       )(
         `This is all it takes to create a custom trait. Create a function with an HTMLElement element as the first argument. You can also optionally follow that with any other parameters you want to make available to you when you use your trait.`,
       ),
-      div(['prism'])(`
-const useMyFlexBox = (el: HTMLElement, dir: 'row' | 'column') => {
+      div(['prism'])(`const useMyFlexBox = (el: HTMLElement, dir: 'row' | 'column') => {
   el.style.display = 'flex';
   el.style.flexDirection = direction;
 }`),

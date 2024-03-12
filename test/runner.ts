@@ -1,8 +1,10 @@
+import { Test } from '../src';
+
 const filter = process.argv.slice(2).join('');
 
 export function runner(tests: [string, ...[string, Test][]][]) {
-  const sandbox: HTMLElement = document.querySelector('#test-sandbox');
-  const results: HTMLElement = document.querySelector('#test-results');
+  const sandbox = document.querySelector('#test-sandbox') as HTMLElement;
+  const results = document.querySelector('#test-results') as HTMLElement;
   results.style.display = 'grid';
   results.style.columnGap = '10px';
   results.style.rowGap = '2px';
@@ -19,7 +21,7 @@ export function runner(tests: [string, ...[string, Test][]][]) {
         let testResult;
         try {
           testResult = test(sandbox);
-        } catch (err) {
+        } catch (err: any) {
           testResult = { pass: false, message: err.message };
         }
         const statusEl = document.createElement('div');
