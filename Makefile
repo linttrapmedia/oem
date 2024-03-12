@@ -63,6 +63,18 @@ deploy: ## Deploy the project
 	@git push -f origin gh-pages
 	@git checkout main
 
+dist: ## Build for distribution
+	@echo $(STATUS) Building dist...
+	@npx esbuild \
+		./src/index.ts \
+		--bundle \
+		--minify-whitespace \
+		--minify-syntax \
+		--sourcemap \
+		--format=esm \
+		--target=es2015 \
+		--outfile=./dist/oem.min.js
+
 docs: ## Build docs
 	@rm -rf ./dist
 	@echo $(STATUS) Building docs...
