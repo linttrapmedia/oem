@@ -8,13 +8,21 @@ import { useStyle } from './traits/Style';
 import { useText } from './traits/Text';
 
 export const CanAdoptElement: Test = () => {
-  const { el } = HTML({
+  const { el, $el } = HTML({
     style: useStyle(),
   });
   const myDiv = document.createElement('div');
+  // by instances
   const e1 = el(myDiv)(['style', 'color', 'red'])('test');
   const t1 = e1.outerHTML === '<div style="color: red;">test</div>';
-  return { pass: t1 };
+
+  // by selector
+  const e2 = document.createElement('div');
+  e2.id = 'test';
+  document.body.appendChild(e2);
+  $el('#test')(['style', 'color', 'red']);
+  const t2 = e2.outerHTML === '<div id="test" style="color: red;"></div>';
+  return { pass: t1 && t2 };
 };
 
 export const CanApplyAttributeTraitToHtml: Test = () => {

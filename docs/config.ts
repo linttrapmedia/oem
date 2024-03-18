@@ -33,7 +33,7 @@ export const usePrism = () => (el: HTMLElement) => {
   return el;
 };
 
-export const { a, button, code, div, el, img, pre, span } = HTML({
+export const { a, button, code, div, el, img, pre, span, $el } = HTML({
   attr: useAttribute(),
   click: useEvent('click'),
   prism: usePrism(),

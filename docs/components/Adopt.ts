@@ -1,9 +1,23 @@
-import { a, div, el } from '../config';
+import { $el, a, button, div, el } from '../config';
 
-const myButton = document.createElement('button');
+export const Adopt = () => {
+  const myButton = document.createElement('button');
 
-export const Adopt = () =>
-  div(
+  // Adopted by selectors
+  $el('#myButton,.myButton')(
+    ['click', () => alert('Click works!')],
+    ['style', 'backgroundColor', 'black'],
+    ['style', 'borderRadius', '4px'],
+    ['style', 'border', 'none'],
+    ['style', 'color', 'white'],
+    ['style', 'cursor', 'pointer'],
+    ['style', 'fontSize', '18px'],
+    ['style', 'padding', '10px 20px'],
+    ['style:mouseover', 'backgroundColor', 'red'],
+    ['style:mouseout', 'backgroundColor', 'black'],
+  );
+
+  return div(
     ['style', 'alignItems', 'center'],
     ['style', 'boxSizing', 'border-box'],
     ['style', 'display', 'flex'],
@@ -27,22 +41,24 @@ export const Adopt = () =>
         a(['attr', 'href', 'https://domx.js.org'], ['attr', 'target', '_blank'])('domx'),
         ` library for examples`,
       ),
-      div(['prism'])(`const { el } = HTML({ style: useStyle() });
-const myButton = document.getElementById('#my-button');
-
-el(myButton)(
-  ['click', () => alert('Hello World')],
-  ['style', 'backgroundColor', 'black'],
-  ['style', 'borderRadius', '4px'],
-  ['style', 'border', 'none'],
-  ['style', 'color', 'white'],
-  ['style', 'cursor', 'pointer'],
-  ['style', 'fontSize', '18px'],
-  ['style', 'padding', '10px 20px'],
-  ['style:mouseover', 'backgroundColor', 'red'],
-  ['style:mouseout', 'backgroundColor', 'black'],
-)();`),
-
+      div(['style', 'fontSize', '21px'], ['style', 'textAlign', 'center'])('Adopt An Element By Instance'),
+      div(['prism'])(`const { el} = HTML({ style: useStyle() });
+  
+  const myButton = document.getElementById('#my-button');
+  
+  el(myButton)(
+    ['click', () => alert('Hello World')],
+    ['style', 'backgroundColor', 'black'],
+    ['style', 'borderRadius', '4px'],
+    ['style', 'border', 'none'],
+    ['style', 'color', 'white'],
+    ['style', 'cursor', 'pointer'],
+    ['style', 'fontSize', '18px'],
+    ['style', 'padding', '10px 20px'],
+    ['style:mouseover', 'backgroundColor', 'red'],
+    ['style:mouseout', 'backgroundColor', 'black'],
+  )();
+  `),
       el(myButton)(
         ['click', () => alert('Click works!')],
         ['style', 'backgroundColor', 'black'],
@@ -55,5 +71,20 @@ el(myButton)(
         ['style:mouseover', 'backgroundColor', 'red'],
         ['style:mouseout', 'backgroundColor', 'black'],
       )('Hello World'),
+      div(['style', 'fontSize', '21px'], ['style', 'textAlign', 'center'])('Or Adopt By Using Selectors'),
+      div(
+        ['style', 'opacity', 0.5],
+        ['style', 'textAlign', 'center'],
+      )('This helps target elements on or after load as well as adopt multiple elements at once.'),
+      div(['prism'])(`const { $el } = HTML({ ... });
+$el('#myButton')(...)();
+$el('.myButton')(...)();
+  `),
+      div(['style', 'display', 'flex'], ['style', 'gap', '20px'], ['style', 'justifyContent', 'center'])(
+        button(['attr', 'id', 'myButton'])('#myButton'),
+        button(['attr', 'class', 'myButton'])('.myButton (1)'),
+        button(['attr', 'class', 'myButton'])('.myButton (2)'),
+      ),
     ),
   );
+};
