@@ -77,8 +77,8 @@ export const Adopt = () => {
         ['style', 'textAlign', 'center'],
       )('This helps target elements on or after load as well as adopt multiple elements at once.'),
       div(['prism'])(`const { $el } = HTML({ ... });
-$el('#myButton')(...)();
-$el('.myButton')(...)();
+$el('#myButton')(...);
+$el('.myButton')(...);
   `),
       div(['style', 'display', 'flex'], ['style', 'gap', '20px'], ['style', 'justifyContent', 'center'])(
         button(['attr', 'id', 'myButton'])('#myButton'),
