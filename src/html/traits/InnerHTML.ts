@@ -24,7 +24,7 @@ export const useInnerHTML =
         } else if (_children instanceof HTMLElement) {
           el.appendChild(_children);
         } else {
-          el.appendChild(document.createTextNode(String(_children)));
+          el.innerHTML = String(_children);
         }
       }
     };
