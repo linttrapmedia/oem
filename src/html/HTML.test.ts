@@ -40,7 +40,11 @@ export const CanRemoveAttributeTraitToHtml: Test = () => {
   });
   const e1 = div(['attr', 'disabled', 'false'])();
   const t1 = e1.outerHTML === '<div></div>';
-  return { pass: t1 };
+  const e2 = div(['attr', 'disabled', 'false', () => false])();
+  const t2 = e2.outerHTML === '<div></div>';
+  const e3 = div(['attr', 'disabled', 'true', () => false])();
+  const t3 = e3.outerHTML === '<div></div>';
+  return { pass: t1 && t2 && t3 };
 };
 
 export const CanApplyClassNameTraitToHtml: Test = () => {

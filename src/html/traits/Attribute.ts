@@ -31,13 +31,12 @@ export const useAttribute = ({
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
       const _val = String(typeof val === 'function' ? val() : val);
+      const _isBool = _val === 'true' || _val === 'false';
       const _condition = typeof condition === 'function' ? condition() : condition ?? true;
-      if (!_condition) return;
-      if (hideOnFalse && _val === 'false') {
-        el.removeAttribute(prop);
-      } else {
-        el.setAttribute(prop, _val);
-      }
+      if (_isBool && hideOnFalse && _val === 'false') return el.removeAttribute(prop);
+      if (_isBool && _condition === false) return el.removeAttribute(prop);
+      if (_condition === false) return;
+      el.setAttribute(prop, _val);
     };
 
     // handle state changes
