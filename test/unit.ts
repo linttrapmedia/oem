@@ -7,6 +7,7 @@ window.addEventListener('DOMContentLoaded', () => {
   runner([
     [
       'HTML',
+      ['can apply inner html trait', html.CanApplyInnerHTMLTraitToHtml],
       ['can apply attribute trait', html.CanApplyAttributeTraitToHtml],
       ['can remove attribute trait', html.CanRemoveAttributeTraitToHtml],
       ['can apply class name trait', html.CanApplyClassNameTraitToHtml],

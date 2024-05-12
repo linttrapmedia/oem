@@ -1,3 +1,4 @@
+import { State } from '../state/State';
 import { Test } from '../types';
 import { HTML } from './HTML';
 import { useAttribute } from './traits/Attribute';
@@ -69,18 +70,35 @@ export const CanApplyEventListenerTraitToHtml: Test = () => {
 };
 
 export const CanApplyInnerHTMLTraitToHtml: Test = () => {
-  const { div } = HTML({
-    html: useInnerHTML(),
-  });
-  const e1 = div(['html', () => 'asdf'])();
+  const state = State({ value: 'asdf' });
+  const { div } = HTML({ staticHtml: useInnerHTML(), dynamicHtml: useInnerHTML({ state }) });
+
+  // static tests
+  const e1 = div(['staticHtml', () => 'asdf'])();
   const t1 = e1.outerHTML === '<div>asdf</div>';
-  const e2 = div(['html', () => ['one', 'two']])();
+  const e2 = div(['staticHtml', () => ['one', 'two']])();
   const t2 = e2.outerHTML === '<div>onetwo</div>';
-  const e3 = div(['html', () => div()('one')])();
+  const e3 = div(['staticHtml', () => div()('one')])();
   const t3 = e3.outerHTML === '<div><div>one</div></div>';
-  const e4 = div(['html', () => [div()('one'), div()('two')]])();
+  const e4 = div(['staticHtml', () => [div()('one'), div()('two')]])();
   const t4 = e4.outerHTML === '<div><div>one</div><div>two</div></div>';
-  return { pass: t1 && t2 && t3 && t4 };
+
+  // dynamic tests
+  const e5 = div(['dynamicHtml', (s) => s.value])();
+  const t5 = e5.outerHTML === '<div>asdf</div>';
+
+  // condition tests
+  state.set({ value: 'c1' });
+  const e6 = div(['dynamicHtml', (s) => s.value, false])();
+  const t6 = e6.outerHTML === '<div></div>';
+  const e7 = div(['dynamicHtml', (s) => s.value, () => false])();
+  const t7 = e7.outerHTML === '<div></div>';
+  const e8 = div(['dynamicHtml', (s) => s.value, () => true])();
+  const t8 = e8.outerHTML === '<div>c1</div>';
+  state.set({ value: 'c2' });
+  const e9 = div(['dynamicHtml', (s) => s.value, (s) => s.value === 'c2'])();
+  const t9 = e9.outerHTML === '<div>c2</div>';
+  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 };
 };
 
 export const CanApplyInnerTextTraitToHtml: Test = () => {

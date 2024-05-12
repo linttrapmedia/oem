@@ -1,58 +1,58 @@
 import { StateType } from '../../types';
 
-type UseStyleProps = {
+type UseStyleProps<T> = {
   event?: keyof GlobalEventHandlersEventMap | null;
   eventElement?: HTMLElement | Window;
   invokeImmediately?: boolean;
   mediaMaxWidth?: number;
   mediaMinWidth?: number;
   mediaType?: 'screen' | 'print';
-  state?: StateType<any> | null;
+  state?: StateType<T>;
 };
 
-export const useStyle = ({
-  event = null,
-  eventElement = window,
-  invokeImmediately = true,
-  mediaType = 'screen',
-  mediaMinWidth = 0,
-  mediaMaxWidth = Infinity,
-  state = null,
-}: UseStyleProps = {}) => {
-  const fingerPrint = (Math.random() * 100000000).toFixed(0);
-  const printId = 'print-style-' + fingerPrint;
-  let style: HTMLStyleElement = document.getElementById(printId) as HTMLStyleElement;
-  if (!style) {
-    style = document.createElement('style');
-    style.id = printId;
-    style.setAttribute('type', 'text/css');
-    style.setAttribute('media', 'print');
-    if (mediaType === 'print') document.getElementsByTagName('head')[0].appendChild(style);
-  }
-  const sheet = style.sheet as CSSStyleSheet;
+export function useStyle(
+  props?: UseStyleProps<any>,
+): (
+  el: HTMLElement,
+  prop: keyof CSSStyleDeclaration,
+  val: (() => string | number) | (string | number),
+  condition?: boolean | (() => boolean),
+) => void;
+
+export function useStyle<T>(
+  props?: UseStyleProps<T>,
+): (
+  el: HTMLElement,
+  prop: keyof CSSStyleDeclaration,
+  val: ((state: T) => string | number) | (string | number),
+  condition?: boolean | ((state: T) => boolean),
+) => void;
+
+export function useStyle<T>(props?: UseStyleProps<T>) {
+  const {
+    event = null,
+    eventElement = window,
+    invokeImmediately = true,
+    mediaMinWidth = 0,
+    mediaMaxWidth = Infinity,
+    state = undefined,
+  } = props ?? {};
   return (
     el: HTMLElement,
     prop: keyof CSSStyleDeclaration,
     val: ((...args: any) => string | number) | (string | number),
     condition?: boolean | ((...args: any) => boolean),
   ) => {
-    if (mediaType === 'print') el.dataset.printId = el.dataset.printId ?? (Math.random() * 100000000).toFixed(0);
-    // application
     const apply = () => {
-      if (mediaType === 'print') {
-        const selector = <string>prop + '-' + el.dataset.printId;
-        const _val = String(typeof val === 'function' ? val() : val);
-        const propFmt = (<string>prop).replace(/([A-Z])/g, '-$1').toLowerCase();
-        sheet.insertRule(`.${selector} { ${propFmt}:${_val} !important; }`, 0);
-        el.classList.add(selector);
-      } else {
-        const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
-        if (!isInBreakpoint) return;
-        const _val = String(typeof val === 'function' ? val() : val);
-        (typeof condition === 'function' ? condition() : condition ?? true)
-          ? (el.style[prop as any] = _val as any)
-          : null;
-      }
+      const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
+      if (!isInBreakpoint) return;
+      const _val = String(typeof val === 'function' ? val(state ? state.get() : undefined) : val);
+      const _condition = state
+        ? typeof condition === 'function'
+          ? condition(state.get())
+          : condition ?? true
+        : condition ?? true;
+      _condition ? (el.style[prop as any] = _val as any) : null;
     };
 
     // handle state changes
@@ -67,4 +67,4 @@ export const useStyle = ({
     // apply immediately
     if (invokeImmediately && !event) apply();
   };
-};
+}

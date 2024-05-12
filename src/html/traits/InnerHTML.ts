@@ -1,20 +1,36 @@
 import { StateType } from '../../types';
 
-type UseInnerHTMLProps = {
-  state?: StateType<any> | null;
+type UseInnerHTMLProps<T> = {
+  state: StateType<T>;
 };
 
-export const useInnerHTML =
-  ({ state }: UseInnerHTMLProps = {}) =>
-  (
-    el: HTMLElement,
-    children: () => string | number | HTMLElement | (string | number | HTMLElement)[],
-    condition?: ((...args: any) => boolean) | boolean,
-  ) => {
+export function useInnerHTML<T>({
+  state,
+}: UseInnerHTMLProps<T>): (
+  el: HTMLElement,
+  children: (state: T) => string | number | HTMLElement | (string | number | HTMLElement)[],
+  condition?: ((state: T) => boolean) | boolean,
+) => void;
+
+export function useInnerHTML(): (
+  el: HTMLElement,
+  children: () => string | number | HTMLElement | (string | number | HTMLElement)[],
+  condition?: (() => boolean) | boolean,
+) => void;
+
+export function useInnerHTML<T>(props?: UseInnerHTMLProps<T>) {
+  const { state } = props ?? {};
+  return (...htmlProps: any) => {
+    const [el, children, condition] = htmlProps;
     const apply = () => {
       el.innerHTML = '';
-      const _children = children();
-      if (typeof condition === 'function' ? condition() : condition ?? true) {
+      const _children = state ? children(state.get()) : children();
+      const _condition = state
+        ? typeof condition === 'function'
+          ? condition(state.get())
+          : condition ?? true
+        : condition ?? true;
+      if (_condition) {
         el.innerHTML = '';
         if (Array.isArray(_children)) {
           _children.forEach((c) => {
@@ -31,3 +47,4 @@ export const useInnerHTML =
     if (state) state.sub(apply);
     apply();
   };
+}
