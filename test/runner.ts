@@ -1,6 +1,7 @@
+import args from '../cmd/util/args';
 import { Test } from '../src';
 
-const filter = process.argv.slice(2).join('');
+const filter = args.FILTER;
 
 export function runner(tests: [string, ...[string, Test][]][]) {
   const sandbox = document.querySelector('#test-sandbox') as HTMLElement;

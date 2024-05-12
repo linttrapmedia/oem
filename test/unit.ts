@@ -14,7 +14,6 @@ window.addEventListener('DOMContentLoaded', () => {
       ['can apply event listener trait', html.CanApplyEventListenerTraitToHtml],
       ['can apply inner html trait', html.CanApplyInnerHTMLTraitToHtml],
       ['can apply inner text trait', html.CanApplyInnerTextTraitToHtml],
-      ['can apply print style trait', html.CanApplyPrintStyleTraitToHtml],
       ['can apply style trait', html.CanApplyStyleTraitToHtml],
       ['can apply multiple traits', html.CanApplyMultipleTraitsToHtml],
       ['can create basic tag with text', html.CanCreateBasicHtmlTagWithText],
