@@ -1,7 +1,6 @@
 import { HTML } from '../../src/html/HTML';
 import { useEvent } from '../../src/html/traits/Event';
-import { useText } from '../../src/html/traits/TextContent';
-import { useStyle } from '../../src/index';
+import { useStyle, useTextContent } from '../../src/index';
 import { State } from '../../src/state/State';
 import { div } from '../config';
 
@@ -12,7 +11,7 @@ const Counter = () => {
   const count_color = () => (count.get() % 2 === 0 ? 'red' : 'black');
 
   const { div } = HTML({
-    'text:count': useText({ state: count }),
+    'text:count': useTextContent({ state: count }),
     'event:click': useEvent('click'),
     'style:click': useStyle({ event: 'click' }),
     'style:mobile': useStyle({ mediaMinWidth: 0 }),

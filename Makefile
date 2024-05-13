@@ -45,6 +45,7 @@ dev: ## Run the project in development mode
 	@npx esbuild \
 		./docs/app.ts \
 		--bundle \
+		--minify \
 		--sourcemap \
 		--target=es2015 \
 		--watch \
