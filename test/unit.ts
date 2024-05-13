@@ -13,7 +13,7 @@ window.addEventListener('DOMContentLoaded', () => {
       ['can apply class name trait', html.CanApplyClassNameTraitToHtml],
       ['can apply event listener trait', html.CanApplyEventListenerTraitToHtml],
       ['can apply inner html trait', html.CanApplyInnerHTMLTraitToHtml],
-      ['can apply inner text trait', html.CanApplyInnerTextTraitToHtml],
+      ['can apply inner text trait', html.CanApplyTextContentTraitToHtml],
       ['can apply style trait', html.CanApplyStyleTraitToHtml],
       ['can apply multiple traits', html.CanApplyMultipleTraitsToHtml],
       ['can create basic tag with text', html.CanCreateBasicHtmlTagWithText],

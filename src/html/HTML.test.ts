@@ -179,13 +179,35 @@ export const CanApplyInnerHTMLTraitToHtml: Test = () => {
   return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 };
 };
 
-export const CanApplyInnerTextTraitToHtml: Test = () => {
+export const CanApplyTextContentTraitToHtml: Test = () => {
+  const state = State({ value: 'asdf' });
   const { div } = HTML({
-    text: useTextContent(),
+    staticText: useTextContent(),
+    dynamicText: useTextContent({ state }),
   });
-  const e1 = div(['text', 'test'])();
+
+  // static tests
+  const e1 = div(['staticText', 'test'])();
   const t1 = e1.outerHTML === '<div>test</div>';
-  return { pass: t1 };
+  const e2 = div(['staticText', () => 'test'])();
+  const t2 = e2.outerHTML === '<div>test</div>';
+
+  // dynamic tests
+  const e3 = div(['dynamicText', (s) => s.value])();
+  const t3 = e3.outerHTML === '<div>asdf</div>';
+
+  // condition tests
+  const e4 = div(['dynamicText', (s) => s.value, false])();
+  const t4 = e4.outerHTML === '<div></div>';
+  const e5 = div(['dynamicText', (s) => s.value, () => false])();
+  const t5 = e5.outerHTML === '<div></div>';
+  const e6 = div(['dynamicText', (s) => s.value, () => true])();
+  const t6 = e6.outerHTML === '<div>asdf</div>';
+  state.set({ value: 'c1' });
+  const e7 = div(['dynamicText', (s) => s.value, (s) => s.value === 'c1'])();
+  const t7 = e7.outerHTML === '<div>c1</div>';
+
+  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 };
 };
 
 export const CanApplyStyleTraitToHtml: Test = () => {
