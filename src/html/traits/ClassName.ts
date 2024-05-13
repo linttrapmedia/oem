@@ -1,30 +1,42 @@
 import { StateType } from '../../types';
 
-type UseClassNameProps = {
+type UseClassNameProps<T> = {
   event?: keyof GlobalEventHandlersEventMap | null;
   eventElement?: HTMLElement | Window;
   invokeImmediately?: boolean;
   mediaMaxWidth?: number;
   mediaMinWidth?: number;
   mediaType?: 'screen' | 'print';
-  state?: StateType<any> | null;
+  state?: StateType<T> | null;
 };
 
-export const useClassName = ({
-  event = null,
-  eventElement = window,
-  invokeImmediately = true,
-  mediaMinWidth = 0,
-  mediaMaxWidth = Infinity,
-  state = null,
-}: UseClassNameProps = {}) => {
-  return (el: HTMLElement, className: string | (() => string), condition?: boolean | (() => boolean)) => {
+export function useClassName(
+  props?: UseClassNameProps<any>,
+): (el: HTMLElement, className: string | (() => string), condition?: boolean | (() => boolean)) => void;
+
+export function useClassName<T>(
+  props?: UseClassNameProps<T>,
+): (el: HTMLElement, className: string | ((state: T) => string), condition?: boolean | ((state: T) => boolean)) => void;
+
+export function useClassName<T>(props?: UseClassNameProps<T>) {
+  const {
+    event = null,
+    eventElement = window,
+    invokeImmediately = true,
+    mediaMinWidth = 0,
+    mediaMaxWidth = Infinity,
+    state = null,
+  } = props ?? {};
+  return (...htmlProps: any) => {
+    const [el, className, condition] = htmlProps;
     // application
     const apply = () => {
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
-      const _className = String(typeof className === 'function' ? className() : className);
-      (typeof condition === 'function' ? condition() : condition ?? true) ? el.setAttribute('class', _className) : null;
+      const _className = typeof className === 'function' ? className(state ? state.get() : undefined) : className;
+      const _condition =
+        typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
+      if (_condition) el.setAttribute('class', _className);
     };
 
     // handle state changes
@@ -39,4 +51,4 @@ export const useClassName = ({
     // apply immediately
     if (invokeImmediately) apply();
   };
-};
+}

@@ -4,7 +4,7 @@ import { useAttribute } from './traits/Attribute';
 import { useClassName } from './traits/ClassName';
 import { useEvent } from './traits/Event';
 import { useStyle } from './traits/Style';
-import { useText } from './traits/Text';
+import { useTextContent } from './traits/TextContent';
 
 export const CanAdoptElement: Test = () => {
   const { el } = SVG({
@@ -53,7 +53,7 @@ export const CanApplyEventListenerTraitToHtml: Test = () => {
 
 export const CanApplyInnerTextTraitToHtml: Test = () => {
   const { circle } = SVG({
-    text: useText(),
+    text: useTextContent(),
   });
   const e1 = circle(['text', 'test'])();
   const t1 = e1.outerHTML === '<circle>test</circle>';
@@ -82,7 +82,7 @@ export const CanApplyStyleTraitToHtml: Test = () => {
 export const CanApplyMultipleTraitsToHtml: Test = () => {
   const { circle } = SVG({
     attr: useAttribute(),
-    text: useText(),
+    text: useTextContent(),
   });
   const e1 = circle(['attr', 'id', 'test'], ['text', 'test'])();
   const t1 = e1.outerHTML === '<circle id="test">test</circle>';

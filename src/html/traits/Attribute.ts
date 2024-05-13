@@ -38,27 +38,20 @@ export function useAttribute<T>(props?: UseAttributeProps<T>) {
     mediaMaxWidth = Infinity,
     state = undefined,
   } = props ?? {};
-  return (
-    el: HTMLElement,
-    prop: string,
-    val: ((...args: any) => string | number | boolean) | (string | number | boolean),
-    condition?: ((state: T) => boolean) | boolean,
-  ) => {
+  return (...htmlProps: any) => {
+    const [el, prop, val, condition] = htmlProps;
     // application
     const apply = () => {
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
-      const _val = String(typeof val === 'function' ? val(state ? state.get() : undefined) : val);
-      const _isBool = _val === 'true' || _val === 'false';
-      const _condition = state
-        ? typeof condition === 'function'
-          ? condition(state.get())
-          : condition ?? true
-        : condition ?? true;
-      if (_isBool && hideOnFalse && _val === 'false') return el.removeAttribute(prop);
+      const _val = state && typeof val === 'function' ? val(state.get()) : val;
+      const _isBool = String(_val) === 'true' || String(_val) === 'false';
+      const _condition =
+        typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
+      if (_isBool && hideOnFalse && String(_val) === 'false') return el.removeAttribute(prop);
       if (_isBool && _condition === false) return el.removeAttribute(prop);
       if (_condition === false) return;
-      el.setAttribute(prop, _val);
+      el.setAttribute(prop, String(_val));
     };
 
     // handle state changes

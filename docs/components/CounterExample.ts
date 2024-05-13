@@ -1,6 +1,6 @@
 import { HTML } from '../../src/html/HTML';
 import { useEvent } from '../../src/html/traits/Event';
-import { useText } from '../../src/html/traits/Text';
+import { useText } from '../../src/html/traits/TextContent';
 import { useStyle } from '../../src/index';
 import { State } from '../../src/state/State';
 import { div } from '../config';

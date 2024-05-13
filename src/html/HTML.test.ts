@@ -6,7 +6,7 @@ import { useClassName } from './traits/ClassName';
 import { useEvent } from './traits/Event';
 import { useInnerHTML } from './traits/InnerHTML';
 import { useStyle } from './traits/Style';
-import { useText } from './traits/Text';
+import { useTextContent } from './traits/TextContent';
 
 export const CanAdoptElement: Test = () => {
   const { el, $el } = HTML({
@@ -27,12 +27,41 @@ export const CanAdoptElement: Test = () => {
 };
 
 export const CanApplyAttributeTraitToHtml: Test = () => {
+  const state = State({ disabled: false });
   const { div } = HTML({
-    attr: useAttribute(),
+    staticAttr: useAttribute(),
+    dynamicAttr: useAttribute({ state }),
   });
-  const e1 = div(['attr', 'id', 'test'])();
+
+  // static tests
+  const e1 = div(['staticAttr', 'id', 'test'])();
   const t1 = e1.outerHTML === '<div id="test"></div>';
-  return { pass: t1 };
+  const e2 = div(['staticAttr', 'disabled', false])();
+  const t2 = e2.outerHTML === '<div></div>';
+  const e3 = div(['staticAttr', 'disabled', 'true'])();
+  const t3 = e3.outerHTML === '<div disabled="true"></div>';
+  const e4 = div(['staticAttr', 'disabled', 'false'])();
+  const t4 = e4.outerHTML === '<div></div>';
+
+  // dynamic tests
+  state.set({ disabled: true });
+  const e5 = div(['dynamicAttr', 'disabled', (state) => state.disabled])();
+  const t5 = e5.outerHTML === '<div disabled="true"></div>';
+  state.set({ disabled: false });
+  const e6 = div(['dynamicAttr', 'disabled', (state) => state.disabled])();
+  const t6 = e6.outerHTML === '<div></div>';
+
+  // condition tests
+  state.set({ disabled: true });
+  const e7 = div(['dynamicAttr', 'disabled', 'true', (state) => state.disabled])();
+  const t7 = e7.outerHTML === '<div disabled="true"></div>';
+  state.set({ disabled: false });
+  const e8 = div(['dynamicAttr', 'disabled', 'true', (state) => state.disabled])();
+  const t8 = e8.outerHTML === '<div></div>';
+
+  console.log(t1, t2, t3, t4, t5, t6, t7, t8);
+
+  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 };
 };
 
 export const CanRemoveAttributeTraitToHtml: Test = () => {
@@ -72,12 +101,38 @@ export const CanRemoveAttributeTraitToHtml: Test = () => {
 };
 
 export const CanApplyClassNameTraitToHtml: Test = () => {
+  const state = State({ className: 'item--modifier-1' });
   const { div } = HTML({
-    className: useClassName(),
+    staticClassName: useClassName(),
+    dynamicClassName: useClassName({ state }),
   });
-  const e1 = div(['className', 'n1 n2'])();
-  const t1 = e1.outerHTML === '<div class="n1 n2"></div>';
-  return { pass: t1 };
+
+  // static tests
+  const e1 = div(['staticClassName', 'test'])();
+  const t1 = e1.outerHTML === '<div class="test"></div>';
+  const e2 = div(['staticClassName', 'test', false])();
+  const t2 = e2.outerHTML === '<div></div>';
+  const e3 = div(['staticClassName', 'test', () => false])();
+  const t3 = e3.outerHTML === '<div></div>';
+  const e4 = div(['staticClassName', 'test', () => true])();
+  const t4 = e4.outerHTML === '<div class="test"></div>';
+
+  // dynamic tests
+  const e5 = div(['dynamicClassName', (s) => s.className])();
+  const t5a = e5.outerHTML === '<div class="item--modifier-1"></div>';
+  state.set({ className: 'item--modifier-2' });
+  const t5b = e5.outerHTML === '<div class="item--modifier-2"></div>';
+  const e6 = div(['dynamicClassName', (s) => s.className, false])();
+  const t6 = e6.outerHTML === '<div></div>';
+  const e7 = div(['dynamicClassName', (s) => s.className, () => false])();
+  const t7 = e7.outerHTML === '<div></div>';
+  const e8 = div(['dynamicClassName', (s) => s.className, () => true])();
+  const t8 = e8.outerHTML === '<div class="item--modifier-2"></div>';
+  state.set({ className: 'item--modifier-3' });
+  const e9 = div(['dynamicClassName', (s) => s.className, (s) => s.className === 'item--modifier-3'])();
+  const t9 = e9.outerHTML === '<div class="item--modifier-3"></div>';
+
+  return { pass: t1 && t2 && t3 && t4 && t5a && t5b && t6 && t7 && t8 && t9 };
 };
 
 export const CanApplyEventListenerTraitToHtml: Test = () => {
@@ -126,7 +181,7 @@ export const CanApplyInnerHTMLTraitToHtml: Test = () => {
 
 export const CanApplyInnerTextTraitToHtml: Test = () => {
   const { div } = HTML({
-    text: useText(),
+    text: useTextContent(),
   });
   const e1 = div(['text', 'test'])();
   const t1 = e1.outerHTML === '<div>test</div>';
@@ -159,7 +214,7 @@ export const CanApplyStyleTraitToHtml: Test = () => {
 export const CanApplyMultipleTraitsToHtml: Test = () => {
   const { div } = HTML({
     attr: useAttribute(),
-    text: useText(),
+    text: useTextContent(),
   });
   const e1 = div(['attr', 'id', 'test'], ['text', 'test'])();
   const t1 = e1.outerHTML === '<div id="test">test</div>';

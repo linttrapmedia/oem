@@ -25,11 +25,8 @@ export function useInnerHTML<T>(props?: UseInnerHTMLProps<T>) {
     const apply = () => {
       el.innerHTML = '';
       const _children = state ? children(state.get()) : children();
-      const _condition = state
-        ? typeof condition === 'function'
-          ? condition(state.get())
-          : condition ?? true
-        : condition ?? true;
+      const _condition =
+        typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
       if (_condition) {
         el.innerHTML = '';
         if (Array.isArray(_children)) {

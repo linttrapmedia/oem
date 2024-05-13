@@ -80,7 +80,13 @@ export const Adopt = () => {
 $el('#myButton')(...);
 $el('.myButton')(...);
   `),
-      div(['style', 'display', 'flex'], ['style', 'gap', '20px'], ['style', 'justifyContent', 'center'])(
+      div(
+        ['style', 'display', 'flex'],
+        ['style', 'gap', '20px'],
+        ['style', 'justifyContent', 'center'],
+        ['style', 'flexDirection', 'column'],
+        ['style:tablet', 'flexDirection', 'row'],
+      )(
         button(['attr', 'id', 'myButton'])('#myButton'),
         button(['attr', 'class', 'myButton'])('.myButton (1)'),
         button(['attr', 'class', 'myButton'])('.myButton (2)'),

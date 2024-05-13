@@ -37,21 +37,14 @@ export function useStyle<T>(props?: UseStyleProps<T>) {
     mediaMaxWidth = Infinity,
     state = undefined,
   } = props ?? {};
-  return (
-    el: HTMLElement,
-    prop: keyof CSSStyleDeclaration,
-    val: ((...args: any) => string | number) | (string | number),
-    condition?: boolean | ((...args: any) => boolean),
-  ) => {
+  return (...htmlProps: any) => {
+    const [el, prop, val, condition] = htmlProps;
     const apply = () => {
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
       const _val = String(typeof val === 'function' ? val(state ? state.get() : undefined) : val);
-      const _condition = state
-        ? typeof condition === 'function'
-          ? condition(state.get())
-          : condition ?? true
-        : condition ?? true;
+      const _condition =
+        typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
       _condition ? (el.style[prop as any] = _val as any) : null;
     };
 

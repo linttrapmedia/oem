@@ -5,6 +5,6 @@ export { useClassName } from './html/traits/ClassName';
 export { useEvent } from './html/traits/Event';
 export { useInnerHTML } from './html/traits/InnerHTML';
 export { useStyle } from './html/traits/Style';
-export { useText } from './html/traits/Text';
+export { useTextContent } from './html/traits/TextContent';
 export { State } from './state/State';
 export * from './types';
