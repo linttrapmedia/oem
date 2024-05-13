@@ -43,7 +43,7 @@ export const Adopt = () => {
       ),
       div()(),
       div(['style', 'fontSize', '21px'], ['style', 'textAlign', 'center'])('Adopt An Element By Instance'),
-      div(['prism'])(`const { el} = HTML({ style: useStyle() });
+      div(['prism'])(`const { el } = HTML({ style: useStyle() });
   
 const myButton = document.getElementById('#my-button');
   
