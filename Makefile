@@ -1,6 +1,6 @@
 #!/usr/bin/env
 
-.PHONY: help build clean cdn dev docs deploy install publish test
+.PHONY: help build clean cdn dev docs deploy examples install publish test
 
 STATUS:="\x1b[96;01m\xE2\x80\xA2\x1b[0m"
 ECHO = @echo "\033[0;34m$(1)\033[0m$(2)"
@@ -88,6 +88,11 @@ docs: ## Build docs
 		--target=es2015 \
 		--outfile=./docs/bundle.min.js
 
+examples: ## Build examples
+	@echo $(STATUS) Building examples...
+	@open ./examples/todo/index.html
+	@npx esbuild --bundle ./examples/todo/src/index.ts --outdir=./examples/todo --watch  --sourcemap --minify
+
 install: ## Install the project
 	@echo $(STATUS) Installing...
 	@npm install
@@ -99,5 +104,6 @@ publish: ## Publish the project to npm
 test: ## Run tests
 	@echo $(STATUS) Testing...
 	@node ./cmd/test.js FILTER=$(FILTER)
+
 
 

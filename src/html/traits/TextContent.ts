@@ -23,7 +23,6 @@ export function useTextContent<T>(props?: UseTextContentProps<T>) {
   return (...htmlProps: any) => {
     const [el, children, condition] = htmlProps;
     const apply = () => {
-      el.innerHTML = '';
       const _children = typeof children === 'function' ? children(state ? state.get() : undefined) : children;
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
