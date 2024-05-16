@@ -1,4 +1,4 @@
-<img src="docs/assets/gfx//oem.png" width="200" style="border-radius:5px;">
+<img src="docs/assets/gfx/oem.png" width="200" style="border-radius:5px;">
 
 ## A novel UI library for writing reactive html with vanilla javascript
 
