@@ -1,5 +1,12 @@
-import { fsm } from './fsm';
+import { fsm } from './fsm/machine';
 import { TodoType } from './state';
+
+export const useTodoDelete = (el: HTMLElement, todo: TodoType) => {
+  el.addEventListener('click', (click: Event) => {
+    click.stopPropagation();
+    fsm('TODO:DELETE', todo);
+  });
+};
 
 export const useTodoToggle = (el: HTMLElement, todo: TodoType) => {
   el.addEventListener('click', () => {

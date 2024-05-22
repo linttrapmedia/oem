@@ -88,7 +88,7 @@ docs: ## Build docs
 		--target=es2015 \
 		--outfile=./docs/bundle.min.js
 
-examples: ## Build examples
+dev_todo: ## Dev todo example
 	@echo $(STATUS) Building examples...
 	@open ./examples/todo/index.html
 	@npx esbuild --bundle ./examples/todo/src/index.ts --outdir=./examples/todo --watch  --sourcemap --minify

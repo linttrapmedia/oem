@@ -1,7 +1,7 @@
-import * as html from '../src/html/HTML.test';
-import * as svg from '../src/html/SVG.test';
 import * as state from '../src/state/State.test';
 import { runner } from './runner';
+import * as html from './unit-tests/HTML.test';
+import * as svg from './unit-tests/SVG.test';
 
 window.addEventListener('DOMContentLoaded', () => {
   runner([

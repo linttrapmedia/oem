@@ -1,12 +1,12 @@
-import { State } from '../state/State';
-import { Test } from '../types';
-import { HTML } from './HTML';
-import { useAttribute } from './traits/Attribute';
-import { useClassName } from './traits/ClassName';
-import { useEvent } from './traits/Event';
-import { useInnerHTML } from './traits/InnerHTML';
-import { useStyle } from './traits/Style';
-import { useTextContent } from './traits/TextContent';
+import { HTML } from '../../src/html/HTML';
+import { useAttribute } from '../../src/html/traits/Attribute';
+import { useClassName } from '../../src/html/traits/ClassName';
+import { useEvent } from '../../src/html/traits/Event';
+import { useInnerHTML } from '../../src/html/traits/InnerHTML';
+import { useStyle } from '../../src/html/traits/Style';
+import { useTextContent } from '../../src/html/traits/TextContent';
+import { State } from '../../src/state/State';
+import { Test } from '../../src/types';
 
 export const CanAdoptElement: Test = () => {
   const { el, $el } = HTML({

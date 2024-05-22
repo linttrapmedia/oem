@@ -1,10 +1,10 @@
-import { Test } from '../types';
-import { SVG } from './SVG';
-import { useAttribute } from './traits/Attribute';
-import { useClassName } from './traits/ClassName';
-import { useEvent } from './traits/Event';
-import { useStyle } from './traits/Style';
-import { useTextContent } from './traits/TextContent';
+import { SVG } from '../../src/html/SVG';
+import { useAttribute } from '../../src/html/traits/Attribute';
+import { useClassName } from '../../src/html/traits/ClassName';
+import { useEvent } from '../../src/html/traits/Event';
+import { useStyle } from '../../src/html/traits/Style';
+import { useTextContent } from '../../src/html/traits/TextContent';
+import { Test } from '../../src/types';
 
 export const CanAdoptElement: Test = () => {
   const { el } = SVG({
