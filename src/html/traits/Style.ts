@@ -14,7 +14,7 @@ export function useStyle(
   props?: UseStyleProps<any>,
 ): (
   el: HTMLElement,
-  prop: keyof CSSStyleDeclaration,
+  prop: keyof CSSStyleDeclaration | `--${string}`,
   val: (() => string | number) | (string | number),
   condition?: boolean | (() => boolean),
 ) => void;
@@ -23,7 +23,7 @@ export function useStyle<T>(
   props?: UseStyleProps<T>,
 ): (
   el: HTMLElement,
-  prop: keyof CSSStyleDeclaration,
+  prop: keyof CSSStyleDeclaration | `--${string}`,
   val: ((state: T) => string | number) | (string | number),
   condition?: boolean | ((state: T) => boolean),
 ) => void;
@@ -45,7 +45,11 @@ export function useStyle<T>(props?: UseStyleProps<T>) {
       const _val = String(typeof val === 'function' ? val(state ? state.get() : undefined) : val);
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
-      _condition ? (el.style[prop as any] = _val as any) : null;
+      _condition
+        ? prop.startsWith('--')
+          ? el.style.setProperty(prop, _val)
+          : (el.style[prop as any] = _val as any)
+        : null;
     };
 
     // handle state changes

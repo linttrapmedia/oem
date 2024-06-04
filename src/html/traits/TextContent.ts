@@ -1,25 +1,29 @@
 import { StateType } from '../../types';
 
 type UseTextContentProps<T> = {
-  state: StateType<T>;
+  event?: keyof GlobalEventHandlersEventMap | null;
+  eventElement?: HTMLElement | Window;
+  state?: StateType<T>;
 };
 
-export function useTextContent<T>({
-  state,
-}: UseTextContentProps<T>): (
+export function useTextContent<T>(
+  props?: UseTextContentProps<T>,
+): (
   el: HTMLElement,
   children: ((state: T) => string | number) | string | number,
   condition?: ((state: T) => boolean) | boolean,
 ) => void;
 
-export function useTextContent(): (
+export function useTextContent(
+  props?: UseTextContentProps<any>,
+): (
   el: HTMLElement,
   children: (() => string | number) | string | number,
   condition?: (() => boolean) | boolean,
 ) => void;
 
 export function useTextContent<T>(props?: UseTextContentProps<T>) {
-  const { state } = props ?? {};
+  const { event, eventElement, state } = props ?? {};
   return (...htmlProps: any) => {
     const [el, children, condition] = htmlProps;
     const apply = () => {
@@ -30,7 +34,16 @@ export function useTextContent<T>(props?: UseTextContentProps<T>) {
         el.textContent = String(_children);
       }
     };
+    // handle state changes
     if (state) state.sub(apply);
+
+    // handle resize changes
+    window.addEventListener('resize', apply);
+
+    // handle event changes
+    if (event) (el ?? eventElement).addEventListener(event, apply);
+
+    // apply immediately
     apply();
   };
 }

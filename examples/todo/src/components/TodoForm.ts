@@ -11,7 +11,7 @@ export const TodoForm = html.form(
   ['style:mobile', 'width', '100%'],
   ['style:mobile', 'marginBlockEnd', '0'],
   ['style:mobile', 'boxSizing', 'border-box'],
-  ['todo:form:onsubmit'],
+  ['todo__form:onsubmit'],
 )(
   html.input(
     ['attr', 'placeholder', 'New Todo'],
@@ -19,7 +19,7 @@ export const TodoForm = html.form(
     ['style:mobile', 'padding', '10px'],
     ['style:mobile', 'borderRadius', '3px'],
     ['style:mobile', 'flex', '1'],
-    ['todo:input:oninput'],
+    ['todo__form__input:oninput'],
   )(),
   html.button(
     ['attr', 'type', 'submit'],

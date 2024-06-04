@@ -1,4 +1,4 @@
-import { State } from '../../../src';
+import { State } from '../../../../src';
 
 // the todo type
 export type TodoType = {
@@ -6,18 +6,20 @@ export type TodoType = {
   completed: boolean;
 };
 
+export const todoItemHovered = State<TodoType | undefined>(undefined);
+
 // the todo list state
-export const todoState = State<TodoType[]>(
+export const todoList = State<TodoType[]>(
   [
     { title: 'Learn React', completed: true },
     { title: 'Learn TypeScript', completed: false },
     { title: 'Learn Node.js', completed: false },
   ],
   {
-    key: 'todoState',
+    key: 'todoList',
     storage: sessionStorage,
   },
 );
 
 // the new todo state
-export const newTodo = State<string>('');
+export const todoNew = State<string>('');

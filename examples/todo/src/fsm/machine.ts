@@ -1,33 +1,26 @@
-import {
-  TODO_ADD_ACTION,
-  TODO_DELETE_ACTION,
-  TODO_INPUT_ACTION,
-  TODO_TOGGLE_ACTION,
-  todo_add,
-  todo_delete,
-  todo_input,
-  todo_toggle,
-} from './actions';
+import * as actions from './actions';
 
 type FSMstate = 'READY' | 'ERROR';
 let fsmState: FSMstate = 'READY';
 
-export function fsm(...actions: TODO_INPUT_ACTION | TODO_ADD_ACTION | TODO_DELETE_ACTION | TODO_TOGGLE_ACTION) {
-  const [action, payload] = actions;
+export function fsm(
+  ...evt: actions.TODO_INPUT_ACTION | actions.TODO_ADD_ACTION | actions.TODO_DELETE_ACTION | actions.TODO_TOGGLE_ACTION
+) {
+  const [action, payload] = evt;
   switch (fsmState) {
     case 'READY':
       switch (action) {
         case 'TODO:INPUT':
-          todo_input(payload);
+          actions.todo_input(payload);
           break;
         case 'TODO:ADD':
-          todo_add();
+          actions.todo_add();
           break;
         case 'TODO:DELETE':
-          todo_delete(payload);
+          actions.todo_delete(payload);
           break;
         case 'TODO:TOGGLE':
-          todo_toggle(payload);
+          actions.todo_toggle(payload);
           break;
       }
       break;

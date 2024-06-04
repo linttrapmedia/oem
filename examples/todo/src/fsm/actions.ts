@@ -1,35 +1,35 @@
-import { TodoType, newTodo, todoState } from '../state';
+import { TodoType, todoList, todoNew } from '../state/todo_state';
 
 export type TODO_ADD_ACTION = ['TODO:ADD'];
 
 export const todo_add = () => {
-  if (newTodo.get() === '') return;
-  const updateState = todoState.get();
-  updateState.push({ title: newTodo.get(), completed: false });
-  todoState.set(updateState);
-  newTodo.set('');
+  if (todoNew.get() === '') return;
+  const updateState = todoList.get();
+  updateState.push({ title: todoNew.get(), completed: false });
+  todoList.set(updateState);
+  todoNew.set('');
 };
 
 export type TODO_DELETE_ACTION = ['TODO:DELETE', TodoType];
 
 export const todo_delete = (todo: TodoType) => {
-  const deleteState = todoState.get();
+  const deleteState = todoList.get();
   const index = deleteState.findIndex((t) => t.title === todo.title);
   deleteState.splice(index, 1);
-  todoState.set(deleteState);
+  todoList.set(deleteState);
 };
 
 export type TODO_INPUT_ACTION = ['TODO:INPUT', string];
 
 export const todo_input = (inputValue: string) => {
-  newTodo.set(inputValue);
+  todoNew.set(inputValue);
 };
 
 export type TODO_TOGGLE_ACTION = ['TODO:TOGGLE', TodoType];
 
 export const todo_toggle = (todo: TodoType) => {
-  const toggleState = todoState.get();
+  const toggleState = todoList.get();
   const index = toggleState.findIndex((t) => t.title === todo.title);
   toggleState[index].completed = !toggleState[index].completed;
-  todoState.set(toggleState);
+  todoList.set(toggleState);
 };

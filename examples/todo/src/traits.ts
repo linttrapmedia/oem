@@ -1,5 +1,5 @@
 import { fsm } from './fsm/machine';
-import { TodoType } from './state';
+import { TodoType } from './state/todo_state';
 
 export const useTodoDelete = (el: HTMLElement, todo: TodoType) => {
   el.addEventListener('click', (click: Event) => {

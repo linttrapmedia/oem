@@ -59,8 +59,6 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
   const e8 = div(['dynamicAttr', 'disabled', 'true', (state) => state.disabled])();
   const t8 = e8.outerHTML === '<div></div>';
 
-  console.log(t1, t2, t3, t4, t5, t6, t7, t8);
-
   return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 };
 };
 
@@ -231,6 +229,15 @@ export const CanApplyStyleTraitToHtml: Test = () => {
   const t5 = e5.outerHTML === '<div></div>';
 
   return { pass: t1 && t2a && t2b && t3 && t4 && t5 };
+};
+
+export const CanApplyCssVarWithStyleTraitToHtml: Test = () => {
+  const { div } = HTML({
+    style: useStyle(),
+  });
+  const e1 = div(['style', '--test-var', 'testing'])();
+  const t1 = e1.outerHTML === '<div style="--test-var: testing;"></div>';
+  return { pass: t1 };
 };
 
 export const CanApplyMultipleTraitsToHtml: Test = () => {
