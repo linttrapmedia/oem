@@ -6,7 +6,7 @@ type UseClassNameProps<T> = {
   invokeImmediately?: boolean;
   mediaMaxWidth?: number;
   mediaMinWidth?: number;
-  mediaType?: 'screen' | 'print';
+  method?: 'classList' | 'className';
   state?: StateType<T> | null;
 };
 
@@ -25,6 +25,7 @@ export function useClassName<T>(props?: UseClassNameProps<T>) {
     invokeImmediately = true,
     mediaMinWidth = 0,
     mediaMaxWidth = Infinity,
+    method = 'classList',
     state = null,
   } = props ?? {};
   return (...htmlProps: any) => {
@@ -36,7 +37,7 @@ export function useClassName<T>(props?: UseClassNameProps<T>) {
       const _className = typeof className === 'function' ? className(state ? state.get() : undefined) : className;
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
-      if (_condition) el.setAttribute('class', _className);
+      if (_condition) method === 'className' ? el.setAttribute('class', _className) : el.classList.add(_className);
     };
 
     // handle state changes

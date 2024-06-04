@@ -102,7 +102,7 @@ export const CanApplyClassNameTraitToHtml: Test = () => {
   const state = State({ className: 'item--modifier-1' });
   const { div } = HTML({
     staticClassName: useClassName(),
-    dynamicClassName: useClassName({ state }),
+    dynamicClassName: useClassName({ state, method: 'className' }),
   });
 
   // static tests
@@ -131,6 +131,39 @@ export const CanApplyClassNameTraitToHtml: Test = () => {
   const t9 = e9.outerHTML === '<div class="item--modifier-3"></div>';
 
   return { pass: t1 && t2 && t3 && t4 && t5a && t5b && t6 && t7 && t8 && t9 };
+};
+
+export const CanApplyClassNameListTraitToHtml: Test = () => {
+  const state = State({ className: 'item--modifier-1' });
+  const { div } = HTML({
+    staticClassName: useClassName(),
+    dynamicClassName: useClassName({ state }),
+  });
+
+  // static tests
+  const e1 = div(['staticClassName', 'test'])();
+  const t1 = e1.outerHTML === '<div class="test"></div>';
+  const e2 = div(['staticClassName', 'test', false])();
+  const t2 = e2.outerHTML === '<div></div>';
+  const e3 = div(['staticClassName', 'test', () => false])();
+  const t3 = e3.outerHTML === '<div></div>';
+  const e4 = div(['staticClassName', 'test', () => true])();
+  const t4 = e4.outerHTML === '<div class="test"></div>';
+
+  // dynamic tests
+  const e5 = div(['dynamicClassName', (s) => s.className])();
+  const t5 = e5.outerHTML === '<div class="item--modifier-1"></div>';
+  const e6 = div(['dynamicClassName', (s) => s.className, false])();
+  const t6 = e6.outerHTML === '<div></div>';
+  const e7 = div(['dynamicClassName', (s) => s.className, () => false])();
+  const t7 = e7.outerHTML === '<div></div>';
+  const e8 = div(['dynamicClassName', (s) => s.className, () => true])();
+  state.set({ className: 'item--modifier-3' });
+  const t8 = e8.outerHTML === '<div class="item--modifier-1 item--modifier-3"></div>';
+  const e9 = div(['dynamicClassName', (s) => s.className, (s) => s.className === 'item--modifier-3'])();
+  const t9 = e9.outerHTML === '<div class="item--modifier-3"></div>';
+
+  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 };
 };
 
 export const CanApplyEventListenerTraitToHtml: Test = () => {

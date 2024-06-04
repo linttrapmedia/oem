@@ -11,6 +11,7 @@ window.addEventListener('DOMContentLoaded', () => {
       ['can apply attribute trait', html.CanApplyAttributeTraitToHtml],
       ['can remove attribute trait', html.CanRemoveAttributeTraitToHtml],
       ['can apply class name trait', html.CanApplyClassNameTraitToHtml],
+      ['can apply class list trait', html.CanApplyClassNameListTraitToHtml],
       ['can apply event listener trait', html.CanApplyEventListenerTraitToHtml],
       ['can apply inner html trait', html.CanApplyInnerHTMLTraitToHtml],
       ['can apply inner text trait', html.CanApplyTextContentTraitToHtml],

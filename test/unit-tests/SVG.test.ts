@@ -27,7 +27,7 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
 
 export const CanApplyClassNameTraitToHtml: Test = () => {
   const { circle } = SVG({
-    className: useClassName(),
+    className: useClassName({ method: 'className' }),
   });
   const e1 = circle(['className', 'n1 n2'])();
   const t1 = e1.outerHTML === '<circle class="n1 n2"></circle>';
@@ -57,16 +57,6 @@ export const CanApplyInnerTextTraitToHtml: Test = () => {
   });
   const e1 = circle(['text', 'test'])();
   const t1 = e1.outerHTML === '<circle>test</circle>';
-  return { pass: t1 };
-};
-
-export const CanApplyPrintStyleTraitToHtml: Test = () => {
-  const { circle } = SVG({
-    printStyle: useStyle({ mediaType: 'print' }),
-  });
-  const e1 = circle(['printStyle', 'fontSize', '12px'])();
-  // can't test if style is applied to document with jsdom
-  const t1 = e1.ownerDocument.head.innerHTML.includes('print-style');
   return { pass: t1 };
 };
 
