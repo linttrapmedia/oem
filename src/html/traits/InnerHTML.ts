@@ -23,7 +23,6 @@ export function useInnerHTML<T>(props?: UseInnerHTMLProps<T>) {
   return (...htmlProps: any) => {
     const [el, children, condition] = htmlProps;
     const apply = () => {
-      el.innerHTML = '';
       const _children = state ? children(state.get()) : children();
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
