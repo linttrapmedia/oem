@@ -41,6 +41,7 @@ window.addEventListener('DOMContentLoaded', () => {
       ['can subscribe to state', state.CanSubscribeToState],
       ['can unsubscribe to state', state.CanUnSubscribeToState],
       ['can reset state', state.CanSubscribeToState],
+      ['can set state and publish', state.CanSetStateAndPublish],
     ],
   ]);
 });

@@ -40,3 +40,16 @@ export const CanResetState: Test = () => {
   const t1 = num.get() === 1;
   return { pass: t1 };
 };
+
+export const CanSetStateAndPublish: Test = () => {
+  const num = State({
+    val: 1,
+  });
+  let flag = false;
+  num.sub(() => (flag = true));
+  num.get().val = 2;
+  num.pub();
+
+  const t1 = flag && num.get().val === 2;
+  return { pass: t1 };
+};

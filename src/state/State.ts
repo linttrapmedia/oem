@@ -27,6 +27,7 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
   let _param: T = param;
   const _subscribers: ((param: T) => any)[] = [];
   const _get = (): T => _param;
+  const _pub = () => _subscribers.forEach((i) => i(_param));
   const _reduce = (cb: (param: T) => T) => () => _set(cb(_param));
   const _reset = () => _set(originalParam);
   const _set = (param: T) => {
@@ -36,5 +37,5 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
   };
   const _sub = (cb: (param: T) => any) => _subscribers.push(cb);
   const _unsub = (cb: (param: T) => any) => _subscribers.splice(_subscribers.indexOf(cb), 1);
-  return { get: _get, reset: _reset, reduce: _reduce, set: _set, sub: _sub, unsub: _unsub };
+  return { get: _get, pub: _pub, reset: _reset, reduce: _reduce, set: _set, sub: _sub, unsub: _unsub };
 }
