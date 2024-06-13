@@ -42,7 +42,7 @@ window.addEventListener('DOMContentLoaded', () => {
       ['can unsubscribe to state', state.CanUnSubscribeToState],
       ['can reset state', state.CanSubscribeToState],
       ['can set state and publish', state.CanSetStateAndPublish],
-      ['can merge state', state.CanMergeState],
+      ['can set deep property', state.CanSetDeepProperty],
     ],
   ]);
 });

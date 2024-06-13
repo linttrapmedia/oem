@@ -1,20 +1,26 @@
 import { StateType } from '../types';
 
-function deepMerge(target: any, source: any): any {
-  const isObject = (obj: any) => obj && typeof obj === 'object';
-  if (!isObject(target) || !isObject(source)) return source;
-  Object.keys(source).forEach((key) => {
-    const targetValue = target[key];
-    const sourceValue = source[key];
-    if (Array.isArray(targetValue) && Array.isArray(sourceValue)) {
-      target[key] = targetValue.concat(sourceValue);
-    } else if (isObject(targetValue) && isObject(sourceValue)) {
-      target[key] = deepMerge(Object.assign({}, targetValue), sourceValue);
-    } else {
-      target[key] = sourceValue;
+function deepSet<T>(obj: T, pathKeys: string, value: any): T {
+  const path = pathKeys.split('.');
+  const update = (obj: any, path: (string | number)[], value: any): any => {
+    const [head, ...tail] = path;
+    if (tail.length === 0) {
+      return Array.isArray(obj)
+        ? [...obj.slice(0, head as number), value, ...obj.slice((head as number) + 1)]
+        : { ...obj, [head]: value };
     }
-  });
-  return target;
+
+    if (obj[head] === undefined) {
+      obj[head] = typeof tail[0] === 'number' ? [] : {};
+    }
+
+    return {
+      ...obj,
+      [head]: update(obj[head], tail, value),
+    };
+  };
+
+  return update(obj, path as (string | number)[], value);
 }
 
 type Persistence = {
@@ -44,7 +50,6 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
   let _param: T = param;
   const _subscribers: ((param: T) => any)[] = [];
   const _get = (): T => _param;
-  const _merge = (update: Partial<T>) => _set(deepMerge(_param, update));
   const _pub = () => _subscribers.forEach((i) => i(_param));
   const _reduce = (cb: (param: T) => T) => () => _set(cb(_param));
   const _reset = () => _set(originalParam);
@@ -53,7 +58,17 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
     _subscribers.forEach((i) => i(_param));
     if (persistence) persistence.storage.setItem(persistence.key, JSON.stringify(_param));
   };
+  const _deepSet = (path: string, value: any) => _set(deepSet(_param, path, value));
   const _sub = (cb: (param: T) => any) => _subscribers.push(cb);
   const _unsub = (cb: (param: T) => any) => _subscribers.splice(_subscribers.indexOf(cb), 1);
-  return { get: _get, pub: _pub, merge: _merge, reset: _reset, reduce: _reduce, set: _set, sub: _sub, unsub: _unsub };
+  return {
+    deepSet: _deepSet,
+    get: _get,
+    pub: _pub,
+    reset: _reset,
+    reduce: _reduce,
+    set: _set,
+    sub: _sub,
+    unsub: _unsub,
+  };
 }

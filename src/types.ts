@@ -1,9 +1,9 @@
 type RestArgs<T extends unknown[]> = T extends [any, ...infer U] ? U : never;
 
 export type StateType<T> = {
+  deepSet: (path: string, value: any) => void;
   get: () => T;
   pub: () => void;
-  merge: (atom: Partial<T>) => void;
   reduce: (cb: (atom: T) => T) => () => void;
   reset: () => void;
   set: (atom: T) => void;

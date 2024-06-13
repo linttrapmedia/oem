@@ -54,25 +54,24 @@ export const CanSetStateAndPublish: Test = () => {
   return { pass: t1 };
 };
 
-export const CanMergeState: Test = () => {
-  const num = State<{
-    v1: number;
-    v2: Partial<{
-      a: string;
-      b: number;
-    }>;
+export const CanSetDeepProperty: Test = () => {
+  const obj = State<{
+    parent: {
+      child: {
+        grandchild: number;
+      };
+    };
   }>({
-    v1: 1,
-    v2: {
-      a: 'a',
-      b: 1,
+    parent: {
+      child: {
+        grandchild: 1,
+      },
     },
   });
-  num.merge({ v1: 2 });
-  const t1 = num.get().v1 === 2;
-  num.merge({ v2: { a: 'changed' } });
-  const t2 = num.get().v2.a === 'changed';
-  num.merge({ v2: { b: 2 } });
-  const t3 = num.get().v2.b === 2;
-  return { pass: t1 && t2 && t3 };
+  obj.deepSet('parent.child.grandchild', 2);
+  const t1 = obj.get().parent.child.grandchild === 2;
+  const ary = State<number[]>([1, 2, 3]);
+  ary.deepSet('0', 2);
+  const t2 = ary.get()[0] === 2;
+  return { pass: t1 && t2 };
 };
