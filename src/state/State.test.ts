@@ -53,3 +53,26 @@ export const CanSetStateAndPublish: Test = () => {
   const t1 = flag && num.get().val === 2;
   return { pass: t1 };
 };
+
+export const CanMergeState: Test = () => {
+  const num = State<{
+    v1: number;
+    v2: Partial<{
+      a: string;
+      b: number;
+    }>;
+  }>({
+    v1: 1,
+    v2: {
+      a: 'a',
+      b: 1,
+    },
+  });
+  num.merge({ v1: 2 });
+  const t1 = num.get().v1 === 2;
+  num.merge({ v2: { a: 'changed' } });
+  const t2 = num.get().v2.a === 'changed';
+  num.merge({ v2: { b: 2 } });
+  const t3 = num.get().v2.b === 2;
+  return { pass: t1 && t2 && t3 };
+};
