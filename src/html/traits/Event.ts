@@ -1,27 +1,27 @@
 import { StateType } from '../../types';
 
-type UseEventProps<T> = {
-  event: keyof GlobalEventHandlersEventMap;
+type UseEventProps<T, E extends keyof GlobalEventHandlersEventMap> = {
+  event: E;
   state?: StateType<T>;
 };
 
-export function useEvent(
-  props?: UseEventProps<any>,
+export function useEvent<E extends keyof GlobalEventHandlersEventMap>(
+  props?: UseEventProps<any, E>,
 ): (
   el: HTMLElement,
-  cb: (evt?: GlobalEventHandlersEventMap) => void,
+  cb: (evt?: GlobalEventHandlersEventMap[E]) => void,
   condition?: (() => boolean) | boolean | (() => boolean),
 ) => void;
 
-export function useEvent<T>(
-  props?: UseEventProps<T>,
+export function useEvent<T, E extends keyof GlobalEventHandlersEventMap>(
+  props?: UseEventProps<T, E>,
 ): (
   el: HTMLElement,
-  cb: (evt?: GlobalEventHandlersEventMap) => void,
+  cb: (evt?: GlobalEventHandlersEventMap[E]) => void,
   condition?: ((state: T) => boolean) | boolean | (() => boolean),
 ) => void;
 
-export function useEvent<T>(props?: UseEventProps<T>) {
+export function useEvent<T, E extends keyof GlobalEventHandlersEventMap>(props?: UseEventProps<T, E>) {
   const { state, event } = props ?? {};
   return (...htmlProps: any) => {
     const [el, cb, condition] = htmlProps;
