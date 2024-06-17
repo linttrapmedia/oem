@@ -168,7 +168,7 @@ export const CanApplyClassNameListTraitToHtml: Test = () => {
 
 export const CanApplyEventListenerTraitToHtml: Test = () => {
   const { div } = HTML({
-    click: useEvent('click'),
+    click: useEvent({ event: 'click' }),
   });
   let clicked = false;
   const handleClick = () => (clicked = true);
@@ -176,6 +176,22 @@ export const CanApplyEventListenerTraitToHtml: Test = () => {
   e1.click();
   const t1 = clicked;
   return { pass: t1 };
+};
+
+export const CanConditionallyApplyEventListenerTraitToHtml: Test = () => {
+  const toggle = State(true);
+  const { div } = HTML({
+    click: useEvent({ event: 'click', state: toggle }),
+  });
+  const e1 = div(
+    ['click', () => toggle.set(false), toggle.get],
+    ['click', () => toggle.set(true), () => toggle.get() === false],
+  )();
+  e1.click();
+  const t1 = toggle.get() === false;
+  e1.click();
+  const t2 = toggle.get() === true;
+  return { pass: t1 && t2 };
 };
 
 export const CanApplyInnerHTMLTraitToHtml: Test = () => {

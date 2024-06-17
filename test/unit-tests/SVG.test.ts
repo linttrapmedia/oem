@@ -1,3 +1,4 @@
+import { State } from '../../src';
 import { SVG } from '../../src/html/SVG';
 import { useAttribute } from '../../src/html/traits/Attribute';
 import { useClassName } from '../../src/html/traits/ClassName';
@@ -36,7 +37,7 @@ export const CanApplyClassNameTraitToHtml: Test = () => {
 
 export const CanApplyEventListenerTraitToHtml: Test = () => {
   const { circle } = SVG({
-    click: useEvent('click'),
+    click: useEvent({ event: 'click' }),
   });
   let clicked = false;
   var clickEvent = new MouseEvent('click', {
@@ -49,6 +50,27 @@ export const CanApplyEventListenerTraitToHtml: Test = () => {
   e1.dispatchEvent(clickEvent);
   const t1 = clicked;
   return { pass: t1 };
+};
+
+export const CanConditionallyApplyEventListenerTraitToHtml: Test = () => {
+  const toggle = State(true);
+  const { circle } = SVG({
+    click: useEvent({ event: 'click', state: toggle }),
+  });
+  const clickEvent = new MouseEvent('click', {
+    view: window,
+    bubbles: true,
+    cancelable: false,
+  });
+  const e1 = circle(
+    ['click', () => toggle.set(false), toggle.get],
+    ['click', () => toggle.set(true), () => toggle.get() === false],
+  )();
+  e1.dispatchEvent(clickEvent);
+  const t1 = toggle.get() === false;
+  e1.dispatchEvent(clickEvent);
+  const t2 = toggle.get() === true;
+  return { pass: t1 && t2 };
 };
 
 export const CanApplyInnerTextTraitToHtml: Test = () => {
