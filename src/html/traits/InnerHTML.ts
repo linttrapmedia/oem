@@ -8,13 +8,13 @@ export function useInnerHTML<T>({
   state,
 }: UseInnerHTMLProps<T>): (
   el: HTMLElement,
-  children: (state: T) => string | number | HTMLElement | (string | number | HTMLElement)[],
+  children: (state: T) => string | number | HTMLElement | SVGElement | (string | number | HTMLElement | SVGElement)[],
   condition?: ((state: T) => boolean) | boolean,
 ) => void;
 
 export function useInnerHTML(): (
   el: HTMLElement,
-  children: () => string | number | HTMLElement | (string | number | HTMLElement)[],
+  children: () => string | number | HTMLElement | SVGElement | (string | number | HTMLElement | SVGElement)[],
   condition?: (() => boolean) | boolean,
 ) => void;
 
@@ -30,10 +30,10 @@ export function useInnerHTML<T>(props?: UseInnerHTMLProps<T>) {
         el.innerHTML = '';
         if (Array.isArray(_children)) {
           _children.forEach((c) => {
-            if (c instanceof HTMLElement) el.appendChild(c);
+            if (c instanceof HTMLElement || c instanceof SVGElement) el.appendChild(c);
             else el.appendChild(document.createTextNode(String(c)));
           });
-        } else if (_children instanceof HTMLElement) {
+        } else if (_children instanceof HTMLElement || _children instanceof SVGElement) {
           el.appendChild(_children);
         } else {
           el.innerHTML = String(_children);

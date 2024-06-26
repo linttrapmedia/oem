@@ -25,6 +25,7 @@ window.addEventListener('DOMContentLoaded', () => {
     ],
     [
       'SVG',
+      ['can apply inner html trait', svg.CanApplyInnerHTMLTraitToHtml],
       ['can apply attribute trait', svg.CanApplyAttributeTraitToHtml],
       ['can apply class name trait', svg.CanApplyClassNameTraitToHtml],
       ['can apply event listener trait', svg.CanApplyEventListenerTraitToHtml],
