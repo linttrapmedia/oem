@@ -12,7 +12,7 @@ const Counter = () => {
 
   const { div } = HTML({
     'text:count': useTextContent({ state: count }),
-    'event:click': useEvent('click'),
+    'event:click': useEvent({ event: 'click' }),
     'style:click': useStyle({ event: 'click' }),
     'style:mobile': useStyle({ mediaMinWidth: 0 }),
     'style:tablet': useStyle({ mediaMinWidth: 960 }),
