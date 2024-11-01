@@ -46,11 +46,11 @@ const count_text = () => \`#\${count.get()}\`;
 const count_color = () => (count.get() % 2 === 0 ? 'red' : 'black');
 
 const { div } = HTML({
-  'text:count': useText({state: count}),
-  'event:click': useEvent('click'),
-  'style:click': useStyle({ event: 'click' }),
-  'style:mobile': useStyle({ mediaMinWidth: 0 }),
-  'style:tablet': useStyle({ mediaMinWidth: 960 }),
+  "text:count": useTextContent({ state: count }),
+  "event:click": useEvent({ event: "click" }),
+  "style:click": useStyle({ event: "click" }),
+  "style:mobile": useStyle({ mediaMinWidth: 0 }),
+  "style:tablet": useStyle({ mediaMinWidth: 960 }),
 });`),
         ),
         div(
