@@ -35,7 +35,7 @@ export const usePrism = () => (el: HTMLElement) => {
 
 export const { a, button, code, div, el, img, pre, span, $el } = HTML({
   attr: useAttribute(),
-  click: useEvent('click'),
+  click: useEvent({ event: 'click' }),
   prism: usePrism(),
   style: useStyle(),
   'style:tablet': useStyle({ mediaMinWidth: 960 }),
@@ -46,7 +46,7 @@ export const { a, button, code, div, el, img, pre, span, $el } = HTML({
 export const svg = SVG({
   attr: useAttribute(),
   style: useStyle(),
-  click: useEvent('click'),
+  click: useEvent({ event: 'click' }),
   'style:mouseover': useStyle({ event: 'mouseover' }),
   'style:mouseout': useStyle({ event: 'mouseout' }),
 });
