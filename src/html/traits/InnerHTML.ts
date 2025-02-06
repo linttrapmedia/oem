@@ -26,8 +26,8 @@ export function useInnerHTML<T>(props?: UseInnerHTMLProps<T>) {
       const _children = state ? children(state.get()) : children();
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
+      el.innerHTML = '';
       if (_condition) {
-        el.innerHTML = '';
         if (Array.isArray(_children)) {
           _children.forEach((c) => {
             if (c instanceof HTMLElement || c instanceof SVGElement) el.appendChild(c);

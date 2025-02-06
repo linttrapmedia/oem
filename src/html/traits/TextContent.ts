@@ -26,10 +26,12 @@ export function useTextContent<T>(props?: UseTextContentProps<T>) {
   const { event, eventElement, state } = props ?? {};
   return (...htmlProps: any) => {
     const [el, children, condition] = htmlProps;
+
     const apply = () => {
       const _children = typeof children === 'function' ? children(state ? state.get() : undefined) : children;
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
+      el.textContent = '';
       if (_condition) {
         el.textContent = String(_children);
       }
