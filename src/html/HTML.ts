@@ -5,7 +5,7 @@ const selectorMap = new Map<string, [any[], any]>();
 const matchObserver = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
     if (mutation.addedNodes.length > 0 && mutation.type === 'childList') {
-      for (const node of mutation.addedNodes) {
+      for (const node of Array.from(mutation.addedNodes)) {
         if (node instanceof Element) {
           for (const [selector, [props, config]] of selectorMap.entries()) {
             const els = Array.from(node.querySelectorAll(selector));
