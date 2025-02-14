@@ -8,7 +8,7 @@ const matchObserver = new MutationObserver((mutations) => {
       for (const node of mutation.addedNodes) {
         if (node instanceof Element) {
           for (const [selector, [props, config]] of selectorMap.entries()) {
-            const els = node.querySelectorAll(selector);
+            const els = Array.from(node.querySelectorAll(selector));
             for (const el of els) HtmlTag(el as HTMLElement, props, config);
           }
         }
@@ -23,7 +23,7 @@ function AdoptElBySelector(selector: string, watch: boolean = true, config: any)
     // on mutation
     if (watch) selectorMap.set(selector, [props, config]);
     // onload
-    const els = document.querySelectorAll(selector);
+    const els = Array.from(document.querySelectorAll(selector));
     for (const el of els) HtmlTag(el as HTMLElement, props, config);
   };
 }
