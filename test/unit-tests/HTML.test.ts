@@ -226,6 +226,23 @@ export const CanApplyInnerHTMLTraitToHtml: Test = () => {
   return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 };
 };
 
+export const CanConditionallyApplyMultipleInnerHTMLTraitToHtml: Test = () => {
+  const uxState = State({ showMenu: 1 });
+  const { div } = HTML({ dynamicHtml: useInnerHTML({ state: uxState }) });
+  const isShowing = () => uxState.get().showMenu === 1;
+  const isHidden = () => uxState.get().showMenu === 0;
+  const showingHtml = () => 'showing';
+  const hiddenHtml = () => 'hidden';
+  const e1 = div(['dynamicHtml', showingHtml, isShowing], ['dynamicHtml', hiddenHtml, isHidden])();
+  const t1 = e1.outerHTML === '<div>showing</div>';
+  uxState.set({ showMenu: 0 });
+  const t2 = e1.outerHTML === '<div>hidden</div>';
+  // both 1 and 2 will fail the condition and therefore no change (the element won't be cleared)
+  uxState.set({ showMenu: 2 });
+  const t3 = e1.outerHTML === '<div>hidden</div>';
+  return { pass: t1 && t2 && t3 };
+};
+
 export const CanApplyTextContentTraitToHtml: Test = () => {
   const state = State({ value: 'asdf' });
   const { div } = HTML({
