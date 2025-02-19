@@ -41,13 +41,15 @@ export function useAttribute<T>(props?: UseAttributeProps<T>) {
     const [el, prop, val, condition] = htmlProps;
     // application
     const apply = () => {
-      el.removeAttribute(prop);
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
       const _val = state && typeof val === 'function' ? val(state.get()) : val;
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
-      if (_condition) el.setAttribute(prop, String(_val));
+      if (_condition) {
+        el.removeAttribute(prop);
+        el.setAttribute(prop, String(_val));
+      }
     };
 
     // handle state changes

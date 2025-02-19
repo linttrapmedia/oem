@@ -40,13 +40,13 @@ export function useStyle<T>(props?: UseStyleProps<T>) {
   return (...htmlProps: any) => {
     const [el, prop, val, condition] = htmlProps;
     const apply = () => {
-      el.style.removeProperty(prop);
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
       const _val = String(typeof val === 'function' ? val(state ? state.get() : undefined) : val);
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
       if (_condition) {
+        el.style.removeProperty(prop);
         prop.startsWith('--') ? el.style.setProperty(prop, _val) : (el.style[prop as any] = _val as any);
       }
     };
