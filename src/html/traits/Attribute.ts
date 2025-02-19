@@ -32,7 +32,6 @@ export function useAttribute<T>(props?: UseAttributeProps<T>) {
   const {
     event = null,
     eventElement = window,
-    hideOnFalse = true,
     invokeImmediately = true,
     mediaMinWidth = 0,
     mediaMaxWidth = Infinity,
@@ -42,16 +41,13 @@ export function useAttribute<T>(props?: UseAttributeProps<T>) {
     const [el, prop, val, condition] = htmlProps;
     // application
     const apply = () => {
+      el.removeAttribute(prop);
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
       const _val = state && typeof val === 'function' ? val(state.get()) : val;
-      const _isBool = String(_val) === 'true' || String(_val) === 'false';
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
-      if (_isBool && hideOnFalse && String(_val) === 'false') return el.removeAttribute(prop);
-      if (_isBool && _condition === false) return el.removeAttribute(prop);
-      if (_condition === false) return;
-      el.setAttribute(prop, String(_val));
+      if (_condition) el.setAttribute(prop, String(_val));
     };
 
     // handle state changes

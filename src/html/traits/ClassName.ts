@@ -25,19 +25,19 @@ export function useClassName<T>(props?: UseClassNameProps<T>) {
     invokeImmediately = true,
     mediaMinWidth = 0,
     mediaMaxWidth = Infinity,
-    method = 'classList',
     state = null,
   } = props ?? {};
   return (...htmlProps: any) => {
     const [el, className, condition] = htmlProps;
     // application
     const apply = () => {
+      el.removeAttribute('class');
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
       const _className = typeof className === 'function' ? className(state ? state.get() : undefined) : className;
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
-      if (_condition) method === 'className' ? el.setAttribute('class', _className) : el.classList.add(_className);
+      if (_condition) el.setAttribute('class', _className);
     };
 
     // handle state changes

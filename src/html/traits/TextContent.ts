@@ -28,13 +28,11 @@ export function useTextContent<T>(props?: UseTextContentProps<T>) {
     const [el, children, condition] = htmlProps;
 
     const apply = () => {
+      el.textContent = '';
       const _children = typeof children === 'function' ? children(state ? state.get() : undefined) : children;
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
-      if (_condition) {
-        el.textContent = '';
-        el.textContent = String(_children);
-      }
+      if (_condition) el.textContent = String(_children);
     };
     // handle state changes
     if (state) state.sub(apply);

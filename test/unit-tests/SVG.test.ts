@@ -27,12 +27,20 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
 };
 
 export const CanApplyClassNameTraitToHtml: Test = () => {
-  const { circle } = SVG({
-    className: useClassName({ method: 'className' }),
-  });
-  const e1 = circle(['className', 'n1 n2'])();
-  const t1 = e1.outerHTML === '<circle class="n1 n2"></circle>';
-  return { pass: t1 };
+  const { circle } = SVG({ 'class:static': useClassName() });
+  const e1 = circle(['class:static', 'c1'])();
+  const t1 = e1.outerHTML === '<circle class="c1"></circle>';
+  const e2 = circle(['class:static', 'c1 c2'])();
+  const t2 = e2.outerHTML === '<circle class="c1 c2"></circle>';
+  const e3 = circle(['class:static', 'c1', false])();
+  const t3 = e3.outerHTML === '<circle></circle>';
+  const e4 = circle(['class:static', 'c1', true])();
+  const t4 = e4.outerHTML === '<circle class="c1"></circle>';
+  const e5 = circle(['class:static', 'c1', () => false])();
+  const t5 = e5.outerHTML === '<circle></circle>';
+  const e6 = circle(['class:static', 'c1', () => true])();
+  const t6 = e6.outerHTML === '<circle class="c1"></circle>';
+  return { pass: t1 && t2 && t3 && t4 && t5 && t6 };
 };
 
 export const CanApplyEventListenerTraitToHtml: Test = () => {

@@ -36,134 +36,52 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
   // static tests
   const e1 = div(['staticAttr', 'id', 'test'])();
   const t1 = e1.outerHTML === '<div id="test"></div>';
-  const e2 = div(['staticAttr', 'disabled', false])();
-  const t2 = e2.outerHTML === '<div></div>';
-  const e3 = div(['staticAttr', 'disabled', 'true'])();
-  const t3 = e3.outerHTML === '<div disabled="true"></div>';
-  const e4 = div(['staticAttr', 'disabled', 'false'])();
-  const t4 = e4.outerHTML === '<div></div>';
+  const e2 = div(['staticAttr', 'disabled', 'true'])();
+  const t2 = e2.outerHTML === '<div disabled="true"></div>';
 
   // dynamic tests
   state.set({ disabled: true });
   const e5 = div(['dynamicAttr', 'disabled', (state) => state.disabled])();
   const t5 = e5.outerHTML === '<div disabled="true"></div>';
+
   state.set({ disabled: false });
   const e6 = div(['dynamicAttr', 'disabled', (state) => state.disabled])();
-  const t6 = e6.outerHTML === '<div></div>';
+  const t6 = e6.outerHTML === '<div disabled="false"></div>';
 
   // condition tests
   state.set({ disabled: true });
   const e7 = div(['dynamicAttr', 'disabled', 'true', (state) => state.disabled])();
   const t7 = e7.outerHTML === '<div disabled="true"></div>';
+
   state.set({ disabled: false });
   const e8 = div(['dynamicAttr', 'disabled', 'true', (state) => state.disabled])();
   const t8 = e8.outerHTML === '<div></div>';
 
-  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 };
-};
-
-export const CanRemoveAttributeTraitToHtml: Test = () => {
-  const state = State({ disabled: false });
-  const { div } = HTML({
-    staticAttr: useAttribute(),
-    dynamicAttr: useAttribute({ state }),
-  });
-
-  // static tests
-  const e1 = div(['staticAttr', 'disabled', true])();
-  const t1 = e1.outerHTML === '<div disabled="true"></div>';
-  const e2 = div(['staticAttr', 'disabled', false])();
-  const t2 = e2.outerHTML === '<div></div>';
-  const e3 = div(['staticAttr', 'disabled', 'true'])();
-  const t3 = e3.outerHTML === '<div disabled="true"></div>';
-  const e4 = div(['staticAttr', 'disabled', 'false'])();
-  const t4 = e4.outerHTML === '<div></div>';
-
-  // dynamic tests
-  state.set({ disabled: true });
-  const e5 = div(['dynamicAttr', 'disabled', (state) => state.disabled])();
-  const t5 = e5.outerHTML === '<div disabled="true"></div>';
-  state.set({ disabled: false });
-  const e6 = div(['dynamicAttr', 'disabled', (state) => state.disabled])();
-  const t6 = e6.outerHTML === '<div></div>';
-
-  // condition tests
-  state.set({ disabled: true });
-  const e7 = div(['dynamicAttr', 'disabled', 'true', (state) => state.disabled])();
-  const t7 = e7.outerHTML === '<div disabled="true"></div>';
-  state.set({ disabled: false });
-  const e8 = div(['dynamicAttr', 'disabled', 'true', (state) => state.disabled])();
-  const t8 = e8.outerHTML === '<div></div>';
-
-  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 };
+  return { pass: t1 && t2 && t5 && t6 && t7 && t8 };
 };
 
 export const CanApplyClassNameTraitToHtml: Test = () => {
   const state = State({ className: 'item--modifier-1' });
   const { div } = HTML({
-    staticClassName: useClassName(),
-    dynamicClassName: useClassName({ state, method: 'className' }),
+    'class:static': useClassName(),
+    'class:dynamic': useClassName({ state }),
   });
 
   // static tests
-  const e1 = div(['staticClassName', 'test'])();
-  const t1 = e1.outerHTML === '<div class="test"></div>';
-  const e2 = div(['staticClassName', 'test', false])();
-  const t2 = e2.outerHTML === '<div></div>';
-  const e3 = div(['staticClassName', 'test', () => false])();
+  const e1 = div(['class:static', 'c1'])();
+  const t1 = e1.outerHTML === '<div class="c1"></div>';
+  const e2 = div(['class:static', 'c1 c2'])();
+  const t2 = e2.outerHTML === '<div class="c1 c2"></div>';
+  const e3 = div(['class:static', 'c1', false])();
   const t3 = e3.outerHTML === '<div></div>';
-  const e4 = div(['staticClassName', 'test', () => true])();
-  const t4 = e4.outerHTML === '<div class="test"></div>';
+  const e4 = div(['class:static', 'c1', true])();
+  const t4 = e4.outerHTML === '<div class="c1"></div>';
+  const e5 = div(['class:static', 'c1', () => false])();
+  const t5 = e5.outerHTML === '<div></div>';
+  const e6 = div(['class:static', 'c1', () => true])();
+  const t6 = e6.outerHTML === '<div class="c1"></div>';
 
-  // dynamic tests
-  const e5 = div(['dynamicClassName', (s) => s.className])();
-  const t5a = e5.outerHTML === '<div class="item--modifier-1"></div>';
-  state.set({ className: 'item--modifier-2' });
-  const t5b = e5.outerHTML === '<div class="item--modifier-2"></div>';
-  const e6 = div(['dynamicClassName', (s) => s.className, false])();
-  const t6 = e6.outerHTML === '<div></div>';
-  const e7 = div(['dynamicClassName', (s) => s.className, () => false])();
-  const t7 = e7.outerHTML === '<div></div>';
-  const e8 = div(['dynamicClassName', (s) => s.className, () => true])();
-  const t8 = e8.outerHTML === '<div class="item--modifier-2"></div>';
-  state.set({ className: 'item--modifier-3' });
-  const e9 = div(['dynamicClassName', (s) => s.className, (s) => s.className === 'item--modifier-3'])();
-  const t9 = e9.outerHTML === '<div class="item--modifier-3"></div>';
-
-  return { pass: t1 && t2 && t3 && t4 && t5a && t5b && t6 && t7 && t8 && t9 };
-};
-
-export const CanApplyClassNameListTraitToHtml: Test = () => {
-  const state = State({ className: 'item--modifier-1' });
-  const { div } = HTML({
-    staticClassName: useClassName(),
-    dynamicClassName: useClassName({ state }),
-  });
-
-  // static tests
-  const e1 = div(['staticClassName', 'test'])();
-  const t1 = e1.outerHTML === '<div class="test"></div>';
-  const e2 = div(['staticClassName', 'test', false])();
-  const t2 = e2.outerHTML === '<div></div>';
-  const e3 = div(['staticClassName', 'test', () => false])();
-  const t3 = e3.outerHTML === '<div></div>';
-  const e4 = div(['staticClassName', 'test', () => true])();
-  const t4 = e4.outerHTML === '<div class="test"></div>';
-
-  // dynamic tests
-  const e5 = div(['dynamicClassName', (s) => s.className])();
-  const t5 = e5.outerHTML === '<div class="item--modifier-1"></div>';
-  const e6 = div(['dynamicClassName', (s) => s.className, false])();
-  const t6 = e6.outerHTML === '<div></div>';
-  const e7 = div(['dynamicClassName', (s) => s.className, () => false])();
-  const t7 = e7.outerHTML === '<div></div>';
-  const e8 = div(['dynamicClassName', (s) => s.className, () => true])();
-  state.set({ className: 'item--modifier-3' });
-  const t8 = e8.outerHTML === '<div class="item--modifier-1 item--modifier-3"></div>';
-  const e9 = div(['dynamicClassName', (s) => s.className, (s) => s.className === 'item--modifier-3'])();
-  const t9 = e9.outerHTML === '<div class="item--modifier-3"></div>';
-
-  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 };
+  return { pass: t1 && t2 && t3 && t4 && t5 && t6 };
 };
 
 export const CanApplyEventListenerTraitToHtml: Test = () => {

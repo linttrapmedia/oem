@@ -26,13 +26,11 @@ export function useEvent<T, E extends keyof GlobalEventHandlersEventMap>(props?:
   return (...htmlProps: any) => {
     const [el, cb, condition] = htmlProps;
     const apply = () => {
+      const _cb = (e: E) => cb(e);
+      el.removeEventListener(event, _cb);
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
-      if (_condition) {
-        el.addEventListener(event, (e: E) => cb(e));
-      } else {
-        el.removeEventListener(event, (e: E) => cb(e));
-      }
+      if (_condition) el.addEventListener(event, _cb);
     };
 
     // handle state changes
@@ -42,9 +40,3 @@ export function useEvent<T, E extends keyof GlobalEventHandlersEventMap>(props?:
     apply();
   };
 }
-
-// export const useEvent =
-//   <E extends keyof GlobalEventHandlersEventMap>(evt: E) =>
-//   (el: HTMLElement, cb: (evt: GlobalEventHandlersEventMap[E]) => any, condition?: (() => boolean) | boolean) => {
-//     (typeof condition === 'function' ? condition() : condition ?? true) ? el.addEventListener(evt, cb) : null;
-//   };
