@@ -41,7 +41,8 @@ export function useClassName<T>(props?: UseClassNameProps<T>) {
         classList.push(_className);
         el.setAttribute('class', classList.join(' '));
       } else {
-        classList.splice(classList.indexOf(_className), 1);
+        const index = classList.indexOf(_className);
+        if (index > -1) classList.splice(index, 1);
         el.setAttribute('class', classList.join(' '));
       }
     };
