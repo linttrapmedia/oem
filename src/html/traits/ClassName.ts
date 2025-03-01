@@ -36,9 +36,13 @@ export function useClassName<T>(props?: UseClassNameProps<T>) {
       const _className = typeof className === 'function' ? className(state ? state.get() : undefined) : className;
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
+      const classList = el.getAttribute('class')?.split(' ') ?? [];
       if (_condition) {
-        el.removeAttribute('class');
-        el.setAttribute('class', _className);
+        classList.push(_className);
+        el.setAttribute('class', classList.join(' '));
+      } else {
+        classList.splice(classList.indexOf(_className), 1);
+        el.setAttribute('class', classList.join(' '));
       }
     };
 

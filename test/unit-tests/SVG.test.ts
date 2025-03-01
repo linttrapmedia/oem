@@ -33,11 +33,11 @@ export const CanApplyClassNameTraitToHtml: Test = () => {
   const e2 = circle(['class:static', 'c1 c2'])();
   const t2 = e2.outerHTML === '<circle class="c1 c2"></circle>';
   const e3 = circle(['class:static', 'c1', false])();
-  const t3 = e3.outerHTML === '<circle></circle>';
+  const t3 = e3.outerHTML === '<circle class=""></circle>';
   const e4 = circle(['class:static', 'c1', true])();
   const t4 = e4.outerHTML === '<circle class="c1"></circle>';
   const e5 = circle(['class:static', 'c1', () => false])();
-  const t5 = e5.outerHTML === '<circle></circle>';
+  const t5 = e5.outerHTML === '<circle class=""></circle>';
   const e6 = circle(['class:static', 'c1', () => true])();
   const t6 = e6.outerHTML === '<circle class="c1"></circle>';
   return { pass: t1 && t2 && t3 && t4 && t5 && t6 };

@@ -46,8 +46,9 @@ export function useStyle<T>(props?: UseStyleProps<T>) {
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
       if (_condition) {
-        el.style.removeProperty(prop);
         prop.startsWith('--') ? el.style.setProperty(prop, _val) : (el.style[prop as any] = _val as any);
+      } else {
+        el.style.removeProperty(prop);
       }
     };
 

@@ -48,6 +48,8 @@ export function useInnerHTML<T>(props?: UseInnerHTMLProps<T>) {
         } else {
           el.innerHTML = String(_children);
         }
+      } else {
+        el.innerHTML = '';
       }
     };
     if (state) state.sub(apply);

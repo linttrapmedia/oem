@@ -47,8 +47,9 @@ export function useAttribute<T>(props?: UseAttributeProps<T>) {
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
       if (_condition) {
-        el.removeAttribute(prop);
         el.setAttribute(prop, String(_val));
+      } else {
+        el.removeAttribute(prop);
       }
     };
 

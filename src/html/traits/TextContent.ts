@@ -32,8 +32,9 @@ export function useTextContent<T>(props?: UseTextContentProps<T>) {
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
       if (_condition) {
-        el.textContent = '';
         el.textContent = String(_children);
+      } else {
+        el.textContent = '';
       }
     };
     // handle state changes
