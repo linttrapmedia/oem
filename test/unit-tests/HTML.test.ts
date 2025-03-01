@@ -68,9 +68,8 @@ export const CanApplyClassNameTraitToHtml: Test = () => {
   });
 
   // static tests
-  const e1 = div(['class:static', 'c1'])();
+  const e1 = div(['class:static', 'c1'], ['class:static', 'c1'])();
   const t1 = e1.outerHTML === '<div class="c1"></div>';
-
   const e2 = div(['class:static', 'c1 c2'])();
   const t2 = e2.outerHTML === '<div class="c1 c2"></div>';
   const e3 = div(['class:static', 'c1', false])();

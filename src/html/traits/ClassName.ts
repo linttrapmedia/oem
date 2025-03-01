@@ -38,7 +38,8 @@ export function useClassName<T>(props?: UseClassNameProps<T>) {
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
       const classList = el.getAttribute('class')?.split(' ') ?? [];
       if (_condition) {
-        classList.push(_className);
+        // _className does not exist in classList
+        if (classList.indexOf(_className) === -1) classList.push(_className);
         el.setAttribute('class', classList.join(' '));
       } else {
         const index = classList.indexOf(_className);
