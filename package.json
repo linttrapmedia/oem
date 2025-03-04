@@ -2,7 +2,7 @@
   "name": "@linttrap/oem",
   "author": "@linttrapmedia",
   "title": "oem",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A novel UI library for writing reactive html with vanilla javascript",
   "type": "module",
   "exports": {
@@ -24,5 +24,6 @@
     "esbuild": "^0.14.27",
     "jsdom": "^21.1.0",
     "prettier": "2.7.1"
-  }
+  },
+  "dependencies": {}
 }
