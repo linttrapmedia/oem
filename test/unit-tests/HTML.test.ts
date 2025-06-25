@@ -57,7 +57,11 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
   const e8 = div(['dynamicAttr', 'disabled', 'true', (state) => state.disabled])();
   const t8 = e8.outerHTML === '<div></div>';
 
-  return { pass: t1 && t2 && t5 && t6 && t7 && t8 };
+  // remove attribute tests
+  const e3 = div(['staticAttr', 'id', 1], ['staticAttr', 'id', undefined])();
+  const t9 = e3.outerHTML === '<div></div>';
+
+  return { pass: t1 && t2 && t5 && t6 && t7 && t8 && t9 };
 };
 
 export const CanApplyClassNameTraitToHtml: Test = () => {
@@ -73,15 +77,19 @@ export const CanApplyClassNameTraitToHtml: Test = () => {
   const e2 = div(['class:static', 'c1 c2'])();
   const t2 = e2.outerHTML === '<div class="c1 c2"></div>';
   const e3 = div(['class:static', 'c1', false])();
-  const t3 = e3.outerHTML === '<div class=""></div>';
+  const t3 = e3.outerHTML === '<div></div>';
   const e4 = div(['class:static', 'c1', true])();
   const t4 = e4.outerHTML === '<div class="c1"></div>';
   const e5 = div(['class:static', 'c1', () => false])();
-  const t5 = e5.outerHTML === '<div class=""></div>';
+  const t5 = e5.outerHTML === '<div></div>';
   const e6 = div(['class:static', 'c1', () => true])();
   const t6 = e6.outerHTML === '<div class="c1"></div>';
 
-  return { pass: t1 && t2 && t3 && t4 && t5 && t6 };
+  // multiple attr tests
+  const e7 = div(['class:static', 'c1 c2', true], ['class:static', undefined, true])();
+  const t7 = e7.outerHTML === '<div></div>';
+
+  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 };
 };
 
 export const CanApplyEventListenerTraitToHtml: Test = () => {
@@ -89,10 +97,11 @@ export const CanApplyEventListenerTraitToHtml: Test = () => {
     click: useEvent({ event: 'click' }),
   });
   let clicked = false;
-  const handleClick = () => (clicked = true);
+  const handleClick: any = () => (clicked = true);
   const e1 = div(['click', handleClick])();
   e1.click();
   const t1 = clicked;
+
   return { pass: t1 };
 };
 
@@ -141,7 +150,14 @@ export const CanApplyInnerHTMLTraitToHtml: Test = () => {
   state.set({ value: 'c2' });
   const e9 = div(['dynamicHtml', (s) => s.value, (s) => s.value === 'c2'])();
   const t9 = e9.outerHTML === '<div>c2</div>';
-  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 };
+
+  // multiple html attributes and using undefined
+  const e10 = div(['staticHtml', () => ['one', 'two']], ['staticHtml', () => undefined, false])();
+  const t10 = e10.outerHTML === '<div>onetwo</div>';
+  const e11 = div(['staticHtml', () => ['one', 'two']], ['staticHtml', () => undefined, true])();
+  const t11 = e11.outerHTML === '<div></div>';
+
+  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 && t10 && t11 };
 };
 
 export const CanApplyTextContentTraitToHtml: Test = () => {
@@ -195,7 +211,21 @@ export const CanApplyStyleTraitToHtml: Test = () => {
   const e5 = div(['dynamicStyle', 'fontSize', (s) => s.fontSize, (s) => s.fontSize === '14px'])();
   const t5 = e5.outerHTML === '<div></div>';
 
-  return { pass: t1 && t2a && t2b && t3 && t4 && t5 };
+  // multiple style attributes and using undefined
+  const e6 = div(
+    ['staticStyle', 'fontSize', '12px'],
+    ['staticStyle', 'color', 'red'],
+    ['staticStyle', 'color', undefined],
+  )();
+  const t6 = e6.outerHTML === '<div style="font-size: 12px;"></div>';
+  const e7 = div(
+    ['staticStyle', 'fontSize', '12px'],
+    ['staticStyle', 'color', undefined],
+    ['staticStyle', 'color', 'red'],
+  )();
+  const t7 = e7.outerHTML === '<div style="font-size: 12px; color: red;"></div>';
+
+  return { pass: t1 && t2a && t2b && t3 && t4 && t5 && t6 && t7 };
 };
 
 export const CanApplyCssVarWithStyleTraitToHtml: Test = () => {

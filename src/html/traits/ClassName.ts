@@ -12,11 +12,19 @@ type UseClassNameProps<T> = {
 
 export function useClassName(
   props?: UseClassNameProps<any>,
-): (el: HTMLElement, className: string | (() => string), condition?: boolean | (() => boolean)) => void;
+): (
+  el: HTMLElement,
+  className: undefined | string | (() => undefined | string),
+  condition?: boolean | (() => boolean),
+) => void;
 
 export function useClassName<T>(
   props?: UseClassNameProps<T>,
-): (el: HTMLElement, className: string | ((state: T) => string), condition?: boolean | ((state: T) => boolean)) => void;
+): (
+  el: HTMLElement,
+  className: undefined | string | ((state: T) => undefined | string),
+  condition?: boolean | ((state: T) => boolean),
+) => void;
 
 export function useClassName<T>(props?: UseClassNameProps<T>) {
   const {
@@ -38,13 +46,13 @@ export function useClassName<T>(props?: UseClassNameProps<T>) {
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
       const classList = el.getAttribute('class')?.split(' ') ?? [];
       if (_condition) {
-        // _className does not exist in classList
-        if (classList.indexOf(_className) === -1) classList.push(_className);
-        el.setAttribute('class', classList.join(' '));
-      } else {
-        const index = classList.indexOf(_className);
-        if (index > -1) classList.splice(index, 1);
-        el.setAttribute('class', classList.join(' '));
+        if (_className === undefined) {
+          el.removeAttribute('class');
+        } else {
+          // _className does not exist in classList
+          if (classList.indexOf(_className) === -1) classList.push(_className);
+          el.setAttribute('class', classList.join(' '));
+        }
       }
     };
 

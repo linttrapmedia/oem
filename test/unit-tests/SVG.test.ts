@@ -33,14 +33,16 @@ export const CanApplyClassNameTraitToHtml: Test = () => {
   const e2 = circle(['class:static', 'c1 c2'])();
   const t2 = e2.outerHTML === '<circle class="c1 c2"></circle>';
   const e3 = circle(['class:static', 'c1', false])();
-  const t3 = e3.outerHTML === '<circle class=""></circle>';
+  const t3 = e3.outerHTML === '<circle></circle>';
   const e4 = circle(['class:static', 'c1', true])();
   const t4 = e4.outerHTML === '<circle class="c1"></circle>';
   const e5 = circle(['class:static', 'c1', () => false])();
-  const t5 = e5.outerHTML === '<circle class=""></circle>';
+  const t5 = e5.outerHTML === '<circle></circle>';
   const e6 = circle(['class:static', 'c1', () => true])();
   const t6 = e6.outerHTML === '<circle class="c1"></circle>';
-  return { pass: t1 && t2 && t3 && t4 && t5 && t6 };
+  const e7 = circle(['class:static', 'c1 c2', true], ['class:static', undefined, true])();
+  const t7 = e7.outerHTML === '<circle></circle>';
+  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 };
 };
 
 export const CanApplyEventListenerTraitToHtml: Test = () => {
@@ -128,6 +130,8 @@ export const CanApplyStyleTraitToHtml: Test = () => {
   });
   const e1 = circle(['style', 'fontSize', '12px'])();
   const t1 = e1.outerHTML === '<circle style="font-size: 12px;"></circle>';
+
+  const e2 = circle(['style', 'fontSize', '12px'], ['style', 'color', 'red'])();
   return { pass: t1 };
 };
 

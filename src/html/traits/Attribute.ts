@@ -15,7 +15,7 @@ export function useAttribute(
 ): (
   el: HTMLElement,
   prop: string,
-  val: (() => string | number | boolean) | (string | number | boolean),
+  val: (() => string | number | boolean | undefined) | (string | number | boolean | undefined),
   condition?: boolean | (() => boolean),
 ) => void;
 
@@ -24,7 +24,7 @@ export function useAttribute<T>(
 ): (
   el: HTMLElement,
   prop: string,
-  val: ((state: T) => string | number | boolean) | (string | number | boolean),
+  val: ((state: T) => string | number | boolean | undefined) | (string | number | boolean | undefined),
   condition?: ((state: T) => boolean) | boolean,
 ) => void;
 
@@ -47,9 +47,11 @@ export function useAttribute<T>(props?: UseAttributeProps<T>) {
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
       if (_condition) {
-        el.setAttribute(prop, String(_val));
-      } else {
-        el.removeAttribute(prop);
+        if (_val === undefined) {
+          el.removeAttribute(prop);
+        } else {
+          el.setAttribute(prop, String(_val));
+        }
       }
     };
 

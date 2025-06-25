@@ -15,7 +15,7 @@ export function useStyle(
 ): (
   el: HTMLElement,
   prop: keyof CSSStyleDeclaration | `--${string}`,
-  val: (() => string | number) | (string | number),
+  val: (() => string | number | undefined) | (string | number | undefined),
   condition?: boolean | (() => boolean),
 ) => void;
 
@@ -24,7 +24,7 @@ export function useStyle<T>(
 ): (
   el: HTMLElement,
   prop: keyof CSSStyleDeclaration | `--${string}`,
-  val: ((state: T) => string | number) | (string | number),
+  val: ((state: T) => string | number | undefined) | (string | number | undefined),
   condition?: boolean | ((state: T) => boolean),
 ) => void;
 
@@ -42,13 +42,15 @@ export function useStyle<T>(props?: UseStyleProps<T>) {
     const apply = () => {
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
-      const _val = String(typeof val === 'function' ? val(state ? state.get() : undefined) : val);
+      const _val = typeof val === 'function' ? val(state ? state.get() : undefined) : val;
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
       if (_condition) {
-        prop.startsWith('--') ? el.style.setProperty(prop, _val) : (el.style[prop as any] = _val as any);
-      } else {
-        el.style.removeProperty(prop);
+        if (_val === undefined) {
+          el.style.removeProperty(prop);
+        } else {
+          prop.startsWith('--') ? el.style.setProperty(prop, _val) : (el.style[prop as any] = _val as any);
+        }
       }
     };
 

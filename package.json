@@ -2,7 +2,7 @@
   "name": "@linttrap/oem",
   "author": "@linttrapmedia",
   "title": "oem",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "A novel UI library for writing reactive html with vanilla javascript",
   "type": "module",
   "exports": {

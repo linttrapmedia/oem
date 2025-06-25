@@ -36,17 +36,19 @@ export function useInnerHTML<T>(props?: UseInnerHTMLProps<T>) {
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
       if (_condition) {
         el.innerHTML = '';
-        if (Array.isArray(_children)) {
-          _children
-            .filter((c) => c)
-            .forEach((c) => {
-              if (c instanceof HTMLElement || c instanceof SVGElement) el.appendChild(c);
-              else el.appendChild(document.createTextNode(String(c)));
-            });
-        } else if (_children instanceof HTMLElement || _children instanceof SVGElement) {
-          el.appendChild(_children);
-        } else {
-          el.innerHTML = String(_children);
+        if (_children !== undefined) {
+          if (Array.isArray(_children)) {
+            _children
+              .filter((c) => c)
+              .forEach((c) => {
+                if (c instanceof HTMLElement || c instanceof SVGElement) el.appendChild(c);
+                else el.appendChild(document.createTextNode(String(c)));
+              });
+          } else if (_children instanceof HTMLElement || _children instanceof SVGElement) {
+            el.appendChild(_children);
+          } else {
+            el.innerHTML = String(_children);
+          }
         }
       }
     };
