@@ -1,6 +1,6 @@
 #!/usr/bin/env
 
-.PHONY: help build clean cdn dev docs deploy examples install publish test
+.PHONY: help build clean cdn dev dist docs deploy examples install publish test
 
 STATUS:="\x1b[96;01m\xE2\x80\xA2\x1b[0m"
 ECHO = @echo "\033[0;34m$(1)\033[0m$(2)"
@@ -66,15 +66,22 @@ deploy: ## Deploy the project
 
 dist: ## Build for distribution
 	@echo $(STATUS) Building dist...
-	@npx esbuild \
-		./src/index.ts \
-		--bundle \
-		--minify-whitespace \
-		--minify-syntax \
-		--sourcemap \
-		--format=esm \
-		--target=es2015 \
-		--outfile=./dist/oem.min.js
+	@bun build ./src/index.ts \
+		--outdir=./dist \
+		--entry-naming oem.esm.js
+		--target browser
+	# @npx esbuild \
+	# 	./src/index.ts \
+	# 	--bundle \
+	# 	--minify-whitespace \
+	# 	--minify-syntax \
+	# 	--sourcemap \
+	# 	--format=esm \
+	# 	--target=es2015 \
+	# 	--global-name=oem \
+	# 	--outfile=./dist/oem.min.js
+	@open http://localhost:3000
+	@bun run ./dist/index.html
 
 docs: ## Build docs
 	@rm -rf ./dist

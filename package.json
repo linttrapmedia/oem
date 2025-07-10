@@ -23,7 +23,12 @@
     "@types/node": "^18.13.0",
     "esbuild": "^0.14.27",
     "jsdom": "^21.1.0",
-    "prettier": "2.7.1"
+    "prettier": "2.7.1",
+    "@types/bun": "latest"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "private": true,
+  "peerDependencies": {
+    "typescript": "^5"
+  }
 }
