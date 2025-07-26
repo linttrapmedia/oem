@@ -1,10 +1,6 @@
 import { div } from '../config';
 import { Code } from './Code';
 
-const Header = (txt: string) => div(['style', 'backgroundColor', 'rgba(0,0,0,0.1)'], ['style', 'padding', '10px'])(txt);
-const Cell = (txt: string) =>
-  div(['style', 'padding', '10px'], ['style', 'borderBottom', '1px solid rgba(0,0,0,0.1)'])(txt);
-
 export const CustomTrait = () =>
   div(
     ['style', 'alignItems', 'center'],

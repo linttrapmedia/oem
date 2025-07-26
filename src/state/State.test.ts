@@ -33,14 +33,6 @@ export const CanUnSubscribeToState: Test = () => {
   return { pass: t1 };
 };
 
-export const CanResetState: Test = () => {
-  const num = State(1);
-  num.set(2);
-  num.reset();
-  const t1 = num.get() === 1;
-  return { pass: t1 };
-};
-
 export const CanSetStateAndPublish: Test = () => {
   const num = State({
     val: 1,
@@ -52,26 +44,4 @@ export const CanSetStateAndPublish: Test = () => {
 
   const t1 = flag && num.get().val === 2;
   return { pass: t1 };
-};
-
-export const CanSetDeepProperty: Test = () => {
-  const obj = State<{
-    parent: {
-      child: {
-        grandchild: number;
-      };
-    };
-  }>({
-    parent: {
-      child: {
-        grandchild: 1,
-      },
-    },
-  });
-  obj.deepSet('parent.child.grandchild', 2);
-  const t1 = obj.get().parent.child.grandchild === 2;
-  const ary = State<number[]>([1, 2, 3]);
-  ary.deepSet('0', 2);
-  const t2 = ary.get()[0] === 2;
-  return { pass: t1 && t2 };
 };

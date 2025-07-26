@@ -8,7 +8,9 @@ import { Header } from './components/Header';
 import { HowItWorks } from './components/HowItWorks';
 import { Install } from './components/Install';
 import { Justification } from './components/Justification';
+import { State } from './components/State';
 import { Svg } from './components/Svg';
+import { Templating } from './components/Templating';
 import { Traits } from './components/Traits';
 import { div } from './config';
 
@@ -28,7 +30,9 @@ function App() {
     Example(),
     HowItWorks(),
     Justification(),
+    Templating(),
     Traits(),
+    State(),
     CustomTrait(),
     Adopt(),
     Svg(),

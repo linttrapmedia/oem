@@ -28,12 +28,12 @@ export const Traits = () =>
       ['style', 'justifyContent', 'center'],
       ['style', 'width', '100%'],
     )(
-      div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])(`It's All About "Traits"`),
+      div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])(`Traits`),
       div(
         ['style', 'opacity', 0.5],
         ['style', 'textAlign', 'center'],
       )(
-        `Traits are small testable functions that are responsible for attaching behaviors to html elements. OEM comes with a handful of traits out of the box, but you can easily write your own.`,
+        `Traits are small testable functions that are responsible for attaching behaviors to html elements. OEM comes with a handful of traits out of the box, but you can easily write your own. Click on the trait name to see the source code and the available options.`,
       ),
       div(
         ['style', 'borderRadius', '5px'],
