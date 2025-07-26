@@ -27,7 +27,7 @@
     "@types/bun": "latest"
   },
   "dependencies": {},
-  "private": true,
+  "private": false,
   "peerDependencies": {
     "typescript": "^5"
   }
