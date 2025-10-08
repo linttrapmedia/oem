@@ -66,20 +66,20 @@ deploy: ## Deploy the project
 
 dist: ## Build for distribution
 	@echo $(STATUS) Building dist...
-	@bun build ./src/index.ts \
-		--outdir=./dist \
-		--entry-naming oem.esm.js
-		--target browser
-	# @npx esbuild \
-	# 	./src/index.ts \
-	# 	--bundle \
-	# 	--minify-whitespace \
-	# 	--minify-syntax \
-	# 	--sourcemap \
-	# 	--format=esm \
-	# 	--target=es2015 \
-	# 	--global-name=oem \
-	# 	--outfile=./dist/oem.min.js
+# 	@bun build ./src/index.ts \
+# 		--outdir=./dist \
+# 		--entry-naming oem.esm.js
+# 		--target browser
+	 @npx esbuild \
+	 	./src/index.ts \
+	 	--bundle \
+	 	--minify-whitespace \
+	 	--minify-syntax \
+	 	--sourcemap \
+	 	--format=esm \
+	 	--target=es2015 \
+	 	--global-name=oem \
+	 	--outfile=./dist/oem.min.js
 	@open http://localhost:3000
 	@bun run ./dist/index.html
 
