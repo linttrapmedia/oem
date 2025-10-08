@@ -33,6 +33,7 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
     if (persistence) persistence.storage.setItem(persistence.key, JSON.stringify(_param));
   };
   const _sub = (cb: (param: T) => any) => _subscribers.push(cb);
+
   const _unsub = (cb: (param: T) => any) => _subscribers.splice(_subscribers.indexOf(cb), 1);
   return {
     get: _get,

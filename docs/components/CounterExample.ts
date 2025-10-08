@@ -5,23 +5,21 @@ import { State } from '../../src/state/State';
 import { div } from '../config';
 
 const Counter = () => {
-  const count = State(1);
-  const count_inc = count.reduce((i: number) => i + 1);
-  const count_text = () => `#${count.get()}`;
-  const count_color = () => (count.get() % 2 === 0 ? 'red' : 'black');
+  const countState = State(1);
 
   const { div } = HTML({
-    'text:count': useTextContent({ state: count }),
+    'text:count': useTextContent({ state: countState }),
     'event:click': useEvent({ event: 'click' }),
-    'style:click': useStyle({ event: 'click' }),
+    'style:count': useStyle({ state: countState }),
     'style:mobile': useStyle({ mediaMinWidth: 0 }),
     'style:tablet': useStyle({ mediaMinWidth: 960 }),
   });
 
   return div(
-    ['text:count', count_text],
-    ['event:click', count_inc],
-    ['style:click', 'color', count_color],
+    ['text:count', (v) => `#${v}`],
+    ['event:click', countState.reduce((i: number) => i + 1)],
+    ['style:count', 'color', 'red', (s) => s % 2 === 0],
+    ['style:count', 'color', 'black', (s) => s % 2 !== 0],
     ['style:mobile', 'cursor', 'pointer'],
     ['style:mobile', 'display', 'flex'],
     ['style:mobile', 'gap', '10px'],
@@ -49,8 +47,11 @@ export const Example = () =>
       ['style', 'display', 'flex'],
       ['style', 'flexDirection', 'column'],
       ['style', 'fontFamily', 'Space Grotesk'],
-      ['style', 'gap', '20px'],
       ['style', 'justifyContent', 'center'],
       ['style', 'width', '100%'],
-    )(div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('Click The Number'), Counter()),
+    )(
+      div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('The Result'),
+      div()('(Click the number)'),
+      Counter(),
+    ),
   );

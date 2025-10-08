@@ -40,17 +40,14 @@ export const HowItWorks = () =>
           ['style:tablet', 'width', '50%'],
         )(
           div(['style', 'textAlign', 'center'])('Step 1: Define State and Your Template Engine'),
-          pre(['prism'])(`const count = State(1);
-const count_inc = count.reduce((i) => i + 1);
-const count_text = () => \`#\${count.get()}\`;
-const count_color = () => (count.get() % 2 === 0 ? 'red' : 'black');
+          pre(['prism'])(`// Create Your State
+const countState = State(1);
 
+// Define Your Template Engine
 const { div } = HTML({
-  "text:count": useTextContent({ state: count }),
-  "event:click": useEvent({ event: "click" }),
-  "style:click": useStyle({ event: "click" }),
-  "style:mobile": useStyle({ mediaMinWidth: 0 }),
-  "style:tablet": useStyle({ mediaMinWidth: 960 }),
+  'text': useTextContent({ state: countState }),
+  'click': useEvent({ event: 'click' }),
+  'style': useStyle({ state: countState }),
 });`),
         ),
         div(
@@ -60,15 +57,12 @@ const { div } = HTML({
           ['style:tablet', 'width', '50%'],
         )(
           div(['style', 'textAlign', 'center'])('Step 2:  Generate Your Reactive UI'),
-          pre(['prism'])(`div(
-  ['text:count', count_text],
-  ['event:click', count_inc],
-  ['style:click', 'color', count_color],
-  ['style:mobile', 'cursor', 'pointer'],
-  ['style:mobile', 'display', 'flex'],
-  ['style:mobile', 'gap', '10px'],
-  ['style:mobile', 'fontSize', '50px'],
-  ['style:tablet', 'fontSize', '80px'],
+          pre(['prism'])(`// Output your html
+div(
+  ['text', (val) => \`#\${val\}\`],
+  ['click', countState.reduce((i: number) => i + 1)],
+  ['style', 'color', 'red', (val) => val % 2 === 0],
+  ['style', 'color', 'black', (val) => val % 2 !== 0],
 )()`),
         ),
       ),

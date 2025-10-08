@@ -41,7 +41,7 @@ const tmpl = HTML({...});`),
       div(['style', 'textAlign', 'center'])('You can now generate HTML elements with the templating engine'),
       pre(['prism'])(`tmpl.div()('Hello World!');
 // returns <div>Hello World!</div>`),
-      div(['style', 'textAlign', 'center'])('Add a trait to the template'),
+      div(['style', 'textAlign', 'center'])('Add a "trait" to the template'),
       pre(['prism'])(`const tmpl = HTML({
   "style": useStyle(),
 });`),
