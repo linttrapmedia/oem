@@ -1,43 +1,50 @@
-import { Adopt } from './components/Adopt';
-import { Example } from './components/CounterExample';
-import { CustomTrait } from './components/CustomTrait';
-import { FAQ } from './components/FAQ';
-import { Features } from './components/Features';
-import { Footer } from './components/Footer';
-import { Header } from './components/Header';
-import { HowItWorks } from './components/HowItWorks';
-import { Install } from './components/Install';
-import { Justification } from './components/Justification';
-import { State } from './components/State';
-import { Svg } from './components/Svg';
-import { Templating } from './components/Templating';
-import { Traits } from './components/Traits';
-import { div } from './config';
+import { div, menuState } from './config';
+import { Introduction } from './pages/Introduction';
+import { Menu } from './pages/Menu';
+import { Templating } from './pages/Templating';
+import { Traits } from './pages/Traits';
 
 function App() {
   return div(
-    ['style', 'display', 'flex'],
-    ['style', 'flexDirection', 'column'],
-    ['style', 'gap', '50px'],
-    ['style', 'boxSizing', 'border-box'],
-    ['style', 'padding', '20px 20px 100px'],
-    ['style', 'margin', 'auto'],
-    ['style', 'maxWidth', '1024px'],
+    ['style', 'display', 'grid'],
+    ['style', 'gridTemplateRows', 'max-content 1fr'],
+    ['style', 'gridTemplateColumns', '1fr'],
+    ['style:tablet', 'gridTemplateRows', 'auto'],
+    ['style:tablet', 'gridTemplateColumns', 'max-content 1fr'],
+    ['style', 'height', '100vh'],
+    ['style', 'overflow', 'hidden'],
+    ['style', 'justifyContent', 'start'],
   )(
-    Header(),
-    Features(),
-    Install(),
-    HowItWorks(),
-    Example(),
-    Templating(),
-    State(),
-    Justification(),
-    Traits(),
-    CustomTrait(),
-    Adopt(),
-    Svg(),
-    FAQ(),
-    Footer(),
+    div(['style', 'backgroundColor', 'black'], ['style', 'padding', '10px'])(Menu()),
+    div(
+      ['style', 'display', 'flex'],
+      ['style', 'flexDirection', 'column'],
+      ['style', 'gap', '50px'],
+      ['style', 'boxSizing', 'border-box'],
+      ['style', 'padding', '20px 20px 100px'],
+      ['style', 'margin', 'auto'],
+      ['style', 'flexGrow', '1'],
+      ['style', 'height', '100%'],
+      ['style', 'overflowY', 'auto'],
+      ['style', 'width', '100%'],
+      ['html:menu', Introduction, menuState.eq('introduction')],
+      ['html:menu', Templating, menuState.eq('templates')],
+      ['html:menu', Traits, menuState.eq('traits')],
+    )(),
+    // Header(),
+    // Features(),
+    // Install(),
+    // HowItWorks(),
+    // Example(),
+    // Templating(),
+    // State(),
+    // Justification(),
+    // Traits(),
+    // CustomTrait(),
+    // Adopt(),
+    // Svg(),
+    // FAQ(),
+    // Footer(),
   );
 }
 

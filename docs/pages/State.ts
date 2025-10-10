@@ -85,7 +85,14 @@ export const State = () =>
             ['attr', 'target', '_blank'],
           )('reduce'),
         ),
-        Cell('Update state based on previous value (functional update)'),
+        Cell('Update state based on previous value (reducer)'),
+        Cell(
+          a(
+            ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/state/State.ts'],
+            ['attr', 'target', '_blank'],
+          )('test'),
+        ),
+        Cell('Test if a value is equal to the current state'),
       ),
       div(['style', 'textAlign', 'center'])('Creating a state object is easy'),
       pre(['prism'])(`import { State } from 'oem';

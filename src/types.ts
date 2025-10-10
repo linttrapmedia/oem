@@ -2,6 +2,8 @@ type RestArgs<T extends unknown[]> = T extends [any, ...infer U] ? U : never;
 
 export type StateType<T> = {
   get: () => T;
+  eq: (atom: T) => () => boolean;
+  neq: (atom: T) => () => boolean;
   pub: () => void;
   reduce: (cb: (atom: T) => T) => () => void;
   set: (atom: T) => void;
@@ -9,8 +11,10 @@ export type StateType<T> = {
   unsub: (cb: (atom: T) => any) => void;
 };
 
-type HtmlTraitFunc<Args extends any[]> = (el: HTMLElement, ...args: Args) => HTMLElement;
+export type HtmlTraitFunc<Args extends any[]> = (el: HTMLElement, ...args: Args) => HTMLElement;
+
 type HtmlTags = keyof HTMLElementTagNameMap;
+
 export type HtmlReturnType<P extends Record<string, HtmlTraitFunc<any>>> = Record<
   HtmlTags,
   <K extends Array<keyof P>>(
@@ -30,8 +34,10 @@ export type HtmlReturnType<P extends Record<string, HtmlTraitFunc<any>>> = Recor
   ) => <K extends Array<keyof P>>(...attributes: { [I in keyof K]-?: [K[I], ...RestArgs<Parameters<P[K[I]]>>] }) => any;
 };
 
-type SvgTraitFunc<Args extends any[]> = (el: SVGElement, ...args: Args) => SVGElement;
+export type SvgTraitFunc<Args extends any[]> = (el: SVGElement, ...args: Args) => SVGElement;
+
 type SvgTags = keyof SVGElementTagNameMap;
+
 export type SvgReturnType<P extends Record<string, SvgTraitFunc<any>>> = Record<
   SvgTags,
   <K extends Array<keyof P>>(

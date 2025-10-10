@@ -66,6 +66,6 @@ export const Header = () =>
         ['style', 'textAlign', 'center'],
         ['style', 'fontSize', '32px'],
         ['style:tablet', 'fontSize', '52px'],
-      )('The flyweight DOM library that scales'),
+      )('The flyweight UI library that scales'),
     ),
   );

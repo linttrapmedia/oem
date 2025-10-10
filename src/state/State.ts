@@ -27,6 +27,8 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
   const _get = (): T => _param;
   const _pub = () => _subscribers.forEach((i) => i(_param));
   const _reduce = (cb: (param: T) => T) => () => _set(cb(_param));
+  const _eq = (atom: T) => () => _param === atom;
+  const _neq = (atom: T) => () => _param !== atom;
   const _set = (param: T) => {
     _param = param;
     _subscribers.forEach((i) => i(_param));
@@ -37,6 +39,8 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
   const _unsub = (cb: (param: T) => any) => _subscribers.splice(_subscribers.indexOf(cb), 1);
   return {
     get: _get,
+    eq: _eq,
+    neq: _neq,
     pub: _pub,
     reduce: _reduce,
     set: _set,

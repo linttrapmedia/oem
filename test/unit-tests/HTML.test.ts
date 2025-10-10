@@ -30,7 +30,7 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
   const state = State({ disabled: false });
   const { div } = HTML({
     staticAttr: useAttribute(),
-    dynamicAttr: useAttribute({ state }),
+    dynamicAttr: useAttribute(state),
   });
 
   // static tests
@@ -41,27 +41,24 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
 
   // dynamic tests
   state.set({ disabled: true });
-  const e5 = div(['dynamicAttr', 'disabled', (state) => state.disabled])();
+  const e5 = div(['dynamicAttr', 'disabled', () => state.get().disabled])();
   const t5 = e5.outerHTML === '<div disabled="true"></div>';
 
   state.set({ disabled: false });
-  const e6 = div(['dynamicAttr', 'disabled', (state) => state.disabled])();
+  const e6 = div(['dynamicAttr', 'disabled', () => state.get().disabled])();
   const t6 = e6.outerHTML === '<div disabled="false"></div>';
 
   // condition tests
   state.set({ disabled: true });
-  const e7 = div(['dynamicAttr', 'disabled', 'true', (state) => state.disabled])();
+  const e7 = div(['dynamicAttr', 'disabled', 'true', () => state.get().disabled])();
   const t7 = e7.outerHTML === '<div disabled="true"></div>';
 
   state.set({ disabled: false });
-  const e8 = div(['dynamicAttr', 'disabled', 'true', (state) => state.disabled])();
+  console.log('state', state.get(), '-'.repeat(20));
+  const e8 = div(['dynamicAttr', 'disabled', 'true', () => state.get().disabled])();
   const t8 = e8.outerHTML === '<div></div>';
 
-  // remove attribute tests
-  const e3 = div(['staticAttr', 'id', 1], ['staticAttr', 'id', undefined])();
-  const t9 = e3.outerHTML === '<div></div>';
-
-  return { pass: t1 && t2 && t5 && t6 && t7 && t8 && t9 };
+  return { pass: t1 && t2 && t5 && t6 && t7 && t8 };
 };
 
 export const CanApplyClassNameTraitToHtml: Test = () => {

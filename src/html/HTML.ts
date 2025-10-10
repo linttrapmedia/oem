@@ -43,7 +43,9 @@ function CreateEl(tag: string, config: any) {
 function HtmlTag(el: HTMLElement, traits: any[] = [], config: any = {}) {
   traits.forEach(([trait, ...args]) => config[trait](el, ...args));
   function fn(...children: any[]) {
-    children.forEach((child) => el.append(child));
+    children.forEach((child) => {
+      if (child) el.append(child);
+    });
     return el;
   }
   return fn;

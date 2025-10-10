@@ -1,5 +1,5 @@
 import { div } from '../config';
-import { Code } from './Code';
+import { Code } from '../pages/Code';
 
 export const CustomTrait = () =>
   div(
