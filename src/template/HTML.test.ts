@@ -1,12 +1,12 @@
-import { HTML } from '../../src/html/HTML';
-import { useAttribute } from '../../src/html/traits/Attribute';
-import { useClassName } from '../../src/html/traits/ClassName';
-import { useEvent } from '../../src/html/traits/Event';
-import { useInnerHTML } from '../../src/html/traits/InnerHTML';
-import { useStyle } from '../../src/html/traits/Style';
-import { useTextContent } from '../../src/html/traits/TextContent';
-import { State } from '../../src/state/State';
-import { Test } from '../../src/types';
+import { State } from '../state/State';
+import { useAttribute } from '../traits/Attribute';
+import { useClassName } from '../traits/ClassName';
+import { useEvent } from '../traits/Event';
+import { useInnerHTML } from '../traits/InnerHTML';
+import { useStyle } from '../traits/Style';
+import { useTextContent } from '../traits/TextContent';
+import { Test } from '../types';
+import { HTML } from './HTML';
 
 export const CanAdoptElement: Test = () => {
   const { el, $el } = HTML({
@@ -30,7 +30,7 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
   const state = State({ disabled: false });
   const { div } = HTML({
     staticAttr: useAttribute(),
-    dynamicAttr: useAttribute(state),
+    dynamicAttr: useAttribute({ state }),
   });
 
   // static tests
@@ -54,7 +54,6 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
   const t7 = e7.outerHTML === '<div disabled="true"></div>';
 
   state.set({ disabled: false });
-  console.log('state', state.get(), '-'.repeat(20));
   const e8 = div(['dynamicAttr', 'disabled', 'true', () => state.get().disabled])();
   const t8 = e8.outerHTML === '<div></div>';
 

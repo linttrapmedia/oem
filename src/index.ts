@@ -1,10 +1,4 @@
-export { HTML } from './html/HTML';
-export { SVG } from './html/SVG';
-export { useAttribute } from './html/traits/Attribute';
-export { useClassName } from './html/traits/ClassName';
-export { useEvent } from './html/traits/Event';
-export { useInnerHTML } from './html/traits/InnerHTML';
-export { useStyle } from './html/traits/Style';
-export { useTextContent } from './html/traits/TextContent';
 export { State } from './state/State';
+export { HTML } from './template/HTML';
+export { SVG } from './template/SVG';
 export * from './types';

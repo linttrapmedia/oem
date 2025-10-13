@@ -1,9 +1,9 @@
-import { a, div } from '../config';
+import { html } from '../config';
 import { Box } from '../parts/Box';
+import { Features } from '../parts/Features';
 import { FooterNav } from '../parts/FooterNav';
 import { Page } from '../parts/Page';
 import { Section } from '../parts/Section';
-import { Features } from './Features';
 
 export const Introduction = () =>
   Page(
@@ -13,7 +13,7 @@ export const Introduction = () =>
       content: Box(
         'column',
         20,
-        div(
+        html.div(
           ['style', 'alignItems', 'center'],
           ['style', 'boxSizing', 'border-box'],
           ['style', 'display', 'grid'],
@@ -33,14 +33,14 @@ export const Introduction = () =>
       content: Box(
         'column',
         20,
-        div(['prism'])(`npm i @linttrap/oem`),
-        div(
+        html.div(['prism'])(`npm i @linttrap/oem`),
+        html.div(
           ['style', 'opacity', 0.35],
           ['style', 'fontSize', '14px'],
           ['style', 'textAlign', 'center'],
         )(
           'Or download with unpkg at ',
-          a(
+          html.a(
             ['attr', 'href', 'https://unpkg.com/@linttrap/oem@latest/dist/oem.min.js'],
             ['attr', 'target', '_blank'],
           )('unpkg'),
@@ -48,8 +48,8 @@ export const Introduction = () =>
       ),
     }),
     Section({
-      title: 'Get Started',
-      subtitle: `Learn about OEM's templating engine and how to create your own templates.`,
+      title: 'Learn (~10min)',
+      subtitle: `You can learn the core concepts of OEM in about 10 minutes. Follow along with the examples to get a feel for how OEM works.`,
       content: FooterNav({
         next: { title: 'Templates', menuState: 'templates' },
       }),

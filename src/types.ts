@@ -1,13 +1,16 @@
 type RestArgs<T extends unknown[]> = T extends [any, ...infer U] ? U : never;
 
+export type CbModes = 'reduce' | 'eq' | 'neq' | never;
+export type CbFunction<T = any> = {
+  (mode: 'reduce', cb: (prev: T) => T): () => void;
+  (mode: 'eq' | 'neq', cb: T): () => boolean;
+};
+
 export type StateType<T> = {
+  cb: CbFunction<T>;
   get: () => T;
-  eq: (atom: T) => () => boolean;
-  neq: (atom: T) => () => boolean;
-  pub: () => void;
-  reduce: (cb: (atom: T) => T) => () => void;
   set: (atom: T) => void;
-  sub: (cb: (atom: T) => any) => number;
+  sub: (cb: (atom: T) => any) => void;
   unsub: (cb: (atom: T) => any) => void;
 };
 

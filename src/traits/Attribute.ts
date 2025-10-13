@@ -1,57 +1,56 @@
-import { StateType } from '../../types';
+import { StateType } from '../types';
 
-type UseClassNameProps<T> = {
+type UseAttributeProps<T> = {
   event?: keyof GlobalEventHandlersEventMap | null;
   eventElement?: HTMLElement | Window;
+  hideOnFalse?: boolean;
   invokeImmediately?: boolean;
   mediaMaxWidth?: number;
   mediaMinWidth?: number;
-  method?: 'classList' | 'className';
-  state?: StateType<T> | null;
+  state?: StateType<T>;
 };
 
-export function useClassName(
-  props?: UseClassNameProps<any>,
+export function useAttribute(
+  props?: UseAttributeProps<any>,
 ): (
   el: HTMLElement,
-  className: undefined | string | (() => undefined | string),
+  prop: string,
+  val: (() => string | number | boolean | undefined) | (string | number | boolean | undefined),
   condition?: boolean | (() => boolean),
 ) => void;
 
-export function useClassName<T>(
-  props?: UseClassNameProps<T>,
+export function useAttribute<T>(
+  props?: UseAttributeProps<T>,
 ): (
   el: HTMLElement,
-  className: undefined | string | ((state: T) => undefined | string),
-  condition?: boolean | ((state: T) => boolean),
+  prop: string,
+  val: ((state: T) => string | number | boolean | undefined) | (string | number | boolean | undefined),
+  condition?: ((state: T) => boolean) | boolean,
 ) => void;
 
-export function useClassName<T>(props?: UseClassNameProps<T>) {
+export function useAttribute<T>(props?: UseAttributeProps<T>) {
   const {
     event = null,
     eventElement = window,
     invokeImmediately = true,
     mediaMinWidth = 0,
     mediaMaxWidth = Infinity,
-    state = null,
+    state = undefined,
   } = props ?? {};
   return (...htmlProps: any) => {
-    const [el, className, condition] = htmlProps;
+    const [el, prop, val, condition] = htmlProps;
     // application
     const apply = () => {
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
-      const _className = typeof className === 'function' ? className(state ? state.get() : undefined) : className;
+      const _val = state && typeof val === 'function' ? val(state.get()) : val;
       const _condition =
         typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
-      const classList = el.getAttribute('class')?.split(' ') ?? [];
       if (_condition) {
-        if (_className === undefined) {
-          el.removeAttribute('class');
+        if (_val === undefined) {
+          el.removeAttribute(prop);
         } else {
-          // _className does not exist in classList
-          if (classList.indexOf(_className) === -1) classList.push(_className);
-          el.setAttribute('class', classList.join(' '));
+          el.setAttribute(prop, String(_val));
         }
       }
     };

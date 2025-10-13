@@ -17,7 +17,7 @@ export const CanUpdateState: Test = () => {
 export const CanSubscribeToState: Test = () => {
   const num = State(1);
   let t1 = false;
-  num.sub(() => (t1 = true));
+  num.get(() => (t1 = true));
   num.set(2);
   return { pass: t1 };
 };
@@ -26,7 +26,7 @@ export const CanUnSubscribeToState: Test = () => {
   const num = State(1);
   let t1 = false;
   const cb = () => (t1 = !t1);
-  num.sub(cb);
+  num.get(cb);
   num.set(2);
   num.unsub(cb);
   num.set(3);
@@ -38,9 +38,8 @@ export const CanSetStateAndPublish: Test = () => {
     val: 1,
   });
   let flag = false;
-  num.sub(() => (flag = true));
+  num.get(() => (flag = true));
   num.get().val = 2;
-  num.pub();
 
   const t1 = flag && num.get().val === 2;
   return { pass: t1 };

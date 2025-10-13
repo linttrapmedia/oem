@@ -1,7 +1,7 @@
-import { div } from '../config';
+import { html } from '../config';
 
 export const Page = (...content: HTMLElement[]) =>
-  div(
+  html.div(
     ['style', 'flexDirection', 'column'],
     ['style', 'alignItems', 'center'],
     ['style', 'boxSizing', 'border-box'],

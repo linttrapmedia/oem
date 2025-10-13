@@ -1,4 +1,4 @@
-import { StateType } from '../../types';
+import { StateType } from '../types';
 
 type UseTextContentProps<T> = {
   event?: keyof GlobalEventHandlersEventMap | null;

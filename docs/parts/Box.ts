@@ -1,7 +1,7 @@
-import { div } from '../config';
+import { html } from '../config';
 
 export const Box = (dir: 'row' | 'column', gap: number, ...children: HTMLElement[]) =>
-  div(
+  html.div(
     ['style', 'flexDirection', dir],
     ['style', 'alignItems', 'center'],
     ['style', 'boxSizing', 'border-box'],

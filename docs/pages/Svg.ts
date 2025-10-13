@@ -1,7 +1,7 @@
-import { div, svg } from '../config';
+import { svg } from '../config';
 
 export const Svg = () =>
-  div(
+  html.div(
     ['style', 'alignItems', 'center'],
     ['style', 'boxSizing', 'border-box'],
     ['style', 'display', 'flex'],
@@ -9,7 +9,7 @@ export const Svg = () =>
     ['style', 'gap', '50px'],
     ['style', 'justifyContent', 'center'],
   )(
-    div(
+    html.div(
       ['style', 'alignItems', 'center'],
       ['style', 'boxSizing', 'border-box'],
       ['style', 'display', 'flex'],
@@ -19,14 +19,14 @@ export const Svg = () =>
       ['style', 'justifyContent', 'center'],
       ['style', 'width', '100%'],
     )(
-      div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('Works With SVG Too'),
-      div(
+      html.div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('Works With SVG Too'),
+      html.div(
         ['style', 'opacity', 0.5],
         ['style', 'textAlign', 'center'],
       )(
         `Working with SVG is just as easy as working with HTML. Just use the SVG function instead of the HTML function.`,
       ),
-      div(['style', 'fontSize', '21px'], ['style', 'textAlign', 'center'])('Example'),
+      html.div(['style', 'fontSize', '21px'], ['style', 'textAlign', 'center'])('Example'),
       svg.svg(
         ['attr', 'height', '50'],
         ['attr', 'width', '200'],
@@ -39,9 +39,9 @@ export const Svg = () =>
         ['style:mouseout', 'backgroundColor', 'black'],
         ['style:mouseover', 'backgroundColor', 'red'],
       )(svg.text(['attr', 'x', 100], ['attr', 'y', 30], ['style', 'textAnchor', 'middle'])('Click Me')),
-      div(['style', 'fontSize', '21px'], ['style', 'textAlign', 'center'])('Source'),
+      html.div(['style', 'fontSize', '21px'], ['style', 'textAlign', 'center'])('Source'),
 
-      div(['prism'])(`svg(
+      html.div(['prism'])(`svg(
     ['attr', 'height', '50'],
     ['attr', 'width', '200'],
     ['click', () => alert('You clicked me!')],

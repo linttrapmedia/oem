@@ -1,4 +1,9 @@
-import { HTML, useAttribute, useEvent, useInnerHTML, useStyle, useTextContent } from '../../../src';
+import { HTML } from '../../../src';
+import { useAttribute } from '../../../src/traits/Attribute';
+import { useEvent } from '../../../src/traits/Event';
+import { useInnerHTML } from '../../../src/traits/InnerHTML';
+import { useStyle } from '../../../src/traits/Style';
+import { useTextContent } from '../../../src/traits/TextContent';
 import { todoItemHovered, todoList } from './state/todo_state';
 import { useTodoDelete, useTodoInput, useTodoSubmit, useTodoToggle } from './traits';
 

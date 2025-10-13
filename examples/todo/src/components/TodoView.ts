@@ -2,7 +2,7 @@ import { html } from '../template';
 import { TodoForm } from './TodoForm';
 import { TodoList } from './TodoList';
 
-export const TodoView = html.div(
+export const TodoView = html.html.div(
   ['style:mobile', 'alignItems', 'center'],
   ['style:mobile', 'display', 'flex'],
   ['style:mobile', 'flexDirection', 'column'],

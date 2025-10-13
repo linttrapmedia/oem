@@ -1,11 +1,12 @@
-import { div, menuState } from './config';
+import { html, menuState } from './config';
 import { Introduction } from './pages/Introduction';
-import { Menu } from './pages/Menu';
+import { State } from './pages/State';
 import { Templating } from './pages/Templating';
 import { Traits } from './pages/Traits';
+import { Menu } from './parts/Menu';
 
 function App() {
-  return div(
+  return html.div(
     ['style', 'display', 'grid'],
     ['style', 'gridTemplateRows', 'max-content 1fr'],
     ['style', 'gridTemplateColumns', '1fr'],
@@ -15,8 +16,8 @@ function App() {
     ['style', 'overflow', 'hidden'],
     ['style', 'justifyContent', 'start'],
   )(
-    div(['style', 'backgroundColor', 'black'], ['style', 'padding', '10px'])(Menu()),
-    div(
+    html.div(['style', 'backgroundColor', 'black'], ['style', 'padding', '10px'])(Menu()),
+    html.div(
       ['style', 'display', 'flex'],
       ['style', 'flexDirection', 'column'],
       ['style', 'gap', '50px'],
@@ -27,9 +28,10 @@ function App() {
       ['style', 'height', '100%'],
       ['style', 'overflowY', 'auto'],
       ['style', 'width', '100%'],
-      ['html:menu', Introduction, menuState.eq('introduction')],
-      ['html:menu', Templating, menuState.eq('templates')],
-      ['html:menu', Traits, menuState.eq('traits')],
+      ['html:menu', Introduction, menuState.cb('eq', 'introduction')],
+      ['html:menu', Templating, menuState.cb('eq', 'templates')],
+      ['html:menu', Traits, menuState.cb('eq', 'traits')],
+      ['html:menu', State, menuState.cb('eq', 'state')],
     )(),
     // Header(),
     // Features(),

@@ -1,8 +1,8 @@
-import { div } from '../config';
-import { Code } from '../pages/Code';
+import { html } from '../config';
+import { Code } from '../x-pages/Code';
 
 export const CustomTrait = () =>
-  div(
+  html.div(
     ['style', 'alignItems', 'center'],
     ['style', 'boxSizing', 'border-box'],
     ['style', 'display', 'flex'],
@@ -10,7 +10,7 @@ export const CustomTrait = () =>
     ['style', 'gap', '50px'],
     ['style', 'justifyContent', 'center'],
   )(
-    div(
+    html.div(
       ['style', 'alignItems', 'center'],
       ['style', 'boxSizing', 'border-box'],
       ['style', 'display', 'flex'],
@@ -20,43 +20,46 @@ export const CustomTrait = () =>
       ['style', 'justifyContent', 'center'],
       ['style', 'width', '100%'],
     )(
-      div(
+      html.div(
         ['style', 'fontSize', '32px'],
         ['style', 'textAlign', 'center'],
       )('You Can Write Your Own Traits (And You Should!)'),
-      div(
+      html.div(
         ['style', 'opacity', 0.5],
         ['style', 'textAlign', 'center'],
       )(
         `Creating a custom trait is easy to do and gives you a powerful abstraction for code reuse throughout your application. Here's an example of a simple "FlexBox" trait.`,
       ),
-      div(['style', 'fontSize', '21px'], ['style', 'textAlign', 'center'])('Step 1: Create The Trait'),
-      div(
+      html.div(['style', 'fontSize', '21px'], ['style', 'textAlign', 'center'])('Step 1: Create The Trait'),
+      html.div(
         ['style', 'opacity', 0.5],
         ['style', 'textAlign', 'center'],
       )(
         `This is all it takes to create a custom trait. Create a function with an HTMLElement element as the first argument. You can also optionally follow that with any other parameters you want to make available to you when you use your trait.`,
       ),
-      div(['prism'])(`const useMyFlexBox = (el: HTMLElement, dir: 'row' | 'column') => {
+      html.div(['prism'])(`const useMyFlexBox = (el: HTMLElement, dir: 'row' | 'column') => {
   el.style.display = 'flex';
   el.style.flexDirection = direction;
 }`),
-      div(['style', 'fontSize', '21px'], ['style', 'textAlign', 'center'])('Step 2: Attach The Trait To Your Template'),
-      div(
+      html.div(
+        ['style', 'fontSize', '21px'],
+        ['style', 'textAlign', 'center'],
+      )('Step 2: Attach The Trait To Your Template'),
+      html.div(
         ['style', 'opacity', 0.5],
         ['style', 'textAlign', 'center'],
       )(
         `You attach the trait to your template like so. In this case 'flex' is user-defined and will be the name of your trait available to you in your tag function`,
       ),
-      div(['prism'])(`const { div } = HTML({
+      html.div(['prism'])(`const { div } = HTML({
   'flex': useMyFlexBox,
 });`),
-      div(['style', 'fontSize', '21px'], ['style', 'textAlign', 'center'])('Step 3: Using The Trait'),
-      div(['style', 'opacity', 0.5], ['style', 'textAlign', 'center'])(
+      html.div(['style', 'fontSize', '21px'], ['style', 'textAlign', 'center'])('Step 3: Using The Trait'),
+      html.div(['style', 'opacity', 0.5], ['style', 'textAlign', 'center'])(
         `When using the div tag function from your template, 'flex' should be auto-magically intellisensed as well as the rest of the parameters of the `,
         Code('useMyFlexBox'),
         ` function`,
       ),
-      div(['prism'])(`div(['flex', 'row'])("Hello World");`),
+      html.div(['prism'])(`html.div(['flex', 'row'])("Hello World");`),
     ),
   );

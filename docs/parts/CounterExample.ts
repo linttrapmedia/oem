@@ -1,8 +1,9 @@
-import { HTML } from '../../src/html/HTML';
-import { useEvent } from '../../src/html/traits/Event';
-import { useStyle, useTextContent } from '../../src/index';
 import { State } from '../../src/state/State';
-import { div } from '../config';
+import { HTML } from '../../src/template/HTML';
+import { useEvent } from '../../src/traits/Event';
+import { useStyle } from '../../src/traits/Style';
+import { useTextContent } from '../../src/traits/TextContent';
+import { html } from '../config';
 
 const Counter = () => {
   const countState = State(1);
@@ -17,7 +18,7 @@ const Counter = () => {
 
   return div(
     ['text:count', (v) => `#${v}`],
-    ['event:click', countState.reduce((i: number) => i + 1)],
+    ['event:click', () => countState.set((i: number) => i + 1)],
     ['style:count', 'color', 'red', (s) => s % 2 === 0],
     ['style:count', 'color', 'black', (s) => s % 2 !== 0],
     ['style:mobile', 'cursor', 'pointer'],
@@ -29,7 +30,7 @@ const Counter = () => {
 };
 
 export const Example = () =>
-  div(
+  html.div(
     ['style', 'alignItems', 'center'],
     ['style', 'backgroundColor', 'rgba(255,255,255,0.2)'],
     ['style', 'boxSizing', 'border-box'],
@@ -41,7 +42,7 @@ export const Example = () =>
     ['style', 'padding', '50px'],
     ['style', 'width', '100%'],
   )(
-    div(
+    html.div(
       ['style', 'alignItems', 'center'],
       ['style', 'boxSizing', 'border-box'],
       ['style', 'display', 'flex'],
@@ -50,8 +51,8 @@ export const Example = () =>
       ['style', 'justifyContent', 'center'],
       ['style', 'width', '100%'],
     )(
-      div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('The Result'),
-      div()('(Click the number)'),
+      html.div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('The Result'),
+      html.div()('(Click the number)'),
       Counter(),
     ),
   );

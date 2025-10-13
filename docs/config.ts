@@ -1,6 +1,9 @@
-import { HTML } from '../src/html/HTML';
-import { useAttribute } from '../src/html/traits/Attribute';
-import { State, SVG, useEvent, useInnerHTML, useStyle } from '../src/index';
+import { State, SVG } from '../src';
+import { HTML } from '../src/template/HTML';
+import { useAttribute } from '../src/traits/Attribute';
+import { useEvent } from '../src/traits/Event';
+import { useInnerHTML } from '../src/traits/InnerHTML';
+import { useStyle } from '../src/traits/Style';
 
 declare module Prism {
   const highlight: any;
@@ -33,7 +36,7 @@ export const usePrism = () => (el: HTMLElement) => {
   return el;
 };
 
-export type MenuStateTypes = 'introduction' | 'templates' | 'state' | 'traits' | 'patterns';
+export type MenuStateTypes = 'introduction' | 'templates' | 'state' | 'traits' | 'patterns' | 'kits';
 
 export const menuState = State<MenuStateTypes>('introduction', {
   key: 'menuState',
@@ -42,7 +45,7 @@ export const menuState = State<MenuStateTypes>('introduction', {
 
 export const menuOpen = State(false);
 
-export const { a, button, code, div, el, img, pre, span, $el } = HTML({
+export const html = HTML({
   attr: useAttribute(),
   click: useEvent({ event: 'click' }),
   prism: usePrism(),

@@ -1,19 +1,19 @@
 import pkg from '../../package.json';
-import { div, menuOpen, menuState, MenuStateTypes, span } from '../config';
+import { html, menuOpen, menuState, MenuStateTypes } from '../config';
 
 const Item = (txt: string, stateKey: MenuStateTypes) =>
-  div(
+  html.div(
     ['style', 'padding', '10px 20px'],
     ['style', 'cursor', 'pointer'],
     ['style', 'transition', 'background-color 0.3s'],
     ['style', 'textTransform', 'uppercase'],
-    ['click', menuState.reduce(() => stateKey)],
-    ['style:menu', 'color', 'yellow', menuState.eq(stateKey)],
-    ['style:menu', 'color', 'white', menuState.neq(stateKey)],
+    ['click', menuState.cb('reduce', () => stateKey)],
+    ['style:menu', 'color', 'yellow', menuState.cb('eq', stateKey)],
+    ['style:menu', 'color', 'white', menuState.cb('neq', stateKey)],
   )(txt);
 
 export const Menu = () =>
-  div(
+  html.div(
     ['style', 'backgroundColor', 'black'],
     ['style', 'color', 'white'],
     ['style', 'padding', '10px'],
@@ -27,7 +27,7 @@ export const Menu = () =>
     [
       'html:menu',
       () => [
-        div(
+        html.div(
           ['style', 'position', 'absolute'],
           ['style', 'top', '10px'],
           ['style', 'right', '10px'],
@@ -38,16 +38,16 @@ export const Menu = () =>
           ['style', 'opacity', '0.5'],
           ['style', 'display', 'flex'],
           ['style:tablet', 'display', 'none'],
-          ['click', menuOpen.reduce((open) => !open)],
+          ['click', menuOpen.cb('reduce', (o) => !o)],
         )('menu'),
-        div(
+        html.div(
           ['style', 'display', 'flex'],
           ['style', 'flexDirection', 'column'],
           ['style', 'alignItems', 'center'],
           ['style', 'justifyContent', 'center'],
           ['style', 'position', 'relative'],
         )(
-          div(
+          html.div(
             ['style', 'display', 'flex'],
             ['style', 'letterSpacing', '2px'],
             ['style', 'fontSize', '40px'],
@@ -59,7 +59,7 @@ export const Menu = () =>
             ['style', 'fontWeight', 'normal'],
           )(
             'oem',
-            span(
+            html.span(
               ['style', 'fontSize', '10px'],
               ['style', 'fontWeight', 'bold'],
               ['style', 'fontFamily', 'monospace'],
@@ -68,12 +68,12 @@ export const Menu = () =>
             )(pkg.version),
           ),
         ),
-        div(
+        html.div(
           ['style', 'display', 'flex'],
           ['style', 'flexDirection', 'column'],
           ['style', 'justifyContent', 'center'],
-          ['style:menu_toggle', 'display', 'none', menuOpen.eq(false)],
-          ['style:menu_toggle', 'display', 'flex', menuOpen.eq(true)],
+          ['style:menu_toggle', 'display', 'none', menuOpen.cb('eq', false)],
+          ['style:menu_toggle', 'display', 'flex', menuOpen.cb('eq', true)],
           ['style:tablet', 'display', 'flex'],
           ['style', 'paddingTop', '20px'],
         )(
@@ -82,6 +82,7 @@ export const Menu = () =>
           Item('Traits', 'traits'),
           Item('State', 'state'),
           Item('Patterns', 'patterns'),
+          Item('Kits', 'kits'),
         ),
       ],
     ],

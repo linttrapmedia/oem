@@ -1,9 +1,9 @@
-import { a, div } from '../config';
+import { html } from '../config';
 
 const date = new Date();
 
 export const Footer = () =>
-  div(
+  html.div(
     ['style', 'alignItems', 'center'],
     ['style', 'boxSizing', 'border-box'],
     ['style', 'display', 'flex'],
@@ -11,7 +11,7 @@ export const Footer = () =>
     ['style', 'gap', '50px'],
     ['style', 'justifyContent', 'center'],
   )(
-    div(
+    html.div(
       ['style', 'alignItems', 'center'],
       ['style', 'boxSizing', 'border-box'],
       ['style', 'display', 'flex'],
@@ -21,11 +21,11 @@ export const Footer = () =>
       ['style', 'justifyContent', 'center'],
       ['style', 'width', '100%'],
     )(
-      div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('OEM'),
-      div(['style', 'opacity', 0.5], ['style', 'textAlign', 'center'])(
+      html.div(['style', 'fontSize', '32px'], ['style', 'textAlign', 'center'])('OEM'),
+      html.div(['style', 'opacity', 0.5], ['style', 'textAlign', 'center'])(
         `©Copyright ${date.getFullYear()} All rights reserved.`,
         ` Made in the USA 🇺🇸 by `,
-        a(
+        html.a(
           ['attr', 'href', 'http://kevinlint.com'],
           ['attr', 'target', '_blank'],
           ['style', 'color', 'black'],
@@ -33,7 +33,7 @@ export const Footer = () =>
           ['style:mouseout', 'color', 'black'],
         )('Kevin Lint'),
         ` as a product of `,
-        a(
+        html.a(
           ['attr', 'href', 'http://linttrap.media'],
           ['attr', 'target', '_blank'],
           ['style', 'color', 'black'],

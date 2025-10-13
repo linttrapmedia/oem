@@ -1,4 +1,4 @@
-import { StateType } from '../types';
+import { CbFunction, StateType } from '../types';
 
 type Persistence = {
   key: string;
@@ -24,25 +24,36 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
 
   let _param: T = param;
   const _subscribers: ((param: T) => any)[] = [];
+
   const _get = (): T => _param;
-  const _pub = () => _subscribers.forEach((i) => i(_param));
-  const _reduce = (cb: (param: T) => T) => () => _set(cb(_param));
-  const _eq = (atom: T) => () => _param === atom;
-  const _neq = (atom: T) => () => _param !== atom;
-  const _set = (param: T) => {
-    _param = param;
-    _subscribers.forEach((i) => i(_param));
-    if (persistence) persistence.storage.setItem(persistence.key, JSON.stringify(_param));
+
+  const _set = (atom: T) => {
+    _param = atom;
+    _subscribers.forEach((i) => i(atom));
+    if (persistence) persistence.storage.setItem(persistence.key, JSON.stringify(atom));
   };
-  const _sub = (cb: (param: T) => any) => _subscribers.push(cb);
+
+  const _sub = (cb: (param: T) => any) => {
+    if (!_subscribers.includes(cb)) _subscribers.push(cb);
+  };
 
   const _unsub = (cb: (param: T) => any) => _subscribers.splice(_subscribers.indexOf(cb), 1);
+
+  const _cb: CbFunction<T> = (mode, arg) => {
+    if (mode === 'reduce') {
+      return () => {
+        _set((arg as any)(_param as any));
+        return true;
+      };
+    }
+    if (mode === 'eq') return () => arg === _param;
+    if (mode === 'neq') return () => arg !== _param;
+    throw new Error('Invalid mode');
+  };
+
   return {
+    cb: _cb,
     get: _get,
-    eq: _eq,
-    neq: _neq,
-    pub: _pub,
-    reduce: _reduce,
     set: _set,
     sub: _sub,
     unsub: _unsub,

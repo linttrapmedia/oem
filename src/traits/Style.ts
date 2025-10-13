@@ -1,4 +1,4 @@
-import { StateType } from '../../types';
+import { StateType } from '../types';
 
 type UseStyleProps<T> = {
   event?: keyof GlobalEventHandlersEventMap | null;
@@ -16,7 +16,7 @@ export function useStyle(
   el: HTMLElement,
   prop: keyof CSSStyleDeclaration | `--${string}`,
   val: (() => string | number | undefined) | (string | number | undefined),
-  condition?: boolean | (() => boolean),
+  condition?: boolean | (() => boolean) | ((state: StateType<any>) => boolean),
 ) => void;
 
 export function useStyle<T>(
