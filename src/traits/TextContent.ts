@@ -28,9 +28,9 @@ export function useTextContent<T>(props?: UseTextContentProps<T>) {
     const [el, children, condition] = htmlProps;
 
     const apply = () => {
-      const _children = typeof children === 'function' ? children(state ? state.get() : undefined) : children;
+      const _children = typeof children === 'function' ? children(state ? state.$val() : undefined) : children;
       const _condition =
-        typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
+        typeof condition === 'function' ? condition(state ? state.$val() : undefined) : condition ?? true;
       if (_condition) {
         el.textContent = String(_children);
       }

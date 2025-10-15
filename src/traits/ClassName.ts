@@ -41,9 +41,9 @@ export function useClassName<T>(props?: UseClassNameProps<T>) {
     const apply = () => {
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
-      const _className = typeof className === 'function' ? className(state ? state.get() : undefined) : className;
+      const _className = typeof className === 'function' ? className(state ? state.$val() : undefined) : className;
       const _condition =
-        typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
+        typeof condition === 'function' ? condition(state ? state.$val() : undefined) : condition ?? true;
       const classList = el.getAttribute('class')?.split(' ') ?? [];
       if (_condition) {
         if (_className === undefined) {

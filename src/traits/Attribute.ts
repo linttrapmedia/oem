@@ -43,9 +43,9 @@ export function useAttribute<T>(props?: UseAttributeProps<T>) {
     const apply = () => {
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
-      const _val = state && typeof val === 'function' ? val(state.get()) : val;
+      const _val = state && typeof val === 'function' ? val(state.$val()) : val;
       const _condition =
-        typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
+        typeof condition === 'function' ? condition(state ? state.$val() : undefined) : condition ?? true;
       if (_condition) {
         if (_val === undefined) {
           el.removeAttribute(prop);

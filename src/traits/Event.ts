@@ -28,7 +28,7 @@ export function useEvent<T, E extends keyof GlobalEventHandlersEventMap>(props?:
     const apply = () => {
       const _cb = (e: E) => cb(e);
       const _condition =
-        typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
+        typeof condition === 'function' ? condition(state ? state.$val() : undefined) : condition ?? true;
       if (_condition) {
         el.addEventListener(event, _cb);
       } else {

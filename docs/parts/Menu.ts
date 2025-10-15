@@ -7,9 +7,8 @@ const Item = (txt: string, stateKey: MenuStateTypes) =>
     ['style', 'cursor', 'pointer'],
     ['style', 'transition', 'background-color 0.3s'],
     ['style', 'textTransform', 'uppercase'],
-    ['click', menuState.cb('reduce', () => stateKey)],
-    ['style:menu', 'color', 'yellow', menuState.cb('eq', stateKey)],
-    ['style:menu', 'color', 'white', menuState.cb('neq', stateKey)],
+    ['click', menuState.$set(stateKey)],
+    ['style:menu', 'color', 'yellow', menuState.test(stateKey)],
   )(txt);
 
 export const Menu = () =>
@@ -38,7 +37,7 @@ export const Menu = () =>
           ['style', 'opacity', '0.5'],
           ['style', 'display', 'flex'],
           ['style:tablet', 'display', 'none'],
-          ['click', menuOpen.cb('reduce', (o) => !o)],
+          ['click', menuOpen.$reduce((o) => !o)],
         )('menu'),
         html.div(
           ['style', 'display', 'flex'],
@@ -72,8 +71,8 @@ export const Menu = () =>
           ['style', 'display', 'flex'],
           ['style', 'flexDirection', 'column'],
           ['style', 'justifyContent', 'center'],
-          ['style:menu_toggle', 'display', 'none', menuOpen.cb('eq', false)],
-          ['style:menu_toggle', 'display', 'flex', menuOpen.cb('eq', true)],
+          ['style:menu_toggle', 'display', 'none', menuOpen.$test(false)],
+          ['style:menu_toggle', 'display', 'flex', menuOpen.$test(true)],
           ['style:tablet', 'display', 'flex'],
           ['style', 'paddingTop', '20px'],
         )(

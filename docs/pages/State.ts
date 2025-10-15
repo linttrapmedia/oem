@@ -30,49 +30,35 @@ const MethodTable = () =>
       html.a(
         ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/state/State.ts'],
         ['attr', 'target', '_blank'],
-      )('get'),
+      )('val, $val'),
     ),
     Cell('Get the current value of the state'),
     Cell(
       html.a(
         ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/state/State.ts'],
         ['attr', 'target', '_blank'],
-      )('sub'),
+      )('set, $set'),
     ),
-    Cell('Subscribe to state changes'),
+    Cell('Set the state to a specific value'),
     Cell(
       html.a(
         ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/state/State.ts'],
         ['attr', 'target', '_blank'],
-      )('set'),
+      )('reduce, $reduce'),
     ),
-    Cell('Update the state'),
+    Cell('Reduce state to a specific value'),
     Cell(
       html.a(
         ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/state/State.ts'],
         ['attr', 'target', '_blank'],
-      )('pub'),
+      )('sub, unsub'),
     ),
-    Cell('Publish a new value to all subscribers'),
+    Cell('Subscribe and unsubscribe to state changes'),
     Cell(
       html.a(
         ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/state/State.ts'],
         ['attr', 'target', '_blank'],
-      )('unsub'),
-    ),
-    Cell('Unsubscribe from state changes'),
-    Cell(
-      html.a(
-        ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/state/State.ts'],
-        ['attr', 'target', '_blank'],
-      )('reduce'),
-    ),
-    Cell('Update state based on previous value (reducer)'),
-    Cell(
-      html.a(
-        ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/state/State.ts'],
-        ['attr', 'target', '_blank'],
-      )('test'),
+      )('test, $test'),
     ),
     Cell('Test if a value is equal to the current state'),
   );
@@ -81,57 +67,89 @@ export const State = () =>
   Page(
     Section({
       title: 'State',
-      subtitle: `State management in OEM is simple and straightforward. Each state object is a micro event bus that can be used anywhere in your application. Although OEM is state management agnostic, it's built-in state management works great for most use cases.`,
-      content: Box(
-        'column',
-        10,
-        html.div(
-          ['style', 'textAlign', 'center'],
-          ['style', 'display', 'inline-flex'],
-          ['style', 'alignItems', 'baseline'],
-        )('Creating a state object using the ', InlineCode('State'), ' function'),
-        html.pre(['prism'])(`import { State } from 'oem';
-const color = State<string>('red');`),
-      ),
+      subtitle: `Each state object in OEM is a micro event bus that can be used anywhere in your application. Although OEM is state management agnostic, it's built-in state management works great for most use cases.`,
+      content: Box('column', 10, MethodTable()),
     }),
+
     Section({
       title: 'Getting',
-      subtitle: `You can get and subscribe to the current value of the state using the 'get' method.`,
+      subtitle: `Getting the current value of the state is straight forward.`,
       content: Box(
         'column',
         10,
-
-        html.pre(['prism'])(`color.get(); // 'red'`),
+        html.div(['style', 'textAlign', 'center'])('Get the current value with the  ', InlineCode('val'), ' property.'),
+        html.pre(['prism'])(`color.val;`),
+        html.div(['style', 'textAlign', 'center'])('Or with the method  ', InlineCode('$val()'), '.'),
+        html.pre(['prism'])(`color.$val();`),
       ),
     }),
 
     Section({
       title: 'Setting',
-      subtitle: `You can set the state using the 'set' method`,
+      subtitle: `Setting state is straight forward as well and includes a few helper methods which begins to introduce some OEM specific patterns.`,
       content: Box(
         'column',
         10,
-
+        html.div(['style', 'textAlign', 'center'])('Set state with the  ', InlineCode('set'), ' method.'),
         html.pre(['prism'])(`color.set('blue');`),
+        html.div(['style', 'textAlign', 'center'])(
+          'Or create callback version of it with  ',
+          InlineCode('$set'),
+          ' to be called later. More on this in the patterns section.',
+        ),
+        html.pre(['prism'])(`const setToBlue = color.$set('blue');
+setToBlue();`),
+        html.div(['style', 'textAlign', 'center'])(
+          'State can also be set using a reducer with the ',
+          InlineCode('reduce'),
+          ' method.',
+        ),
+        html.pre(['prism'])(`color.reduce((prev) => prev === 'red' ? 'blue' : 'red');`),
+        html.div(['style', 'textAlign', 'center'])(
+          'Or create callback version of it with  ',
+          InlineCode('$reduce'),
+          ' to call it later.',
+        ),
+        html.pre(['prism'])(`const toggleColor = color.$reduce((prev) => prev === 'red' ? 'blue' : 'red');
+toggleColor();`),
       ),
     }),
     Section({
       title: 'Subscribing',
-      subtitle: `You can subscribe and unsubscribe to state changes using the 'sub' and 'unsub' methods.`,
+      subtitle: `Subscribing to state changes is an important part of state management. OEM makes this easy with the built-in pub/sub pattern.`,
+      content: Box(
+        'column',
+        10,
+        html.div(['style', 'textAlign', 'center'])('Subscribe by calling the ', InlineCode('sub'), ' method.'),
+        html.pre(['prism'])(`const cb = (val) => console.log(val)
+color.sub(cb);`),
+        html.div(['style', 'textAlign', 'center'])(
+          'You can unsubscribe from state changes by calling ',
+          InlineCode('unsub(cb)'),
+        ),
+        html.pre(['prism'])(`color.unsub(callback);`),
+      ),
+    }),
+    Section({
+      title: 'Testing',
+      subtitle: `Testing the current state value is useful for conditionally applying traits or other logic in your application.`,
       content: Box(
         'column',
         10,
         html.div(['style', 'textAlign', 'center'])(
-          'You can subscribe to state changes by calling ',
-          InlineCode('sub(callback)'),
+          'Test if the current state matches a value with the ',
+          InlineCode('test'),
+          ' method. Note: equality is determined by comparing the serialized values.',
         ),
-        html.pre(['prism'])(`const callback = (val) => console.log(val)
-color.sub(callback);`),
-        html.div(['style', 'textAlign', 'center'])(
-          'You can unsubscribe from state changes by calling ',
-          InlineCode('unsub(callback)'),
-        ),
-        html.pre(['prism'])(`color.unsub(callback);`),
+        html.pre(['prism'])(`color.test('red');
+color.$test('red'); // callback version
+`),
+        html.div(['style', 'textAlign', 'center'])('Works with regular expressions too'),
+        html.pre(['prism'])(`color.test(/red/);
+color.$test(/red/); // callback version`),
+        html.div(['style', 'textAlign', 'center'])('You can also check for inequality by passing a second argument'),
+        html.pre(['prism'])(`color.test('red', false); // returns true if color is NOT 'red'
+color.$test('red', false); // callback version`),
       ),
     }),
     Section({

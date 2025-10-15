@@ -1,17 +1,16 @@
 type RestArgs<T extends unknown[]> = T extends [any, ...infer U] ? U : never;
 
-export type CbModes = 'reduce' | 'eq' | 'neq' | never;
-export type CbFunction<T = any> = {
-  (mode: 'reduce', cb: (prev: T) => T): () => void;
-  (mode: 'eq' | 'neq', cb: T): () => boolean;
-};
-
 export type StateType<T> = {
-  cb: CbFunction<T>;
-  get: () => T;
+  reduce: (cb: (prev: T) => T) => void;
   set: (atom: T) => void;
   sub: (cb: (atom: T) => any) => void;
+  test: (regex: RegExp | T, checkFor?: true | false) => boolean;
   unsub: (cb: (atom: T) => any) => void;
+  val: T;
+  $reduce: (cb: (prev: T) => T) => () => void;
+  $set: (atom: T) => () => void;
+  $test: (regex: RegExp | T, checkFor?: true | false) => () => boolean;
+  $val: () => T;
 };
 
 export type HtmlTraitFunc<Args extends any[]> = (el: HTMLElement, ...args: Args) => HTMLElement;

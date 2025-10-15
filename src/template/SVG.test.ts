@@ -75,12 +75,12 @@ export const CanConditionallyApplyEventListenerTraitToHtml: Test = () => {
   });
   const e1 = circle(
     ['click', () => toggle.set(false), toggle.get],
-    ['click', () => toggle.set(true), () => toggle.get() === false],
+    ['click', () => toggle.set(true), () => toggle.$val() === false],
   )();
   e1.dispatchEvent(clickEvent);
-  const t1 = toggle.get() === false;
+  const t1 = toggle.$val() === false;
   e1.dispatchEvent(clickEvent);
-  const t2 = toggle.get() === true;
+  const t2 = toggle.$val() === true;
   return { pass: t1 && t2 };
 };
 

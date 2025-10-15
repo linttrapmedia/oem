@@ -5,7 +5,7 @@ import { useEvent } from '../src/traits/Event';
 import { useInnerHTML } from '../src/traits/InnerHTML';
 import { useStyle } from '../src/traits/Style';
 
-declare module Prism {
+declare namespace Prism {
   const highlight: any;
   const languages: any;
 }

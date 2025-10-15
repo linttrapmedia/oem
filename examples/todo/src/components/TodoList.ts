@@ -2,8 +2,8 @@ import { TodoType, todoItemHovered } from '../state/todo_state';
 import { html } from '../template';
 
 const TodoListItem = (todo: TodoType) => {
-  const isHovered = () => todoItemHovered.get()?.title === todo.title || todo.completed;
-  const isNotHovered = () => todoItemHovered.get()?.title !== todo.title && !todo.completed;
+  const isHovered = () => todoItemHovered.$val()?.title === todo.title || todo.completed;
+  const isNotHovered = () => todoItemHovered.$val()?.title !== todo.title && !todo.completed;
   const onMouseOver = () => todoItemHovered.set(todo);
   const onMouseOut = () => todoItemHovered.set(undefined);
   const isCompleted = () => todo.completed;

@@ -41,20 +41,20 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
 
   // dynamic tests
   state.set({ disabled: true });
-  const e5 = div(['dynamicAttr', 'disabled', () => state.get().disabled])();
+  const e5 = div(['dynamicAttr', 'disabled', () => state.$val().disabled])();
   const t5 = e5.outerHTML === '<div disabled="true"></div>';
 
   state.set({ disabled: false });
-  const e6 = div(['dynamicAttr', 'disabled', () => state.get().disabled])();
+  const e6 = div(['dynamicAttr', 'disabled', () => state.$val().disabled])();
   const t6 = e6.outerHTML === '<div disabled="false"></div>';
 
   // condition tests
   state.set({ disabled: true });
-  const e7 = div(['dynamicAttr', 'disabled', 'true', () => state.get().disabled])();
+  const e7 = div(['dynamicAttr', 'disabled', 'true', () => state.$val().disabled])();
   const t7 = e7.outerHTML === '<div disabled="true"></div>';
 
   state.set({ disabled: false });
-  const e8 = div(['dynamicAttr', 'disabled', 'true', () => state.get().disabled])();
+  const e8 = div(['dynamicAttr', 'disabled', 'true', () => state.$val().disabled])();
   const t8 = e8.outerHTML === '<div></div>';
 
   return { pass: t1 && t2 && t5 && t6 && t7 && t8 };
@@ -108,12 +108,12 @@ export const CanConditionallyApplyEventListenerTraitToHtml: Test = () => {
   });
   const e1 = div(
     ['click', () => toggle.set(false), toggle.get],
-    ['click', () => toggle.set(true), () => toggle.get() === false],
+    ['click', () => toggle.set(true), () => toggle.$val() === false],
   )();
   e1.click();
-  const t1 = toggle.get() === false;
+  const t1 = toggle.$val() === false;
   e1.click();
-  const t2 = toggle.get() === true;
+  const t2 = toggle.$val() === true;
   return { pass: t1 && t2 };
 };
 

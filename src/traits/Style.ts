@@ -42,9 +42,9 @@ export function useStyle<T>(props?: UseStyleProps<T>) {
     const apply = () => {
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
-      const _val = typeof val === 'function' ? val(state ? state.get() : undefined) : val;
+      const _val = typeof val === 'function' ? val(state ? state.$val() : undefined) : val;
       const _condition =
-        typeof condition === 'function' ? condition(state ? state.get() : undefined) : condition ?? true;
+        typeof condition === 'function' ? condition(state ? state.$val() : undefined) : condition ?? true;
       if (_condition) {
         if (_val === undefined) {
           el.style.removeProperty(prop);

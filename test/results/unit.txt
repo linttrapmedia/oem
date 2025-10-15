@@ -1,1 +1,0 @@
-✘ HTML can conditionally apply event listener trait ✘ SVG can conditionally apply event listener trait ✘ State can set state and publish 

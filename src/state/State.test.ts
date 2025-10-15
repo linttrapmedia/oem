@@ -3,22 +3,22 @@ import { State } from './State';
 
 export const CanCreateState: Test = () => {
   const num = State(1);
-  const t1 = num.get() === 1;
+  const t1 = num.$val() === 1;
   return { pass: t1 };
 };
 
 export const CanUpdateState: Test = () => {
   const num = State(1);
   num.set(2);
-  const t1 = num.get() === 2;
+  const t1 = num.$val() === 2;
   return { pass: t1 };
 };
 
 export const CanSubscribeToState: Test = () => {
-  const num = State(1);
+  const num = State(true);
   let t1 = false;
-  num.get(() => (t1 = true));
-  num.set(2);
+  num.sub(() => (t1 = true));
+  num.set(false);
   return { pass: t1 };
 };
 
@@ -26,7 +26,7 @@ export const CanUnSubscribeToState: Test = () => {
   const num = State(1);
   let t1 = false;
   const cb = () => (t1 = !t1);
-  num.get(cb);
+  num.sub(cb);
   num.set(2);
   num.unsub(cb);
   num.set(3);
@@ -38,9 +38,9 @@ export const CanSetStateAndPublish: Test = () => {
     val: 1,
   });
   let flag = false;
-  num.get(() => (flag = true));
-  num.get().val = 2;
+  num.sub(() => (flag = true));
+  num.set({ val: 2 });
 
-  const t1 = flag && num.get().val === 2;
+  const t1 = flag && num.$val().val === 2;
   return { pass: t1 };
 };
