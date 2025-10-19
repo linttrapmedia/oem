@@ -1,6 +1,6 @@
-import { TodoView } from './components/TodoView';
+import components from './components';
 
 document.addEventListener('DOMContentLoaded', () => {
   const root = document.getElementById('root')!;
-  root.appendChild(TodoView);
+  root.appendChild(components.TodoView);
 });

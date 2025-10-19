@@ -4,14 +4,14 @@ import { useEvent } from '../../../src/traits/Event';
 import { useInnerHTML } from '../../../src/traits/InnerHTML';
 import { useStyle } from '../../../src/traits/Style';
 import { useTextContent } from '../../../src/traits/TextContent';
-import { todoItemHovered, todoList } from './state/todo_state';
+import { state } from './state';
 import { useTodoDelete, useTodoInput, useTodoSubmit, useTodoToggle } from './traits';
 
 export const html = HTML({
-  'style:mobile': useStyle({ state: todoList, mediaMinWidth: 0 }),
+  'style:mobile': useStyle({ state: state.todoList, mediaMinWidth: 0 }),
   'style:mouseout': useStyle({ event: 'mouseout' }),
   'style:mouseover': useStyle({ event: 'mouseover' }),
-  'style:tablet': useStyle({ state: todoList, mediaMinWidth: 768 }),
+  'style:tablet': useStyle({ state: state.todoList, mediaMinWidth: 768 }),
   'text:mouseout': useTextContent({ event: 'mouseout' }),
   'text:mouseover': useTextContent({ event: 'mouseover' }),
   'todo__form__input:oninput': useTodoInput,
@@ -20,8 +20,8 @@ export const html = HTML({
   'todo__item:onmouseout': useEvent({ event: 'mouseout' }),
   'todo__item:onmouseover': useEvent({ event: 'mouseover' }),
   'todo__item:ontoggle': useTodoToggle,
-  'todo__item:text': useTextContent({ state: todoItemHovered }),
-  'todo__list:html': useInnerHTML({ state: todoList }),
+  'todo__item:text': useTextContent({ state: state.todoItemHovered }),
+  'todo__list:html': useInnerHTML({ state: state.todoList }),
   attr: useAttribute(),
   text: useTextContent(),
 });

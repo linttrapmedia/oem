@@ -1,11 +1,44 @@
-import { TodoType, todoItemHovered } from '../state/todo_state';
-import { html } from '../template';
+import { state } from './state';
+import { html } from './template';
+import { TodoType } from './types';
+
+const TodoForm = html.form(
+  ['style:mobile', 'backgroundColor', '#f2f2f2'],
+  ['style:mobile', 'border', '1px solid lightgray'],
+  ['style:mobile', 'borderRadius', '5px'],
+  ['style:mobile', 'padding', '20px'],
+  ['style:mobile', 'display', 'flex'],
+  ['style:mobile', 'gap', '10px'],
+  ['style:mobile', 'maxWidth', '400px'],
+  ['style:mobile', 'width', '100%'],
+  ['style:mobile', 'marginBlockEnd', '0'],
+  ['style:mobile', 'boxSizing', 'border-box'],
+  ['todo__form:onsubmit'],
+)(
+  html.input(
+    ['attr', 'placeholder', 'New Todo'],
+    ['style:mobile', 'border', '1px solid lightgray'],
+    ['style:mobile', 'padding', '10px'],
+    ['style:mobile', 'borderRadius', '3px'],
+    ['style:mobile', 'flex', '1'],
+    ['todo__form__input:oninput'],
+  )(),
+  html.button(
+    ['attr', 'type', 'submit'],
+    ['style:mobile', 'border', '1px solid lightgray'],
+    ['style:mobile', 'borderRadius', '3px'],
+    ['style:mobile', 'padding', '10px'],
+    ['style:mobile', 'backgroundColor', 'lightgray'],
+    ['style:mobile', 'fontWeight', 'bold'],
+    ['style:mobile', 'cursor', 'pointer'],
+  )('Submit'),
+);
 
 const TodoListItem = (todo: TodoType) => {
-  const isHovered = () => todoItemHovered.$val()?.title === todo.title || todo.completed;
-  const isNotHovered = () => todoItemHovered.$val()?.title !== todo.title && !todo.completed;
-  const onMouseOver = () => todoItemHovered.set(todo);
-  const onMouseOut = () => todoItemHovered.set(undefined);
+  const isHovered = () => state.todoItemHovered.$val()?.title === todo.title || todo.completed;
+  const isNotHovered = () => state.todoItemHovered.$val()?.title !== todo.title && !todo.completed;
+  const onMouseOver = () => state.todoItemHovered.set(todo);
+  const onMouseOut = () => state.todoItemHovered.set(undefined);
   const isCompleted = () => todo.completed;
   const isNotCompleted = () => !todo.completed;
 
@@ -65,7 +98,7 @@ const TodoListItem = (todo: TodoType) => {
   );
 };
 
-export const TodoList = html.div(
+const TodoList = html.div(
   ['style:mobile', 'border', '1px solid lightgray'],
   ['style:mobile', 'borderRadius', '5px'],
   ['style:mobile', 'boxSizing', 'border-box'],
@@ -84,3 +117,19 @@ export const TodoList = html.div(
         .map(TodoListItem),
   ],
 )();
+
+const TodoView = html.div(
+  ['style:mobile', 'alignItems', 'center'],
+  ['style:mobile', 'display', 'flex'],
+  ['style:mobile', 'flexDirection', 'column'],
+  ['style:mobile', 'fontSize', '16px'],
+  ['style:mobile', 'height', '100vh'],
+  ['style:mobile', 'justifyContent', 'flex-start'],
+  ['style:mobile', 'fontFamily', 'Arial, sans-serif'],
+  ['style:mobile', 'color', 'gray'],
+  ['style:mobile', 'gap', '20px'],
+  ['style:mobile', 'boxSizing', 'border-box'],
+  ['style:mobile', 'padding', '20px'],
+)(TodoForm, TodoList);
+
+export default { TodoForm, TodoList, TodoListItem, TodoView };

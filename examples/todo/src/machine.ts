@@ -1,11 +1,9 @@
 import * as actions from './actions';
+import { ACTIONS, FSMstate } from './types';
 
-type FSMstate = 'READY' | 'ERROR';
 let fsmState: FSMstate = 'READY';
 
-export function fsm(
-  ...evt: actions.TODO_INPUT_ACTION | actions.TODO_ADD_ACTION | actions.TODO_DELETE_ACTION | actions.TODO_TOGGLE_ACTION
-) {
+export function fsm(...evt: ACTIONS) {
   const [action, payload] = evt;
   switch (fsmState) {
     case 'READY':
