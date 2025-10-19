@@ -7,9 +7,10 @@ import { Section } from '../parts/Section';
 
 export const Introduction = () =>
   Page(
+    Page.Header('OEM', 'The flyweight UI library for the modern web'),
     Section({
-      title: 'Introduction',
-      subtitle: `OEM is a flyweight UI library for building sophisticated web applications using a unique, isomorphic syntax that scales with your project.`,
+      title: 'Features',
+      subtitle: `OEM is a tiny layer-one utility that provides just enough structure to build powerful micro-templating engines with the following features:`,
       content: Box(
         'column',
         20,
@@ -47,11 +48,12 @@ export const Introduction = () =>
         ),
       ),
     }),
+
     Section({
-      title: 'Learn (~10min)',
-      subtitle: `You can learn the core concepts of OEM in about 10 minutes. Follow along with the examples to get a feel for how OEM works.`,
+      title: 'Docs',
+      subtitle: `Explore the full documentation to learn more about OEM's core concepts and how to build with it.`,
       content: FooterNav({
-        next: { title: 'Templates', menuState: 'templates' },
+        next: { title: 'Docs', menuState: 'docs' },
       }),
     }),
   );

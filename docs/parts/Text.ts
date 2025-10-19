@@ -17,3 +17,13 @@ export const InlineCode = (text: string) =>
     ['style', 'padding', '2px 5px'],
     ['style', 'margin', '0 2px'],
   )(text);
+
+export const Note = (...children: any[]) =>
+  html.small(
+    ['style', 'display', 'block'],
+    ['style', 'fontSize', '13px'],
+    ['style', 'opacity', 0.5],
+    ['style', 'textAlign', 'center'],
+    ['style', 'padding', '20px'],
+    ['style', 'backgroundColor', 'rgba(0,0,0,0.1)'],
+  )(...children);

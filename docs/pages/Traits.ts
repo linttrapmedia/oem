@@ -10,15 +10,14 @@ const useStyle = (el: HTMLElement, prop: keyof CSSStyleDeclaration, value: any) 
 
 export const Traits = () =>
   Page(
+    Page.Header('Traits', 'Adding functionality to your templating engine with traits'),
     Section({
-      title: 'Traits',
-      subtitle: `Traits are small, reusable functions that can be attached to HTML elements to add functionality. They can be composed together to create complex behaviors.`,
+      title: 'The Trait Function',
+      subtitle: `A "trait" is just a function that takes an element as its first argument and does something to it.`,
       content: Box(
         'column',
         20,
-        html.div(['style', 'textAlign', 'center'])(
-          'A "trait" is just a function that takes an element as its first argument and does something to it.',
-        ),
+        html.div(['style', 'textAlign', 'center'])(`Here's the basic template for a trait function:`),
         html.div(['prism'])(`const useStyle = (el: HTMLElement) => {...}`),
         html.div(['style', 'textAlign', 'center'])(
           'Here is an example of a very simple "style" trait for applying css styles to an element.',

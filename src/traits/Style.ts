@@ -39,6 +39,7 @@ export function useStyle<T>(props?: UseStyleProps<T>) {
   } = props ?? {};
   return (...htmlProps: any) => {
     const [el, prop, val, condition] = htmlProps;
+
     const apply = () => {
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;

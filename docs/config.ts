@@ -11,16 +11,19 @@ declare namespace Prism {
 }
 
 export const usePrism = () => (el: HTMLElement) => {
+  el.style.display = 'block';
   el.style.whiteSpace = 'pre';
   el.style.fontFamily = 'monospace';
   el.style.color = 'white';
   el.style.backgroundColor = 'black';
   el.style.padding = '30px';
   el.style.borderRadius = '5px';
-  el.style.overflow = 'auto';
+  el.style.overflowX = 'auto';
   el.style.maxWidth = '100%';
   el.style.width = '100%';
+  el.style.minWidth = '0';
   el.style.boxSizing = 'border-box';
+  el.style.wordBreak = 'normal';
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.type === 'childList') {
@@ -36,7 +39,7 @@ export const usePrism = () => (el: HTMLElement) => {
   return el;
 };
 
-export type MenuStateTypes = 'introduction' | 'templates' | 'state' | 'traits' | 'patterns' | 'kits';
+export type MenuStateTypes = 'introduction' | 'docs' | 'templates' | 'state' | 'traits' | 'patterns' | 'kits';
 
 export const menuState = State<MenuStateTypes>('introduction', {
   key: 'menuState',

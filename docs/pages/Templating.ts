@@ -6,9 +6,11 @@ import { Section } from '../parts/Section';
 
 export const Templating = () =>
   Page(
+    Page.Header('Templates', 'Creating micro-templating engines with OEM'),
+
     Section({
-      title: 'Templates',
-      subtitle: `OEM is built around the concept of creating micro-templating engines that can be composed together to create complex UIs. This is done by defining a set of traits (small testable functions) that can be attached to HTML elements.`,
+      title: 'The HTML function',
+      subtitle: `The HTML function creates a templating engine that can generate HTML elements.`,
       content: Box(
         'column',
         10,

@@ -5,70 +5,19 @@ import { Page } from '../parts/Page';
 import { Section } from '../parts/Section';
 import { InlineCode } from '../parts/Text';
 
-const Header = (txt: string) =>
-  html.div(['style', 'backgroundColor', 'rgba(0,0,0,0.1)'], ['style', 'padding', '10px'])(txt);
-
-const Cell = (txt: HTMLElement | string) =>
-  html.div(
-    ['style', 'padding', '10px'],
-    ['style', 'borderBottom', '1px solid rgba(0,0,0,0.1)'],
-    ['style', 'fontSize', '13px'],
-    ['style:tablet', 'fontSize', '16px'],
-  )(txt);
-
-const MethodTable = () =>
-  html.div(
-    ['style', 'borderRadius', '5px'],
-    ['style', 'boxSizing', 'border-box'],
-    ['style', 'display', 'grid'],
-    ['style', 'gridTemplateColumns', '1fr 1fr'],
-    ['style', 'width', '100%'],
-  )(
-    Header('Method'),
-    Header('Description'),
-    Cell(
-      html.a(
-        ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/state/State.ts'],
-        ['attr', 'target', '_blank'],
-      )('val, $val'),
-    ),
-    Cell('Get the current value of the state'),
-    Cell(
-      html.a(
-        ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/state/State.ts'],
-        ['attr', 'target', '_blank'],
-      )('set, $set'),
-    ),
-    Cell('Set the state to a specific value'),
-    Cell(
-      html.a(
-        ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/state/State.ts'],
-        ['attr', 'target', '_blank'],
-      )('reduce, $reduce'),
-    ),
-    Cell('Reduce state to a specific value'),
-    Cell(
-      html.a(
-        ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/state/State.ts'],
-        ['attr', 'target', '_blank'],
-      )('sub, unsub'),
-    ),
-    Cell('Subscribe and unsubscribe to state changes'),
-    Cell(
-      html.a(
-        ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/state/State.ts'],
-        ['attr', 'target', '_blank'],
-      )('test, $test'),
-    ),
-    Cell('Test if a value is equal to the current state'),
-  );
-
 export const State = () =>
   Page(
+    Page.Header('State', 'Managing dynamic data with OEM State'),
     Section({
-      title: 'State',
+      title: 'The State Object',
       subtitle: `Each state object in OEM is a micro event bus that can be used anywhere in your application. Although OEM is state management agnostic, it's built-in state management works great for most use cases.`,
-      content: Box('column', 10, MethodTable()),
+      content: Box(
+        'column',
+        10,
+        html.div(['style', 'textAlign', 'center'])('Import the State function to create a state object'),
+        html.pre(['prism'])(`import { State } from 'oem';
+const color = State<'red' | 'green'>('red');`),
+      ),
     }),
 
     Section({

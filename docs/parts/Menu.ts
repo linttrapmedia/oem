@@ -77,6 +77,7 @@ export const Menu = () =>
           ['style', 'paddingTop', '20px'],
         )(
           Item('Intro', 'introduction'),
+          Item('Docs', 'docs'),
           Item('Templates', 'templates'),
           Item('Traits', 'traits'),
           Item('State', 'state'),
