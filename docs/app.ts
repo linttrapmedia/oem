@@ -1,7 +1,7 @@
 import { html, menuState } from './config';
 import { Docs } from './pages/Docs';
+import { Factory } from './pages/Factory';
 import { Introduction } from './pages/Introduction';
-import { Kits } from './pages/Kits';
 import { Patterns } from './pages/Patterns';
 import { State } from './pages/State';
 import { Templating } from './pages/Templating';
@@ -42,7 +42,7 @@ function App() {
       ['html:menu', Traits, menuState.$test(/traits/)],
       ['html:menu', State, menuState.$test(/state/)],
       ['html:menu', Patterns, menuState.$test(/patterns/)],
-      ['html:menu', Kits, menuState.$test(/kits/)],
+      ['html:menu', Factory, menuState.$test(/factory/)],
     )(),
   );
 }
@@ -59,7 +59,7 @@ document.addEventListener('keydown', (e) => {
   if (key === 'ArrowRight' || key === 'ArrowLeft') {
     switch (val) {
       case 'introduction':
-        menuState.set(key === 'ArrowRight' ? 'docs' : 'kits');
+        menuState.set(key === 'ArrowRight' ? 'docs' : 'factory');
         break;
       case 'docs':
         menuState.set(key === 'ArrowRight' ? 'templates' : 'introduction');
@@ -74,9 +74,9 @@ document.addEventListener('keydown', (e) => {
         menuState.set(key === 'ArrowRight' ? 'patterns' : 'traits');
         break;
       case 'patterns':
-        menuState.set(key === 'ArrowRight' ? 'kits' : 'state');
+        menuState.set(key === 'ArrowRight' ? 'factory' : 'state');
         break;
-      case 'kits':
+      case 'factory':
         menuState.set(key === 'ArrowRight' ? 'introduction' : 'patterns');
         break;
     }

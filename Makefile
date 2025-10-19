@@ -21,19 +21,6 @@ help:
 
 # TASKS
 
-cdn: ## Build for CDN
-	@echo $(STATUS) Building cdn dist...
-	@npx esbuild \
-		./src/index.ts \
-		--bundle \
-		--minify-whitespace \
-		--minify-syntax \
-		--sourcemap \
-		--format=iife \
-		--target=es2015 \
-		--global-name=oem \
-		--outfile=./dist/oem.min.js
-
 clean: ## Clean the project
 	@echo $(STATUS) Cleaning...
 	@rm -rf ./docs/bundle.min.js ./docs/bundle.min.js.map ./node_modules ./package-lock.json ./dist
@@ -42,14 +29,11 @@ clean: ## Clean the project
 dev: ## Run the project in development mode
 	@echo $(STATUS) Running in development mode...
 	@open ./docs/index.html
-	@npx esbuild \
-		./docs/app.ts \
-		--bundle \
-		--minify \
-		--sourcemap \
-		--target=es2015 \
+	@bun build ./docs/app.ts \
 		--watch \
-		--outfile=./docs/bundle.min.js
+		--outdir=./docs \
+		--sourcemap \
+		--minify
 
 deploy: ## Deploy the project
 	@echo $(STATUS) Deploying...
@@ -64,41 +48,24 @@ deploy: ## Deploy the project
 	@git push -f origin gh-pages
 	@git checkout main
 
-dist: ## Build for distribution
-	@echo $(STATUS) Building dist...
-# 	@bun build ./src/index.ts \
-# 		--outdir=./dist \
-# 		--entry-naming oem.esm.js
-# 		--target browser
-	 @npx esbuild \
-	 	./src/index.ts \
-	 	--bundle \
-	 	--minify-whitespace \
-	 	--minify-syntax \
-	 	--sourcemap \
-	 	--format=esm \
-	 	--target=es2015 \
-	 	--global-name=oem \
-	 	--outfile=./dist/oem.min.js
-	@open http://localhost:3000
-	@bun run ./dist/index.html
-
 docs: ## Build docs
 	@rm -rf ./dist
 	@echo $(STATUS) Building docs...
-	@npx esbuild \
-		./docs/app.ts \
-		--bundle \
-		--minify-whitespace \
-		--minify-syntax \
+	@bun build ./docs/app.ts \
+		--watch \
+		--outdir=./docs \
 		--sourcemap \
-		--target=es2015 \
-		--outfile=./docs/bundle.min.js
+		--minify
+		--bundle
 
 dev_todo: ## Dev todo example
 	@echo $(STATUS) Building examples...
 	@open ./examples/todo/index.html
-	@npx esbuild --bundle ./examples/todo/src/index.ts --outdir=./examples/todo --watch  --sourcemap --minify
+	@bun build ./examples/todo/src/index.ts \
+		--watch \
+		--outdir=./examples/todo \
+		--sourcemap \
+		--minify
 
 install: ## Install the project
 	@echo $(STATUS) Installing...
@@ -110,7 +77,7 @@ publish: ## Publish the project to npm
 
 test: ## Run tests
 	@echo $(STATUS) Testing...
-	@node ./cmd/test.js FILTER=$(FILTER)
+	@bun test ./cmd/test.js FILTER=$(FILTER)
 
 
 

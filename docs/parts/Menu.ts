@@ -82,8 +82,17 @@ export const Menu = () =>
           Item('Traits', 'traits'),
           Item('State', 'state'),
           Item('Patterns', 'patterns'),
-          Item('Kits', 'kits'),
+          Item('Factory', 'factory'),
         ),
+        html.a(
+          ['style', 'marginTop', '20px'],
+          ['style', 'color', 'white'],
+          ['style', 'padding', '10px'],
+          ['style', 'textDecoration', 'none'],
+          ['style', 'border', '1px solid rgba(255,255,255,0.2)'],
+          ['attr', 'href', 'https://github.com/linttrapmedia/oem'],
+          ['attr', 'target', '_blank'],
+        )('GITHUB'),
       ],
     ],
   )();
