@@ -35,13 +35,13 @@ dev: ## Run the project in development mode
 		--sourcemap \
 		--minify
 
-deploy: ## Deploy the project
+deploy: ## Deploy the project to GitHub Pages/oem.js.org
 	@echo $(STATUS) Deploying...
 	@git branch -D gh-pages
 	@git checkout -b gh-pages
 	@git merge main --no-commit --no-ff
 	@make clean
-	@npm i
+	@bun install
 	@make docs
 	@git add .
 	@git commit -m 'deploy'
@@ -52,10 +52,9 @@ docs: ## Build docs
 	@rm -rf ./dist
 	@echo $(STATUS) Building docs...
 	@bun build ./docs/app.ts \
-		--watch \
 		--outdir=./docs \
 		--sourcemap \
-		--minify
+		--minify \
 		--bundle
 
 dev_todo: ## Dev todo example
