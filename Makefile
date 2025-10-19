@@ -40,11 +40,6 @@ deploy: ## Deploy the project to GitHub Pages/oem.js.org
 	@git branch -D gh-pages
 	@git checkout -b gh-pages
 	@git merge main --no-commit --no-ff
-	@make clean
-	@bun install
-	@make docs
-	@git add .
-	@git commit -m 'deploy'
 	@git push -f origin gh-pages
 	@git checkout main
 
