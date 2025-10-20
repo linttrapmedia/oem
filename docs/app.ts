@@ -30,7 +30,6 @@ function App() {
       ['style', 'gap', '50px'],
       ['style', 'boxSizing', 'border-box'],
       ['style', 'padding', '20px 20px 100px'],
-      ['style', 'margin', 'auto'],
       ['style', 'height', '100%'],
       ['style', 'overflowY', 'auto'],
       ['style', 'overflowX', 'hidden'],
@@ -53,32 +52,27 @@ document.addEventListener('DOMContentLoaded', () => {
   root.appendChild(App());
 });
 
+function scrollAppContentToTop() {
+  document.querySelector("[data-part='AppContent']")?.scrollTo({ top: 0 });
+}
+
+menuState.sub(scrollAppContentToTop);
+
 document.addEventListener('keydown', (e) => {
   const key = e.key;
   const val = menuState.$val();
-  if (key === 'ArrowRight' || key === 'ArrowLeft') {
-    switch (val) {
-      case 'introduction':
-        menuState.set(key === 'ArrowRight' ? 'docs' : 'factory');
-        break;
-      case 'docs':
-        menuState.set(key === 'ArrowRight' ? 'templates' : 'introduction');
-        break;
-      case 'templates':
-        menuState.set(key === 'ArrowRight' ? 'traits' : 'docs');
-        break;
-      case 'traits':
-        menuState.set(key === 'ArrowRight' ? 'state' : 'templates');
-        break;
-      case 'state':
-        menuState.set(key === 'ArrowRight' ? 'patterns' : 'traits');
-        break;
-      case 'patterns':
-        menuState.set(key === 'ArrowRight' ? 'factory' : 'state');
-        break;
-      case 'factory':
-        menuState.set(key === 'ArrowRight' ? 'introduction' : 'patterns');
-        break;
-    }
-  }
+  if (key !== 'ArrowRight' && key !== 'ArrowLeft') return;
+  const caseMap = {
+    introduction: key === 'ArrowRight' ? 'docs' : 'factory',
+    docs: key === 'ArrowRight' ? 'templates' : 'introduction',
+    templates: key === 'ArrowRight' ? 'traits' : 'docs',
+    traits: key === 'ArrowRight' ? 'state' : 'templates',
+    state: key === 'ArrowRight' ? 'patterns' : 'traits',
+    patterns: key === 'ArrowRight' ? 'factory' : 'state',
+    factory: key === 'ArrowRight' ? 'introduction' : 'patterns',
+  };
+  const newState = caseMap[val] as typeof val;
+  if (!newState) return;
+  menuState.set(newState);
+  scrollAppContentToTop();
 });

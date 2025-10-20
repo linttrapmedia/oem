@@ -107,7 +107,7 @@ export const CanConditionallyApplyEventListenerTraitToHtml: Test = () => {
     click: useEvent({ event: 'click', state: toggle }),
   });
   const e1 = div(
-    ['click', () => toggle.set(false), toggle.get],
+    ['click', () => toggle.set(false), toggle.val],
     ['click', () => toggle.set(true), () => toggle.$val() === false],
   )();
   e1.click();
@@ -118,7 +118,7 @@ export const CanConditionallyApplyEventListenerTraitToHtml: Test = () => {
 };
 
 export const CanApplyInnerHTMLTraitToHtml: Test = () => {
-  const state = State({ value: 'asdf' });
+  const state = State<{ value: string }>({ value: 'asdf' });
   const { div } = HTML({ staticHtml: useInnerHTML(), dynamicHtml: useInnerHTML({ state }) });
 
   // static tests
@@ -144,8 +144,9 @@ export const CanApplyInnerHTMLTraitToHtml: Test = () => {
   const e8 = div(['dynamicHtml', (s) => s.value, () => true])();
   const t8 = e8.outerHTML === '<div>c1</div>';
   state.set({ value: 'c2' });
-  const e9 = div(['dynamicHtml', (s) => s.value, (s) => s.value === 'c2'])();
+  const e9 = div(['dynamicHtml', (s) => s.value, state.$test(/c2/)])();
   const t9 = e9.outerHTML === '<div>c2</div>';
+  console.log(e9.outerHTML);
 
   // multiple html attributes and using undefined
   const e10 = div(['staticHtml', () => ['one', 'two']], ['staticHtml', () => undefined, false])();

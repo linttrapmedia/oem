@@ -74,7 +74,7 @@ export const CanConditionallyApplyEventListenerTraitToHtml: Test = () => {
     cancelable: false,
   });
   const e1 = circle(
-    ['click', () => toggle.set(false), toggle.get],
+    ['click', () => toggle.set(false), toggle.val],
     ['click', () => toggle.set(true), () => toggle.$val() === false],
   )();
   e1.dispatchEvent(clickEvent);
@@ -111,7 +111,7 @@ export const CanApplyInnerHTMLTraitToHtml: Test = () => {
   const e8 = circle(['dynamicHtml', (s) => s.value, () => true])();
   const t8 = e8.outerHTML === '<circle>c1</circle>';
   state.set({ value: 'c2' });
-  const e9 = circle(['dynamicHtml', (s) => s.value, (s) => s.value === 'c2'])();
+  const e9 = circle(['dynamicHtml', (s) => s.value, state.$test(/c2/)])();
   const t9 = e9.outerHTML === '<circle>c2</circle>';
   return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 };
 };

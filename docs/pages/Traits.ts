@@ -3,6 +3,7 @@ import { Box } from '../parts/Box';
 import { FooterNav } from '../parts/FooterNav';
 import { Page } from '../parts/Page';
 import { Section } from '../parts/Section';
+import { Note } from '../parts/Text';
 
 const useStyle = (el: HTMLElement, prop: keyof CSSStyleDeclaration, value: any) => {
   el.style[prop as any] = value;
@@ -35,6 +36,9 @@ export const Traits = () =>
   ['style','fontSize','24px'],
   ['style','textAlign','center']
 )('...');`),
+        Note(
+          `Note: you could have applied the style textAlign trait multiple times to the same element with different values, and it would apply them in order. However, that would only make sense if we had a way to add a condition. That's exactly what we cover in the Patterns section. First, let's see how State works.`,
+        ),
       ),
     }),
 

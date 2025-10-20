@@ -44,3 +44,30 @@ export const CanSetStateAndPublish: Test = () => {
   const t1 = flag && num.$val().val === 2;
   return { pass: t1 };
 };
+
+export const CanTestStateValue: Test = () => {
+  const num = State(5);
+  const str = State('hello');
+  const tests = [
+    num.test(5),
+    num.test(3, false),
+    num.$test(5)(),
+    num.$test(3, false)(),
+    num.test(/5/),
+    num.test(/3/, false),
+    num.$test(/5/)(),
+    num.$test(/3/, false)(),
+    str.test('hello'),
+    str.test('world', false),
+    str.$test('hello')(),
+    str.$test('world', false)(),
+    str.test(/hello/),
+    str.test(/world/, false),
+    str.$test(/hello/)(),
+    str.$test(/world/, false)(),
+  ];
+
+  return {
+    pass: tests.every((t) => t),
+  };
+};

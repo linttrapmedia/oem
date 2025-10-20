@@ -7,7 +7,6 @@ window.addEventListener('DOMContentLoaded', () => {
   runner([
     [
       'HTML',
-      ['can apply inner html trait', html.CanApplyInnerHTMLTraitToHtml],
       ['can apply attribute trait', html.CanApplyAttributeTraitToHtml],
       ['can apply class name trait', html.CanApplyClassNameTraitToHtml],
       ['can apply event listener trait', html.CanApplyEventListenerTraitToHtml],
@@ -43,6 +42,7 @@ window.addEventListener('DOMContentLoaded', () => {
       ['can unsubscribe to state', state.CanUnSubscribeToState],
       ['can reset state', state.CanSubscribeToState],
       ['can set state and publish', state.CanSetStateAndPublish],
+      ['can test state value', state.CanTestStateValue],
     ],
   ]);
 });

@@ -9,17 +9,13 @@ export const Factory = () =>
     Page.Header('Factory', 'Pre-built components,  templates and generators for rapid development'),
     Section({
       title: 'Ready-Made Traits',
-      subtitle: `OEM Factory provides a set of pre-built components and templates to help you get started quickly. I'll be adding more, feel free to suggest any you'd like to see!`,
+      subtitle: `OEM Factory provides a set of powerful pre-built traits that include configurations for responding to events, media queries and state objects with the Locality of Behavior pattern included which covers 95% of use cases out of the box.`,
       content: Table.Grid(
         Table.Header('Trait'),
         Table.Header('Description'),
         Table.Cell(
           html.a(
-            [
-              'attr',
-              'href',
-              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/html/traits/Style.ts',
-            ],
+            ['attr', 'href', 'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/traits/Style.ts'],
             ['attr', 'target', '_blank'],
           )('useAttribute'),
         ),
@@ -29,7 +25,7 @@ export const Factory = () =>
             [
               'attr',
               'href',
-              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/html/traits/ClassName.ts',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/traits/ClassName.ts',
             ],
             ['attr', 'target', '_blank'],
           )('useClassName'),
@@ -37,11 +33,7 @@ export const Factory = () =>
         Table.Cell('Apply class names'),
         Table.Cell(
           html.a(
-            [
-              'attr',
-              'href',
-              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/html/traits/Event.ts',
-            ],
+            ['attr', 'href', 'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/traits/Event.ts'],
             ['attr', 'target', '_blank'],
           )('useEvent'),
         ),
@@ -51,7 +43,7 @@ export const Factory = () =>
             [
               'attr',
               'href',
-              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/html/traits/InnerHTML.ts',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/traits/InnerHTML.ts',
             ],
             ['attr', 'target', '_blank'],
           )('useInnerHTML'),
@@ -62,7 +54,7 @@ export const Factory = () =>
             [
               'attr',
               'href',
-              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/html/traits/TextContent.ts',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/traits/TextContent.ts',
             ],
             ['attr', 'target', '_blank'],
           )('useTextContent'),
@@ -70,17 +62,14 @@ export const Factory = () =>
         Table.Cell('Apply inner text'),
         Table.Cell(
           html.a(
-            [
-              'attr',
-              'href',
-              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/html/traits/Style.ts',
-            ],
+            ['attr', 'href', 'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/traits/Style.ts'],
             ['attr', 'target', '_blank'],
           )('useStyle'),
         ),
         Table.Cell('Apply styles'),
       ),
     }),
+
     Section({
       title: 'Thank You',
       subtitle: `We appreciate your interest in OEM. We hope you find this project useful. Feel free to contribute or provide feedback!`,

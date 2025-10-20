@@ -25,5 +25,6 @@ export const Note = (...children: any[]) =>
     ['style', 'opacity', 0.5],
     ['style', 'textAlign', 'center'],
     ['style', 'padding', '20px'],
+    ['style', 'marginBottom', '20px'],
     ['style', 'backgroundColor', 'rgba(0,0,0,0.1)'],
   )(...children);
