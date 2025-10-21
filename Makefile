@@ -63,7 +63,7 @@ dev_todo: ## Dev todo example
 
 install: ## Install the project
 	@echo $(STATUS) Installing...
-	@npm install
+	@bun install
 
 publish: ## Publish the project to npm
 	@echo $(STATUS) Publish package...
@@ -71,7 +71,7 @@ publish: ## Publish the project to npm
 
 test: ## Run tests
 	@echo $(STATUS) Testing...
-	@bun test ./cmd/test.js FILTER=$(FILTER)
+	@bun run ./cmd/test.ts FILTER=$(FILTER)
 
 
 

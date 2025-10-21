@@ -146,8 +146,6 @@ export const CanApplyInnerHTMLTraitToHtml: Test = () => {
   state.set({ value: 'c2' });
   const e9 = div(['dynamicHtml', (s) => s.value, state.$test(/c2/)])();
   const t9 = e9.outerHTML === '<div>c2</div>';
-  console.log(e9.outerHTML);
-
   // multiple html attributes and using undefined
   const e10 = div(['staticHtml', () => ['one', 'two']], ['staticHtml', () => undefined, false])();
   const t10 = e10.outerHTML === '<div>onetwo</div>';
@@ -189,24 +187,24 @@ export const CanApplyTextContentTraitToHtml: Test = () => {
 };
 
 export const CanApplyStyleTraitToHtml: Test = () => {
-  const state = State({ fontSize: '13px' });
+  const state = State<{ fontSize: string }>({ fontSize: '13px' });
   const { div } = HTML({
     staticStyle: useStyle(),
     dynamicStyle: useStyle({ state }),
   });
   const e1 = div(['staticStyle', 'fontSize', '12px'])();
   const t1 = e1.outerHTML === '<div style="font-size: 12px;"></div>';
-  const e2 = div(['dynamicStyle', 'fontSize', (s) => s.fontSize])();
+  const e2 = div(['dynamicStyle', 'fontSize', () => state.$val().fontSize])();
   const t2a = e2.outerHTML === '<div style="font-size: 13px;"></div>';
   state.set({ fontSize: '14px' });
   const t2b = e2.outerHTML === '<div style="font-size: 14px;"></div>';
   state.set({ fontSize: '15px' });
-  const e3 = div(['dynamicStyle', 'fontSize', (s) => s.fontSize, () => false])();
+  const e3 = div(['dynamicStyle', 'fontSize', () => state.$val().fontSize, () => false])();
   const t3 = e3.outerHTML === '<div></div>';
-  const e4 = div(['dynamicStyle', 'fontSize', (s) => s.fontSize, () => true])();
+  const e4 = div(['dynamicStyle', 'fontSize', () => state.$val().fontSize, () => true])();
   const t4 = e4.outerHTML === '<div style="font-size: 15px;"></div>';
-  const e5 = div(['dynamicStyle', 'fontSize', (s) => s.fontSize, (s) => s.fontSize === '14px'])();
-  const t5 = e5.outerHTML === '<div></div>';
+  const e5 = div(['dynamicStyle', 'fontSize', () => state.$val().fontSize, state.$test(/15px/)])();
+  const t5 = e5.outerHTML === '<div style="font-size: 15px;"></div>';
 
   // multiple style attributes and using undefined
   const e6 = div(

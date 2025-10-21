@@ -1,7 +1,5 @@
 import args from '../cmd/util/args';
-import { Test } from '../src';
-
-const filter = args.FILTER;
+import { Test } from '../src/types';
 
 export function runner(tests: [string, ...[string, Test][]][]) {
   const sandbox = document.querySelector('#test-sandbox') as HTMLElement;
@@ -14,9 +12,8 @@ export function runner(tests: [string, ...[string, Test][]][]) {
   tests.forEach(([module, ...assertions]) => {
     assertions
       .filter((t) => {
-        const filterString = module + t[0].split(' ').join('');
-        const filterSearch = filterString.search(filter);
-        return filterSearch > -1;
+        if (args.FILTER) return (t[1].name as any) === args.FILTER;
+        return true;
       })
       .forEach(([desc, test]) => {
         let testResult;
@@ -29,7 +26,7 @@ export function runner(tests: [string, ...[string, Test][]][]) {
         statusEl.style.fontFamily = 'monospace';
         statusEl.style.fontSize = '14px';
         statusEl.style.color = testResult.pass ? 'green' : 'red';
-        statusEl.innerText = testResult.pass ? '✔' : '✘';
+        statusEl.innerText = testResult.pass ? '+' : 'x';
         statusEl.className = testResult.pass ? 'pass' : 'fail';
 
         const moduleEl = document.createElement('div');

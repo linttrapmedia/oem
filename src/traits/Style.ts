@@ -1,7 +1,7 @@
 import { StateType } from '../types';
 
 type UseStyleProps<T> = {
-  event?: keyof GlobalEventHandlersEventMap | null;
+  event?: keyof GlobalEventHandlersEventMap | undefined;
   eventElement?: HTMLElement | Window;
   invokeImmediately?: boolean;
   mediaMaxWidth?: number;
