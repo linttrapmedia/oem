@@ -59,7 +59,9 @@ export function useStyle<T>(props?: UseStyleProps<T>) {
     if (state) state.sub(apply);
 
     // handle resize changes
-    window.addEventListener('resize', apply);
+    const resizeObserver = new ResizeObserver(apply);
+    resizeObserver.observe(el);
+    resizeObserver.observe(document.body);
 
     // handle event changes
     if (event) (el ?? eventElement).addEventListener(event, apply);

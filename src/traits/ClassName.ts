@@ -63,7 +63,9 @@ export function useClassName<T>(props?: UseClassNameProps<T>) {
     if (event) (el ?? eventElement).addEventListener(event, apply);
 
     // handle breakpoint changes
-    window.addEventListener('resize', apply);
+    const resizeObserver = new ResizeObserver(apply);
+    resizeObserver.observe(el);
+    resizeObserver.observe(document.body);
 
     // apply immediately
     if (invokeImmediately) apply();

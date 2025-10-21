@@ -27,12 +27,11 @@ export function useEvent<T, E extends keyof GlobalEventHandlersEventMap>(props?:
     const [el, cb, condition] = htmlProps;
     const apply = () => {
       const _cb = (e: E) => cb(e);
+      el.removeEventListener(event, _cb);
       const _condition =
         typeof condition === 'function' ? condition(state ? state.$val() : undefined) : condition ?? true;
       if (_condition) {
         el.addEventListener(event, _cb);
-      } else {
-        el.removeEventListener(event, _cb);
       }
     };
 

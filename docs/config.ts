@@ -54,6 +54,7 @@ export const html = HTML({
   prism: usePrism(),
   style: useStyle(),
   'html:menu': useInnerHTML({ state: menuState }),
+  'html:menu_toggle': useInnerHTML({ state: menuOpen }),
   'style:menu': useStyle({ state: menuState }),
   'style:menu_toggle': useStyle({ state: menuOpen }),
   'style:tablet': useStyle({ mediaMinWidth: 800 }),
