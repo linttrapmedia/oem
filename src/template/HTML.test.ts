@@ -1,3 +1,4 @@
+import ResizeObserver from 'resize-observer-polyfill';
 import { State } from '../state/State';
 import { useAttribute } from '../traits/Attribute';
 import { useClassName } from '../traits/ClassName';
@@ -7,6 +8,8 @@ import { useStyle } from '../traits/Style';
 import { useTextContent } from '../traits/TextContent';
 import { Test } from '../types';
 import { HTML } from './HTML';
+
+globalThis.ResizeObserver = ResizeObserver;
 
 export const CanAdoptElement: Test = () => {
   const { el, $el } = HTML({
