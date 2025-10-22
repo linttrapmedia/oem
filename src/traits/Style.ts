@@ -1,14 +1,18 @@
 import { StateType } from '../types';
 
 type UseStyleProps<T> = {
-  event?: keyof GlobalEventHandlersEventMap | undefined;
-  eventElement?: HTMLElement | Window;
-  invokeImmediately?: boolean;
   mediaMaxWidth?: number;
   mediaMinWidth?: number;
   mediaType?: 'screen' | 'print';
-  state?: StateType<T>;
+  state?: StateType<any> | StateType<any>[];
 };
+
+export function useStyle(): (
+  el: HTMLElement,
+  prop: keyof CSSStyleDeclaration | `--${string}`,
+  val: (() => string | number | undefined) | (string | number | undefined),
+  condition?: boolean | (() => boolean) | ((state: StateType<any>) => boolean),
+) => void;
 
 export function useStyle(
   props?: UseStyleProps<any>,
@@ -19,33 +23,16 @@ export function useStyle(
   condition?: boolean | (() => boolean) | ((state: StateType<any>) => boolean),
 ) => void;
 
-export function useStyle<T>(
-  props?: UseStyleProps<T>,
-): (
-  el: HTMLElement,
-  prop: keyof CSSStyleDeclaration | `--${string}`,
-  val: ((state: T) => string | number | undefined) | (string | number | undefined),
-  condition?: boolean | ((state: T) => boolean),
-) => void;
-
 export function useStyle<T>(props?: UseStyleProps<T>) {
-  const {
-    event = null,
-    eventElement = window,
-    invokeImmediately = true,
-    mediaMinWidth = 0,
-    mediaMaxWidth = Infinity,
-    state = undefined,
-  } = props ?? {};
+  const { mediaMinWidth = 0, mediaMaxWidth = Infinity, state = undefined } = props ?? {};
   return (...htmlProps: any) => {
-    const [el, prop, val, condition] = htmlProps;
+    const [el, prop, val, condition = true] = htmlProps;
 
     const apply = () => {
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
-      const _val = typeof val === 'function' ? val(state ? state.$val() : undefined) : val;
-      const _condition =
-        typeof condition === 'function' ? condition(state ? state.$val() : undefined) : condition ?? true;
+      const _val = typeof val === 'function' ? val() : val;
+      const _condition = typeof condition === 'function' ? condition() : condition;
       if (_condition) {
         if (_val === undefined) {
           el.style.removeProperty(prop);
@@ -55,18 +42,14 @@ export function useStyle<T>(props?: UseStyleProps<T>) {
       }
     };
 
-    // handle state changes
-    if (state) state.sub(apply);
+    const stateIsArray = Array.isArray(state);
+    if (state) stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
 
-    // handle resize changes
-    const resizeObserver = new ResizeObserver(apply);
-    resizeObserver.observe(el);
-    resizeObserver.observe(document.body);
+    if (props?.mediaMinWidth || props?.mediaMaxWidth) {
+      const resizeObserver = new ResizeObserver(apply);
+      resizeObserver.observe(document.body);
+    }
 
-    // handle event changes
-    if (event) (el ?? eventElement).addEventListener(event, apply);
-
-    // apply immediately
-    if (invokeImmediately && !event) apply();
+    apply();
   };
 }

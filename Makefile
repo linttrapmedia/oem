@@ -43,6 +43,20 @@ deploy: ## Deploy the project to GitHub Pages/oem.js.org
 	@git push -f origin gh-pages
 	@git checkout main
 
+dist: ## Build distribution files
+	@rm -rf ./dist
+	@echo $(STATUS) Building distribution files...
+	@mkdir -p ./dist
+	@bun build ./src/index.ts \
+		--outdir=./dist \
+		--sourcemap \
+		--minify \
+		--bundle \
+		--target=browser \
+		--format=iife
+	@echo $(STATUS) Prepending to index.js...
+	@echo 'window.oem = ' | cat - ./dist/index.js > temp && mv temp ./dist/index.js
+
 docs: ## Build docs
 	@rm -rf ./dist
 	@echo $(STATUS) Building docs...

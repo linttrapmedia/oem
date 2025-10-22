@@ -1,4 +1,4 @@
-import { state } from './state';
+import { state, todoList } from './state';
 import { html } from './template';
 import { TodoType } from './types';
 
@@ -110,8 +110,9 @@ const TodoList = html.div(
   ['style:mobile', 'gap', '10px'],
   [
     'todo__list:html',
-    (todos) =>
-      todos
+    () =>
+      todoList
+        .$val()
         .sort((a, b) => a.title.localeCompare(b.title))
         .sort((a, b) => Number(a.completed) - Number(b.completed))
         .map(TodoListItem),

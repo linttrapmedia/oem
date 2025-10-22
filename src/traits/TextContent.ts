@@ -1,17 +1,13 @@
 import { StateType } from '../types';
 
 type UseTextContentProps<T> = {
-  event?: keyof GlobalEventHandlersEventMap | null;
-  eventElement?: HTMLElement | Window;
-  state?: StateType<T>;
+  state?: StateType<any> | StateType<any>[];
 };
 
-export function useTextContent<T>(
-  props?: UseTextContentProps<T>,
-): (
+export function useTextContent(): (
   el: HTMLElement,
-  children: ((state: T) => string | number) | string | number,
-  condition?: ((state: T) => boolean) | boolean,
+  children: (() => string | number) | string | number,
+  condition?: (() => boolean) | boolean,
 ) => void;
 
 export function useTextContent(
@@ -23,30 +19,21 @@ export function useTextContent(
 ) => void;
 
 export function useTextContent<T>(props?: UseTextContentProps<T>) {
-  const { event, eventElement, state } = props ?? {};
+  const { state } = props ?? {};
   return (...htmlProps: any) => {
     const [el, children, condition] = htmlProps;
 
     const apply = () => {
-      const _children = typeof children === 'function' ? children(state ? state.$val() : undefined) : children;
-      const _condition =
-        typeof condition === 'function' ? condition(state ? state.$val() : undefined) : condition ?? true;
+      const _children = typeof children === 'function' ? children() : children;
+      const _condition = typeof condition === 'function' ? condition() : condition ?? true;
       if (_condition) {
         el.textContent = String(_children);
       }
     };
-    // handle state changes
-    if (state) state.sub(apply);
 
-    // handle resize changes
-    const resizeObserver = new ResizeObserver(apply);
-    resizeObserver.observe(el);
-    resizeObserver.observe(document.body);
+    const stateIsArray = Array.isArray(state);
+    if (state) stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
 
-    // handle event changes
-    if (event) (el ?? eventElement).addEventListener(event, apply);
-
-    // apply immediately
     apply();
   };
 }

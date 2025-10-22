@@ -1,44 +1,54 @@
 import { StateType } from '../types';
 
-type UseEventProps<T, E extends keyof GlobalEventHandlersEventMap> = {
+type UseEventConfig<E extends keyof GlobalEventHandlersEventMap> = {
   event: E;
-  state?: StateType<T>;
+  state?: StateType<any> | StateType<any>[];
 };
 
+const eventMap = new WeakMap<HTMLElement, Map<string, ((evt: any) => void) | null>>();
+
+export function useEvent<E extends keyof GlobalEventHandlersEventMap>(): (
+  el: HTMLElement,
+  cb: (evt?: GlobalEventHandlersEventMap[E]) => void,
+  condition?: (() => boolean) | boolean | (() => boolean),
+) => void;
+
 export function useEvent<E extends keyof GlobalEventHandlersEventMap>(
-  props?: UseEventProps<any, E>,
+  props?: UseEventConfig<E>,
 ): (
   el: HTMLElement,
   cb: (evt?: GlobalEventHandlersEventMap[E]) => void,
   condition?: (() => boolean) | boolean | (() => boolean),
 ) => void;
 
-export function useEvent<T, E extends keyof GlobalEventHandlersEventMap>(
-  props?: UseEventProps<T, E>,
-): (
-  el: HTMLElement,
-  cb: (evt?: GlobalEventHandlersEventMap[E]) => void,
-  condition?: ((state: T) => boolean) | boolean | (() => boolean),
-) => void;
+export function useEvent<T, E extends keyof GlobalEventHandlersEventMap>(props?: UseEventConfig<E>) {
+  const { state, event = 'click' } = props ?? {};
 
-export function useEvent<T, E extends keyof GlobalEventHandlersEventMap>(props?: UseEventProps<T, E>) {
-  const { state, event } = props ?? {};
   return (...htmlProps: any) => {
-    const [el, cb, condition] = htmlProps;
+    const [el, cb, condition = true] = htmlProps;
+    if (!eventMap.has(el)) eventMap.set(el, new Map());
+    const listenerMap = eventMap.get(el)!;
+
     const apply = () => {
-      const _cb = (e: E) => cb(e);
-      el.removeEventListener(event, _cb);
-      const _condition =
-        typeof condition === 'function' ? condition(state ? state.$val() : undefined) : condition ?? true;
+      const _condition = typeof condition === 'function' ? condition() : condition;
+
+      let listener = listenerMap.get(event) ?? null;
+      if (listener) {
+        el.removeEventListener(event, listener as EventListener);
+        listenerMap.set(event, null); // Clear the entry while we re-evaluate
+        listener = null;
+      }
+
       if (_condition) {
-        el.addEventListener(event, _cb);
+        const newListener = (e: Event) => cb(e as GlobalEventHandlersEventMap[E]);
+        el.addEventListener(event, newListener as EventListener);
+        listenerMap.set(event, newListener);
+        listener = newListener;
       }
     };
 
-    // handle state changes
-    if (state) state.sub(apply);
-
-    // apply immediately
+    const stateIsArray = Array.isArray(state);
+    if (state) stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
     apply();
   };
 }

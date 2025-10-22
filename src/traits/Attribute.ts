@@ -1,17 +1,18 @@
 import { StateType } from '../types';
 
-type UseAttributeProps<T> = {
-  event?: keyof GlobalEventHandlersEventMap | null;
-  eventElement?: HTMLElement | Window;
-  hideOnFalse?: boolean;
-  invokeImmediately?: boolean;
-  mediaMaxWidth?: number;
-  mediaMinWidth?: number;
-  state?: StateType<T>;
+type UseAttributeConfig = {
+  state?: StateType<any> | StateType<any>[];
 };
 
+export function useAttribute(): (
+  el: HTMLElement,
+  prop: string,
+  val: (() => string | number | boolean | undefined) | (string | number | boolean | undefined),
+  condition?: boolean | (() => boolean),
+) => void;
+
 export function useAttribute(
-  props?: UseAttributeProps<any>,
+  props?: UseAttributeConfig,
 ): (
   el: HTMLElement,
   prop: string,
@@ -19,34 +20,17 @@ export function useAttribute(
   condition?: boolean | (() => boolean),
 ) => void;
 
-export function useAttribute<T>(
-  props?: UseAttributeProps<T>,
-): (
-  el: HTMLElement,
-  prop: string,
-  val: ((state: T) => string | number | boolean | undefined) | (string | number | boolean | undefined),
-  condition?: ((state: T) => boolean) | boolean,
-) => void;
-
-export function useAttribute<T>(props?: UseAttributeProps<T>) {
-  const {
-    event = null,
-    eventElement = window,
-    invokeImmediately = true,
-    mediaMinWidth = 0,
-    mediaMaxWidth = Infinity,
-    state = undefined,
-  } = props ?? {};
+export function useAttribute<T>(props?: UseAttributeConfig) {
+  const { state = undefined } = props ?? {};
   return (...htmlProps: any) => {
-    const [el, prop, val, condition] = htmlProps;
+    const [el, prop, val, condition = true] = htmlProps;
+
     // application
     const apply = () => {
-      const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
-      if (!isInBreakpoint) return;
-      const _val = state && typeof val === 'function' ? val(state.$val()) : val;
-      const _condition =
-        typeof condition === 'function' ? condition(state ? state.$val() : undefined) : condition ?? true;
+      const _val = typeof val === 'function' ? val() : val;
+      const _condition = typeof condition === 'function' ? condition() : condition;
       if (_condition) {
+        el.setAttribute(prop, String(_val));
         if (_val === undefined) {
           el.removeAttribute(prop);
         } else {
@@ -55,18 +39,8 @@ export function useAttribute<T>(props?: UseAttributeProps<T>) {
       }
     };
 
-    // handle state changes
-    if (state) state.sub(apply);
-
-    // handle event changes
-    if (event) (el ?? eventElement).addEventListener(event, apply);
-
-    // handle breakpoint changes
-    const resizeObserver = new ResizeObserver(apply);
-    resizeObserver.observe(el);
-    resizeObserver.observe(document.body);
-
-    // apply immediately
-    if (invokeImmediately) apply();
+    const stateIsArray = Array.isArray(state);
+    if (state) stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
+    apply();
   };
 }

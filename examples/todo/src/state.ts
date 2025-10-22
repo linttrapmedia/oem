@@ -3,7 +3,7 @@ import { TodoType } from './types';
 
 const todoItemHovered = State<TodoType | undefined>(undefined);
 
-const todoList = State<TodoType[]>(
+export const todoList = State<TodoType[]>(
   [
     { title: 'Learn React', completed: true },
     { title: 'Learn TypeScript', completed: false },

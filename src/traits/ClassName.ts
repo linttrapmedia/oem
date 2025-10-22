@@ -1,73 +1,48 @@
 import { StateType } from '../types';
 
-type UseClassNameProps<T> = {
-  event?: keyof GlobalEventHandlersEventMap | null;
-  eventElement?: HTMLElement | Window;
-  invokeImmediately?: boolean;
+type UseClassNameConfig = {
   mediaMaxWidth?: number;
   mediaMinWidth?: number;
-  method?: 'classList' | 'className';
-  state?: StateType<T> | null;
+  state?: StateType<any> | StateType<any>[];
 };
 
-export function useClassName(
-  props?: UseClassNameProps<any>,
-): (
+export function useClassName(): (
   el: HTMLElement,
-  className: undefined | string | (() => undefined | string),
+  classList: undefined | string | (() => undefined | string),
   condition?: boolean | (() => boolean),
 ) => void;
 
-export function useClassName<T>(
-  props?: UseClassNameProps<T>,
+export function useClassName(
+  props?: UseClassNameConfig,
 ): (
   el: HTMLElement,
-  className: undefined | string | ((state: T) => undefined | string),
-  condition?: boolean | ((state: T) => boolean),
+  classList: undefined | string | (() => undefined | string),
+  condition?: boolean | (() => boolean),
 ) => void;
 
-export function useClassName<T>(props?: UseClassNameProps<T>) {
-  const {
-    event = null,
-    eventElement = window,
-    invokeImmediately = true,
-    mediaMinWidth = 0,
-    mediaMaxWidth = Infinity,
-    state = null,
-  } = props ?? {};
+export function useClassName<T>(props?: UseClassNameConfig) {
+  const { mediaMinWidth = 0, mediaMaxWidth = Infinity, state = null } = props ?? {};
   return (...htmlProps: any) => {
-    const [el, className, condition] = htmlProps;
+    const [el, classes, condition = true] = htmlProps;
     // application
     const apply = () => {
       const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
       if (!isInBreakpoint) return;
-      const _className = typeof className === 'function' ? className(state ? state.$val() : undefined) : className;
-      const _condition =
-        typeof condition === 'function' ? condition(state ? state.$val() : undefined) : condition ?? true;
-      const classList = el.getAttribute('class')?.split(' ') ?? [];
+      const _classes = typeof classes === 'function' ? classes() : classes;
+      const _condition = typeof condition === 'function' ? condition() : condition;
       if (_condition) {
-        if (_className === undefined) {
-          el.removeAttribute('class');
-        } else {
-          // _className does not exist in classList
-          if (classList.indexOf(_className) === -1) classList.push(_className);
-          el.setAttribute('class', classList.join(' '));
-        }
+        el.setAttribute('class', _classes);
       }
     };
 
-    // handle state changes
-    if (state) state.sub(apply);
+    const stateIsArray = Array.isArray(state);
+    if (state) stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
 
-    // handle event changes
-    if (event) (el ?? eventElement).addEventListener(event, apply);
+    if (props?.mediaMinWidth || props?.mediaMaxWidth) {
+      const resizeObserver = new ResizeObserver(apply);
+      resizeObserver.observe(document.body);
+    }
 
-    // handle breakpoint changes
-    const resizeObserver = new ResizeObserver(apply);
-    resizeObserver.observe(el);
-    resizeObserver.observe(document.body);
-
-    // apply immediately
-    if (invokeImmediately) apply();
+    apply();
   };
 }

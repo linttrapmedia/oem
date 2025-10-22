@@ -624,23 +624,14 @@ var ResizeObserver_es_default = index;
 
 // src/traits/Attribute.ts
 function useAttribute(props) {
-  const {
-    event = null,
-    eventElement = window,
-    invokeImmediately = true,
-    mediaMinWidth = 0,
-    mediaMaxWidth = Infinity,
-    state = undefined
-  } = props ?? {};
+  const { state = undefined } = props ?? {};
   return (...htmlProps) => {
-    const [el, prop, val, condition] = htmlProps;
+    const [el, prop, val, condition = true] = htmlProps;
     const apply = () => {
-      const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
-      if (!isInBreakpoint)
-        return;
-      const _val = state && typeof val === "function" ? val(state.$val()) : val;
-      const _condition = typeof condition === "function" ? condition(state ? state.$val() : undefined) : condition ?? true;
+      const _val = typeof val === "function" ? val() : val;
+      const _condition = typeof condition === "function" ? condition() : condition;
       if (_condition) {
+        el.setAttribute(prop, String(_val));
         if (_val === undefined) {
           el.removeAttribute(prop);
         } else {
@@ -648,201 +639,33 @@ function useAttribute(props) {
         }
       }
     };
+    const stateIsArray = Array.isArray(state);
     if (state)
-      state.sub(apply);
-    if (event)
-      (el ?? eventElement).addEventListener(event, apply);
-    const resizeObserver = new ResizeObserver(apply);
-    resizeObserver.observe(el);
-    resizeObserver.observe(document.body);
-    if (invokeImmediately)
-      apply();
-  };
-}
-
-// src/traits/ClassName.ts
-function useClassName(props) {
-  const {
-    event = null,
-    eventElement = window,
-    invokeImmediately = true,
-    mediaMinWidth = 0,
-    mediaMaxWidth = Infinity,
-    state = null
-  } = props ?? {};
-  return (...htmlProps) => {
-    const [el, className, condition] = htmlProps;
-    const apply = () => {
-      const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
-      if (!isInBreakpoint)
-        return;
-      const _className = typeof className === "function" ? className(state ? state.$val() : undefined) : className;
-      const _condition = typeof condition === "function" ? condition(state ? state.$val() : undefined) : condition ?? true;
-      const classList = el.getAttribute("class")?.split(" ") ?? [];
-      if (_condition) {
-        if (_className === undefined) {
-          el.removeAttribute("class");
-        } else {
-          if (classList.indexOf(_className) === -1)
-            classList.push(_className);
-          el.setAttribute("class", classList.join(" "));
-        }
-      }
-    };
-    if (state)
-      state.sub(apply);
-    if (event)
-      (el ?? eventElement).addEventListener(event, apply);
-    const resizeObserver = new ResizeObserver(apply);
-    resizeObserver.observe(el);
-    resizeObserver.observe(document.body);
-    if (invokeImmediately)
-      apply();
-  };
-}
-
-// src/traits/Event.ts
-function useEvent(props) {
-  const { state, event } = props ?? {};
-  return (...htmlProps) => {
-    const [el, cb, condition] = htmlProps;
-    const apply = () => {
-      const _cb = (e) => cb(e);
-      el.removeEventListener(event, _cb);
-      const _condition = typeof condition === "function" ? condition(state ? state.$val() : undefined) : condition ?? true;
-      if (_condition) {
-        el.addEventListener(event, _cb);
-      }
-    };
-    if (state)
-      state.sub(apply);
+      stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
     apply();
-  };
-}
-
-// src/traits/InnerHTML.ts
-function useInnerHTML(props) {
-  const { state } = props ?? {};
-  return (...htmlProps) => {
-    const [el, children, condition] = htmlProps;
-    const apply = () => {
-      const _children = state ? children(state.$val()) : children();
-      const _condition = typeof condition === "function" ? condition(state ? state.val : undefined) : condition ?? true;
-      if (_condition) {
-        el.innerHTML = "";
-        if (_children !== undefined) {
-          if (Array.isArray(_children)) {
-            _children.filter((c) => c).forEach((c) => {
-              if (c instanceof HTMLElement || c instanceof SVGElement)
-                el.appendChild(c);
-              else
-                el.appendChild(document.createTextNode(String(c)));
-            });
-          } else if (_children instanceof HTMLElement || _children instanceof SVGElement) {
-            el.appendChild(_children);
-          } else {
-            el.innerHTML = String(_children);
-          }
-        }
-      }
-    };
-    if (state)
-      state.sub(apply);
-    apply();
-  };
-}
-
-// src/traits/Style.ts
-function useStyle(props) {
-  const {
-    event = null,
-    eventElement = window,
-    invokeImmediately = true,
-    mediaMinWidth = 0,
-    mediaMaxWidth = Infinity,
-    state = undefined
-  } = props ?? {};
-  return (...htmlProps) => {
-    const [el, prop, val, condition] = htmlProps;
-    const apply = () => {
-      const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
-      if (!isInBreakpoint)
-        return;
-      const _val = typeof val === "function" ? val(state ? state.$val() : undefined) : val;
-      const _condition = typeof condition === "function" ? condition(state ? state.$val() : undefined) : condition ?? true;
-      if (_condition) {
-        if (_val === undefined) {
-          el.style.removeProperty(prop);
-        } else {
-          prop.startsWith("--") ? el.style.setProperty(prop, _val) : el.style[prop] = _val;
-        }
-      }
-    };
-    if (state)
-      state.sub(apply);
-    const resizeObserver = new ResizeObserver(apply);
-    resizeObserver.observe(el);
-    resizeObserver.observe(document.body);
-    if (event)
-      (el ?? eventElement).addEventListener(event, apply);
-    if (invokeImmediately && !event)
-      apply();
   };
 }
 
 // src/traits/TextContent.ts
 function useTextContent(props) {
-  const { event, eventElement, state } = props ?? {};
+  const { state } = props ?? {};
   return (...htmlProps) => {
     const [el, children, condition] = htmlProps;
     const apply = () => {
-      const _children = typeof children === "function" ? children(state ? state.$val() : undefined) : children;
-      const _condition = typeof condition === "function" ? condition(state ? state.$val() : undefined) : condition ?? true;
+      const _children = typeof children === "function" ? children() : children;
+      const _condition = typeof condition === "function" ? condition() : condition ?? true;
       if (_condition) {
         el.textContent = String(_children);
       }
     };
+    const stateIsArray = Array.isArray(state);
     if (state)
-      state.sub(apply);
-    const resizeObserver = new ResizeObserver(apply);
-    resizeObserver.observe(el);
-    resizeObserver.observe(document.body);
-    if (event)
-      (el ?? eventElement).addEventListener(event, apply);
+      stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
     apply();
   };
 }
 
 // src/template/HTML.ts
-var selectorMap = new Map;
-var matchObserver = new MutationObserver((mutations) => {
-  mutations.forEach((mutation) => {
-    if (mutation.addedNodes.length > 0 && mutation.type === "childList") {
-      for (const node of Array.from(mutation.addedNodes)) {
-        if (node instanceof Element) {
-          for (const [selector, [props, config]] of selectorMap.entries()) {
-            const els = Array.from(node.querySelectorAll(selector));
-            for (const el of els)
-              HtmlTag(el, props, config);
-          }
-        }
-      }
-    }
-  });
-});
-matchObserver.observe(document, { attributes: true, childList: true, subtree: true });
-function AdoptElBySelector(selector, watch = true, config) {
-  return (...props) => {
-    if (watch)
-      selectorMap.set(selector, [props, config]);
-    const els = Array.from(document.querySelectorAll(selector));
-    for (const el of els)
-      HtmlTag(el, props, config);
-  };
-}
-function AdoptElByInstance(el, config) {
-  return (...props) => HtmlTag(el, props, config);
-}
 function CreateEl(tag, config) {
   return (...props) => {
     const ns = "http://www.w3.org/1999/xhtml";
@@ -863,56 +686,143 @@ function HtmlTag(el, traits = [], config = {}) {
 }
 function HTML(config) {
   return new Proxy({}, {
-    get: (_, prop) => {
-      if (prop === "el")
-        return (el) => AdoptElByInstance(el, config);
-      if (prop === "$el")
-        return (selector, watch) => AdoptElBySelector(selector, watch, config);
-      return CreateEl(prop, config);
-    }
+    get: (_, prop) => CreateEl(prop, config)
   });
 }
 
 // src/template/HTML.test.ts
 globalThis.ResizeObserver = ResizeObserver_es_default;
-var CanAdoptElement = () => {
-  const { el, $el } = HTML({
-    style: useStyle()
+var CanApplyMultipleTraitsToHtml = () => {
+  const { div } = HTML({
+    attr: useAttribute(),
+    text: useTextContent()
   });
-  const myDiv = document.createElement("div");
-  const e1 = el(myDiv)(["style", "color", "red"])("test");
-  const t1 = e1.outerHTML === '<div style="color: red;">test</div>';
-  const e2 = document.createElement("div");
-  e2.id = "test";
-  document.body.appendChild(e2);
-  $el("#test")(["style", "color", "red"]);
-  const t2 = e2.outerHTML === '<div id="test" style="color: red;"></div>';
-  return { pass: t1 && t2 };
+  const e1 = div(["attr", "id", "test"], ["text", "test"])();
+  const t1 = e1.outerHTML === '<div id="test">test</div>';
+  return { pass: t1 };
 };
+var CanCreateBasicHtmlTagWithText = () => {
+  const { div } = HTML();
+  const test = div()("test");
+  const t1 = test.outerHTML === "<div>test</div>";
+  return { pass: t1 };
+};
+var HasValidHtmlNamespace = () => {
+  const { div } = HTML({
+    attr: useAttribute()
+  });
+  const t1 = div(["attr", "id", "1"])().namespaceURI === "http://www.w3.org/1999/xhtml";
+  return { pass: t1 };
+};
+
+// src/template/SVG.ts
+function SvgTag(el, traits = [], config = {}) {
+  traits.forEach(([trait, ...args]) => config[trait](el, ...args));
+  function fn(...children) {
+    children.forEach((child) => el.append(child));
+    return el;
+  }
+  return fn;
+}
+function SVG(config) {
+  return new Proxy({}, {
+    get: (_, prop) => {
+      if (prop === "el")
+        return (el) => (...props) => SvgTag(el, props, config);
+      return (...props) => {
+        const ns = "http://www.w3.org/2000/svg";
+        const el = document.createElementNS(ns, prop);
+        return SvgTag(el, props, config);
+      };
+    }
+  });
+}
+
+// src/template/SVG.test.ts
+var CanApplyMultipleTraitsToSvg = () => {
+  const { circle } = SVG({
+    attr: useAttribute(),
+    text: useTextContent()
+  });
+  const e1 = circle(["attr", "id", "test"], ["text", "test"])();
+  const t1 = e1.outerHTML === '<circle id="test">test</circle>';
+  return { pass: t1 };
+};
+var CanCreateBasicSvgTagWithText = () => {
+  const { circle } = SVG();
+  const test = circle()("test");
+  const t1 = test.outerHTML === "<circle>test</circle>";
+  return { pass: t1 };
+};
+var HasValidSvgNamespace = () => {
+  const { circle } = SVG({
+    attr: useAttribute()
+  });
+  const t1 = circle(["attr", "id", "1"])().namespaceURI === "http://www.w3.org/2000/svg";
+  return { pass: t1 };
+};
+
+// src/traits/Attribute.test.ts
 var CanApplyAttributeTraitToHtml = () => {
-  const state = State({ disabled: false });
+  const disabled = State(false);
   const { div } = HTML({
     staticAttr: useAttribute(),
-    dynamicAttr: useAttribute({ state })
+    dynamicAttr: useAttribute({ state: disabled })
   });
   const e1 = div(["staticAttr", "id", "test"])();
   const t1 = e1.outerHTML === '<div id="test"></div>';
   const e2 = div(["staticAttr", "disabled", "true"])();
   const t2 = e2.outerHTML === '<div disabled="true"></div>';
-  state.set({ disabled: true });
-  const e5 = div(["dynamicAttr", "disabled", () => state.$val().disabled])();
+  disabled.set(true);
+  const e5 = div(["dynamicAttr", "disabled", disabled.$val])();
   const t5 = e5.outerHTML === '<div disabled="true"></div>';
-  state.set({ disabled: false });
-  const e6 = div(["dynamicAttr", "disabled", () => state.$val().disabled])();
+  disabled.set(false);
+  const e6 = div(["dynamicAttr", "disabled", disabled.$val])();
   const t6 = e6.outerHTML === '<div disabled="false"></div>';
-  state.set({ disabled: true });
-  const e7 = div(["dynamicAttr", "disabled", "true", () => state.$val().disabled])();
+  disabled.set(true);
+  const e7 = div(["dynamicAttr", "disabled", "true", disabled.$val])();
   const t7 = e7.outerHTML === '<div disabled="true"></div>';
-  state.set({ disabled: false });
-  const e8 = div(["dynamicAttr", "disabled", "true", () => state.$val().disabled])();
+  disabled.set(false);
+  const e8 = div(["dynamicAttr", "disabled", "true", disabled.$val])();
   const t8 = e8.outerHTML === "<div></div>";
   return { pass: t1 && t2 && t5 && t6 && t7 && t8 };
 };
+var CanApplyAttributeTraitToSvg = () => {
+  const { circle } = SVG({
+    attr: useAttribute()
+  });
+  const e1 = circle(["attr", "id", "test"])();
+  const t1 = e1.outerHTML === '<circle id="test"></circle>';
+  return { pass: t1 };
+};
+
+// src/traits/ClassName.ts
+function useClassName(props) {
+  const { mediaMinWidth = 0, mediaMaxWidth = Infinity, state = null } = props ?? {};
+  return (...htmlProps) => {
+    const [el, classes, condition = true] = htmlProps;
+    const apply = () => {
+      const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
+      if (!isInBreakpoint)
+        return;
+      const _classes = typeof classes === "function" ? classes() : classes;
+      const _condition = typeof condition === "function" ? condition() : condition;
+      if (_condition) {
+        el.setAttribute("class", _classes);
+      }
+    };
+    const stateIsArray = Array.isArray(state);
+    if (state)
+      stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
+    if (props?.mediaMinWidth || props?.mediaMaxWidth) {
+      const resizeObserver = new ResizeObserver(apply);
+      resizeObserver.observe(document.body);
+    }
+    apply();
+  };
+}
+
+// src/traits/ClassName.test.ts
 var CanApplyClassNameTraitToHtml = () => {
   const state = State({ className: "item--modifier-1" });
   const { div } = HTML({
@@ -931,10 +841,61 @@ var CanApplyClassNameTraitToHtml = () => {
   const t5 = e5.outerHTML === "<div></div>";
   const e6 = div(["class:static", "c1", () => true])();
   const t6 = e6.outerHTML === '<div class="c1"></div>';
-  const e7 = div(["class:static", "c1 c2", true], ["class:static", undefined, true])();
-  const t7 = e7.outerHTML === "<div></div>";
+  const e7 = div(["class:static", "c1 c2", true], ["class:static", "", true])();
+  const t7 = e7.outerHTML === '<div class=""></div>';
   return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 };
 };
+var CanApplyClassNameTraitToSvg = () => {
+  const { circle } = SVG({ "class:static": useClassName() });
+  const e1 = circle(["class:static", "c1"])();
+  const t1 = e1.outerHTML === '<circle class="c1"></circle>';
+  const e2 = circle(["class:static", "c1 c2"])();
+  const t2 = e2.outerHTML === '<circle class="c1 c2"></circle>';
+  const e3 = circle(["class:static", "c1", false])();
+  const t3 = e3.outerHTML === "<circle></circle>";
+  const e4 = circle(["class:static", "c1", true])();
+  const t4 = e4.outerHTML === '<circle class="c1"></circle>';
+  const e5 = circle(["class:static", "c1", () => false])();
+  const t5 = e5.outerHTML === "<circle></circle>";
+  const e6 = circle(["class:static", "c1", () => true])();
+  const t6 = e6.outerHTML === '<circle class="c1"></circle>';
+  const e7 = circle(["class:static", "c1 c2", true], ["class:static", "", true])();
+  const t7 = e7.outerHTML === '<circle class=""></circle>';
+  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 };
+};
+
+// src/traits/Event.ts
+var eventMap = new WeakMap;
+function useEvent(props) {
+  const { state, event = "click" } = props ?? {};
+  return (...htmlProps) => {
+    const [el, cb, condition = true] = htmlProps;
+    if (!eventMap.has(el))
+      eventMap.set(el, new Map);
+    const listenerMap = eventMap.get(el);
+    const apply = () => {
+      const _condition = typeof condition === "function" ? condition() : condition;
+      let listener = listenerMap.get(event) ?? null;
+      if (listener) {
+        el.removeEventListener(event, listener);
+        listenerMap.set(event, null);
+        listener = null;
+      }
+      if (_condition) {
+        const newListener = (e) => cb(e);
+        el.addEventListener(event, newListener);
+        listenerMap.set(event, newListener);
+        listener = newListener;
+      }
+    };
+    const stateIsArray = Array.isArray(state);
+    if (state)
+      stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
+    apply();
+  };
+}
+
+// src/traits/Event.test.ts
 var CanApplyEventListenerTraitToHtml = () => {
   const { div } = HTML({
     click: useEvent({ event: "click" })
@@ -951,13 +912,83 @@ var CanConditionallyApplyEventListenerTraitToHtml = () => {
   const { div } = HTML({
     click: useEvent({ event: "click", state: toggle })
   });
-  const e1 = div(["click", () => toggle.set(false), toggle.val], ["click", () => toggle.set(true), () => toggle.$val() === false])();
+  const handleClick = () => toggle.set(!toggle.$val());
+  const e1 = div(["click", handleClick, false], ["click", handleClick, true])();
   e1.click();
   const t1 = toggle.$val() === false;
   e1.click();
   const t2 = toggle.$val() === true;
   return { pass: t1 && t2 };
 };
+var CanApplyEventListenerTraitToSvg = () => {
+  const { circle } = SVG({
+    click: useEvent({ event: "click" })
+  });
+  let clicked = false;
+  var clickEvent = new MouseEvent("click", {
+    view: window,
+    bubbles: true,
+    cancelable: false
+  });
+  const handleClick = () => clicked = true;
+  const e1 = circle(["click", handleClick])();
+  e1.dispatchEvent(clickEvent);
+  const t1 = clicked;
+  return { pass: t1 };
+};
+var CanConditionallyApplyEventListenerTraitToSvg = () => {
+  const toggle = State(true);
+  const { circle } = SVG({
+    click: useEvent({ event: "click", state: toggle })
+  });
+  const clickEvent = new MouseEvent("click", {
+    view: window,
+    bubbles: true,
+    cancelable: false
+  });
+  const handleClick = () => toggle.set(!toggle.$val());
+  const e1 = circle(["click", handleClick, false], ["click", handleClick, true])();
+  e1.dispatchEvent(clickEvent);
+  const t1 = toggle.$val() === false;
+  e1.dispatchEvent(clickEvent);
+  const t2 = toggle.$val() === true;
+  return { pass: t1 && t2 };
+};
+
+// src/traits/InnerHTML.ts
+function useInnerHTML(props) {
+  const { state } = props ?? {};
+  return (...htmlProps) => {
+    const [el, children, condition = true] = htmlProps;
+    const apply = () => {
+      const _children = children();
+      const _condition = typeof condition === "function" ? condition() : condition;
+      if (_condition) {
+        el.innerHTML = "";
+        if (_children !== undefined) {
+          if (Array.isArray(_children)) {
+            _children.filter((c) => c).forEach((c) => {
+              if (c instanceof HTMLElement || c instanceof SVGElement)
+                el.appendChild(c);
+              else
+                el.appendChild(document.createTextNode(String(c)));
+            });
+          } else if (_children instanceof HTMLElement || _children instanceof SVGElement) {
+            el.appendChild(_children);
+          } else {
+            el.innerHTML = String(_children);
+          }
+        }
+      }
+    };
+    const stateIsArray = Array.isArray(state);
+    if (state)
+      stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
+    apply();
+  };
+}
+
+// src/traits/InnerHTML.test.ts
 var CanApplyInnerHTMLTraitToHtml = () => {
   const state = State({ value: "asdf" });
   const { div } = HTML({ staticHtml: useInnerHTML(), dynamicHtml: useInnerHTML({ state }) });
@@ -969,17 +1000,17 @@ var CanApplyInnerHTMLTraitToHtml = () => {
   const t3 = e3.outerHTML === "<div><div>one</div></div>";
   const e4 = div(["staticHtml", () => [div()("one"), div()("two")]])();
   const t4 = e4.outerHTML === "<div><div>one</div><div>two</div></div>";
-  const e5 = div(["dynamicHtml", (s) => s.value])();
+  const e5 = div(["dynamicHtml", () => state.$val().value])();
   const t5 = e5.outerHTML === "<div>asdf</div>";
   state.set({ value: "c1" });
-  const e6 = div(["dynamicHtml", (s) => s.value, false])();
+  const e6 = div(["dynamicHtml", () => state.$val().value, false])();
   const t6 = e6.outerHTML === "<div></div>";
-  const e7 = div(["dynamicHtml", (s) => s.value, () => false])();
+  const e7 = div(["dynamicHtml", () => state.$val().value, () => false])();
   const t7 = e7.outerHTML === "<div></div>";
-  const e8 = div(["dynamicHtml", (s) => s.value, () => true])();
+  const e8 = div(["dynamicHtml", () => state.$val().value, () => true])();
   const t8 = e8.outerHTML === "<div>c1</div>";
   state.set({ value: "c2" });
-  const e9 = div(["dynamicHtml", (s) => s.value, state.$test(/c2/)])();
+  const e9 = div(["dynamicHtml", () => state.$val().value, state.$test(/c2/)])();
   const t9 = e9.outerHTML === "<div>c2</div>";
   const e10 = div(["staticHtml", () => ["one", "two"]], ["staticHtml", () => {
     return;
@@ -989,31 +1020,66 @@ var CanApplyInnerHTMLTraitToHtml = () => {
     return;
   }, true])();
   const t11 = e11.outerHTML === "<div></div>";
-  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 && t10 && t11 };
+  const tests = [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11];
+  return { pass: tests.every((t) => t) };
 };
-var CanApplyTextContentTraitToHtml = () => {
+var CanApplyInnerHTMLTraitToSvg = () => {
   const state = State({ value: "asdf" });
-  const { div } = HTML({
-    staticText: useTextContent(),
-    dynamicText: useTextContent({ state })
-  });
-  const e1 = div(["staticText", "test"])();
-  const t1 = e1.outerHTML === "<div>test</div>";
-  const e2 = div(["staticText", () => "test"])();
-  const t2 = e2.outerHTML === "<div>test</div>";
-  const e3 = div(["dynamicText", (s) => s.value])();
-  const t3 = e3.outerHTML === "<div>asdf</div>";
-  const e4 = div(["dynamicText", (s) => s.value, false])();
-  const t4 = e4.outerHTML === "<div></div>";
-  const e5 = div(["dynamicText", (s) => s.value, () => false])();
-  const t5 = e5.outerHTML === "<div></div>";
-  const e6 = div(["dynamicText", (s) => s.value, () => true])();
-  const t6 = e6.outerHTML === "<div>asdf</div>";
+  const { circle } = SVG({ staticHtml: useInnerHTML(), dynamicHtml: useInnerHTML({ state }) });
+  const e1 = circle(["staticHtml", () => "asdf"])();
+  const t1 = e1.outerHTML === "<circle>asdf</circle>";
+  const e2 = circle(["staticHtml", () => ["one", "two"]])();
+  const t2 = e2.outerHTML === "<circle>onetwo</circle>";
+  const e3 = circle(["staticHtml", () => circle()("one")])();
+  const t3 = e3.outerHTML === "<circle><circle>one</circle></circle>";
+  const e4 = circle(["staticHtml", () => [circle()("one"), circle()("two")]])();
+  const t4 = e4.outerHTML === "<circle><circle>one</circle><circle>two</circle></circle>";
+  const e5 = circle(["dynamicHtml", () => state.$val().value])();
+  const t5 = e5.outerHTML === "<circle>asdf</circle>";
   state.set({ value: "c1" });
-  const e7 = div(["dynamicText", (s) => s.value, (s) => s.value === "c1"])();
-  const t7 = e7.outerHTML === "<div>c1</div>";
-  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 };
+  const e6 = circle(["dynamicHtml", () => state.$val().value, false])();
+  const t6 = e6.outerHTML === "<circle></circle>";
+  const e7 = circle(["dynamicHtml", () => state.$val().value, () => false])();
+  const t7 = e7.outerHTML === "<circle></circle>";
+  const e8 = circle(["dynamicHtml", () => state.$val().value, () => true])();
+  const t8 = e8.outerHTML === "<circle>c1</circle>";
+  state.set({ value: "c2" });
+  const e9 = circle(["dynamicHtml", () => state.$val().value, state.$test(/c2/)])();
+  const t9 = e9.outerHTML === "<circle>c2</circle>";
+  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 };
 };
+
+// src/traits/Style.ts
+function useStyle(props) {
+  const { mediaMinWidth = 0, mediaMaxWidth = Infinity, state = undefined } = props ?? {};
+  return (...htmlProps) => {
+    const [el, prop, val, condition = true] = htmlProps;
+    const apply = () => {
+      const isInBreakpoint = window.innerWidth >= mediaMinWidth && window.innerWidth <= mediaMaxWidth;
+      if (!isInBreakpoint)
+        return;
+      const _val = typeof val === "function" ? val() : val;
+      const _condition = typeof condition === "function" ? condition() : condition;
+      if (_condition) {
+        if (_val === undefined) {
+          el.style.removeProperty(prop);
+        } else {
+          prop.startsWith("--") ? el.style.setProperty(prop, _val) : el.style[prop] = _val;
+        }
+      }
+    };
+    const stateIsArray = Array.isArray(state);
+    if (state)
+      stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
+    if (props?.mediaMinWidth || props?.mediaMaxWidth) {
+      const resizeObserver = new ResizeObserver(apply);
+      resizeObserver.observe(document.body);
+    }
+    apply();
+  };
+}
+
+// src/traits/Style.test.ts
 var CanApplyStyleTraitToHtml = () => {
   const state = State({ fontSize: "13px" });
   const { div } = HTML({
@@ -1047,153 +1113,7 @@ var CanApplyCssVarWithStyleTraitToHtml = () => {
   const t1 = e1.outerHTML === '<div style="--test-var: testing;"></div>';
   return { pass: t1 };
 };
-var CanApplyMultipleTraitsToHtml = () => {
-  const { div } = HTML({
-    attr: useAttribute(),
-    text: useTextContent()
-  });
-  const e1 = div(["attr", "id", "test"], ["text", "test"])();
-  const t1 = e1.outerHTML === '<div id="test">test</div>';
-  return { pass: t1 };
-};
-var CanCreateBasicHtmlTagWithText = () => {
-  const { div } = HTML();
-  const test = div()("test");
-  const t1 = test.outerHTML === "<div>test</div>";
-  return { pass: t1 };
-};
-var HasValidHtmlNamespace = () => {
-  const { div } = HTML({
-    attr: useAttribute()
-  });
-  const t1 = div(["attr", "id", "1"])().namespaceURI === "http://www.w3.org/1999/xhtml";
-  return { pass: t1 };
-};
-// src/template/SVG.ts
-function SvgTag(el, traits = [], config = {}) {
-  traits.forEach(([trait, ...args]) => config[trait](el, ...args));
-  function fn(...children) {
-    children.forEach((child) => el.append(child));
-    return el;
-  }
-  return fn;
-}
-function SVG(config) {
-  return new Proxy({}, {
-    get: (_, prop) => {
-      if (prop === "el")
-        return (el) => (...props) => SvgTag(el, props, config);
-      return (...props) => {
-        const ns = "http://www.w3.org/2000/svg";
-        const el = document.createElementNS(ns, prop);
-        return SvgTag(el, props, config);
-      };
-    }
-  });
-}
-// src/template/SVG.test.ts
-var CanAdoptElement2 = () => {
-  const { el } = SVG({
-    style: useStyle()
-  });
-  const myCircle = document.createElement("circle");
-  const e1 = el(myCircle)(["style", "color", "red"])();
-  const t1 = e1.outerHTML === '<circle style="color: red;"></circle>';
-  return { pass: t1 };
-};
-var CanApplyAttributeTraitToHtml2 = () => {
-  const { circle } = SVG({
-    attr: useAttribute()
-  });
-  const e1 = circle(["attr", "id", "test"])();
-  const t1 = e1.outerHTML === '<circle id="test"></circle>';
-  return { pass: t1 };
-};
-var CanApplyClassNameTraitToHtml2 = () => {
-  const { circle } = SVG({ "class:static": useClassName() });
-  const e1 = circle(["class:static", "c1"])();
-  const t1 = e1.outerHTML === '<circle class="c1"></circle>';
-  const e2 = circle(["class:static", "c1 c2"])();
-  const t2 = e2.outerHTML === '<circle class="c1 c2"></circle>';
-  const e3 = circle(["class:static", "c1", false])();
-  const t3 = e3.outerHTML === "<circle></circle>";
-  const e4 = circle(["class:static", "c1", true])();
-  const t4 = e4.outerHTML === '<circle class="c1"></circle>';
-  const e5 = circle(["class:static", "c1", () => false])();
-  const t5 = e5.outerHTML === "<circle></circle>";
-  const e6 = circle(["class:static", "c1", () => true])();
-  const t6 = e6.outerHTML === '<circle class="c1"></circle>';
-  const e7 = circle(["class:static", "c1 c2", true], ["class:static", undefined, true])();
-  const t7 = e7.outerHTML === "<circle></circle>";
-  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 };
-};
-var CanApplyEventListenerTraitToHtml2 = () => {
-  const { circle } = SVG({
-    click: useEvent({ event: "click" })
-  });
-  let clicked = false;
-  var clickEvent = new MouseEvent("click", {
-    view: window,
-    bubbles: true,
-    cancelable: false
-  });
-  const handleClick = () => clicked = true;
-  const e1 = circle(["click", handleClick])();
-  e1.dispatchEvent(clickEvent);
-  const t1 = clicked;
-  return { pass: t1 };
-};
-var CanConditionallyApplyEventListenerTraitToHtml2 = () => {
-  const toggle = State(true);
-  const { circle } = SVG({
-    click: useEvent({ event: "click", state: toggle })
-  });
-  const clickEvent = new MouseEvent("click", {
-    view: window,
-    bubbles: true,
-    cancelable: false
-  });
-  const e1 = circle(["click", () => toggle.set(false), toggle.val], ["click", () => toggle.set(true), () => toggle.$val() === false])();
-  e1.dispatchEvent(clickEvent);
-  const t1 = toggle.$val() === false;
-  e1.dispatchEvent(clickEvent);
-  const t2 = toggle.$val() === true;
-  return { pass: t1 && t2 };
-};
-var CanApplyInnerHTMLTraitToHtml2 = () => {
-  const state = State({ value: "asdf" });
-  const { circle } = SVG({ staticHtml: useInnerHTML(), dynamicHtml: useInnerHTML({ state }) });
-  const e1 = circle(["staticHtml", () => "asdf"])();
-  const t1 = e1.outerHTML === "<circle>asdf</circle>";
-  const e2 = circle(["staticHtml", () => ["one", "two"]])();
-  const t2 = e2.outerHTML === "<circle>onetwo</circle>";
-  const e3 = circle(["staticHtml", () => circle()("one")])();
-  const t3 = e3.outerHTML === "<circle><circle>one</circle></circle>";
-  const e4 = circle(["staticHtml", () => [circle()("one"), circle()("two")]])();
-  const t4 = e4.outerHTML === "<circle><circle>one</circle><circle>two</circle></circle>";
-  const e5 = circle(["dynamicHtml", (s) => s.value])();
-  const t5 = e5.outerHTML === "<circle>asdf</circle>";
-  state.set({ value: "c1" });
-  const e6 = circle(["dynamicHtml", (s) => s.value, false])();
-  const t6 = e6.outerHTML === "<circle></circle>";
-  const e7 = circle(["dynamicHtml", (s) => s.value, () => false])();
-  const t7 = e7.outerHTML === "<circle></circle>";
-  const e8 = circle(["dynamicHtml", (s) => s.value, () => true])();
-  const t8 = e8.outerHTML === "<circle>c1</circle>";
-  state.set({ value: "c2" });
-  const e9 = circle(["dynamicHtml", (s) => s.value, state.$test(/c2/)])();
-  const t9 = e9.outerHTML === "<circle>c2</circle>";
-  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 };
-};
-var CanApplyInnerTextTraitToHtml = () => {
-  const { circle } = SVG({
-    text: useTextContent()
-  });
-  const e1 = circle(["text", "test"])();
-  const t1 = e1.outerHTML === "<circle>test</circle>";
-  return { pass: t1 };
-};
-var CanApplyStyleTraitToHtml2 = () => {
+var CanApplyStyleTraitToSvg = () => {
   const { circle } = SVG({
     style: useStyle()
   });
@@ -1202,26 +1122,37 @@ var CanApplyStyleTraitToHtml2 = () => {
   const e2 = circle(["style", "fontSize", "12px"], ["style", "color", "red"])();
   return { pass: t1 };
 };
-var CanApplyMultipleTraitsToHtml2 = () => {
+
+// src/traits/TextContent.test.ts
+var CanApplyTextContentTraitToHtml = () => {
+  const state = State({ value: "asdf" });
+  const { div } = HTML({
+    staticText: useTextContent(),
+    dynamicText: useTextContent({ state })
+  });
+  const e1 = div(["staticText", "test"])();
+  const t1 = e1.outerHTML === "<div>test</div>";
+  const e2 = div(["staticText", () => "test"])();
+  const t2 = e2.outerHTML === "<div>test</div>";
+  const e3 = div(["dynamicText", () => state.$val().value])();
+  const t3 = e3.outerHTML === "<div>asdf</div>";
+  const e4 = div(["dynamicText", () => state.$val().value, false])();
+  const t4 = e4.outerHTML === "<div></div>";
+  const e5 = div(["dynamicText", () => state.$val().value, () => false])();
+  const t5 = e5.outerHTML === "<div></div>";
+  const e6 = div(["dynamicText", () => state.$val().value, () => true])();
+  const t6 = e6.outerHTML === "<div>asdf</div>";
+  state.set({ value: "c1" });
+  const e7 = div(["dynamicText", () => state.$val().value, () => state.$val().value === "c1"])();
+  const t7 = e7.outerHTML === "<div>c1</div>";
+  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 };
+};
+var CanApplyTextContentTraitToSvg = () => {
   const { circle } = SVG({
-    attr: useAttribute(),
     text: useTextContent()
   });
-  const e1 = circle(["attr", "id", "test"], ["text", "test"])();
-  const t1 = e1.outerHTML === '<circle id="test">test</circle>';
-  return { pass: t1 };
-};
-var CanCreateBasicHtmlTagWithText2 = () => {
-  const { circle } = SVG();
-  const test = circle()("test");
-  const t1 = test.outerHTML === "<circle>test</circle>";
-  return { pass: t1 };
-};
-var HasValidHtmlNamespace2 = () => {
-  const { circle } = SVG({
-    attr: useAttribute()
-  });
-  const t1 = circle(["attr", "id", "1"])().namespaceURI === "http://www.w3.org/2000/svg";
+  const e1 = circle(["text", "test"])();
+  const t1 = e1.outerHTML === "<circle>test</circle>";
   return { pass: t1 };
 };
 
@@ -1278,27 +1209,25 @@ window.addEventListener("DOMContentLoaded", () => {
       ["can apply event listener trait", CanApplyEventListenerTraitToHtml],
       ["can conditionally apply event listener trait", CanConditionallyApplyEventListenerTraitToHtml],
       ["can apply inner html trait", CanApplyInnerHTMLTraitToHtml],
-      ["can apply inner text trait", CanApplyTextContentTraitToHtml],
+      ["can apply text content trait", CanApplyTextContentTraitToHtml],
       ["can apply style trait", CanApplyStyleTraitToHtml],
       ["can apply css var with style trait", CanApplyCssVarWithStyleTraitToHtml],
       ["can apply multiple traits", CanApplyMultipleTraitsToHtml],
       ["can create basic tag with text", CanCreateBasicHtmlTagWithText],
-      ["has valid namespace", HasValidHtmlNamespace],
-      ["can adopt existing element", CanAdoptElement]
+      ["has valid namespace", HasValidHtmlNamespace]
     ],
     [
       "SVG",
-      ["can apply inner html trait", CanApplyInnerHTMLTraitToHtml2],
-      ["can apply attribute trait", CanApplyAttributeTraitToHtml2],
-      ["can apply class name trait", CanApplyClassNameTraitToHtml2],
-      ["can apply event listener trait", CanApplyEventListenerTraitToHtml2],
-      ["can conditionally apply event listener trait", CanConditionallyApplyEventListenerTraitToHtml2],
-      ["can apply inner text trait", CanApplyInnerTextTraitToHtml],
-      ["can apply style trait", CanApplyStyleTraitToHtml2],
-      ["can apply multiple traits", CanApplyMultipleTraitsToHtml2],
-      ["can create basic tag with text", CanCreateBasicHtmlTagWithText2],
-      ["has valid namespace", HasValidHtmlNamespace2],
-      ["can adopt existing element", CanAdoptElement2]
+      ["can apply inner html trait", CanApplyInnerHTMLTraitToSvg],
+      ["can apply attribute trait", CanApplyAttributeTraitToSvg],
+      ["can apply class name trait", CanApplyClassNameTraitToSvg],
+      ["can apply event listener trait", CanApplyEventListenerTraitToSvg],
+      ["can conditionally apply event listener trait", CanConditionallyApplyEventListenerTraitToSvg],
+      ["can apply text content trait", CanApplyTextContentTraitToSvg],
+      ["can apply style trait", CanApplyStyleTraitToSvg],
+      ["can apply multiple traits", CanApplyMultipleTraitsToSvg],
+      ["can create basic tag with text", CanCreateBasicSvgTagWithText],
+      ["has valid namespace", HasValidSvgNamespace]
     ],
     [
       "State",

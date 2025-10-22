@@ -1,7 +1,7 @@
 import { StateType } from '../types';
 
-type UseInnerHTMLProps<T> = {
-  state: StateType<T>;
+type UseInnerHTMLConfig = {
+  state?: StateType<any> | StateType<any>[];
 };
 
 type Children =
@@ -12,27 +12,23 @@ type Children =
   | undefined
   | (string | number | HTMLElement | SVGElement | undefined)[];
 
-export function useInnerHTML<T>({
-  state,
-}: UseInnerHTMLProps<T>): (
-  el: HTMLElement,
-  children: (state: T) => Children,
-  condition?: ((state: T) => boolean) | boolean,
-) => void;
-
 export function useInnerHTML(): (
   el: HTMLElement,
   children: () => Children,
   condition?: (() => boolean) | boolean,
 ) => void;
 
-export function useInnerHTML<T>(props?: UseInnerHTMLProps<T>) {
+export function useInnerHTML(
+  props?: UseInnerHTMLConfig,
+): (el: HTMLElement, children: () => Children, condition?: (() => boolean) | boolean) => void;
+
+export function useInnerHTML(props?: UseInnerHTMLConfig) {
   const { state } = props ?? {};
   return (...htmlProps: any) => {
-    const [el, children, condition] = htmlProps;
+    const [el, children, condition = true] = htmlProps;
     const apply = () => {
-      const _children = state ? children(state.$val()) : children();
-      const _condition = typeof condition === 'function' ? condition(state ? state.val : undefined) : condition ?? true;
+      const _children = children();
+      const _condition = typeof condition === 'function' ? condition() : condition;
       if (_condition) {
         el.innerHTML = '';
         if (_children !== undefined) {
@@ -51,7 +47,8 @@ export function useInnerHTML<T>(props?: UseInnerHTMLProps<T>) {
         }
       }
     };
-    if (state) state.sub(apply);
+    const stateIsArray = Array.isArray(state);
+    if (state) stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
     apply();
   };
 }
