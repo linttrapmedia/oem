@@ -1,3 +1,18 @@
+import { CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg } from '../src/factory/traits/Attribute.test';
+import { CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg } from '../src/factory/traits/ClassName.test';
+import {
+  CanApplyEventListenerTraitToHtml,
+  CanApplyEventListenerTraitToSvg,
+  CanConditionallyApplyEventListenerTraitToHtml,
+  CanConditionallyApplyEventListenerTraitToSvg,
+} from '../src/factory/traits/Event.test';
+import { CanApplyInnerHTMLTraitToHtml, CanApplyInnerHTMLTraitToSvg } from '../src/factory/traits/InnerHTML.test';
+import {
+  CanApplyCssVarWithStyleTraitToHtml,
+  CanApplyStyleTraitToHtml,
+  CanApplyStyleTraitToSvg,
+} from '../src/factory/traits/Style.test';
+import { CanApplyTextContentTraitToHtml, CanApplyTextContentTraitToSvg } from '../src/factory/traits/TextContent.test';
 import * as state from '../src/state/State.test';
 import {
   CanApplyMultipleTraitsToHtml,
@@ -9,21 +24,6 @@ import {
   CanCreateBasicSvgTagWithText,
   HasValidSvgNamespace,
 } from '../src/template/SVG.test';
-import { CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg } from '../src/traits/Attribute.test';
-import { CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg } from '../src/traits/ClassName.test';
-import {
-  CanApplyEventListenerTraitToHtml,
-  CanApplyEventListenerTraitToSvg,
-  CanConditionallyApplyEventListenerTraitToHtml,
-  CanConditionallyApplyEventListenerTraitToSvg,
-} from '../src/traits/Event.test';
-import { CanApplyInnerHTMLTraitToHtml, CanApplyInnerHTMLTraitToSvg } from '../src/traits/InnerHTML.test';
-import {
-  CanApplyCssVarWithStyleTraitToHtml,
-  CanApplyStyleTraitToHtml,
-  CanApplyStyleTraitToSvg,
-} from '../src/traits/Style.test';
-import { CanApplyTextContentTraitToHtml, CanApplyTextContentTraitToSvg } from '../src/traits/TextContent.test';
 import { runner } from './runner';
 
 window.addEventListener('DOMContentLoaded', () => {

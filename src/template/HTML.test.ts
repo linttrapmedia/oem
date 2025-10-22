@@ -1,6 +1,6 @@
 import ResizeObserver from 'resize-observer-polyfill';
-import { useAttribute } from '../traits/Attribute';
-import { useTextContent } from '../traits/TextContent';
+import { useAttribute } from '../factory/traits/Attribute';
+import { useTextContent } from '../factory/traits/TextContent';
 import { Test } from '../types';
 import { HTML } from './HTML';
 

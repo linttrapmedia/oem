@@ -1,15 +1,31 @@
+import { useEvent } from '@/factory/traits/Event';
+import { useStyle } from '@/factory/traits/Style';
+import { HTML, State } from '@/index';
 import pkg from '../../package.json';
 import { html, menuOpen, menuState, MenuStateTypes } from '../config';
 
-const Item = (txt: string, stateKey: MenuStateTypes) =>
-  html.div(
+const Item = (txt: string, stateKey: MenuStateTypes) => {
+  const hovered = State(false);
+  const tmpl = HTML({
+    click: useEvent({ event: 'click' }),
+    mouseover: useEvent({ event: 'mouseover' }),
+    mouseout: useEvent({ event: 'mouseout' }),
+    style: useStyle({ state: [hovered, menuState] }),
+  });
+
+  return tmpl.div(
     ['style', 'padding', '10px 20px'],
     ['style', 'cursor', 'pointer'],
     ['style', 'transition', 'background-color 0.3s'],
     ['style', 'textTransform', 'uppercase'],
     ['click', menuState.$set(stateKey)],
-    ['style:menu', 'color', 'yellow', menuState.test(stateKey)],
+    ['style', 'color', 'yellow', hovered.$test(true)],
+    ['style', 'color', 'white', hovered.$test(false)],
+    ['style', 'color', 'yellow', menuState.test(stateKey)],
+    ['mouseover', hovered.$set(true)],
+    ['mouseout', hovered.$set(false)],
   )(txt);
+};
 
 export const Menu = () =>
   html.div(

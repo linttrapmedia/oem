@@ -1,9 +1,8 @@
-import { State, SVG } from '../src';
-import { HTML } from '../src/template/HTML';
-import { useAttribute } from '../src/traits/Attribute';
-import { useEvent } from '../src/traits/Event';
-import { useInnerHTML } from '../src/traits/InnerHTML';
-import { useStyle } from '../src/traits/Style';
+import { useAttribute } from '@/factory/traits/Attribute';
+import { useEvent } from '@/factory/traits/Event';
+import { useInnerHTML } from '@/factory/traits/InnerHTML';
+import { useStyle } from '@/factory/traits/Style';
+import { HTML, State, SVG } from '@/index';
 
 declare namespace Prism {
   const highlight: any;
@@ -58,14 +57,10 @@ export const html = HTML({
   'style:menu': useStyle({ state: menuState }),
   'style:menu_toggle': useStyle({ state: menuOpen }),
   'style:tablet': useStyle({ mediaMinWidth: 800 }),
-  'style:mouseover': useStyle({ event: 'mouseover' }),
-  'style:mouseout': useStyle({ event: 'mouseout' }),
 });
 
 export const svg = SVG({
   attr: useAttribute(),
   style: useStyle(),
   click: useEvent({ event: 'click' }),
-  'style:mouseover': useStyle({ event: 'mouseover' }),
-  'style:mouseout': useStyle({ event: 'mouseout' }),
 });

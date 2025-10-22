@@ -15,7 +15,11 @@ export const Factory = () =>
         Table.Header('Description'),
         Table.Cell(
           html.a(
-            ['attr', 'href', 'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/traits/Style.ts'],
+            [
+              'attr',
+              'href',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/factory/traits/Style.ts',
+            ],
             ['attr', 'target', '_blank'],
           )('useAttribute'),
         ),
@@ -25,7 +29,7 @@ export const Factory = () =>
             [
               'attr',
               'href',
-              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/traits/ClassName.ts',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/factory/traits/ClassName.ts',
             ],
             ['attr', 'target', '_blank'],
           )('useClassName'),
@@ -33,7 +37,11 @@ export const Factory = () =>
         Table.Cell('Apply class names'),
         Table.Cell(
           html.a(
-            ['attr', 'href', 'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/traits/Event.ts'],
+            [
+              'attr',
+              'href',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/factory/traits/Event.ts',
+            ],
             ['attr', 'target', '_blank'],
           )('useEvent'),
         ),
@@ -43,7 +51,7 @@ export const Factory = () =>
             [
               'attr',
               'href',
-              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/traits/InnerHTML.ts',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/factory/traits/InnerHTML.ts',
             ],
             ['attr', 'target', '_blank'],
           )('useInnerHTML'),
@@ -54,7 +62,7 @@ export const Factory = () =>
             [
               'attr',
               'href',
-              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/traits/TextContent.ts',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/factory/traits/TextContent.ts',
             ],
             ['attr', 'target', '_blank'],
           )('useTextContent'),
@@ -62,7 +70,11 @@ export const Factory = () =>
         Table.Cell('Apply inner text'),
         Table.Cell(
           html.a(
-            ['attr', 'href', 'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/traits/Style.ts'],
+            [
+              'attr',
+              'href',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/factory/traits/Style.ts',
+            ],
             ['attr', 'target', '_blank'],
           )('useStyle'),
         ),

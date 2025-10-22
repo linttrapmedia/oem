@@ -1,7 +1,7 @@
-import { State } from '../state/State';
-import { HTML } from '../template/HTML';
-import { SVG } from '../template/SVG';
-import { Test } from '../types';
+import { State } from '@/state/State';
+import { HTML } from '@/template/HTML';
+import { SVG } from '@/template/SVG';
+import { Test } from '@/types';
 import { useClassName } from './ClassName';
 
 export const CanApplyClassNameTraitToHtml: Test = () => {
