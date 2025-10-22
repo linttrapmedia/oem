@@ -42,24 +42,18 @@ tmpl.div(['style','color','red'])('Hello, OEM!');
 // create a state object
 const color = State<'green' | 'red'>('red');
 
-// get the current value
-console.log(color.val); // 'red'
+// getting
+console.log(color.val);
+console.log(color.$val()); // (method version)
 
-// get the current value (method version)
-console.log(color.$val()); // 'red'
-
-// set the value
-color.set('green');
-
-// set the value (method version)
-const setToRed = color.$set('red');
+// setting
+color.set('green'); 
+const setToRed = color.$set('red'); // (method version)
 setToRed();
 
-// reduce the value
+// reducing
 color.reduce((prev) => prev === 'red' ? 'green' : 'red');
-
-// reduce the value (method version)
-const toggleColor = color.$reduce((prev) => prev === 'red' ? 'green' : 'red');
+const toggleColor = color.$reduce((prev) => prev === 'red' ? 'green' : 'red'); (method version)
 toggleColor();
 
 // subscribe to changes
@@ -69,19 +63,13 @@ color.sub(colorSub);
 // unsubscribe from changes
 color.unsub(colorSub);
 
-// test the current value
-color.test('red'); // returns true
-
-// test if the current value is NOT 'red'
-color.test('red', false); // returns true
-
-// test the current value (method version)
-const isRed = color.$test('red'); 
-isRed(); // returns true
-
-// test if the current value is NOT 'red' (method version)
-const isNotRed = color.$test('red', false);
-isNotRed(); // returns true
+// test
+color.test('red'); // by string
+color.test('red', false); // by string, false for NOT equal
+const isRed = color.$test('red');  // (method version)
+isRed();
+const isNotRed = color.$test('red', false); // (method version) NOT equal
+isNotRed();
 `),
       ),
     }),

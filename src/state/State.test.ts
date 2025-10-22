@@ -65,6 +65,10 @@ export const CanTestStateValue: Test = () => {
     str.test(/world/, false),
     str.$test(/hello/)(),
     str.$test(/world/, false)(),
+    str.test((val) => val === 'hello'),
+    str.test((val) => val === 'world', false),
+    str.$test((val) => val === 'hello')(),
+    str.$test((val) => val === 'world', false)(),
   ];
 
   return {

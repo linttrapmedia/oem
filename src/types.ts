@@ -4,7 +4,7 @@ export type StateType<T> = {
   reduce: (cb: (prev: T) => T) => void;
   set: (atom: T) => void;
   sub: (cb: (atom: T) => any) => void;
-  test: (regex: RegExp | T, checkFor?: true | false) => boolean;
+  test: (regex: RegExp | T | ((atom: T) => boolean), checkFor?: true | false) => boolean;
   unsub: (cb: (atom: T) => any) => void;
   val: T;
   $reduce: (cb: (prev: T) => T) => () => void;

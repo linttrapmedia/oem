@@ -41,15 +41,18 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
     if (!_subs.includes(cb)) _subs.push(cb);
   };
 
-  const test = (regexOrVal: RegExp | T, checkFor: true | false = true) => {
+  const test = (predicate: RegExp | T | ((atom: T) => boolean), truthCheck: true | false = true) => {
     const serialized_currentVal = JSON.stringify(_val);
-    if (regexOrVal instanceof RegExp) {
-      const result = regexOrVal.test(serialized_currentVal);
-      return checkFor ? result : !result;
+    if (predicate instanceof RegExp) {
+      const result = predicate.test(serialized_currentVal);
+      return truthCheck ? result : !result;
+    } else if (typeof predicate === 'function' && predicate instanceof Function) {
+      const result = (predicate as (atom: T) => boolean)(_val);
+      return truthCheck ? result : !result;
     } else {
-      const serialized_regex = JSON.stringify(regexOrVal);
-      const result = serialized_currentVal === serialized_regex;
-      return checkFor ? result : !result;
+      const string_comparison = JSON.stringify(predicate);
+      const result = serialized_currentVal === string_comparison;
+      return truthCheck ? result : !result;
     }
   };
 
