@@ -43,33 +43,31 @@ tmpl.div(['style','color','red'])('Hello, OEM!');
 const color = State<'green' | 'red'>('red');
 
 // getting
-console.log(color.val);
-console.log(color.$val()); // (cb version)
+color.val;
+color.$val(); // method version
 
 // setting
 color.set('green'); 
-const setToRed = color.$set('red'); // (cb version)
+const setToRed = color.$set('red'); // cb version
 
 // reducing
 color.reduce((prev) => prev === 'red' ? 'green' : 'red');
-color.$reduce((prev) => prev === 'red' ? 'green' : 'red'); // (cb version)
+color.$reduce((prev) => prev === 'red' ? 'green' : 'red'); // cb version
 
-// subscribe to changes
-const colorSub = (clr) =>  console.log('Color changed to:', clr);
+// subscribe/unsubscribe to changes
+const colorSub = (updatedColor) => {...};
 color.sub(colorSub);
-
-// unsubscribe from changes
 color.unsub(colorSub);
 
 // testing value
 color.test('red'); // by string
 color.test('red', false); // by string, false for NOT equal
-color.$test('red');  // by string, (cb version)
-color.$test('red', false); // by string, (cb version) NOT equal
+color.$test('red');  // by string, cb version
+color.$test('red', false); // by string, cb version NOT equal
 color.test(/red/); // by regex
-color.$test(/red/); // by regex, (cb version)
+color.$test(/red/); // by regex, cb version
 color.test((val) => val === 'red'); // by function
-color.$test((val) => val === 'red'); // by function, (cb version)
+color.$test((val) => val === 'red'); // by function, cb version
 `),
       ),
     }),

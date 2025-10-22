@@ -88,17 +88,26 @@ color.sub(cb);`),
         html.div(['style', 'textAlign', 'center'])(
           'Test if the current state matches a value with the ',
           InlineCode('test'),
-          ' method. Note: equality is determined by comparing the serialized values.',
+          ' method. Use this for simple values like strings and numbers.',
         ),
         html.pre(['prism'])(`color.test('red');
+color.test('red', false); // NOT equal
 color.$test('red'); // callback version
+color.$test('red', false); // callback version NOT equal
+`),
+        html.div(['style', 'textAlign', 'center'])(
+          'Or use a predicate function to test the value. Works better for arrays and objects.',
+        ),
+        html.pre(['prism'])(`color.test((val) => val === 'red');
+color.test((val) => val === 'red', false); // NOT equal
+color.$test((val) => val === 'red'); // callback version
+color.$test((val) => val === 'red', false); // callback version NOT equal
 `),
         html.div(['style', 'textAlign', 'center'])('Works with regular expressions too'),
         html.pre(['prism'])(`color.test(/red/);
-color.$test(/red/); // callback version`),
-        html.div(['style', 'textAlign', 'center'])('You can also check for inequality by passing a second argument'),
-        html.pre(['prism'])(`color.test('red', false); // returns true if color is NOT 'red'
-color.$test('red', false); // callback version`),
+color.test(/red/, false); // NOT equal
+color.$test(/red/); // callback version
+color.$test(/red/, false); // callback version NOT equal`),
       ),
     }),
     Section({
