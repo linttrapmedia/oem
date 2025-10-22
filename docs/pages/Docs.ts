@@ -44,32 +44,32 @@ const color = State<'green' | 'red'>('red');
 
 // getting
 console.log(color.val);
-console.log(color.$val()); // (method version)
+console.log(color.$val()); // (cb version)
 
 // setting
 color.set('green'); 
-const setToRed = color.$set('red'); // (method version)
-setToRed();
+const setToRed = color.$set('red'); // (cb version)
 
 // reducing
 color.reduce((prev) => prev === 'red' ? 'green' : 'red');
-const toggleColor = color.$reduce((prev) => prev === 'red' ? 'green' : 'red'); (method version)
-toggleColor();
+color.$reduce((prev) => prev === 'red' ? 'green' : 'red'); // (cb version)
 
 // subscribe to changes
-const colorSub = (newColor) =>  console.log('Color changed to:', newColor);
+const colorSub = (clr) =>  console.log('Color changed to:', clr);
 color.sub(colorSub);
 
 // unsubscribe from changes
 color.unsub(colorSub);
 
-// test
+// testing value
 color.test('red'); // by string
 color.test('red', false); // by string, false for NOT equal
-const isRed = color.$test('red');  // (method version)
-isRed();
-const isNotRed = color.$test('red', false); // (method version) NOT equal
-isNotRed();
+color.$test('red');  // by string, (cb version)
+color.$test('red', false); // by string, (cb version) NOT equal
+color.test(/red/); // by regex
+color.$test(/red/); // by regex, (cb version)
+color.test((val) => val === 'red'); // by function
+color.$test((val) => val === 'red'); // by function, (cb version)
 `),
       ),
     }),
