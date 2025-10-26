@@ -75,6 +75,15 @@ dev_todo: ## Dev todo example
 		--sourcemap \
 		--minify
 
+dev_todo2: ## Dev todo example
+	@echo $(STATUS) Building examples...
+	@open ./examples/todo2/index.html
+	@bun build ./examples/todo2/src/index.ts \
+		--watch \
+		--outdir=./examples/todo2 \
+		--sourcemap \
+		--minify
+
 install: ## Install the project
 	@echo $(STATUS) Installing...
 	@bun install
