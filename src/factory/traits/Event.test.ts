@@ -22,12 +22,12 @@ export const CanConditionallyApplyEventListenerTraitToHtml: Test = () => {
   const { div } = HTML({
     click: useEvent({ event: 'click', state: toggle }),
   });
-  const handleClick: any = () => toggle.set(!toggle.$val());
+  const handleClick: any = () => toggle.set(!toggle.val());
   const e1 = div(['click', handleClick, false], ['click', handleClick, true])();
   e1.click();
-  const t1 = toggle.$val() === false;
+  const t1 = toggle.val() === false;
   e1.click();
-  const t2 = toggle.$val() === true;
+  const t2 = toggle.val() === true;
   return { pass: t1 && t2 };
 };
 
@@ -58,12 +58,12 @@ export const CanConditionallyApplyEventListenerTraitToSvg: Test = () => {
     bubbles: true,
     cancelable: false,
   });
-  const handleClick: any = () => toggle.set(!toggle.$val());
+  const handleClick: any = () => toggle.set(!toggle.val());
 
   const e1 = circle(['click', handleClick, false], ['click', handleClick, true])();
   e1.dispatchEvent(clickEvent);
-  const t1 = toggle.$val() === false;
+  const t1 = toggle.val() === false;
   e1.dispatchEvent(clickEvent);
-  const t2 = toggle.$val() === true;
+  const t2 = toggle.val() === true;
   return { pass: t1 && t2 };
 };

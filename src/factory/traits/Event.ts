@@ -1,4 +1,4 @@
-import { StateType } from '../types';
+import { StateType } from '@/types';
 
 type UseEventConfig<E extends keyof GlobalEventHandlersEventMap> = {
   event: E;

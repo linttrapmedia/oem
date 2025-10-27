@@ -6,11 +6,10 @@ export type StateType<T> = {
   sub: (cb: (atom: T) => any) => void;
   test: (regex: RegExp | T | ((atom: T) => boolean), checkFor?: true | false) => boolean;
   unsub: (cb: (atom: T) => any) => void;
-  val: T;
+  val: () => T;
   $reduce: (cb: (prev: T) => T) => () => void;
   $set: (atom: T) => () => void;
   $test: (regex: RegExp | T | ((atom: T) => boolean), checkFor?: true | false) => () => boolean;
-  $val: () => T;
 };
 
 export type HtmlTraitFunc<Args extends any[]> = (el: HTMLElement, ...args: Args) => HTMLElement;

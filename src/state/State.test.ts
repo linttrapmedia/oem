@@ -3,14 +3,14 @@ import { State } from './State';
 
 export const CanCreateState: Test = () => {
   const num = State(1);
-  const t1 = num.$val() === 1;
+  const t1 = num.val() === 1;
   return { pass: t1 };
 };
 
 export const CanUpdateState: Test = () => {
   const num = State(1);
   num.set(2);
-  const t1 = num.$val() === 2;
+  const t1 = num.val() === 2;
   return { pass: t1 };
 };
 
@@ -41,7 +41,7 @@ export const CanSetStateAndPublish: Test = () => {
   num.sub(() => (flag = true));
   num.set({ val: 2 });
 
-  const t1 = flag && num.$val().val === 2;
+  const t1 = flag && num.val().val === 2;
   return { pass: t1 };
 };
 

@@ -19,20 +19,20 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
 
   // dynamic tests
   disabled.set(true);
-  const e5 = div(['dynamicAttr', 'disabled', disabled.$val])();
+  const e5 = div(['dynamicAttr', 'disabled', disabled.val])();
   const t5 = e5.outerHTML === '<div disabled="true"></div>';
 
   disabled.set(false);
-  const e6 = div(['dynamicAttr', 'disabled', disabled.$val])();
+  const e6 = div(['dynamicAttr', 'disabled', disabled.val])();
   const t6 = e6.outerHTML === '<div disabled="false"></div>';
 
   // condition tests
   disabled.set(true);
-  const e7 = div(['dynamicAttr', 'disabled', 'true', disabled.$val])();
+  const e7 = div(['dynamicAttr', 'disabled', 'true', disabled.val])();
   const t7 = e7.outerHTML === '<div disabled="true"></div>';
 
   disabled.set(false);
-  const e8 = div(['dynamicAttr', 'disabled', 'true', disabled.$val])();
+  const e8 = div(['dynamicAttr', 'disabled', 'true', disabled.val])();
   const t8 = e8.outerHTML === '<div></div>';
 
   return { pass: t1 && t2 && t5 && t6 && t7 && t8 };

@@ -12,16 +12,16 @@ export const CanApplyStyleTraitToHtml: Test = () => {
   });
   const e1 = div(['staticStyle', 'fontSize', '12px'])();
   const t1 = e1.outerHTML === '<div style="font-size: 12px;"></div>';
-  const e2 = div(['dynamicStyle', 'fontSize', () => state.$val().fontSize])();
+  const e2 = div(['dynamicStyle', 'fontSize', () => state.val().fontSize])();
   const t2a = e2.outerHTML === '<div style="font-size: 13px;"></div>';
   state.set({ fontSize: '14px' });
   const t2b = e2.outerHTML === '<div style="font-size: 14px;"></div>';
   state.set({ fontSize: '15px' });
-  const e3 = div(['dynamicStyle', 'fontSize', () => state.$val().fontSize, () => false])();
+  const e3 = div(['dynamicStyle', 'fontSize', () => state.val().fontSize, () => false])();
   const t3 = e3.outerHTML === '<div></div>';
-  const e4 = div(['dynamicStyle', 'fontSize', () => state.$val().fontSize, () => true])();
+  const e4 = div(['dynamicStyle', 'fontSize', () => state.val().fontSize, () => true])();
   const t4 = e4.outerHTML === '<div style="font-size: 15px;"></div>';
-  const e5 = div(['dynamicStyle', 'fontSize', () => state.$val().fontSize, state.$test(/15px/)])();
+  const e5 = div(['dynamicStyle', 'fontSize', () => state.val().fontSize, state.$test(/15px/)])();
   const t5 = e5.outerHTML === '<div style="font-size: 15px;"></div>';
 
   // multiple style attributes and using undefined

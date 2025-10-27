@@ -1,3 +1,4 @@
+import { CanMapListOfElements } from '@/factory/traits/Map.test';
 import { CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg } from '../src/factory/traits/Attribute.test';
 import { CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg } from '../src/factory/traits/ClassName.test';
 import {
@@ -30,27 +31,46 @@ window.addEventListener('DOMContentLoaded', () => {
   runner([
     [
       'HTML',
-      ['can apply attribute trait', CanApplyAttributeTraitToHtml],
-      ['can apply class name trait', CanApplyClassNameTraitToHtml],
-      ['can apply event listener trait', CanApplyEventListenerTraitToHtml],
-      ['can conditionally apply event listener trait', CanConditionallyApplyEventListenerTraitToHtml],
-      ['can apply inner html trait', CanApplyInnerHTMLTraitToHtml],
-      ['can apply text content trait', CanApplyTextContentTraitToHtml],
-      ['can apply style trait', CanApplyStyleTraitToHtml],
-      ['can apply css var with style trait', CanApplyCssVarWithStyleTraitToHtml],
       ['can apply multiple traits', CanApplyMultipleTraitsToHtml],
       ['can create basic tag with text', CanCreateBasicHtmlTagWithText],
       ['has valid namespace', HasValidHtmlNamespace],
     ],
     [
+      'useAttribute',
+      ['can apply attribute trait to html', CanApplyAttributeTraitToHtml],
+      ['can apply attribute trait to svg', CanApplyAttributeTraitToSvg],
+    ],
+    [
+      'useClassName',
+      ['can apply class name trait to html', CanApplyClassNameTraitToHtml],
+      ['can apply class name trait to svg', CanApplyClassNameTraitToSvg],
+    ],
+    [
+      'useEventListener',
+      ['can apply event listener trait to html', CanApplyEventListenerTraitToHtml],
+      ['can conditionally apply event listener trait to html', CanConditionallyApplyEventListenerTraitToHtml],
+      ['can apply event listener trait to svg', CanApplyEventListenerTraitToSvg],
+      ['can conditionally apply event listener trait to svg', CanConditionallyApplyEventListenerTraitToSvg],
+    ],
+    [
+      'useInnerHTML',
+      ['can apply inner html trait to html', CanApplyInnerHTMLTraitToHtml],
+      ['can apply inner html trait to svg', CanApplyInnerHTMLTraitToSvg],
+    ],
+    ['useMap', ['can map list of elements', CanMapListOfElements]],
+    [
+      'useStyle',
+      ['can apply style trait to html', CanApplyStyleTraitToHtml],
+      ['can apply style trait to svg', CanApplyStyleTraitToSvg],
+      ['can apply css var with style trait to html', CanApplyCssVarWithStyleTraitToHtml],
+    ],
+    [
+      'useTextContent',
+      ['can apply text content trait to html', CanApplyTextContentTraitToHtml],
+      ['can apply text content trait to svg', CanApplyTextContentTraitToSvg],
+    ],
+    [
       'SVG',
-      ['can apply inner html trait', CanApplyInnerHTMLTraitToSvg],
-      ['can apply attribute trait', CanApplyAttributeTraitToSvg],
-      ['can apply class name trait', CanApplyClassNameTraitToSvg],
-      ['can apply event listener trait', CanApplyEventListenerTraitToSvg],
-      ['can conditionally apply event listener trait', CanConditionallyApplyEventListenerTraitToSvg],
-      ['can apply text content trait', CanApplyTextContentTraitToSvg],
-      ['can apply style trait', CanApplyStyleTraitToSvg],
       ['can apply multiple traits', CanApplyMultipleTraitsToSvg],
       ['can create basic tag with text', CanCreateBasicSvgTagWithText],
       ['has valid namespace', HasValidSvgNamespace],

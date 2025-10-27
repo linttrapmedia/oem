@@ -6,7 +6,7 @@ type Persistence = {
   overwrite?: boolean;
 };
 
-function getVal<T>(param: T, persistence?: Persistence): T {
+function getPersistedVal<T>(param: T, persistence?: Persistence): T {
   if (!persistence) return param;
   const storageParam: any = persistence.storage.getItem(persistence.key);
   const parsedStorageParam = JSON.parse(storageParam);
@@ -23,9 +23,9 @@ function getVal<T>(param: T, persistence?: Persistence): T {
 }
 
 export function State<T>(param: T, persistence?: Persistence): StateType<T> {
-  let _val: T = getVal(param, persistence);
+  let _val: T = getPersistedVal(param, persistence);
   const _subs: ((param: T) => any)[] = [];
-  const $val = (): T => _val;
+  const val = (): T => _val;
 
   const _set = (atom: T) => {
     _val = atom;
@@ -35,7 +35,7 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
   const $set = (atom: T) => () => _set(atom);
 
   const reduce = (cb: (prev: T) => T) => _set(cb(_val));
-  const $reduce = (cb: (prev: T) => T) => () => _set(cb($val()));
+  const $reduce = (cb: (prev: T) => T) => () => _set(cb(val()));
 
   const _sub = (cb: (val: T) => any) => {
     if (!_subs.includes(cb)) _subs.push(cb);
@@ -76,13 +76,12 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
   const _unsub = (cb: (val: T) => any) => _subs.splice(_subs.indexOf(cb), 1);
 
   return {
-    val: _val,
     reduce: reduce,
     set: _set,
     sub: _sub,
     test: test,
     unsub: _unsub,
-    $val: $val,
+    val: val,
     $reduce: $reduce,
     $set: $set,
     $test: $test,

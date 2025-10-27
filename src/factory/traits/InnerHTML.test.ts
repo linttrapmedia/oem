@@ -19,19 +19,19 @@ export const CanApplyInnerHTMLTraitToHtml: Test = () => {
   const t4 = e4.outerHTML === '<div><div>one</div><div>two</div></div>';
 
   // dynamic tests
-  const e5 = div(['dynamicHtml', () => state.$val().value])();
+  const e5 = div(['dynamicHtml', () => state.val().value])();
   const t5 = e5.outerHTML === '<div>asdf</div>';
 
   // condition tests
   state.set({ value: 'c1' });
-  const e6 = div(['dynamicHtml', () => state.$val().value, false])();
+  const e6 = div(['dynamicHtml', () => state.val().value, false])();
   const t6 = e6.outerHTML === '<div></div>';
-  const e7 = div(['dynamicHtml', () => state.$val().value, () => false])();
+  const e7 = div(['dynamicHtml', () => state.val().value, () => false])();
   const t7 = e7.outerHTML === '<div></div>';
-  const e8 = div(['dynamicHtml', () => state.$val().value, () => true])();
+  const e8 = div(['dynamicHtml', () => state.val().value, () => true])();
   const t8 = e8.outerHTML === '<div>c1</div>';
   state.set({ value: 'c2' });
-  const e9 = div(['dynamicHtml', () => state.$val().value, state.$test(/c2/)])();
+  const e9 = div(['dynamicHtml', () => state.val().value, state.$test(/c2/)])();
   const t9 = e9.outerHTML === '<div>c2</div>';
   // multiple html attributes and using undefined
   const e10 = div(['staticHtml', () => ['one', 'two']], ['staticHtml', () => undefined, false])();
@@ -59,19 +59,19 @@ export const CanApplyInnerHTMLTraitToSvg: Test = () => {
   const t4 = e4.outerHTML === '<circle><circle>one</circle><circle>two</circle></circle>';
 
   // dynamic tests
-  const e5 = circle(['dynamicHtml', () => state.$val().value])();
+  const e5 = circle(['dynamicHtml', () => state.val().value])();
   const t5 = e5.outerHTML === '<circle>asdf</circle>';
 
   // condition tests
   state.set({ value: 'c1' });
-  const e6 = circle(['dynamicHtml', () => state.$val().value, false])();
+  const e6 = circle(['dynamicHtml', () => state.val().value, false])();
   const t6 = e6.outerHTML === '<circle></circle>';
-  const e7 = circle(['dynamicHtml', () => state.$val().value, () => false])();
+  const e7 = circle(['dynamicHtml', () => state.val().value, () => false])();
   const t7 = e7.outerHTML === '<circle></circle>';
-  const e8 = circle(['dynamicHtml', () => state.$val().value, () => true])();
+  const e8 = circle(['dynamicHtml', () => state.val().value, () => true])();
   const t8 = e8.outerHTML === '<circle>c1</circle>';
   state.set({ value: 'c2' });
-  const e9 = circle(['dynamicHtml', () => state.$val().value, state.$test(/c2/)])();
+  const e9 = circle(['dynamicHtml', () => state.val().value, state.$test(/c2/)])();
   const t9 = e9.outerHTML === '<circle>c2</circle>';
   return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 };
 };

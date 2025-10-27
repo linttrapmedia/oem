@@ -1,8 +1,59 @@
 <html>
     <head>
       <title>OEM Element Unit Tests</title>
-      <script>// src/state/State.ts
-function getVal(param, persistence) {
+      <script>// src/factory/traits/Attribute.ts
+function useAttribute(props) {
+  const { state = undefined } = props ?? {};
+  return (...htmlProps) => {
+    const [el, prop, val, condition = true] = htmlProps;
+    const apply = () => {
+      const _val = typeof val === "function" ? val() : val;
+      const _condition = typeof condition === "function" ? condition() : condition;
+      if (_condition) {
+        el.setAttribute(prop, String(_val));
+        if (_val === undefined) {
+          el.removeAttribute(prop);
+        } else {
+          el.setAttribute(prop, String(_val));
+        }
+      }
+    };
+    const stateIsArray = Array.isArray(state);
+    if (state)
+      stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
+    apply();
+  };
+}
+
+// src/factory/traits/Map.ts
+function useMap(config) {
+  const { states } = config || {};
+  return (el, items, renderItem, condition = true, ...inlineStates) => {
+    const apply = () => {
+      const cond = typeof condition === "function" ? condition() : condition;
+      if (!cond)
+        return;
+      items().forEach((item, index) => {
+        const itemEl = renderItem(item, index);
+        const itemKey = itemEl.getAttribute("key");
+        if (!itemKey)
+          throw new Error('Each item must have a unique "key" property for mapping.');
+        const currEl = el.querySelector(`[key="${itemKey}"]`);
+        const isDiff = itemEl.outerHTML !== currEl?.outerHTML;
+        if (!currEl)
+          return el.appendChild(itemEl);
+        if (currEl && isDiff)
+          el.replaceChild(itemEl, currEl);
+      });
+    };
+    const _states = states ? [...inlineStates, ...states] : inlineStates;
+    _states.forEach((state) => state.sub(apply));
+    apply();
+  };
+}
+
+// src/state/State.ts
+function getPersistedVal(param, persistence) {
   if (!persistence)
     return param;
   const storageParam = persistence.storage.getItem(persistence.key);
@@ -20,9 +71,9 @@ function getVal(param, persistence) {
   return param;
 }
 function State(param, persistence) {
-  let _val = getVal(param, persistence);
+  let _val = getPersistedVal(param, persistence);
   const _subs = [];
-  const $val = () => _val;
+  const val = () => _val;
   const _set = (atom) => {
     _val = atom;
     _subs.forEach((i) => i(atom));
@@ -31,7 +82,7 @@ function State(param, persistence) {
   };
   const $set = (atom) => () => _set(atom);
   const reduce = (cb) => _set(cb(_val));
-  const $reduce = (cb) => () => _set(cb($val()));
+  const $reduce = (cb) => () => _set(cb(val()));
   const _sub = (cb) => {
     if (!_subs.includes(cb))
       _subs.push(cb);
@@ -66,13 +117,12 @@ function State(param, persistence) {
   };
   const _unsub = (cb) => _subs.splice(_subs.indexOf(cb), 1);
   return {
-    val: _val,
     reduce,
     set: _set,
     sub: _sub,
     test,
     unsub: _unsub,
-    $val,
+    val,
     $reduce,
     $set,
     $test
@@ -104,6 +154,40 @@ function HTML(config) {
   });
 }
 
+// src/factory/traits/Map.test.ts
+var CanMapListOfElements = () => {
+  const items1 = State(["item1", "item2"]);
+  const tmpl1 = HTML({
+    map: useMap(),
+    attr: useAttribute()
+  });
+  const render1 = (item) => tmpl1.div(["attr", "key", item])(item);
+  const e1 = tmpl1.div(["map", items1.val, render1])();
+  const t1 = e1.outerHTML === '<div><div key="item1">item1</div><div key="item2">item2</div></div>';
+  const items2 = State(["item1", "item2"]);
+  const tmpl2 = HTML({
+    map: useMap({ states: [items2] }),
+    attr: useAttribute()
+  });
+  const render2 = (item) => tmpl2.div(["attr", "key", item])(item);
+  const e2 = tmpl2.div(["map", items2.val, render2])();
+  const t2 = e2.outerHTML === '<div><div key="item1">item1</div><div key="item2">item2</div></div>';
+  const items3a = State(["item1", "item2"]);
+  const items3b = State([1, 2, 10]);
+  const tmpl3 = HTML({
+    map: useMap({ states: [items3a, items3b] }),
+    attr: useAttribute()
+  });
+  const render3 = (item, i) => tmpl3.div(["attr", "key", i], ["attr", "id", items3b.val()[i]])(item);
+  const e3 = tmpl3.div(["map", items3a.val, render3, true, items3b])();
+  items3b.set([3, 4, 10]);
+  const t3 = e3.outerHTML === '<div><div key="0" id="3">item1</div><div key="1" id="4">item2</div></div>';
+  items3a.reduce((prev) => [...prev, "item3"]);
+  const t4 = e3.outerHTML === '<div><div key="0" id="3">item1</div><div key="1" id="4">item2</div><div key="2" id="10">item3</div></div>';
+  const tests = [t1, t2, t3, t4];
+  return { pass: tests.every(Boolean) };
+};
+
 // src/template/SVG.ts
 function SvgTag(el, traits = [], config = {}) {
   traits.forEach(([trait, ...args]) => config[trait](el, ...args));
@@ -127,30 +211,6 @@ function SVG(config) {
   });
 }
 
-// src/factory/traits/Attribute.ts
-function useAttribute(props) {
-  const { state = undefined } = props ?? {};
-  return (...htmlProps) => {
-    const [el, prop, val, condition = true] = htmlProps;
-    const apply = () => {
-      const _val = typeof val === "function" ? val() : val;
-      const _condition = typeof condition === "function" ? condition() : condition;
-      if (_condition) {
-        el.setAttribute(prop, String(_val));
-        if (_val === undefined) {
-          el.removeAttribute(prop);
-        } else {
-          el.setAttribute(prop, String(_val));
-        }
-      }
-    };
-    const stateIsArray = Array.isArray(state);
-    if (state)
-      stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
-    apply();
-  };
-}
-
 // src/factory/traits/Attribute.test.ts
 var CanApplyAttributeTraitToHtml = () => {
   const disabled = State(false);
@@ -163,16 +223,16 @@ var CanApplyAttributeTraitToHtml = () => {
   const e2 = div(["staticAttr", "disabled", "true"])();
   const t2 = e2.outerHTML === '<div disabled="true"></div>';
   disabled.set(true);
-  const e5 = div(["dynamicAttr", "disabled", disabled.$val])();
+  const e5 = div(["dynamicAttr", "disabled", disabled.val])();
   const t5 = e5.outerHTML === '<div disabled="true"></div>';
   disabled.set(false);
-  const e6 = div(["dynamicAttr", "disabled", disabled.$val])();
+  const e6 = div(["dynamicAttr", "disabled", disabled.val])();
   const t6 = e6.outerHTML === '<div disabled="false"></div>';
   disabled.set(true);
-  const e7 = div(["dynamicAttr", "disabled", "true", disabled.$val])();
+  const e7 = div(["dynamicAttr", "disabled", "true", disabled.val])();
   const t7 = e7.outerHTML === '<div disabled="true"></div>';
   disabled.set(false);
-  const e8 = div(["dynamicAttr", "disabled", "true", disabled.$val])();
+  const e8 = div(["dynamicAttr", "disabled", "true", disabled.val])();
   const t8 = e8.outerHTML === "<div></div>";
   return { pass: t1 && t2 && t5 && t6 && t7 && t8 };
 };
@@ -301,12 +361,12 @@ var CanConditionallyApplyEventListenerTraitToHtml = () => {
   const { div } = HTML({
     click: useEvent({ event: "click", state: toggle })
   });
-  const handleClick = () => toggle.set(!toggle.$val());
+  const handleClick = () => toggle.set(!toggle.val());
   const e1 = div(["click", handleClick, false], ["click", handleClick, true])();
   e1.click();
-  const t1 = toggle.$val() === false;
+  const t1 = toggle.val() === false;
   e1.click();
-  const t2 = toggle.$val() === true;
+  const t2 = toggle.val() === true;
   return { pass: t1 && t2 };
 };
 var CanApplyEventListenerTraitToSvg = () => {
@@ -335,12 +395,12 @@ var CanConditionallyApplyEventListenerTraitToSvg = () => {
     bubbles: true,
     cancelable: false
   });
-  const handleClick = () => toggle.set(!toggle.$val());
+  const handleClick = () => toggle.set(!toggle.val());
   const e1 = circle(["click", handleClick, false], ["click", handleClick, true])();
   e1.dispatchEvent(clickEvent);
-  const t1 = toggle.$val() === false;
+  const t1 = toggle.val() === false;
   e1.dispatchEvent(clickEvent);
-  const t2 = toggle.$val() === true;
+  const t2 = toggle.val() === true;
   return { pass: t1 && t2 };
 };
 
@@ -389,17 +449,17 @@ var CanApplyInnerHTMLTraitToHtml = () => {
   const t3 = e3.outerHTML === "<div><div>one</div></div>";
   const e4 = div(["staticHtml", () => [div()("one"), div()("two")]])();
   const t4 = e4.outerHTML === "<div><div>one</div><div>two</div></div>";
-  const e5 = div(["dynamicHtml", () => state.$val().value])();
+  const e5 = div(["dynamicHtml", () => state.val().value])();
   const t5 = e5.outerHTML === "<div>asdf</div>";
   state.set({ value: "c1" });
-  const e6 = div(["dynamicHtml", () => state.$val().value, false])();
+  const e6 = div(["dynamicHtml", () => state.val().value, false])();
   const t6 = e6.outerHTML === "<div></div>";
-  const e7 = div(["dynamicHtml", () => state.$val().value, () => false])();
+  const e7 = div(["dynamicHtml", () => state.val().value, () => false])();
   const t7 = e7.outerHTML === "<div></div>";
-  const e8 = div(["dynamicHtml", () => state.$val().value, () => true])();
+  const e8 = div(["dynamicHtml", () => state.val().value, () => true])();
   const t8 = e8.outerHTML === "<div>c1</div>";
   state.set({ value: "c2" });
-  const e9 = div(["dynamicHtml", () => state.$val().value, state.$test(/c2/)])();
+  const e9 = div(["dynamicHtml", () => state.val().value, state.$test(/c2/)])();
   const t9 = e9.outerHTML === "<div>c2</div>";
   const e10 = div(["staticHtml", () => ["one", "two"]], ["staticHtml", () => {
     return;
@@ -423,17 +483,17 @@ var CanApplyInnerHTMLTraitToSvg = () => {
   const t3 = e3.outerHTML === "<circle><circle>one</circle></circle>";
   const e4 = circle(["staticHtml", () => [circle()("one"), circle()("two")]])();
   const t4 = e4.outerHTML === "<circle><circle>one</circle><circle>two</circle></circle>";
-  const e5 = circle(["dynamicHtml", () => state.$val().value])();
+  const e5 = circle(["dynamicHtml", () => state.val().value])();
   const t5 = e5.outerHTML === "<circle>asdf</circle>";
   state.set({ value: "c1" });
-  const e6 = circle(["dynamicHtml", () => state.$val().value, false])();
+  const e6 = circle(["dynamicHtml", () => state.val().value, false])();
   const t6 = e6.outerHTML === "<circle></circle>";
-  const e7 = circle(["dynamicHtml", () => state.$val().value, () => false])();
+  const e7 = circle(["dynamicHtml", () => state.val().value, () => false])();
   const t7 = e7.outerHTML === "<circle></circle>";
-  const e8 = circle(["dynamicHtml", () => state.$val().value, () => true])();
+  const e8 = circle(["dynamicHtml", () => state.val().value, () => true])();
   const t8 = e8.outerHTML === "<circle>c1</circle>";
   state.set({ value: "c2" });
-  const e9 = circle(["dynamicHtml", () => state.$val().value, state.$test(/c2/)])();
+  const e9 = circle(["dynamicHtml", () => state.val().value, state.$test(/c2/)])();
   const t9 = e9.outerHTML === "<circle>c2</circle>";
   return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 };
 };
@@ -477,16 +537,16 @@ var CanApplyStyleTraitToHtml = () => {
   });
   const e1 = div(["staticStyle", "fontSize", "12px"])();
   const t1 = e1.outerHTML === '<div style="font-size: 12px;"></div>';
-  const e2 = div(["dynamicStyle", "fontSize", () => state.$val().fontSize])();
+  const e2 = div(["dynamicStyle", "fontSize", () => state.val().fontSize])();
   const t2a = e2.outerHTML === '<div style="font-size: 13px;"></div>';
   state.set({ fontSize: "14px" });
   const t2b = e2.outerHTML === '<div style="font-size: 14px;"></div>';
   state.set({ fontSize: "15px" });
-  const e3 = div(["dynamicStyle", "fontSize", () => state.$val().fontSize, () => false])();
+  const e3 = div(["dynamicStyle", "fontSize", () => state.val().fontSize, () => false])();
   const t3 = e3.outerHTML === "<div></div>";
-  const e4 = div(["dynamicStyle", "fontSize", () => state.$val().fontSize, () => true])();
+  const e4 = div(["dynamicStyle", "fontSize", () => state.val().fontSize, () => true])();
   const t4 = e4.outerHTML === '<div style="font-size: 15px;"></div>';
-  const e5 = div(["dynamicStyle", "fontSize", () => state.$val().fontSize, state.$test(/15px/)])();
+  const e5 = div(["dynamicStyle", "fontSize", () => state.val().fontSize, state.$test(/15px/)])();
   const t5 = e5.outerHTML === '<div style="font-size: 15px;"></div>';
   const e6 = div(["staticStyle", "fontSize", "12px"], ["staticStyle", "color", "red"], ["staticStyle", "color", undefined])();
   const t6 = e6.outerHTML === '<div style="font-size: 12px;"></div>';
@@ -542,16 +602,16 @@ var CanApplyTextContentTraitToHtml = () => {
   const t1 = e1.outerHTML === "<div>test</div>";
   const e2 = div(["staticText", () => "test"])();
   const t2 = e2.outerHTML === "<div>test</div>";
-  const e3 = div(["dynamicText", () => state.$val().value])();
+  const e3 = div(["dynamicText", () => state.val().value])();
   const t3 = e3.outerHTML === "<div>asdf</div>";
-  const e4 = div(["dynamicText", () => state.$val().value, false])();
+  const e4 = div(["dynamicText", () => state.val().value, false])();
   const t4 = e4.outerHTML === "<div></div>";
-  const e5 = div(["dynamicText", () => state.$val().value, () => false])();
+  const e5 = div(["dynamicText", () => state.val().value, () => false])();
   const t5 = e5.outerHTML === "<div></div>";
-  const e6 = div(["dynamicText", () => state.$val().value, () => true])();
+  const e6 = div(["dynamicText", () => state.val().value, () => true])();
   const t6 = e6.outerHTML === "<div>asdf</div>";
   state.set({ value: "c1" });
-  const e7 = div(["dynamicText", () => state.$val().value, () => state.$val().value === "c1"])();
+  const e7 = div(["dynamicText", () => state.val().value, () => state.val().value === "c1"])();
   const t7 = e7.outerHTML === "<div>c1</div>";
   return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 };
 };
@@ -567,13 +627,13 @@ var CanApplyTextContentTraitToSvg = () => {
 // src/state/State.test.ts
 var CanCreateState = () => {
   const num = State(1);
-  const t1 = num.$val() === 1;
+  const t1 = num.val() === 1;
   return { pass: t1 };
 };
 var CanUpdateState = () => {
   const num = State(1);
   num.set(2);
-  const t1 = num.$val() === 2;
+  const t1 = num.val() === 2;
   return { pass: t1 };
 };
 var CanSubscribeToState = () => {
@@ -600,7 +660,7 @@ var CanSetStateAndPublish = () => {
   let flag = false;
   num.sub(() => flag = true);
   num.set({ val: 2 });
-  const t1 = flag && num.$val().val === 2;
+  const t1 = flag && num.val().val === 2;
   return { pass: t1 };
 };
 var CanTestStateValue = () => {
@@ -1157,7 +1217,7 @@ var HasValidSvgNamespace = () => {
 };
 
 // cmd/util/args.ts
-var args_default = ["/Users/kevinlint/.bun/bin/bun", "/Users/kevinlint/LintTrap/oem/cmd/test.ts", "FILTER="].slice(2).map((arg) => arg.split("=")).reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+var args_default = ["/Users/kevinlint/.bun/bin/bun", "/Users/kevinlint/LintTrap/oem/cmd/test.ts", "FILTER=CanMapListOfElements"].slice(2).map((arg) => arg.split("=")).reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
 
 // test/runner.ts
 function runner(tests) {
@@ -1204,27 +1264,46 @@ window.addEventListener("DOMContentLoaded", () => {
   runner([
     [
       "HTML",
-      ["can apply attribute trait", CanApplyAttributeTraitToHtml],
-      ["can apply class name trait", CanApplyClassNameTraitToHtml],
-      ["can apply event listener trait", CanApplyEventListenerTraitToHtml],
-      ["can conditionally apply event listener trait", CanConditionallyApplyEventListenerTraitToHtml],
-      ["can apply inner html trait", CanApplyInnerHTMLTraitToHtml],
-      ["can apply text content trait", CanApplyTextContentTraitToHtml],
-      ["can apply style trait", CanApplyStyleTraitToHtml],
-      ["can apply css var with style trait", CanApplyCssVarWithStyleTraitToHtml],
       ["can apply multiple traits", CanApplyMultipleTraitsToHtml],
       ["can create basic tag with text", CanCreateBasicHtmlTagWithText],
       ["has valid namespace", HasValidHtmlNamespace]
     ],
     [
+      "useAttribute",
+      ["can apply attribute trait to html", CanApplyAttributeTraitToHtml],
+      ["can apply attribute trait to svg", CanApplyAttributeTraitToSvg]
+    ],
+    [
+      "useClassName",
+      ["can apply class name trait to html", CanApplyClassNameTraitToHtml],
+      ["can apply class name trait to svg", CanApplyClassNameTraitToSvg]
+    ],
+    [
+      "useEventListener",
+      ["can apply event listener trait to html", CanApplyEventListenerTraitToHtml],
+      ["can conditionally apply event listener trait to html", CanConditionallyApplyEventListenerTraitToHtml],
+      ["can apply event listener trait to svg", CanApplyEventListenerTraitToSvg],
+      ["can conditionally apply event listener trait to svg", CanConditionallyApplyEventListenerTraitToSvg]
+    ],
+    [
+      "useInnerHTML",
+      ["can apply inner html trait to html", CanApplyInnerHTMLTraitToHtml],
+      ["can apply inner html trait to svg", CanApplyInnerHTMLTraitToSvg]
+    ],
+    ["useMap", ["can map list of elements", CanMapListOfElements]],
+    [
+      "useStyle",
+      ["can apply style trait to html", CanApplyStyleTraitToHtml],
+      ["can apply style trait to svg", CanApplyStyleTraitToSvg],
+      ["can apply css var with style trait to html", CanApplyCssVarWithStyleTraitToHtml]
+    ],
+    [
+      "useTextContent",
+      ["can apply text content trait to html", CanApplyTextContentTraitToHtml],
+      ["can apply text content trait to svg", CanApplyTextContentTraitToSvg]
+    ],
+    [
       "SVG",
-      ["can apply inner html trait", CanApplyInnerHTMLTraitToSvg],
-      ["can apply attribute trait", CanApplyAttributeTraitToSvg],
-      ["can apply class name trait", CanApplyClassNameTraitToSvg],
-      ["can apply event listener trait", CanApplyEventListenerTraitToSvg],
-      ["can conditionally apply event listener trait", CanConditionallyApplyEventListenerTraitToSvg],
-      ["can apply text content trait", CanApplyTextContentTraitToSvg],
-      ["can apply style trait", CanApplyStyleTraitToSvg],
       ["can apply multiple traits", CanApplyMultipleTraitsToSvg],
       ["can create basic tag with text", CanCreateBasicSvgTagWithText],
       ["has valid namespace", HasValidSvgNamespace]

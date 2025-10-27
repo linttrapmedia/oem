@@ -50,11 +50,12 @@ function Map(
   const apply = () => {
     const cond = typeof condition === 'function' ? condition() : condition;
     if (!cond) return;
-    el.innerHTML = '';
     items().forEach((item) => {
-      const renderedItem = renderItem(item);
-      const isDifferent = !el.contains(renderedItem);
-      if (isDifferent) el.appendChild(renderedItem);
+      const itemEl = renderItem(item);
+      const currEl = el.querySelector(`[key="${itemEl.getAttribute('key')}"]`);
+      const isDiff = itemEl.outerHTML !== currEl?.outerHTML;
+      if (!currEl) return el.appendChild(itemEl);
+      if (currEl && isDiff) el.replaceChild(itemEl, currEl);
     });
   };
   states.forEach((state) => state.sub(apply));
@@ -86,17 +87,17 @@ const todos = State<Todo[]>(
   },
 );
 
-function handleClick(id: number) {
-  todos.reduce((list) => list.map((todo) => (todo.id === id ? { ...todo, completed: !todo.completed } : todo)));
-}
+const updateTodo = (list: Todo[], id: Todo['id'], changes: Partial<Todo>): Todo[] =>
+  list.map((item) => (item.id === id ? { ...item, ...changes } : item));
 
-const todoItem = (todo: Todo) =>
-  tmpl.li(['attr', 'id', todo.id], ['event', 'click', () => handleClick(todo.id)])(
-    todo.completed ? '✓ ' : '✗ ',
-    todo.title,
-  );
+const renderTodoItem = (todo: Todo) =>
+  tmpl.li(
+    ['attr', 'id', todo.id],
+    ['attr', 'key', todo.id],
+    ['event', 'click', todos.$reduce((list) => updateTodo(list, todo.id, { completed: !todo.completed }))],
+  )(todo.completed ? '✓ ' : '✗ ', todo.title);
 
 document.addEventListener('DOMContentLoaded', () => {
   const root = document.getElementById('root')!;
-  root.appendChild(tmpl.ul(['map', todos.$val, todoItem, true, todos])());
+  root.appendChild(tmpl.ul(['map', todos.val, renderTodoItem, true, todos])());
 });
