@@ -15,6 +15,6 @@ export const Table = {
       ['style', 'padding', '10px'],
       ['style', 'borderBottom', '1px solid rgba(0,0,0,0.1)'],
       ['style', 'fontSize', '13px'],
-      ['style:tablet', 'fontSize', '16px'],
+      // ['style:tablet', 'fontSize', '16px'],
     )(txt),
 };

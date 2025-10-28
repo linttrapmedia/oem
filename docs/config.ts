@@ -9,7 +9,7 @@ declare namespace Prism {
   const languages: any;
 }
 
-export const usePrism = () => (el: HTMLElement) => {
+export const usePrism = (el: HTMLElement) => {
   el.style.display = 'block';
   el.style.whiteSpace = 'pre';
   el.style.fontFamily = 'monospace';
@@ -48,19 +48,15 @@ export const menuState = State<MenuStateTypes>('introduction', {
 export const menuOpen = State(false);
 
 export const html = HTML({
-  attr: useAttribute(),
+  attr: useAttribute,
   click: useEvent({ event: 'click' }),
-  prism: usePrism(),
-  style: useStyle(),
-  'html:menu': useInnerHTML({ state: menuState }),
-  'html:menu_toggle': useInnerHTML({ state: menuOpen }),
-  'style:menu': useStyle({ state: menuState }),
-  'style:menu_toggle': useStyle({ state: menuOpen }),
-  'style:tablet': useStyle({ mediaMinWidth: 800 }),
+  prism: usePrism,
+  style: useStyle,
+  html: useInnerHTML,
 });
 
 export const svg = SVG({
-  attr: useAttribute(),
-  style: useStyle(),
+  attr: useAttribute,
+  style: useStyle,
   click: useEvent({ event: 'click' }),
 });

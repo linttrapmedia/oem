@@ -5,8 +5,8 @@ import { SVG } from './SVG';
 
 export const CanApplyMultipleTraitsToSvg: Test = () => {
   const { circle } = SVG({
-    attr: useAttribute(),
-    text: useTextContent(),
+    attr: useAttribute,
+    text: useTextContent,
   });
   const e1 = circle(['attr', 'id', 'test'], ['text', 'test'])();
   const t1 = e1.outerHTML === '<circle id="test">test</circle>';
@@ -28,7 +28,7 @@ export const CanCreateEmptySvgTag: Test = () => {
 
 export const HasValidSvgNamespace: Test = () => {
   const { circle } = SVG({
-    attr: useAttribute(),
+    attr: useAttribute,
   });
   const t1 = circle(['attr', 'id', '1'])().namespaceURI === 'http://www.w3.org/2000/svg';
   return { pass: t1 };

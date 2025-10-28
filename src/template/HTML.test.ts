@@ -8,8 +8,8 @@ globalThis.ResizeObserver = ResizeObserver;
 
 export const CanApplyMultipleTraitsToHtml: Test = () => {
   const { div } = HTML({
-    attr: useAttribute(),
-    text: useTextContent(),
+    attr: useAttribute,
+    text: useTextContent,
   });
   const e1 = div(['attr', 'id', 'test'], ['text', 'test'])();
   const t1 = e1.outerHTML === '<div id="test">test</div>';
@@ -31,7 +31,7 @@ export const CanCreateEmptyHtmlTag: Test = () => {
 
 export const HasValidHtmlNamespace: Test = () => {
   const { div } = HTML({
-    attr: useAttribute(),
+    attr: useAttribute,
   });
   const t1 = div(['attr', 'id', '1'])().namespaceURI === 'http://www.w3.org/1999/xhtml';
   return { pass: t1 };

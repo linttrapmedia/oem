@@ -10,7 +10,7 @@ const Item = (txt: string, stateKey: MenuStateTypes) => {
     click: useEvent({ event: 'click' }),
     mouseover: useEvent({ event: 'mouseover' }),
     mouseout: useEvent({ event: 'mouseout' }),
-    style: useStyle({ state: [hovered, menuState] }),
+    style: useStyle,
   });
 
   return tmpl.div(
@@ -19,11 +19,11 @@ const Item = (txt: string, stateKey: MenuStateTypes) => {
     ['style', 'transition', 'background-color 0.3s'],
     ['style', 'textTransform', 'uppercase'],
     ['click', menuState.$set(stateKey)],
-    ['style', 'color', 'yellow', hovered.$test(true)],
-    ['style', 'color', 'white', hovered.$test(false)],
-    ['style', 'color', 'yellow', menuState.test(stateKey)],
-    ['mouseover', hovered.$set(true)],
-    ['mouseout', hovered.$set(false)],
+    ['style', 'color', 'yellow', hovered.$test(true), hovered],
+    ['style', 'color', 'white', hovered.$test(false), hovered],
+    ['style', 'color', 'yellow', menuState.test(stateKey), menuState],
+    // ['mouseover', hovered.$set(true), menuState],
+    // ['mouseout', hovered.$set(false), menuState],
   )(txt);
 };
 
@@ -40,7 +40,7 @@ export const Menu = () =>
     ['style', 'justifyContent', 'center'],
     ['style', 'textAlign', 'center'],
     [
-      'html:menu',
+      'html',
       () => [
         html.div(
           ['style', 'position', 'absolute'],
@@ -52,10 +52,10 @@ export const Menu = () =>
           ['style', 'padding', '5px'],
           ['style', 'opacity', '0.5'],
           ['style', 'display', 'flex'],
-          ['style:tablet', 'display', 'none'],
+          // ['style:tablet', 'display', 'none'],
           ['click', menuOpen.$reduce((o) => !o)],
-          ['html:menu_toggle', () => '-', menuOpen.$test(true)],
-          ['html:menu_toggle', () => '=', menuOpen.$test(false)],
+          ['html', () => '-', menuOpen.$test(true), menuOpen],
+          ['html', () => '=', menuOpen.$test(false), menuOpen],
         )(),
         html.div(
           ['style', 'display', 'flex'],
@@ -89,9 +89,9 @@ export const Menu = () =>
           ['style', 'display', 'flex'],
           ['style', 'flexDirection', 'column'],
           ['style', 'justifyContent', 'center'],
-          ['style:menu_toggle', 'display', 'none', menuOpen.$test(false)],
-          ['style:menu_toggle', 'display', 'flex', menuOpen.$test(true)],
-          ['style:tablet', 'display', 'flex'],
+          ['style', 'display', 'none', menuOpen.$test(false), menuOpen],
+          ['style', 'display', 'flex', menuOpen.$test(true), menuOpen],
+          // ['style:tablet', 'display', 'flex'],
           ['style', 'paddingTop', '20px'],
         )(
           Item('Intro', 'introduction'),

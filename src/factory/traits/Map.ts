@@ -1,33 +1,30 @@
+import { Trait } from '@/trait/Trait';
 import { StateType } from '@/types';
 
-type UseMapConfig = {
-  states?: StateType<any>[];
-};
+type Props = [
+  el: HTMLElement,
+  items: () => any[],
+  renderer: (item: any, index: number) => HTMLElement,
+  condition: boolean | (() => boolean),
+  ...states: StateType<any>[],
+];
 
-export function useMap(config?: UseMapConfig) {
-  const { states } = config || {};
-  return (
-    el: HTMLElement,
-    items: () => any[],
-    renderItem: (item: any, index: number) => HTMLElement,
-    condition: boolean | (() => boolean) = true,
-    ...inlineStates: StateType<any>[]
-  ) => {
-    const apply = () => {
-      const cond = typeof condition === 'function' ? condition() : condition;
-      if (!cond) return;
-      items().forEach((item, index) => {
-        const itemEl = renderItem(item, index);
-        const itemKey = itemEl.getAttribute('key');
-        if (!itemKey) throw new Error('Each item must have a unique "key" property for mapping.');
-        const currEl = el.querySelector(`[key="${itemKey}"]`);
-        const isDiff = itemEl.outerHTML !== currEl?.outerHTML;
-        if (!currEl) return el.appendChild(itemEl);
-        if (currEl && isDiff) el.replaceChild(itemEl, currEl);
-      });
-    };
-    const _states = states ? [...inlineStates, ...states] : inlineStates;
-    _states.forEach((state) => state.sub(apply));
-    apply();
+export const useMap = Trait((...props: Props) => {
+  const [el, items, renderer, condition = true, ...states] = props;
+  const apply = () => {
+    const cond = typeof condition === 'function' ? condition() : condition;
+    if (!cond) return;
+    items().forEach((item, index) => {
+      const itemEl = renderer(item, index);
+      const itemKey = itemEl.getAttribute('key');
+      if (!itemKey) throw new Error('Each item must have a unique "key" property for mapping.');
+      const currEl = el.querySelector(`[key="${itemKey}"]`);
+      const isDiff = itemEl.outerHTML !== currEl?.outerHTML;
+      if (!currEl) return el.appendChild(itemEl);
+      if (currEl && isDiff) el.replaceChild(itemEl, currEl);
+    });
   };
-}
+  apply();
+  const unsubs = states.map((state) => state.sub(apply));
+  return () => unsubs.forEach((unsub) => unsub());
+});

@@ -3,7 +3,7 @@ type RestArgs<T extends unknown[]> = T extends [any, ...infer U] ? U : never;
 export type StateType<T> = {
   reduce: (cb: (prev: T) => T) => void;
   set: (atom: T) => void;
-  sub: (cb: (atom: T) => any) => void;
+  sub: (cb: (atom: T) => any) => () => void;
   test: (regex: RegExp | T | ((atom: T) => boolean), checkFor?: true | false) => boolean;
   unsub: (cb: (atom: T) => any) => void;
   val: () => T;

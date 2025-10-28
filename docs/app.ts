@@ -14,8 +14,8 @@ function App() {
     ['style', 'display', 'grid'],
     ['style', 'gridTemplateRows', 'max-content 1fr'],
     ['style', 'gridTemplateColumns', '1fr'],
-    ['style:tablet', 'gridTemplateRows', 'auto'],
-    ['style:tablet', 'gridTemplateColumns', 'max-content 1fr'],
+    // ['style:tablet', 'gridTemplateRows', 'auto'],
+    // ['style:tablet', 'gridTemplateColumns', 'max-content 1fr'],
     ['style', 'height', '100vh'],
     ['style', 'justifyContent', 'start'],
     ['style', 'width', '100vw'],
@@ -35,13 +35,13 @@ function App() {
       ['style', 'overflowX', 'hidden'],
       ['style', 'maxWidth', '100%'],
       ['style', 'minWidth', 0],
-      ['html:menu', Introduction, menuState.$test('introduction')],
-      ['html:menu', Docs, menuState.$test('docs')],
-      ['html:menu', Templating, menuState.$test('templates')],
-      ['html:menu', Traits, menuState.$test('traits')],
-      ['html:menu', State, menuState.$test('state')],
-      ['html:menu', Patterns, menuState.$test('patterns')],
-      ['html:menu', Factory, menuState.$test('factory')],
+      ['html', Introduction, menuState.$test('introduction'), menuState],
+      ['html', Docs, menuState.$test('docs'), menuState],
+      ['html', Templating, menuState.$test('templates'), menuState],
+      ['html', Traits, menuState.$test('traits'), menuState],
+      ['html', State, menuState.$test('state'), menuState],
+      ['html', Patterns, menuState.$test('patterns'), menuState],
+      ['html', Factory, menuState.$test('factory'), menuState],
     )(),
   );
 }
@@ -60,7 +60,7 @@ menuState.sub(scrollAppContentToTop);
 
 document.addEventListener('keydown', (e) => {
   const key = e.key;
-  const val = menuState.$val();
+  const val = menuState.val();
   if (key !== 'ArrowRight' && key !== 'ArrowLeft') return;
   const caseMap = {
     introduction: key === 'ArrowRight' ? 'docs' : 'factory',

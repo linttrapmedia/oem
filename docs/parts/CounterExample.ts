@@ -13,7 +13,7 @@ const Counter = () => {
     'event:click': useEvent({ event: 'click' }),
     'style:count': useStyle({ state: countState }),
     'style:mobile': useStyle({ mediaMinWidth: 0 }),
-    'style:tablet': useStyle({ mediaMinWidth: 960 }),
+    // 'style:tablet': useStyle({ mediaMinWidth: 960 }),
   });
 
   return div(
@@ -25,7 +25,7 @@ const Counter = () => {
     ['style:mobile', 'display', 'flex'],
     ['style:mobile', 'gap', '10px'],
     ['style:mobile', 'fontSize', '50px'],
-    ['style:tablet', 'fontSize', '80px'],
+    // ['style:tablet', 'fontSize', '80px'],
   )();
 };
 

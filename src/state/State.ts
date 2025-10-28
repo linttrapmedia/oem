@@ -24,7 +24,7 @@ function getPersistedVal<T>(param: T, persistence?: Persistence): T {
 
 export function State<T>(param: T, persistence?: Persistence): StateType<T> {
   let _val: T = getPersistedVal(param, persistence);
-  const _subs: ((param: T) => any)[] = [];
+  const _subs: Set<(param: T) => any> = new Set();
   const val = (): T => _val;
 
   const _set = (atom: T) => {
@@ -38,7 +38,8 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
   const $reduce = (cb: (prev: T) => T) => () => _set(cb(val()));
 
   const _sub = (cb: (val: T) => any) => {
-    if (!_subs.includes(cb)) _subs.push(cb);
+    _subs.add(cb); // Set.add() automatically prevents duplicates of the same function reference
+    return () => _unsub(cb);
   };
 
   const test = (predicate: RegExp | T | ((atom: T) => boolean), truthCheck: true | false = true) => {
@@ -73,8 +74,9 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
       }
     };
 
-  const _unsub = (cb: (val: T) => any) => _subs.splice(_subs.indexOf(cb), 1);
-
+  const _unsub = (cb: (val: T) => any) => {
+    _subs.delete(cb);
+  };
   return {
     reduce: reduce,
     set: _set,

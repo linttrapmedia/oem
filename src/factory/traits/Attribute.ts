@@ -1,46 +1,30 @@
-import { StateType } from '../types';
+import { Trait } from '@/trait/Trait';
+import { StateType } from '@/types';
 
-type UseAttributeConfig = {
-  state?: StateType<any> | StateType<any>[];
-};
-
-export function useAttribute(): (
+type Props = [
   el: HTMLElement,
   prop: string,
   val: (() => string | number | boolean | undefined) | (string | number | boolean | undefined),
   condition?: boolean | (() => boolean),
-) => void;
+  ...states: StateType<any>[],
+];
 
-export function useAttribute(
-  props?: UseAttributeConfig,
-): (
-  el: HTMLElement,
-  prop: string,
-  val: (() => string | number | boolean | undefined) | (string | number | boolean | undefined),
-  condition?: boolean | (() => boolean),
-) => void;
-
-export function useAttribute<T>(props?: UseAttributeConfig) {
-  const { state = undefined } = props ?? {};
-  return (...htmlProps: any) => {
-    const [el, prop, val, condition = true] = htmlProps;
-
-    // application
-    const apply = () => {
-      const _val = typeof val === 'function' ? val() : val;
-      const _condition = typeof condition === 'function' ? condition() : condition;
-      if (_condition) {
+export const useAttribute = Trait((...props: Props) => {
+  const [el, prop, val, condition = true, ...states] = props;
+  const apply = () => {
+    const _val = typeof val === 'function' ? val() : val;
+    const _condition = typeof condition === 'function' ? condition() : condition;
+    if (_condition) {
+      if (_val === undefined) {
+        el.removeAttribute(prop);
+      } else {
         el.setAttribute(prop, String(_val));
-        if (_val === undefined) {
-          el.removeAttribute(prop);
-        } else {
-          el.setAttribute(prop, String(_val));
-        }
       }
-    };
-
-    const stateIsArray = Array.isArray(state);
-    if (state) stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
-    apply();
+    } else {
+      el.removeAttribute(prop);
+    }
   };
-}
+  apply();
+  const unsubs = states.map((state) => state.sub(apply));
+  return () => unsubs.forEach((unsub) => unsub());
+});

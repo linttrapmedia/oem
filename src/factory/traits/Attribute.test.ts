@@ -7,8 +7,8 @@ import { useAttribute } from './Attribute';
 export const CanApplyAttributeTraitToHtml: Test = () => {
   const disabled = State(false);
   const { div } = HTML({
-    staticAttr: useAttribute(),
-    dynamicAttr: useAttribute({ state: disabled }),
+    staticAttr: useAttribute,
+    dynamicAttr: useAttribute,
   });
 
   // static tests
@@ -19,11 +19,11 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
 
   // dynamic tests
   disabled.set(true);
-  const e5 = div(['dynamicAttr', 'disabled', disabled.val])();
+  const e5 = div(['dynamicAttr', 'disabled', disabled.val, true, disabled])();
   const t5 = e5.outerHTML === '<div disabled="true"></div>';
 
   disabled.set(false);
-  const e6 = div(['dynamicAttr', 'disabled', disabled.val])();
+  const e6 = div(['dynamicAttr', 'disabled', disabled.val, true, disabled])();
   const t6 = e6.outerHTML === '<div disabled="false"></div>';
 
   // condition tests
@@ -40,7 +40,7 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
 
 export const CanApplyAttributeTraitToSvg: Test = () => {
   const { circle } = SVG({
-    attr: useAttribute(),
+    attr: useAttribute,
   });
   const e1 = circle(['attr', 'id', 'test'])();
   const t1 = e1.outerHTML === '<circle id="test"></circle>';
