@@ -18,10 +18,10 @@ export const Factory = () =>
             [
               'attr',
               'href',
-              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/factory/traits/Style.ts',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/lib/traits/Style.ts',
             ],
             ['attr', 'target', '_blank'],
-          )('useAttribute'),
+          )('useAttributeTrait'),
         ),
         Table.Cell('Apply attributes'),
         Table.Cell(
@@ -29,10 +29,10 @@ export const Factory = () =>
             [
               'attr',
               'href',
-              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/factory/traits/ClassName.ts',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/lib/traits/ClassName.ts',
             ],
             ['attr', 'target', '_blank'],
-          )('useClassName'),
+          )('useClassNameTrait'),
         ),
         Table.Cell('Apply class names'),
         Table.Cell(
@@ -40,10 +40,10 @@ export const Factory = () =>
             [
               'attr',
               'href',
-              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/factory/traits/Event.ts',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/lib/traits/Event.ts',
             ],
             ['attr', 'target', '_blank'],
-          )('useEvent'),
+          )('useEventTrait'),
         ),
         Table.Cell('Attach event listener'),
         Table.Cell(
@@ -51,10 +51,10 @@ export const Factory = () =>
             [
               'attr',
               'href',
-              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/factory/traits/InnerHTML.ts',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/lib/traits/InnerHTML.ts',
             ],
             ['attr', 'target', '_blank'],
-          )('useInnerHTML'),
+          )('useInnerHTMLTrait'),
         ),
         Table.Cell('Attach event listener'),
         Table.Cell(
@@ -62,10 +62,10 @@ export const Factory = () =>
             [
               'attr',
               'href',
-              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/factory/traits/TextContent.ts',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/lib/traits/TextContent.ts',
             ],
             ['attr', 'target', '_blank'],
-          )('useTextContent'),
+          )('useTextContentTrait'),
         ),
         Table.Cell('Apply inner text'),
         Table.Cell(
@@ -73,10 +73,10 @@ export const Factory = () =>
             [
               'attr',
               'href',
-              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/factory/traits/Style.ts',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/lib/traits/Style.ts',
             ],
             ['attr', 'target', '_blank'],
-          )('useStyle'),
+          )('useStyleTrait'),
         ),
         Table.Cell('Apply styles'),
       ),

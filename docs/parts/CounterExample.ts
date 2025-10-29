@@ -1,19 +1,19 @@
-import { State } from '../../src/state/State';
+import { State } from '../../src/State';
 import { HTML } from '../../src/template/HTML';
-import { useEvent } from '../../src/traits/Event';
-import { useStyle } from '../../src/traits/Style';
-import { useTextContent } from '../../src/traits/TextContent';
+import { useEventTrait } from '../../src/traits/Event';
+import { useStyleTrait } from '../../src/traits/Style';
+import { useTextContentTrait } from '../../src/traits/TextContent';
 import { html } from '../config';
 
 const Counter = () => {
   const countState = State(1);
 
   const { div } = HTML({
-    'text:count': useTextContent({ state: countState }),
-    'event:click': useEvent({ event: 'click' }),
-    'style:count': useStyle({ state: countState }),
-    'style:mobile': useStyle({ mediaMinWidth: 0 }),
-    // 'style:tablet': useStyle({ mediaMinWidth: 960 }),
+    'text:count': useTextContentTrait({ state: countState }),
+    'event:click': useEventTrait({ event: 'click' }),
+    'style:count': useStyleTrait({ state: countState }),
+    'style:mobile': useStyleTrait({ mediaMinWidth: 0 }),
+    // 'style:tablet': useStyleTrait({ mediaMinWidth: 960 }),
   });
 
   return div(

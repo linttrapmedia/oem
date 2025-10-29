@@ -1,14 +1,14 @@
-import { State } from '@/state/State';
-import { HTML } from '@/template/HTML';
-import { SVG } from '@/template/SVG';
+import { HTML } from '@/HTML';
+import { useAttributeTrait } from '@/lib/traits/Attribute';
+import { State } from '@/State';
+import { SVG } from '@/SVG';
 import { Test } from '@/types';
-import { useAttribute } from './Attribute';
 
 export const CanApplyAttributeTraitToHtml: Test = () => {
   const disabled = State(false);
   const { div } = HTML({
-    staticAttr: useAttribute,
-    dynamicAttr: useAttribute,
+    staticAttr: useAttributeTrait,
+    dynamicAttr: useAttributeTrait,
   });
 
   // static tests
@@ -40,7 +40,7 @@ export const CanApplyAttributeTraitToHtml: Test = () => {
 
 export const CanApplyAttributeTraitToSvg: Test = () => {
   const { circle } = SVG({
-    attr: useAttribute,
+    attr: useAttributeTrait,
   });
   const e1 = circle(['attr', 'id', 'test'])();
   const t1 = e1.outerHTML === '<circle id="test"></circle>';

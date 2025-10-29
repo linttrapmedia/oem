@@ -1,4 +1,4 @@
-import { Trait } from '@/trait/Trait';
+import { Trait } from '@/Trait';
 import { StateType } from '@/types';
 
 type Props = [
@@ -14,7 +14,7 @@ type Props = [
   ...states: StateType<any>[],
 ];
 
-export const useInnerHTML = Trait((...props: Props) => {
+export const useInnerHTMLTrait = Trait((...props: Props) => {
   const [el, children, condition = true, ...states] = props;
   const apply = () => {
     const _children = children();

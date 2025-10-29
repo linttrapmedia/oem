@@ -1,11 +1,11 @@
-import { HTML } from '@/template/HTML';
-import { SVG } from '@/template/SVG';
+import { HTML } from '@/HTML';
+import { SVG } from '@/SVG';
 import { Test } from '@/types';
-import { useClassName } from './ClassName';
+import { useClassNameTrait } from './ClassName';
 
 export const CanApplyClassNameTraitToHtml: Test = () => {
   const { div } = HTML({
-    classname: useClassName,
+    classname: useClassNameTrait,
   });
 
   // static tests
@@ -30,7 +30,7 @@ export const CanApplyClassNameTraitToHtml: Test = () => {
 };
 
 export const CanApplyClassNameTraitToSvg: Test = () => {
-  const { circle } = SVG({ classname: useClassName });
+  const { circle } = SVG({ classname: useClassNameTrait });
   const e1 = circle(['classname', 'c1'])();
   const t1 = e1.outerHTML === '<circle class="c1"></circle>';
   const e2 = circle(['classname', 'c1 c2'])();

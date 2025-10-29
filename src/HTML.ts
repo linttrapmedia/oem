@@ -1,4 +1,4 @@
-import { HtmlReturnType } from '../types';
+import { HtmlReturnType } from '@/types';
 
 function CreateEl(tag: string, config: any) {
   return (...props: any[]) => {

@@ -1,12 +1,12 @@
-import { State } from '@/state/State';
-import { HTML } from '@/template/HTML';
-import { SVG } from '@/template/SVG';
+import { HTML } from '@/HTML';
+import { State } from '@/State';
+import { SVG } from '@/SVG';
 import { Test } from '@/types';
-import { useStyle } from './Style';
+import { useStyleTrait } from './Style';
 
 export const CanApplyStyleTraitToHtml: Test = () => {
   const state = State<{ fontSize: string }>({ fontSize: '13px' });
-  const { div } = HTML({ style: useStyle });
+  const { div } = HTML({ style: useStyleTrait });
   const e1 = div(['style', 'fontSize', '12px'])();
   const t1 = e1.outerHTML === '<div style="font-size: 12px;"></div>';
   const e2 = div(['style', 'fontSize', () => state.val().fontSize, true, state])();
@@ -27,14 +27,14 @@ export const CanApplyStyleTraitToHtml: Test = () => {
 };
 
 export const CanApplyCssVarWithStyleTraitToHtml: Test = () => {
-  const { div } = HTML({ style: useStyle });
+  const { div } = HTML({ style: useStyleTrait });
   const e1 = div(['style', '--test-var', 'testing'])();
   const t1 = e1.outerHTML === '<div style="--test-var: testing;"></div>';
   return { pass: t1 };
 };
 
 export const CanApplyStyleTraitToSvg: Test = () => {
-  const { circle } = SVG({ style: useStyle });
+  const { circle } = SVG({ style: useStyleTrait });
   const e1 = circle(['style', 'fontSize', '12px'])();
   const t1 = e1.outerHTML === '<circle style="font-size: 12px;"></circle>';
   const e2 = circle(['style', 'fontSize', '12px'], ['style', 'color', 'red'])();

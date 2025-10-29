@@ -1,4 +1,4 @@
-export { State } from './state/State';
-export { HTML } from './template/HTML';
-export { SVG } from './template/SVG';
+export { HTML } from './HTML';
+export { State } from './State';
+export { SVG } from './SVG';
 export * from './types';

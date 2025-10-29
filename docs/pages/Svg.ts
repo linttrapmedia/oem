@@ -30,7 +30,7 @@ export const Svg = () =>
       svg.svg(
         ['attr', 'height', '50'],
         ['attr', 'width', '200'],
-        ['click', () => alert('You clicked me!')],
+        ['event', 'click', () => alert('You clicked me!')],
         ['style', 'backgroundColor', 'black'],
         ['style', 'borderRadius', '5px'],
         ['style', 'cursor', 'pointer'],

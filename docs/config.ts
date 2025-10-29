@@ -1,8 +1,9 @@
-import { useAttribute } from '@/factory/traits/Attribute';
-import { useEvent } from '@/factory/traits/Event';
-import { useInnerHTML } from '@/factory/traits/InnerHTML';
-import { useStyle } from '@/factory/traits/Style';
 import { HTML, State, SVG } from '@/index';
+import { useMediaQueryState } from '@/lib/states/MediaQuery';
+import { useAttributeTrait } from '@/lib/traits/Attribute';
+import { useEventTrait } from '@/lib/traits/Event';
+import { useInnerHTMLTrait } from '@/lib/traits/InnerHTML';
+import { useStyleTrait } from '@/lib/traits/Style';
 
 declare namespace Prism {
   const highlight: any;
@@ -46,17 +47,19 @@ export const menuState = State<MenuStateTypes>('introduction', {
 });
 
 export const menuOpen = State(false);
+export const isMobile = useMediaQueryState({ type: 'screen', minWidth: 0, maxWidth: 959 });
+export const isTablet = useMediaQueryState({ type: 'screen', minWidth: 960, maxWidth: Infinity });
 
 export const html = HTML({
-  attr: useAttribute,
-  click: useEvent({ event: 'click' }),
+  attr: useAttributeTrait,
+  event: useEventTrait,
   prism: usePrism,
-  style: useStyle,
-  html: useInnerHTML,
+  style: useStyleTrait,
+  html: useInnerHTMLTrait,
 });
 
 export const svg = SVG({
-  attr: useAttribute,
-  style: useStyle,
-  click: useEvent({ event: 'click' }),
+  attr: useAttributeTrait,
+  style: useStyleTrait,
+  event: useEventTrait,
 });

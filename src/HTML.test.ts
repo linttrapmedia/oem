@@ -1,15 +1,15 @@
+import { HTML } from '@/HTML';
+import { useAttributeTrait } from '@/lib/traits/Attribute';
+import { useTextContentTrait } from '@/lib/traits/TextContent';
+import { Test } from '@/types';
 import ResizeObserver from 'resize-observer-polyfill';
-import { useAttribute } from '../factory/traits/Attribute';
-import { useTextContent } from '../factory/traits/TextContent';
-import { Test } from '../types';
-import { HTML } from './HTML';
 
 globalThis.ResizeObserver = ResizeObserver;
 
 export const CanApplyMultipleTraitsToHtml: Test = () => {
   const { div } = HTML({
-    attr: useAttribute,
-    text: useTextContent,
+    attr: useAttributeTrait,
+    text: useTextContentTrait,
   });
   const e1 = div(['attr', 'id', 'test'], ['text', 'test'])();
   const t1 = e1.outerHTML === '<div id="test">test</div>';
@@ -31,7 +31,7 @@ export const CanCreateEmptyHtmlTag: Test = () => {
 
 export const HasValidHtmlNamespace: Test = () => {
   const { div } = HTML({
-    attr: useAttribute,
+    attr: useAttributeTrait,
   });
   const t1 = div(['attr', 'id', '1'])().namespaceURI === 'http://www.w3.org/1999/xhtml';
   return { pass: t1 };

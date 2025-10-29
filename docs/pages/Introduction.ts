@@ -1,4 +1,4 @@
-import { html } from '../config';
+import { html, isTablet } from '../config';
 import { Box } from '../parts/Box';
 import { Features } from '../parts/Features';
 import { FooterNav } from '../parts/FooterNav';
@@ -22,8 +22,8 @@ export const Introduction = () =>
           ['style', 'gap', '20px'],
           ['style', 'justifyContent', 'center'],
           ['style', 'width', '100%'],
-          // ['style:tablet', 'borderRight', '1px dashed black'],
-          // ['style:tablet', 'borderBottom', 'none'],
+          ['style', 'borderRight', '1px dashed black', isTablet.val, isTablet],
+          ['style', 'borderBottom', 'none', isTablet.val, isTablet],
           ['style', 'borderRight', 'none'],
         )(Features()),
       ),

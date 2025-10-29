@@ -28,28 +28,28 @@ export const KitchenSink = () =>
         html.a(
           ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/html/traits/Style.ts'],
           ['attr', 'target', '_blank'],
-        )('useAttribute'),
+        )('useAttributeTrait'),
       ),
       Cell('Apply attributes'),
       Cell(
         html.a(
           ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/html/traits/ClassName.ts'],
           ['attr', 'target', '_blank'],
-        )('useClassName'),
+        )('useClassNameTrait'),
       ),
       Cell('Apply class names'),
       Cell(
         html.a(
           ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/html/traits/Event.ts'],
           ['attr', 'target', '_blank'],
-        )('useEvent'),
+        )('useEventTrait'),
       ),
       Cell('Attach event listener'),
       Cell(
         html.a(
           ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/html/traits/InnerHTML.ts'],
           ['attr', 'target', '_blank'],
-        )('useInnerHTML'),
+        )('useInnerHTMLTrait'),
       ),
       Cell('Attach event listener'),
       Cell(
@@ -63,7 +63,7 @@ export const KitchenSink = () =>
         html.a(
           ['attr', 'href', 'https://github.com/linttrapmedia/oem/blob/main/src/html/traits/Style.ts'],
           ['attr', 'target', '_blank'],
-        )('useStyle'),
+        )('useStyleTrait'),
       ),
       Cell('Apply styles'),
     ),

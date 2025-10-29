@@ -1,4 +1,4 @@
-import { Trait } from '@/trait/Trait';
+import { Trait } from '@/Trait';
 import { StateType } from '@/types';
 
 type Props = [
@@ -8,7 +8,7 @@ type Props = [
   ...states: StateType<any>[],
 ];
 
-export const useTextContent = Trait((...props: Props) => {
+export const useTextContentTrait = Trait((...props: Props) => {
   const [el, children, condition, ...states] = props;
   const apply = () => {
     const _children = typeof children === 'function' ? children() : children;

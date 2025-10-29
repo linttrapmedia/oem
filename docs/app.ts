@@ -1,4 +1,4 @@
-import { html, menuState } from './config';
+import { html, isMobile, isTablet, menuState } from './config';
 import { Docs } from './pages/Docs';
 import { Factory } from './pages/Factory';
 import { Introduction } from './pages/Introduction';
@@ -12,10 +12,10 @@ function App() {
   return html.div(
     ['attr', 'data-part', 'App'],
     ['style', 'display', 'grid'],
-    ['style', 'gridTemplateRows', 'max-content 1fr'],
-    ['style', 'gridTemplateColumns', '1fr'],
-    // ['style:tablet', 'gridTemplateRows', 'auto'],
-    // ['style:tablet', 'gridTemplateColumns', 'max-content 1fr'],
+    ['style', 'gridTemplateRows', 'max-content 1fr', isMobile.val, isMobile],
+    ['style', 'gridTemplateColumns', '1fr', isMobile.val, isMobile],
+    ['style', 'gridTemplateRows', 'auto', isTablet.val, isTablet],
+    ['style', 'gridTemplateColumns', 'max-content 1fr', isTablet.val, isTablet],
     ['style', 'height', '100vh'],
     ['style', 'justifyContent', 'start'],
     ['style', 'width', '100vw'],

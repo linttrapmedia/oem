@@ -21,6 +21,14 @@ export const FooterNav = ({
     ['style', 'color', 'white'],
     ['style', 'borderRadius', '5px'],
   )(
-    prev && html.div(['style', 'cursor', 'pointer'], ['click', () => menuState.set(prev.menuState)])(`← ${prev.title}`),
-    next && html.div(['style', 'cursor', 'pointer'], ['click', () => menuState.set(next.menuState)])(`${next.title} →`),
+    prev &&
+      html.div(
+        ['style', 'cursor', 'pointer'],
+        ['event', 'click', () => menuState.set(prev.menuState)],
+      )(`← ${prev.title}`),
+    next &&
+      html.div(
+        ['style', 'cursor', 'pointer'],
+        ['event', 'click', () => menuState.set(next.menuState)],
+      )(`${next.title} →`),
   );

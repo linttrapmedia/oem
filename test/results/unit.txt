@@ -1,0 +1,1 @@
+x Trait - useEventListenerTrait can apply event listener trait to html 

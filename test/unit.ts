@@ -1,30 +1,23 @@
-import { CanMapListOfElements } from '@/factory/traits/Map.test';
-import { CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg } from '../src/factory/traits/Attribute.test';
-import { CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg } from '../src/factory/traits/ClassName.test';
+import { CanApplyMultipleTraitsToHtml, CanCreateBasicHtmlTagWithText, HasValidHtmlNamespace } from '@/HTML.test';
+import { CanKeepTrackOfMediaQueryState } from '@/lib/states/MediaQuery.test';
+import { CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg } from '@/lib/traits/Attribute.test';
+import { CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg } from '@/lib/traits/ClassName.test';
 import {
   CanApplyEventListenerTraitToHtml,
   CanApplyEventListenerTraitToSvg,
   CanConditionallyApplyEventListenerTraitToHtml,
   CanConditionallyApplyEventListenerTraitToSvg,
-} from '../src/factory/traits/Event.test';
-import { CanApplyInnerHTMLTraitToHtml, CanApplyInnerHTMLTraitToSvg } from '../src/factory/traits/InnerHTML.test';
+} from '@/lib/traits/Event.test';
+import { CanApplyInnerHTMLTraitToHtml, CanApplyInnerHTMLTraitToSvg } from '@/lib/traits/InnerHTML.test';
+import { CanMapListOfElements } from '@/lib/traits/Map.test';
 import {
   CanApplyCssVarWithStyleTraitToHtml,
   CanApplyStyleTraitToHtml,
   CanApplyStyleTraitToSvg,
-} from '../src/factory/traits/Style.test';
-import { CanApplyTextContentTraitToHtml, CanApplyTextContentTraitToSvg } from '../src/factory/traits/TextContent.test';
-import * as state from '../src/state/State.test';
-import {
-  CanApplyMultipleTraitsToHtml,
-  CanCreateBasicHtmlTagWithText,
-  HasValidHtmlNamespace,
-} from '../src/template/HTML.test';
-import {
-  CanApplyMultipleTraitsToSvg,
-  CanCreateBasicSvgTagWithText,
-  HasValidSvgNamespace,
-} from '../src/template/SVG.test';
+} from '@/lib/traits/Style.test';
+import { CanApplyTextContentTraitToHtml, CanApplyTextContentTraitToSvg } from '@/lib/traits/TextContent.test';
+import * as state from '@/State.test';
+import { CanApplyMultipleTraitsToSvg, CanCreateBasicSvgTagWithText, HasValidSvgNamespace } from '@/SVG.test';
 import { runner } from './runner';
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -36,36 +29,36 @@ window.addEventListener('DOMContentLoaded', () => {
       ['has valid namespace', HasValidHtmlNamespace],
     ],
     [
-      'useAttribute',
+      'Trait - useAttributeTrait',
       ['can apply attribute trait to html', CanApplyAttributeTraitToHtml],
       ['can apply attribute trait to svg', CanApplyAttributeTraitToSvg],
     ],
     [
-      'useClassName',
+      'Trait - useClassName',
       ['can apply class name trait to html', CanApplyClassNameTraitToHtml],
       ['can apply class name trait to svg', CanApplyClassNameTraitToSvg],
     ],
     [
-      'useEventListener',
+      'Trait - useEventListenerTrait',
       ['can apply event listener trait to html', CanApplyEventListenerTraitToHtml],
       ['can conditionally apply event listener trait to html', CanConditionallyApplyEventListenerTraitToHtml],
       ['can apply event listener trait to svg', CanApplyEventListenerTraitToSvg],
       ['can conditionally apply event listener trait to svg', CanConditionallyApplyEventListenerTraitToSvg],
     ],
     [
-      'useInnerHTML',
+      'Trait - useInnerHTMLTrait',
       ['can apply inner html trait to html', CanApplyInnerHTMLTraitToHtml],
       ['can apply inner html trait to svg', CanApplyInnerHTMLTraitToSvg],
     ],
-    ['useMap', ['can map list of elements', CanMapListOfElements]],
+    ['Trait - useMapTrait', ['can map list of elements', CanMapListOfElements]],
     [
-      'useStyle',
+      'Trait - useStyleTrait',
       ['can apply style trait to html', CanApplyStyleTraitToHtml],
       ['can apply style trait to svg', CanApplyStyleTraitToSvg],
       ['can apply css var with style trait to html', CanApplyCssVarWithStyleTraitToHtml],
     ],
     [
-      'useTextContent',
+      'Trait - useTextContentTrait',
       ['can apply text content trait to html', CanApplyTextContentTraitToHtml],
       ['can apply text content trait to svg', CanApplyTextContentTraitToSvg],
     ],
@@ -85,5 +78,6 @@ window.addEventListener('DOMContentLoaded', () => {
       ['can set state and publish', state.CanSetStateAndPublish],
       ['can test state value', state.CanTestStateValue],
     ],
+    ['State - useMediaQueryState', ['can create media query state', CanKeepTrackOfMediaQueryState]],
   ]);
 });

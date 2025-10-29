@@ -1,4 +1,4 @@
-import { Trait } from '@/trait/Trait';
+import { Trait } from '@/Trait';
 import { StateType } from '@/types';
 
 type Props = [
@@ -9,7 +9,7 @@ type Props = [
   ...states: StateType<any>[],
 ];
 
-export const useAttribute = Trait((...props: Props) => {
+export const useAttributeTrait = Trait((...props: Props) => {
   const [el, prop, val, condition = true, ...states] = props;
   const apply = () => {
     const _val = typeof val === 'function' ? val() : val;

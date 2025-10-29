@@ -18,7 +18,7 @@ export const Patterns = () =>
         html.div(['style', 'textAlign', 'center'])(
           `Here's the basic outline of a trait that responds to state changes and only applies when a condition is met:`,
         ),
-        html.pre(['prism'])(`function useStyleTrait(props) { // <-- configurable
+        html.pre(['prism'])(`function useStyleTraitTrait(props) { // <-- configurable
   return function(el, prop, val, cond) { // <-- your trait function
     const apply = () => { // <-- your apply function
       if (cond ? cond() : true) { ... } // <-- the condition to apply
@@ -33,8 +33,8 @@ export const Patterns = () =>
         html.pre(['prism'])(`// register the trait multiple times and 
 // have them respond to different state objects
 const tmpl = HTML({
-  'style:a': useStyleTrait({ state: stateObjectA }),
-  'style:b': useStyleTrait({ state: stateObjectB }),
+  'style:a': useStyleTraitTrait({ state: stateObjectA }),
+  'style:b': useStyleTraitTrait({ state: stateObjectB }),
 });
 
 // somewhere in your app

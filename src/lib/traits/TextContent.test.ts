@@ -1,13 +1,13 @@
-import { State } from '@/state/State';
-import { HTML } from '@/template/HTML';
-import { SVG } from '@/template/SVG';
+import { HTML } from '@/HTML';
+import { State } from '@/State';
+import { SVG } from '@/SVG';
 import { Test } from '@/types';
-import { useTextContent } from './TextContent';
+import { useTextContentTrait } from './TextContent';
 
 export const CanApplyTextContentTraitToHtml: Test = () => {
   const state = State({ value: 'asdf' });
   const { div } = HTML({
-    text: useTextContent,
+    text: useTextContentTrait,
   });
 
   // static tests
@@ -38,7 +38,7 @@ export const CanApplyTextContentTraitToHtml: Test = () => {
 
 export const CanApplyTextContentTraitToSvg: Test = () => {
   const { circle } = SVG({
-    text: useTextContent,
+    text: useTextContentTrait,
   });
   const e1 = circle(['text', 'test'])();
   const t1 = e1.outerHTML === '<circle>test</circle>';

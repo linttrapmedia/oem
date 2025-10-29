@@ -1,12 +1,12 @@
-import { useAttribute } from '../factory/traits/Attribute';
-import { useTextContent } from '../factory/traits/TextContent';
-import { Test } from '../types';
+import { useAttributeTrait } from '@/lib/traits/Attribute';
+import { useTextContentTrait } from '@/lib/traits/TextContent';
+import { Test } from '@/types';
 import { SVG } from './SVG';
 
 export const CanApplyMultipleTraitsToSvg: Test = () => {
   const { circle } = SVG({
-    attr: useAttribute,
-    text: useTextContent,
+    attr: useAttributeTrait,
+    text: useTextContentTrait,
   });
   const e1 = circle(['attr', 'id', 'test'], ['text', 'test'])();
   const t1 = e1.outerHTML === '<circle id="test">test</circle>';
@@ -28,7 +28,7 @@ export const CanCreateEmptySvgTag: Test = () => {
 
 export const HasValidSvgNamespace: Test = () => {
   const { circle } = SVG({
-    attr: useAttribute,
+    attr: useAttributeTrait,
   });
   const t1 = circle(['attr', 'id', '1'])().namespaceURI === 'http://www.w3.org/2000/svg';
   return { pass: t1 };

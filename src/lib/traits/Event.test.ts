@@ -1,16 +1,18 @@
-import { State } from '@/state/State';
-import { HTML } from '@/template/HTML';
-import { SVG } from '@/template/SVG';
+import { HTML } from '@/HTML';
+import { useAttributeTrait } from '@/lib/traits/Attribute';
+import { useEventTrait } from '@/lib/traits/Event';
+import { State } from '@/State';
+import { SVG } from '@/SVG';
 import { Test } from '@/types';
-import { useEvent } from './Event';
 
 export const CanApplyEventListenerTraitToHtml: Test = () => {
   const { div } = HTML({
-    click: useEvent({ event: 'click' }),
+    event: useEventTrait,
+    attr: useAttributeTrait,
   });
   let clicked = false;
   const handleClick: any = () => (clicked = true);
-  const e1 = div(['click', handleClick])();
+  const e1 = div(['event', 'clicks', handleClick])();
   e1.click();
   const t1 = clicked;
 
@@ -20,10 +22,10 @@ export const CanApplyEventListenerTraitToHtml: Test = () => {
 export const CanConditionallyApplyEventListenerTraitToHtml: Test = () => {
   const toggle = State(true);
   const { div } = HTML({
-    click: useEvent({ event: 'click', state: toggle }),
+    event: useEventTrait,
   });
   const handleClick: any = () => toggle.set(!toggle.val());
-  const e1 = div(['click', handleClick, false], ['click', handleClick, true])();
+  const e1 = div(['event', 'click', handleClick, false], ['event', 'click', handleClick, true])();
   e1.click();
   const t1 = toggle.val() === false;
   e1.click();
@@ -33,7 +35,7 @@ export const CanConditionallyApplyEventListenerTraitToHtml: Test = () => {
 
 export const CanApplyEventListenerTraitToSvg: Test = () => {
   const { circle } = SVG({
-    click: useEvent({ event: 'click' }),
+    event: useEventTrait,
   });
   let clicked = false;
   var clickEvent = new MouseEvent('click', {
@@ -42,7 +44,7 @@ export const CanApplyEventListenerTraitToSvg: Test = () => {
     cancelable: false,
   });
   const handleClick = () => (clicked = true);
-  const e1 = circle(['click', handleClick])();
+  const e1 = circle(['event', 'click', handleClick])();
   e1.dispatchEvent(clickEvent);
   const t1 = clicked;
   return { pass: t1 };
@@ -51,7 +53,7 @@ export const CanApplyEventListenerTraitToSvg: Test = () => {
 export const CanConditionallyApplyEventListenerTraitToSvg: Test = () => {
   const toggle = State(true);
   const { circle } = SVG({
-    click: useEvent({ event: 'click', state: toggle }),
+    event: useEventTrait,
   });
   const clickEvent = new MouseEvent('click', {
     view: window,
@@ -60,7 +62,7 @@ export const CanConditionallyApplyEventListenerTraitToSvg: Test = () => {
   });
   const handleClick: any = () => toggle.set(!toggle.val());
 
-  const e1 = circle(['click', handleClick, false], ['click', handleClick, true])();
+  const e1 = circle(['event', 'click', handleClick, false], ['event', 'click', handleClick, true])();
   e1.dispatchEvent(clickEvent);
   const t1 = toggle.val() === false;
   e1.dispatchEvent(clickEvent);

@@ -1,12 +1,12 @@
-import { State } from '@/state/State';
-import { HTML } from '@/template/HTML';
-import { SVG } from '@/template/SVG';
+import { HTML } from '@/HTML';
+import { State } from '@/State';
+import { SVG } from '@/SVG';
 import { Test } from '@/types';
-import { useInnerHTML } from './InnerHTML';
+import { useInnerHTMLTrait } from './InnerHTML';
 
 export const CanApplyInnerHTMLTraitToHtml: Test = () => {
   const state = State<{ value: string }>({ value: 'asdf' });
-  const { div } = HTML({ html: useInnerHTML });
+  const { div } = HTML({ html: useInnerHTMLTrait });
 
   // static tests
   const e1 = div(['html', () => 'asdf'])();
@@ -46,7 +46,7 @@ export const CanApplyInnerHTMLTraitToHtml: Test = () => {
 
 export const CanApplyInnerHTMLTraitToSvg: Test = () => {
   const state = State({ value: 'asdf' });
-  const { circle } = SVG({ html: useInnerHTML });
+  const { circle } = SVG({ html: useInnerHTMLTrait });
 
   // static tests
   const e1 = circle(['html', () => 'asdf'])();

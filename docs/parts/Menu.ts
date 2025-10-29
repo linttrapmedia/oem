@@ -1,29 +1,22 @@
-import { useEvent } from '@/factory/traits/Event';
-import { useStyle } from '@/factory/traits/Style';
-import { HTML, State } from '@/index';
+import { State } from '@/index';
 import pkg from '../../package.json';
-import { html, menuOpen, menuState, MenuStateTypes } from '../config';
+import { html, isMobile, isTablet, menuOpen, menuState, MenuStateTypes } from '../config';
 
 const Item = (txt: string, stateKey: MenuStateTypes) => {
   const hovered = State(false);
-  const tmpl = HTML({
-    click: useEvent({ event: 'click' }),
-    mouseover: useEvent({ event: 'mouseover' }),
-    mouseout: useEvent({ event: 'mouseout' }),
-    style: useStyle,
-  });
 
-  return tmpl.div(
+  return html.div(
     ['style', 'padding', '10px 20px'],
     ['style', 'cursor', 'pointer'],
     ['style', 'transition', 'background-color 0.3s'],
     ['style', 'textTransform', 'uppercase'],
-    ['click', menuState.$set(stateKey)],
+    ['event', 'click', menuState.$set(stateKey)],
     ['style', 'color', 'yellow', hovered.$test(true), hovered],
     ['style', 'color', 'white', hovered.$test(false), hovered],
-    ['style', 'color', 'yellow', menuState.test(stateKey), menuState],
-    // ['mouseover', hovered.$set(true), menuState],
-    // ['mouseout', hovered.$set(false), menuState],
+    ['style', 'color', 'yellow', menuState.$test(stateKey), menuState],
+    ['style', 'color', 'white', menuState.$test(stateKey, false), menuState],
+    ['event', 'mouseover', hovered.$set(true)],
+    ['event', 'mouseout', hovered.$set(false)],
   )(txt);
 };
 
@@ -51,9 +44,9 @@ export const Menu = () =>
           ['style', 'textTransform', 'uppercase'],
           ['style', 'padding', '5px'],
           ['style', 'opacity', '0.5'],
-          ['style', 'display', 'flex'],
-          // ['style:tablet', 'display', 'none'],
-          ['click', menuOpen.$reduce((o) => !o)],
+          ['style', 'display', 'flex', isMobile.val, isMobile],
+          ['style', 'display', 'none', isTablet.val, isTablet],
+          ['event', 'click', menuOpen.$reduce((o) => !o)],
           ['html', () => '-', menuOpen.$test(true), menuOpen],
           ['html', () => '=', menuOpen.$test(false), menuOpen],
         )(),
@@ -89,9 +82,8 @@ export const Menu = () =>
           ['style', 'display', 'flex'],
           ['style', 'flexDirection', 'column'],
           ['style', 'justifyContent', 'center'],
-          ['style', 'display', 'none', menuOpen.$test(false), menuOpen],
-          ['style', 'display', 'flex', menuOpen.$test(true), menuOpen],
-          // ['style:tablet', 'display', 'flex'],
+          ['style', 'display', 'none', () => isMobile.val() && !menuOpen.val(), menuOpen, isMobile],
+          ['style', 'display', 'flex', () => isTablet.val() || menuOpen.val(), menuOpen, isTablet],
           ['style', 'paddingTop', '20px'],
         )(
           Item('Intro', 'introduction'),

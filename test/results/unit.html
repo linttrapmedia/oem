@@ -1,162 +1,7 @@
 <html>
     <head>
       <title>OEM Element Unit Tests</title>
-      <script>// src/trait/Trait.ts
-function Trait(traitFn) {
-  return (...traitProps) => {
-    const el = traitProps[0];
-    const cleanupFunc = traitFn(...traitProps);
-    let observer = null;
-    const fullCleanup = () => {
-      cleanupFunc();
-      if (observer) {
-        observer.disconnect();
-        observer = null;
-      }
-    };
-    if (el.parentNode) {
-      observer = new MutationObserver((mutationsList) => {
-        for (const mutation of mutationsList) {
-          if (mutation.type === "childList") {
-            if (Array.from(mutation.removedNodes).includes(el)) {
-              fullCleanup();
-              return;
-            }
-          }
-        }
-      });
-      observer.observe(el.parentNode, { childList: true });
-    }
-    return fullCleanup;
-  };
-}
-
-// src/factory/traits/Attribute.ts
-var useAttribute = Trait((...props) => {
-  const [el, prop, val, condition = true, ...states] = props;
-  const apply = () => {
-    const _val = typeof val === "function" ? val() : val;
-    const _condition = typeof condition === "function" ? condition() : condition;
-    if (_condition) {
-      if (_val === undefined) {
-        el.removeAttribute(prop);
-      } else {
-        el.setAttribute(prop, String(_val));
-      }
-    } else {
-      el.removeAttribute(prop);
-    }
-  };
-  apply();
-  const unsubs = states.map((state) => state.sub(apply));
-  return () => unsubs.forEach((unsub) => unsub());
-});
-
-// src/factory/traits/Map.ts
-var useMap = Trait((...props) => {
-  const [el, items, renderer, condition = true, ...states] = props;
-  const apply = () => {
-    const cond = typeof condition === "function" ? condition() : condition;
-    if (!cond)
-      return;
-    items().forEach((item, index) => {
-      const itemEl = renderer(item, index);
-      const itemKey = itemEl.getAttribute("key");
-      if (!itemKey)
-        throw new Error('Each item must have a unique "key" property for mapping.');
-      const currEl = el.querySelector(`[key="${itemKey}"]`);
-      const isDiff = itemEl.outerHTML !== currEl?.outerHTML;
-      if (!currEl)
-        return el.appendChild(itemEl);
-      if (currEl && isDiff)
-        el.replaceChild(itemEl, currEl);
-    });
-  };
-  apply();
-  const unsubs = states.map((state) => state.sub(apply));
-  return () => unsubs.forEach((unsub) => unsub());
-});
-
-// src/state/State.ts
-function getPersistedVal(param, persistence) {
-  if (!persistence)
-    return param;
-  const storageParam = persistence.storage.getItem(persistence.key);
-  const parsedStorageParam = JSON.parse(storageParam);
-  const isStorageParamValid = parsedStorageParam !== null && parsedStorageParam !== undefined;
-  if ((persistence.overwrite ?? true) && isStorageParamValid)
-    return parsedStorageParam;
-  if (!(persistence.overwrite ?? true) && isStorageParamValid) {
-    if (Array.isArray(param) && Array.isArray(parsedStorageParam)) {
-      return [...param, ...parsedStorageParam];
-    } else if (typeof param === "object" && typeof parsedStorageParam === "object") {
-      return { ...param, ...parsedStorageParam };
-    }
-  }
-  return param;
-}
-function State(param, persistence) {
-  let _val = getPersistedVal(param, persistence);
-  const _subs = new Set;
-  const val = () => _val;
-  const _set = (atom) => {
-    _val = atom;
-    _subs.forEach((i) => i(atom));
-    if (persistence)
-      persistence.storage.setItem(persistence.key, JSON.stringify(atom));
-  };
-  const $set = (atom) => () => _set(atom);
-  const reduce = (cb) => _set(cb(_val));
-  const $reduce = (cb) => () => _set(cb(val()));
-  const _sub = (cb) => {
-    _subs.add(cb);
-    return () => _unsub(cb);
-  };
-  const test = (predicate, truthCheck = true) => {
-    const serialized_currentVal = JSON.stringify(_val);
-    if (predicate instanceof RegExp) {
-      const result = predicate.test(serialized_currentVal);
-      return truthCheck ? result : !result;
-    } else if (typeof predicate === "function" && predicate instanceof Function) {
-      const result = predicate(_val);
-      return truthCheck ? result : !result;
-    } else {
-      const string_comparison = JSON.stringify(predicate);
-      const result = serialized_currentVal === string_comparison;
-      return truthCheck ? result : !result;
-    }
-  };
-  const $test = (predicate, truthCheck = true) => () => {
-    const serialized_currentVal = JSON.stringify(_val);
-    if (predicate instanceof RegExp) {
-      const result = predicate.test(serialized_currentVal);
-      return truthCheck ? result : !result;
-    } else if (typeof predicate === "function" && predicate instanceof Function) {
-      const result = predicate(_val);
-      return truthCheck ? result : !result;
-    } else {
-      const string_comparison = JSON.stringify(predicate);
-      const result = serialized_currentVal === string_comparison;
-      return truthCheck ? result : !result;
-    }
-  };
-  const _unsub = (cb) => {
-    _subs.delete(cb);
-  };
-  return {
-    reduce,
-    set: _set,
-    sub: _sub,
-    test,
-    unsub: _unsub,
-    val,
-    $reduce,
-    $set,
-    $test
-  };
-}
-
-// src/template/HTML.ts
+      <script>// src/HTML.ts
 function CreateEl(tag, config) {
   return (...props) => {
     const ns = "http://www.w3.org/1999/xhtml";
@@ -181,341 +26,52 @@ function HTML(config) {
   });
 }
 
-// src/factory/traits/Map.test.ts
-var CanMapListOfElements = () => {
-  const items1 = State(["item1", "item2"]);
-  const tmpl1 = HTML({
-    map: useMap,
-    attr: useAttribute
-  });
-  const render1 = (item) => tmpl1.div(["attr", "key", item])(item);
-  const e1 = tmpl1.div(["map", items1.val, render1, true, items1])();
-  const t1 = e1.outerHTML === '<div><div key="item1">item1</div><div key="item2">item2</div></div>';
-  const items2 = State(["item1", "item2"]);
-  const tmpl2 = HTML({
-    map: useMap,
-    attr: useAttribute
-  });
-  const render2 = (item) => tmpl2.div(["attr", "key", item])(item);
-  const e2 = tmpl2.div(["map", items2.val, render2, true, items2])();
-  const t2 = e2.outerHTML === '<div><div key="item1">item1</div><div key="item2">item2</div></div>';
-  const items3a = State(["item1", "item2"]);
-  const items3b = State([1, 2, 10]);
-  const tmpl3 = HTML({
-    map: useMap,
-    attr: useAttribute
-  });
-  const render3 = (item, i) => tmpl3.div(["attr", "key", i], ["attr", "id", items3b.val()[i]])(item);
-  const e3 = tmpl3.div(["map", items3a.val, render3, true, items3b, items3a])();
-  items3b.set([3, 4, 10]);
-  const t3 = e3.outerHTML === '<div><div key="0" id="3">item1</div><div key="1" id="4">item2</div></div>';
-  items3a.reduce((prev) => [...prev, "item3"]);
-  const t4 = e3.outerHTML === '<div><div key="0" id="3">item1</div><div key="1" id="4">item2</div><div key="2" id="10">item3</div></div>';
-  const tests = [t1, t2, t3, t4];
-  return { pass: tests.every(Boolean) };
-};
-
-// src/template/SVG.ts
-function SvgTag(el, traits = [], config = {}) {
-  traits.forEach(([trait, ...args]) => config[trait](el, ...args));
-  function fn(...children) {
-    children.forEach((child) => el.append(child));
-    return el;
-  }
-  return fn;
-}
-function SVG(config) {
-  return new Proxy({}, {
-    get: (_, prop) => {
-      if (prop === "el")
-        return (el) => (...props) => SvgTag(el, props, config);
-      return (...props) => {
-        const ns = "http://www.w3.org/2000/svg";
-        const el = document.createElementNS(ns, prop);
-        return SvgTag(el, props, config);
-      };
-    }
-  });
-}
-
-// src/factory/traits/Attribute.test.ts
-var CanApplyAttributeTraitToHtml = () => {
-  const disabled = State(false);
-  const { div } = HTML({
-    staticAttr: useAttribute,
-    dynamicAttr: useAttribute
-  });
-  const e1 = div(["staticAttr", "id", "test"])();
-  const t1 = e1.outerHTML === '<div id="test"></div>';
-  const e2 = div(["staticAttr", "disabled", "true"])();
-  const t2 = e2.outerHTML === '<div disabled="true"></div>';
-  disabled.set(true);
-  const e5 = div(["dynamicAttr", "disabled", disabled.val, true, disabled])();
-  const t5 = e5.outerHTML === '<div disabled="true"></div>';
-  disabled.set(false);
-  const e6 = div(["dynamicAttr", "disabled", disabled.val, true, disabled])();
-  const t6 = e6.outerHTML === '<div disabled="false"></div>';
-  disabled.set(true);
-  const e7 = div(["dynamicAttr", "disabled", "true", disabled.val])();
-  const t7 = e7.outerHTML === '<div disabled="true"></div>';
-  disabled.set(false);
-  const e8 = div(["dynamicAttr", "disabled", "true", disabled.val])();
-  const t8 = e8.outerHTML === "<div></div>";
-  return { pass: t1 && t2 && t5 && t6 && t7 && t8 };
-};
-var CanApplyAttributeTraitToSvg = () => {
-  const { circle } = SVG({
-    attr: useAttribute
-  });
-  const e1 = circle(["attr", "id", "test"])();
-  const t1 = e1.outerHTML === '<circle id="test"></circle>';
-  return { pass: t1 };
-};
-
-// src/factory/traits/ClassName.ts
-var useClassName = Trait((...props) => {
-  const [el, className, condition = true, ...states] = props;
-  const apply = () => {
-    const _className = typeof className === "function" ? className() : className;
-    const _condition = typeof condition === "function" ? condition() : condition;
-    if (_condition)
-      el.setAttribute("class", String(_className));
-  };
-  apply();
-  const unsubs = states.map((state) => state.sub(apply));
-  return () => unsubs.forEach((unsub) => unsub());
-});
-
-// src/factory/traits/ClassName.test.ts
-var CanApplyClassNameTraitToHtml = () => {
-  const { div } = HTML({
-    classname: useClassName
-  });
-  const e1 = div(["classname", "c1"], ["classname", "c1"])();
-  const t1 = e1.outerHTML === '<div class="c1"></div>';
-  const e2 = div(["classname", "c1 c2"])();
-  const t2 = e2.outerHTML === '<div class="c1 c2"></div>';
-  const e3 = div(["classname", "c1", false])();
-  const t3 = e3.outerHTML === "<div></div>";
-  const e4 = div(["classname", "c1", true])();
-  const t4 = e4.outerHTML === '<div class="c1"></div>';
-  const e5 = div(["classname", "c1", () => false])();
-  const t5 = e5.outerHTML === "<div></div>";
-  const e6 = div(["classname", "c1", () => true])();
-  const t6 = e6.outerHTML === '<div class="c1"></div>';
-  const e7 = div(["classname", "c1 c2", true], ["classname", "", true])();
-  const t7 = e7.outerHTML === '<div class=""></div>';
-  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 };
-};
-var CanApplyClassNameTraitToSvg = () => {
-  const { circle } = SVG({ classname: useClassName });
-  const e1 = circle(["classname", "c1"])();
-  const t1 = e1.outerHTML === '<circle class="c1"></circle>';
-  const e2 = circle(["classname", "c1 c2"])();
-  const t2 = e2.outerHTML === '<circle class="c1 c2"></circle>';
-  const e3 = circle(["classname", "c1", false])();
-  const t3 = e3.outerHTML === "<circle></circle>";
-  const e4 = circle(["classname", "c1", true])();
-  const t4 = e4.outerHTML === '<circle class="c1"></circle>';
-  const e5 = circle(["classname", "c1", () => false])();
-  const t5 = e5.outerHTML === "<circle></circle>";
-  const e6 = circle(["classname", "c1", () => true])();
-  const t6 = e6.outerHTML === '<circle class="c1"></circle>';
-  const e7 = circle(["classname", "c1 c2", true], ["classname", "", true])();
-  const t7 = e7.outerHTML === '<circle class=""></circle>';
-  const tests = [t1, t2, t3, t4, t5, t6, t7];
-  return { pass: tests.every(Boolean) };
-};
-
-// src/factory/traits/Event.ts
-var eventMap = new WeakMap;
-function useEvent(props) {
-  const { state, event = "click" } = props ?? {};
-  return (...htmlProps) => {
-    const [el, cb, condition = true] = htmlProps;
-    if (!eventMap.has(el))
-      eventMap.set(el, new Map);
-    const listenerMap = eventMap.get(el);
-    const apply = () => {
-      const _condition = typeof condition === "function" ? condition() : condition;
-      let listener = listenerMap.get(event) ?? null;
-      if (listener) {
-        el.removeEventListener(event, listener);
-        listenerMap.set(event, null);
-        listener = null;
+// src/Trait.ts
+function Trait(traitFn) {
+  return (...traitProps) => {
+    const el = traitProps[0];
+    const cleanupFunc = traitFn(...traitProps);
+    let observer = null;
+    const fullCleanup = () => {
+      if (typeof cleanupFunc === "function") {
+        cleanupFunc();
       }
-      if (_condition) {
-        const newListener = (e) => cb(e);
-        el.addEventListener(event, newListener);
-        listenerMap.set(event, newListener);
-        listener = newListener;
+      if (observer) {
+        observer.disconnect();
+        observer = null;
       }
     };
-    const stateIsArray = Array.isArray(state);
-    if (state)
-      stateIsArray ? state.forEach((s) => s.sub(apply)) : state.sub(apply);
-    apply();
+    if (el.parentNode) {
+      observer = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+          if (mutation.type === "childList") {
+            if (Array.from(mutation.removedNodes).includes(el)) {
+              fullCleanup();
+              return;
+            }
+          }
+        }
+      });
+      observer.observe(el.parentNode, { childList: true });
+    }
+    return fullCleanup;
   };
 }
 
-// src/factory/traits/Event.test.ts
-var CanApplyEventListenerTraitToHtml = () => {
-  const { div } = HTML({
-    click: useEvent({ event: "click" })
-  });
-  let clicked = false;
-  const handleClick = () => clicked = true;
-  const e1 = div(["click", handleClick])();
-  e1.click();
-  const t1 = clicked;
-  return { pass: t1 };
-};
-var CanConditionallyApplyEventListenerTraitToHtml = () => {
-  const toggle = State(true);
-  const { div } = HTML({
-    click: useEvent({ event: "click", state: toggle })
-  });
-  const handleClick = () => toggle.set(!toggle.val());
-  const e1 = div(["click", handleClick, false], ["click", handleClick, true])();
-  e1.click();
-  const t1 = toggle.val() === false;
-  e1.click();
-  const t2 = toggle.val() === true;
-  return { pass: t1 && t2 };
-};
-var CanApplyEventListenerTraitToSvg = () => {
-  const { circle } = SVG({
-    click: useEvent({ event: "click" })
-  });
-  let clicked = false;
-  var clickEvent = new MouseEvent("click", {
-    view: window,
-    bubbles: true,
-    cancelable: false
-  });
-  const handleClick = () => clicked = true;
-  const e1 = circle(["click", handleClick])();
-  e1.dispatchEvent(clickEvent);
-  const t1 = clicked;
-  return { pass: t1 };
-};
-var CanConditionallyApplyEventListenerTraitToSvg = () => {
-  const toggle = State(true);
-  const { circle } = SVG({
-    click: useEvent({ event: "click", state: toggle })
-  });
-  const clickEvent = new MouseEvent("click", {
-    view: window,
-    bubbles: true,
-    cancelable: false
-  });
-  const handleClick = () => toggle.set(!toggle.val());
-  const e1 = circle(["click", handleClick, false], ["click", handleClick, true])();
-  e1.dispatchEvent(clickEvent);
-  const t1 = toggle.val() === false;
-  e1.dispatchEvent(clickEvent);
-  const t2 = toggle.val() === true;
-  return { pass: t1 && t2 };
-};
-
-// src/factory/traits/InnerHTML.ts
-var useInnerHTML = Trait((...props) => {
-  const [el, children, condition = true, ...states] = props;
-  const apply = () => {
-    const _children = children();
-    const _condition = typeof condition === "function" ? condition() : condition;
-    if (_condition) {
-      el.innerHTML = "";
-      if (_children !== undefined) {
-        if (Array.isArray(_children)) {
-          _children.filter((c) => c).forEach((c) => {
-            if (c instanceof HTMLElement || c instanceof SVGElement)
-              el.appendChild(c);
-            else
-              el.appendChild(document.createTextNode(String(c)));
-          });
-        } else if (_children instanceof HTMLElement || _children instanceof SVGElement) {
-          el.appendChild(_children);
-        } else {
-          el.innerHTML = String(_children);
-        }
-      }
-    }
-  };
-  apply();
-  const unsubs = states.map((state) => state.sub(apply));
-  return () => unsubs.forEach((unsub) => unsub());
-});
-
-// src/factory/traits/InnerHTML.test.ts
-var CanApplyInnerHTMLTraitToHtml = () => {
-  const state = State({ value: "asdf" });
-  const { div } = HTML({ html: useInnerHTML });
-  const e1 = div(["html", () => "asdf"])();
-  const t1 = e1.outerHTML === "<div>asdf</div>";
-  const e2 = div(["html", () => ["one", "two"]])();
-  const t2 = e2.outerHTML === "<div>onetwo</div>";
-  const e3 = div(["html", () => div()("one")])();
-  const t3 = e3.outerHTML === "<div><div>one</div></div>";
-  const e4 = div(["html", () => [div()("one"), div()("two")]])();
-  const t4 = e4.outerHTML === "<div><div>one</div><div>two</div></div>";
-  const e5 = div(["html", () => state.val().value, true, state])();
-  const t5 = e5.outerHTML === "<div>asdf</div>";
-  state.set({ value: "c1" });
-  const e6 = div(["html", () => state.val().value, false, state])();
-  const t6 = e6.outerHTML === "<div></div>";
-  const e7 = div(["html", () => state.val().value, () => false, state])();
-  const t7 = e7.outerHTML === "<div></div>";
-  const e8 = div(["html", () => state.val().value, () => true, state])();
-  const t8 = e8.outerHTML === "<div>c1</div>";
-  state.set({ value: "c2" });
-  const e9 = div(["html", () => state.val().value, state.$test(/c2/), state])();
-  const t9 = e9.outerHTML === "<div>c2</div>";
-  const e10 = div(["html", () => ["one", "two"]], ["html", () => {
-    return;
-  }, false])();
-  const t10 = e10.outerHTML === "<div>onetwo</div>";
-  const e11 = div(["html", () => ["one", "two"]], ["html", () => {
-    return;
-  }, true])();
-  const t11 = e11.outerHTML === "<div></div>";
-  const tests = [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11];
-  return { pass: tests.every((t) => t) };
-};
-var CanApplyInnerHTMLTraitToSvg = () => {
-  const state = State({ value: "asdf" });
-  const { circle } = SVG({ html: useInnerHTML });
-  const e1 = circle(["html", () => "asdf"])();
-  const t1 = e1.outerHTML === "<circle>asdf</circle>";
-  const e2 = circle(["html", () => ["one", "two"]])();
-  const t2 = e2.outerHTML === "<circle>onetwo</circle>";
-  const e3 = circle(["html", () => circle()("one")])();
-  const t3 = e3.outerHTML === "<circle><circle>one</circle></circle>";
-  const e4 = circle(["html", () => [circle()("one"), circle()("two")]])();
-  const t4 = e4.outerHTML === "<circle><circle>one</circle><circle>two</circle></circle>";
-  const e5 = circle(["html", () => state.val().value, true, state])();
-  const t5 = e5.outerHTML === "<circle>asdf</circle>";
-  state.set({ value: "c1" });
-  const e6 = circle(["html", () => state.val().value, false, state])();
-  const t6 = e6.outerHTML === "<circle></circle>";
-  const e7 = circle(["html", () => state.val().value, () => false, state])();
-  const t7 = e7.outerHTML === "<circle></circle>";
-  const e8 = circle(["html", () => state.val().value, () => true, state])();
-  const t8 = e8.outerHTML === "<circle>c1</circle>";
-  state.set({ value: "c2" });
-  const e9 = circle(["html", () => state.val().value, state.$test(/c2/)])();
-  const t9 = e9.outerHTML === "<circle>c2</circle>";
-  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 };
-};
-
-// src/factory/traits/Style.ts
-var useStyle = Trait((...props) => {
+// src/lib/traits/Attribute.ts
+var useAttributeTrait = Trait((...props) => {
   const [el, prop, val, condition = true, ...states] = props;
   const apply = () => {
     const _val = typeof val === "function" ? val() : val;
     const _condition = typeof condition === "function" ? condition() : condition;
     if (_condition) {
-      prop.startsWith("--") ? el.style.setProperty(prop, _val) : el.style[prop] = _val;
+      if (_val === undefined) {
+        el.removeAttribute(prop);
+      } else {
+        el.setAttribute(prop, String(_val));
+      }
+    } else {
+      el.removeAttribute(prop);
     }
   };
   apply();
@@ -523,43 +79,8 @@ var useStyle = Trait((...props) => {
   return () => unsubs.forEach((unsub) => unsub());
 });
 
-// src/factory/traits/Style.test.ts
-var CanApplyStyleTraitToHtml = () => {
-  const state = State({ fontSize: "13px" });
-  const { div } = HTML({ style: useStyle });
-  const e1 = div(["style", "fontSize", "12px"])();
-  const t1 = e1.outerHTML === '<div style="font-size: 12px;"></div>';
-  const e2 = div(["style", "fontSize", () => state.val().fontSize, true, state])();
-  const t2a = e2.outerHTML === '<div style="font-size: 13px;"></div>';
-  state.set({ fontSize: "14px" });
-  const t2b = e2.outerHTML === '<div style="font-size: 14px;"></div>';
-  state.set({ fontSize: "15px" });
-  const e3 = div(["style", "fontSize", () => state.val().fontSize, () => false, state])();
-  const t3 = e3.outerHTML === "<div></div>";
-  const e4 = div(["style", "fontSize", () => state.val().fontSize, () => true, state])();
-  const t4 = e4.outerHTML === '<div style="font-size: 15px;"></div>';
-  const e5 = div(["style", "fontSize", () => state.val().fontSize, state.$test(/15px/), state])();
-  const t5 = e5.outerHTML === '<div style="font-size: 15px;"></div>';
-  const tests = [t1, t2a, t2b, t3, t4, t5];
-  return { pass: tests.every(Boolean) };
-};
-var CanApplyCssVarWithStyleTraitToHtml = () => {
-  const { div } = HTML({ style: useStyle });
-  const e1 = div(["style", "--test-var", "testing"])();
-  const t1 = e1.outerHTML === '<div style="--test-var: testing;"></div>';
-  return { pass: t1 };
-};
-var CanApplyStyleTraitToSvg = () => {
-  const { circle } = SVG({ style: useStyle });
-  const e1 = circle(["style", "fontSize", "12px"])();
-  const t1 = e1.outerHTML === '<circle style="font-size: 12px;"></circle>';
-  const e2 = circle(["style", "fontSize", "12px"], ["style", "color", "red"])();
-  const t2 = e2.outerHTML === '<circle style="font-size: 12px; color: red;"></circle>';
-  return { pass: t1 && t2 };
-};
-
-// src/factory/traits/TextContent.ts
-var useTextContent = Trait((...props) => {
+// src/lib/traits/TextContent.ts
+var useTextContentTrait = Trait((...props) => {
   const [el, children, condition, ...states] = props;
   const apply = () => {
     const _children = typeof children === "function" ? children() : children;
@@ -572,108 +93,6 @@ var useTextContent = Trait((...props) => {
   const unsubs = states.map((state) => state.sub(apply));
   return () => unsubs.forEach((unsub) => unsub());
 });
-
-// src/factory/traits/TextContent.test.ts
-var CanApplyTextContentTraitToHtml = () => {
-  const state = State({ value: "asdf" });
-  const { div } = HTML({
-    text: useTextContent
-  });
-  const e1 = div(["text", "test"])();
-  const t1 = e1.outerHTML === "<div>test</div>";
-  const e2 = div(["text", () => "test"])();
-  const t2 = e2.outerHTML === "<div>test</div>";
-  const e3 = div(["text", () => state.val().value, true, state])();
-  const t3 = e3.outerHTML === "<div>asdf</div>";
-  const e4 = div(["text", () => state.val().value, false, state])();
-  const t4 = e4.outerHTML === "<div></div>";
-  const e5 = div(["text", () => state.val().value, () => false, state])();
-  const t5 = e5.outerHTML === "<div></div>";
-  const e6 = div(["text", () => state.val().value, () => true, state])();
-  const t6 = e6.outerHTML === "<div>asdf</div>";
-  state.set({ value: "c1" });
-  const e7 = div(["text", () => state.val().value, () => state.val().value === "c1", state])();
-  const t7 = e7.outerHTML === "<div>c1</div>";
-  const tests = [t1, t2, t3, t4, t5, t6, t7];
-  return { pass: tests.every(Boolean) };
-};
-var CanApplyTextContentTraitToSvg = () => {
-  const { circle } = SVG({
-    text: useTextContent
-  });
-  const e1 = circle(["text", "test"])();
-  const t1 = e1.outerHTML === "<circle>test</circle>";
-  return { pass: t1 };
-};
-
-// src/state/State.test.ts
-var CanCreateState = () => {
-  const num = State(1);
-  const t1 = num.val() === 1;
-  return { pass: t1 };
-};
-var CanUpdateState = () => {
-  const num = State(1);
-  num.set(2);
-  const t1 = num.val() === 2;
-  return { pass: t1 };
-};
-var CanSubscribeToState = () => {
-  const num = State(true);
-  let t1 = false;
-  num.sub(() => t1 = true);
-  num.set(false);
-  return { pass: t1 };
-};
-var CanUnSubscribeToState = () => {
-  const num = State(1);
-  let t1 = false;
-  const cb = () => t1 = !t1;
-  num.sub(cb);
-  num.set(2);
-  num.unsub(cb);
-  num.set(3);
-  return { pass: t1 };
-};
-var CanSetStateAndPublish = () => {
-  const num = State({
-    val: 1
-  });
-  let flag = false;
-  num.sub(() => flag = true);
-  num.set({ val: 2 });
-  const t1 = flag && num.val().val === 2;
-  return { pass: t1 };
-};
-var CanTestStateValue = () => {
-  const num = State(5);
-  const str = State("hello");
-  const tests = [
-    num.test(5),
-    num.test(3, false),
-    num.$test(5)(),
-    num.$test(3, false)(),
-    num.test(/5/),
-    num.test(/3/, false),
-    num.$test(/5/)(),
-    num.$test(/3/, false)(),
-    str.test("hello"),
-    str.test("world", false),
-    str.$test("hello")(),
-    str.$test("world", false)(),
-    str.test(/hello/),
-    str.test(/world/, false),
-    str.$test(/hello/)(),
-    str.$test(/world/, false)(),
-    str.test((val) => val === "hello"),
-    str.test((val) => val === "world", false),
-    str.$test((val) => val === "hello")(),
-    str.$test((val) => val === "world", false)()
-  ];
-  return {
-    pass: tests.every((t) => t)
-  };
-};
 
 // node_modules/resize-observer-polyfill/dist/ResizeObserver.es.js
 var MapShim = function() {
@@ -1149,12 +568,12 @@ var index = function() {
 }();
 var ResizeObserver_es_default = index;
 
-// src/template/HTML.test.ts
+// src/HTML.test.ts
 globalThis.ResizeObserver = ResizeObserver_es_default;
 var CanApplyMultipleTraitsToHtml = () => {
   const { div } = HTML({
-    attr: useAttribute,
-    text: useTextContent
+    attr: useAttributeTrait,
+    text: useTextContentTrait
   });
   const e1 = div(["attr", "id", "test"], ["text", "test"])();
   const t1 = e1.outerHTML === '<div id="test">test</div>';
@@ -1168,17 +587,642 @@ var CanCreateBasicHtmlTagWithText = () => {
 };
 var HasValidHtmlNamespace = () => {
   const { div } = HTML({
-    attr: useAttribute
+    attr: useAttributeTrait
   });
   const t1 = div(["attr", "id", "1"])().namespaceURI === "http://www.w3.org/1999/xhtml";
   return { pass: t1 };
 };
 
-// src/template/SVG.test.ts
+// src/State.ts
+function getPersistedVal(param, persistence) {
+  if (!persistence)
+    return param;
+  const storageParam = persistence.storage.getItem(persistence.key);
+  const parsedStorageParam = JSON.parse(storageParam);
+  const isStorageParamValid = parsedStorageParam !== null && parsedStorageParam !== undefined;
+  if ((persistence.overwrite ?? true) && isStorageParamValid)
+    return parsedStorageParam;
+  if (!(persistence.overwrite ?? true) && isStorageParamValid) {
+    if (Array.isArray(param) && Array.isArray(parsedStorageParam)) {
+      return [...param, ...parsedStorageParam];
+    } else if (typeof param === "object" && typeof parsedStorageParam === "object") {
+      return { ...param, ...parsedStorageParam };
+    }
+  }
+  return param;
+}
+function State(param, persistence) {
+  let _val = getPersistedVal(param, persistence);
+  const _subs = new Set;
+  const val = () => _val;
+  const _set = (atom) => {
+    _val = atom;
+    _subs.forEach((i) => i(atom));
+    if (persistence)
+      persistence.storage.setItem(persistence.key, JSON.stringify(atom));
+  };
+  const $set = (atom) => () => _set(atom);
+  const reduce = (cb) => _set(cb(_val));
+  const $reduce = (cb) => () => _set(cb(val()));
+  const _sub = (cb) => {
+    _subs.add(cb);
+    return () => _unsub(cb);
+  };
+  const test = (predicate, truthCheck = true) => {
+    const serialized_currentVal = JSON.stringify(_val);
+    if (predicate instanceof RegExp) {
+      const result = predicate.test(serialized_currentVal);
+      return truthCheck ? result : !result;
+    } else if (typeof predicate === "function" && predicate instanceof Function) {
+      const result = predicate(_val);
+      return truthCheck ? result : !result;
+    } else {
+      const string_comparison = JSON.stringify(predicate);
+      const result = serialized_currentVal === string_comparison;
+      return truthCheck ? result : !result;
+    }
+  };
+  const $test = (predicate, truthCheck = true) => () => {
+    const serialized_currentVal = JSON.stringify(_val);
+    if (predicate instanceof RegExp) {
+      const result = predicate.test(serialized_currentVal);
+      return truthCheck ? result : !result;
+    } else if (typeof predicate === "function" && predicate instanceof Function) {
+      const result = predicate(_val);
+      return truthCheck ? result : !result;
+    } else {
+      const string_comparison = JSON.stringify(predicate);
+      const result = serialized_currentVal === string_comparison;
+      return truthCheck ? result : !result;
+    }
+  };
+  const _unsub = (cb) => {
+    _subs.delete(cb);
+  };
+  return {
+    reduce,
+    set: _set,
+    sub: _sub,
+    test,
+    unsub: _unsub,
+    val,
+    $reduce,
+    $set,
+    $test
+  };
+}
+
+// src/lib/states/MediaQuery.ts
+var useMediaQueryState = (props) => {
+  const { type = "all", minWidth = 0, maxWidth = Infinity } = props;
+  const state = State(false);
+  const apply = () => {
+    const width = window.innerWidth;
+    const mediaMatches = width >= minWidth && width <= maxWidth;
+    const typeMatches = type === "all" || window.matchMedia(type).matches;
+    state.set(mediaMatches && typeMatches);
+  };
+  apply();
+  window.addEventListener("resize", apply);
+  return state;
+};
+
+// src/lib/states/MediaQuery.test.ts
+if (!window.matchMedia) {
+  window.matchMedia = function(query) {
+    return {
+      matches: true,
+      media: query,
+      onchange: null,
+      addListener: function() {},
+      removeListener: function() {},
+      addEventListener: function() {},
+      removeEventListener: function() {},
+      dispatchEvent: function() {
+        return false;
+      }
+    };
+  };
+}
+var CanKeepTrackOfMediaQueryState = () => {
+  Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: 1024 });
+  const mq1 = useMediaQueryState({
+    type: "screen",
+    minWidth: 500,
+    maxWidth: 2000
+  });
+  const t1 = mq1.val() === true;
+  const mq2 = useMediaQueryState({
+    type: "screen",
+    minWidth: 1400,
+    maxWidth: 2000
+  });
+  const t2 = mq2.val() === false;
+  const tests = [t1, t2];
+  return { pass: tests.every(Boolean) };
+};
+
+// src/SVG.ts
+function SvgTag(el, traits = [], config = {}) {
+  traits.forEach(([trait, ...args]) => config[trait](el, ...args));
+  function fn(...children) {
+    children.forEach((child) => el.append(child));
+    return el;
+  }
+  return fn;
+}
+function SVG(config) {
+  return new Proxy({}, {
+    get: (_, prop) => {
+      if (prop === "el")
+        return (el) => (...props) => SvgTag(el, props, config);
+      return (...props) => {
+        const ns = "http://www.w3.org/2000/svg";
+        const el = document.createElementNS(ns, prop);
+        return SvgTag(el, props, config);
+      };
+    }
+  });
+}
+
+// src/lib/traits/Attribute.test.ts
+var CanApplyAttributeTraitToHtml = () => {
+  const disabled = State(false);
+  const { div } = HTML({
+    staticAttr: useAttributeTrait,
+    dynamicAttr: useAttributeTrait
+  });
+  const e1 = div(["staticAttr", "id", "test"])();
+  const t1 = e1.outerHTML === '<div id="test"></div>';
+  const e2 = div(["staticAttr", "disabled", "true"])();
+  const t2 = e2.outerHTML === '<div disabled="true"></div>';
+  disabled.set(true);
+  const e5 = div(["dynamicAttr", "disabled", disabled.val, true, disabled])();
+  const t5 = e5.outerHTML === '<div disabled="true"></div>';
+  disabled.set(false);
+  const e6 = div(["dynamicAttr", "disabled", disabled.val, true, disabled])();
+  const t6 = e6.outerHTML === '<div disabled="false"></div>';
+  disabled.set(true);
+  const e7 = div(["dynamicAttr", "disabled", "true", disabled.val])();
+  const t7 = e7.outerHTML === '<div disabled="true"></div>';
+  disabled.set(false);
+  const e8 = div(["dynamicAttr", "disabled", "true", disabled.val])();
+  const t8 = e8.outerHTML === "<div></div>";
+  return { pass: t1 && t2 && t5 && t6 && t7 && t8 };
+};
+var CanApplyAttributeTraitToSvg = () => {
+  const { circle } = SVG({
+    attr: useAttributeTrait
+  });
+  const e1 = circle(["attr", "id", "test"])();
+  const t1 = e1.outerHTML === '<circle id="test"></circle>';
+  return { pass: t1 };
+};
+
+// src/lib/traits/ClassName.ts
+var useClassNameTrait = Trait((...props) => {
+  const [el, className, condition = true, ...states] = props;
+  const apply = () => {
+    const _className = typeof className === "function" ? className() : className;
+    const _condition = typeof condition === "function" ? condition() : condition;
+    if (_condition)
+      el.setAttribute("class", String(_className));
+  };
+  apply();
+  const unsubs = states.map((state) => state.sub(apply));
+  return () => unsubs.forEach((unsub) => unsub());
+});
+
+// src/lib/traits/ClassName.test.ts
+var CanApplyClassNameTraitToHtml = () => {
+  const { div } = HTML({
+    classname: useClassNameTrait
+  });
+  const e1 = div(["classname", "c1"], ["classname", "c1"])();
+  const t1 = e1.outerHTML === '<div class="c1"></div>';
+  const e2 = div(["classname", "c1 c2"])();
+  const t2 = e2.outerHTML === '<div class="c1 c2"></div>';
+  const e3 = div(["classname", "c1", false])();
+  const t3 = e3.outerHTML === "<div></div>";
+  const e4 = div(["classname", "c1", true])();
+  const t4 = e4.outerHTML === '<div class="c1"></div>';
+  const e5 = div(["classname", "c1", () => false])();
+  const t5 = e5.outerHTML === "<div></div>";
+  const e6 = div(["classname", "c1", () => true])();
+  const t6 = e6.outerHTML === '<div class="c1"></div>';
+  const e7 = div(["classname", "c1 c2", true], ["classname", "", true])();
+  const t7 = e7.outerHTML === '<div class=""></div>';
+  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 };
+};
+var CanApplyClassNameTraitToSvg = () => {
+  const { circle } = SVG({ classname: useClassNameTrait });
+  const e1 = circle(["classname", "c1"])();
+  const t1 = e1.outerHTML === '<circle class="c1"></circle>';
+  const e2 = circle(["classname", "c1 c2"])();
+  const t2 = e2.outerHTML === '<circle class="c1 c2"></circle>';
+  const e3 = circle(["classname", "c1", false])();
+  const t3 = e3.outerHTML === "<circle></circle>";
+  const e4 = circle(["classname", "c1", true])();
+  const t4 = e4.outerHTML === '<circle class="c1"></circle>';
+  const e5 = circle(["classname", "c1", () => false])();
+  const t5 = e5.outerHTML === "<circle></circle>";
+  const e6 = circle(["classname", "c1", () => true])();
+  const t6 = e6.outerHTML === '<circle class="c1"></circle>';
+  const e7 = circle(["classname", "c1 c2", true], ["classname", "", true])();
+  const t7 = e7.outerHTML === '<circle class=""></circle>';
+  const tests = [t1, t2, t3, t4, t5, t6, t7];
+  return { pass: tests.every(Boolean) };
+};
+
+// src/lib/traits/Event.ts
+var useEventTrait = Trait((...props) => {
+  const [el, evt, cb, condition = true, ...states] = props;
+  let listenerAttached = false;
+  const apply = () => {
+    const _condition = typeof condition === "function" ? condition() : condition;
+    if (_condition && !listenerAttached) {
+      el.addEventListener(evt, cb);
+      listenerAttached = true;
+    } else {
+      el.removeEventListener(evt, cb);
+      listenerAttached = false;
+    }
+  };
+  apply();
+  const unsubs = states.map((state) => state.sub(apply));
+  return () => {
+    el.removeEventListener(evt, cb);
+    unsubs.forEach((unsub) => unsub());
+  };
+});
+
+// src/lib/traits/Event.test.ts
+var CanApplyEventListenerTraitToHtml = () => {
+  const { div } = HTML({
+    event: useEventTrait,
+    attr: useAttributeTrait
+  });
+  let clicked = false;
+  const handleClick = () => clicked = true;
+  const e1 = div(["event", "clicks", handleClick])();
+  e1.click();
+  const t1 = clicked;
+  return { pass: t1 };
+};
+var CanConditionallyApplyEventListenerTraitToHtml = () => {
+  const toggle = State(true);
+  const { div } = HTML({
+    event: useEventTrait
+  });
+  const handleClick = () => toggle.set(!toggle.val());
+  const e1 = div(["event", "click", handleClick, false], ["event", "click", handleClick, true])();
+  e1.click();
+  const t1 = toggle.val() === false;
+  e1.click();
+  const t2 = toggle.val() === true;
+  return { pass: t1 && t2 };
+};
+var CanApplyEventListenerTraitToSvg = () => {
+  const { circle } = SVG({
+    event: useEventTrait
+  });
+  let clicked = false;
+  var clickEvent = new MouseEvent("click", {
+    view: window,
+    bubbles: true,
+    cancelable: false
+  });
+  const handleClick = () => clicked = true;
+  const e1 = circle(["event", "click", handleClick])();
+  e1.dispatchEvent(clickEvent);
+  const t1 = clicked;
+  return { pass: t1 };
+};
+var CanConditionallyApplyEventListenerTraitToSvg = () => {
+  const toggle = State(true);
+  const { circle } = SVG({
+    event: useEventTrait
+  });
+  const clickEvent = new MouseEvent("click", {
+    view: window,
+    bubbles: true,
+    cancelable: false
+  });
+  const handleClick = () => toggle.set(!toggle.val());
+  const e1 = circle(["event", "click", handleClick, false], ["event", "click", handleClick, true])();
+  e1.dispatchEvent(clickEvent);
+  const t1 = toggle.val() === false;
+  e1.dispatchEvent(clickEvent);
+  const t2 = toggle.val() === true;
+  return { pass: t1 && t2 };
+};
+
+// src/lib/traits/InnerHTML.ts
+var useInnerHTMLTrait = Trait((...props) => {
+  const [el, children, condition = true, ...states] = props;
+  const apply = () => {
+    const _children = children();
+    const _condition = typeof condition === "function" ? condition() : condition;
+    if (_condition) {
+      el.innerHTML = "";
+      if (_children !== undefined) {
+        if (Array.isArray(_children)) {
+          _children.filter((c) => c).forEach((c) => {
+            if (c instanceof HTMLElement || c instanceof SVGElement)
+              el.appendChild(c);
+            else
+              el.appendChild(document.createTextNode(String(c)));
+          });
+        } else if (_children instanceof HTMLElement || _children instanceof SVGElement) {
+          el.appendChild(_children);
+        } else {
+          el.innerHTML = String(_children);
+        }
+      }
+    }
+  };
+  apply();
+  const unsubs = states.map((state) => state.sub(apply));
+  return () => unsubs.forEach((unsub) => unsub());
+});
+
+// src/lib/traits/InnerHTML.test.ts
+var CanApplyInnerHTMLTraitToHtml = () => {
+  const state = State({ value: "asdf" });
+  const { div } = HTML({ html: useInnerHTMLTrait });
+  const e1 = div(["html", () => "asdf"])();
+  const t1 = e1.outerHTML === "<div>asdf</div>";
+  const e2 = div(["html", () => ["one", "two"]])();
+  const t2 = e2.outerHTML === "<div>onetwo</div>";
+  const e3 = div(["html", () => div()("one")])();
+  const t3 = e3.outerHTML === "<div><div>one</div></div>";
+  const e4 = div(["html", () => [div()("one"), div()("two")]])();
+  const t4 = e4.outerHTML === "<div><div>one</div><div>two</div></div>";
+  const e5 = div(["html", () => state.val().value, true, state])();
+  const t5 = e5.outerHTML === "<div>asdf</div>";
+  state.set({ value: "c1" });
+  const e6 = div(["html", () => state.val().value, false, state])();
+  const t6 = e6.outerHTML === "<div></div>";
+  const e7 = div(["html", () => state.val().value, () => false, state])();
+  const t7 = e7.outerHTML === "<div></div>";
+  const e8 = div(["html", () => state.val().value, () => true, state])();
+  const t8 = e8.outerHTML === "<div>c1</div>";
+  state.set({ value: "c2" });
+  const e9 = div(["html", () => state.val().value, state.$test(/c2/), state])();
+  const t9 = e9.outerHTML === "<div>c2</div>";
+  const e10 = div(["html", () => ["one", "two"]], ["html", () => {
+    return;
+  }, false])();
+  const t10 = e10.outerHTML === "<div>onetwo</div>";
+  const e11 = div(["html", () => ["one", "two"]], ["html", () => {
+    return;
+  }, true])();
+  const t11 = e11.outerHTML === "<div></div>";
+  const tests = [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11];
+  return { pass: tests.every((t) => t) };
+};
+var CanApplyInnerHTMLTraitToSvg = () => {
+  const state = State({ value: "asdf" });
+  const { circle } = SVG({ html: useInnerHTMLTrait });
+  const e1 = circle(["html", () => "asdf"])();
+  const t1 = e1.outerHTML === "<circle>asdf</circle>";
+  const e2 = circle(["html", () => ["one", "two"]])();
+  const t2 = e2.outerHTML === "<circle>onetwo</circle>";
+  const e3 = circle(["html", () => circle()("one")])();
+  const t3 = e3.outerHTML === "<circle><circle>one</circle></circle>";
+  const e4 = circle(["html", () => [circle()("one"), circle()("two")]])();
+  const t4 = e4.outerHTML === "<circle><circle>one</circle><circle>two</circle></circle>";
+  const e5 = circle(["html", () => state.val().value, true, state])();
+  const t5 = e5.outerHTML === "<circle>asdf</circle>";
+  state.set({ value: "c1" });
+  const e6 = circle(["html", () => state.val().value, false, state])();
+  const t6 = e6.outerHTML === "<circle></circle>";
+  const e7 = circle(["html", () => state.val().value, () => false, state])();
+  const t7 = e7.outerHTML === "<circle></circle>";
+  const e8 = circle(["html", () => state.val().value, () => true, state])();
+  const t8 = e8.outerHTML === "<circle>c1</circle>";
+  state.set({ value: "c2" });
+  const e9 = circle(["html", () => state.val().value, state.$test(/c2/)])();
+  const t9 = e9.outerHTML === "<circle>c2</circle>";
+  return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 };
+};
+
+// src/lib/traits/Map.ts
+var useMapTraitTrait = Trait((...props) => {
+  const [el, items, renderer, condition = true, ...states] = props;
+  const apply = () => {
+    const cond = typeof condition === "function" ? condition() : condition;
+    if (!cond)
+      return;
+    items().forEach((item, index2) => {
+      const itemEl = renderer(item, index2);
+      const itemKey = itemEl.getAttribute("key");
+      if (!itemKey)
+        throw new Error('Each item must have a unique "key" property for mapping.');
+      const currEl = el.querySelector(`[key="${itemKey}"]`);
+      const isDiff = itemEl.outerHTML !== currEl?.outerHTML;
+      if (!currEl)
+        return el.appendChild(itemEl);
+      if (currEl && isDiff)
+        el.replaceChild(itemEl, currEl);
+    });
+  };
+  apply();
+  const unsubs = states.map((state) => state.sub(apply));
+  return () => unsubs.forEach((unsub) => unsub());
+});
+
+// src/lib/traits/Map.test.ts
+var CanMapListOfElements = () => {
+  const items1 = State(["item1", "item2"]);
+  const tmpl1 = HTML({
+    map: useMapTraitTrait,
+    attr: useAttributeTrait
+  });
+  const render1 = (item) => tmpl1.div(["attr", "key", item])(item);
+  const e1 = tmpl1.div(["map", items1.val, render1, true, items1])();
+  const t1 = e1.outerHTML === '<div><div key="item1">item1</div><div key="item2">item2</div></div>';
+  const items2 = State(["item1", "item2"]);
+  const tmpl2 = HTML({
+    map: useMapTraitTrait,
+    attr: useAttributeTrait
+  });
+  const render2 = (item) => tmpl2.div(["attr", "key", item])(item);
+  const e2 = tmpl2.div(["map", items2.val, render2, true, items2])();
+  const t2 = e2.outerHTML === '<div><div key="item1">item1</div><div key="item2">item2</div></div>';
+  const items3a = State(["item1", "item2"]);
+  const items3b = State([1, 2, 10]);
+  const tmpl3 = HTML({
+    map: useMapTraitTrait,
+    attr: useAttributeTrait
+  });
+  const render3 = (item, i) => tmpl3.div(["attr", "key", i], ["attr", "id", items3b.val()[i]])(item);
+  const e3 = tmpl3.div(["map", items3a.val, render3, true, items3b, items3a])();
+  items3b.set([3, 4, 10]);
+  const t3 = e3.outerHTML === '<div><div key="0" id="3">item1</div><div key="1" id="4">item2</div></div>';
+  items3a.reduce((prev) => [...prev, "item3"]);
+  const t4 = e3.outerHTML === '<div><div key="0" id="3">item1</div><div key="1" id="4">item2</div><div key="2" id="10">item3</div></div>';
+  const tests = [t1, t2, t3, t4];
+  return { pass: tests.every(Boolean) };
+};
+
+// src/lib/traits/Style.ts
+var useStyleTrait = Trait((...props) => {
+  const [el, prop, val, condition = true, ...states] = props;
+  const apply = () => {
+    const _val = typeof val === "function" ? val() : val;
+    const _condition = typeof condition === "function" ? condition() : condition;
+    if (_condition) {
+      prop.startsWith("--") ? el.style.setProperty(prop, _val) : el.style[prop] = _val;
+    }
+  };
+  apply();
+  const unsubs = states.map((state) => state.sub(apply));
+  return () => unsubs.forEach((unsub) => unsub());
+});
+
+// src/lib/traits/Style.test.ts
+var CanApplyStyleTraitToHtml = () => {
+  const state = State({ fontSize: "13px" });
+  const { div } = HTML({ style: useStyleTrait });
+  const e1 = div(["style", "fontSize", "12px"])();
+  const t1 = e1.outerHTML === '<div style="font-size: 12px;"></div>';
+  const e2 = div(["style", "fontSize", () => state.val().fontSize, true, state])();
+  const t2a = e2.outerHTML === '<div style="font-size: 13px;"></div>';
+  state.set({ fontSize: "14px" });
+  const t2b = e2.outerHTML === '<div style="font-size: 14px;"></div>';
+  state.set({ fontSize: "15px" });
+  const e3 = div(["style", "fontSize", () => state.val().fontSize, () => false, state])();
+  const t3 = e3.outerHTML === "<div></div>";
+  const e4 = div(["style", "fontSize", () => state.val().fontSize, () => true, state])();
+  const t4 = e4.outerHTML === '<div style="font-size: 15px;"></div>';
+  const e5 = div(["style", "fontSize", () => state.val().fontSize, state.$test(/15px/), state])();
+  const t5 = e5.outerHTML === '<div style="font-size: 15px;"></div>';
+  const tests = [t1, t2a, t2b, t3, t4, t5];
+  return { pass: tests.every(Boolean) };
+};
+var CanApplyCssVarWithStyleTraitToHtml = () => {
+  const { div } = HTML({ style: useStyleTrait });
+  const e1 = div(["style", "--test-var", "testing"])();
+  const t1 = e1.outerHTML === '<div style="--test-var: testing;"></div>';
+  return { pass: t1 };
+};
+var CanApplyStyleTraitToSvg = () => {
+  const { circle } = SVG({ style: useStyleTrait });
+  const e1 = circle(["style", "fontSize", "12px"])();
+  const t1 = e1.outerHTML === '<circle style="font-size: 12px;"></circle>';
+  const e2 = circle(["style", "fontSize", "12px"], ["style", "color", "red"])();
+  const t2 = e2.outerHTML === '<circle style="font-size: 12px; color: red;"></circle>';
+  return { pass: t1 && t2 };
+};
+
+// src/lib/traits/TextContent.test.ts
+var CanApplyTextContentTraitToHtml = () => {
+  const state = State({ value: "asdf" });
+  const { div } = HTML({
+    text: useTextContentTrait
+  });
+  const e1 = div(["text", "test"])();
+  const t1 = e1.outerHTML === "<div>test</div>";
+  const e2 = div(["text", () => "test"])();
+  const t2 = e2.outerHTML === "<div>test</div>";
+  const e3 = div(["text", () => state.val().value, true, state])();
+  const t3 = e3.outerHTML === "<div>asdf</div>";
+  const e4 = div(["text", () => state.val().value, false, state])();
+  const t4 = e4.outerHTML === "<div></div>";
+  const e5 = div(["text", () => state.val().value, () => false, state])();
+  const t5 = e5.outerHTML === "<div></div>";
+  const e6 = div(["text", () => state.val().value, () => true, state])();
+  const t6 = e6.outerHTML === "<div>asdf</div>";
+  state.set({ value: "c1" });
+  const e7 = div(["text", () => state.val().value, () => state.val().value === "c1", state])();
+  const t7 = e7.outerHTML === "<div>c1</div>";
+  const tests = [t1, t2, t3, t4, t5, t6, t7];
+  return { pass: tests.every(Boolean) };
+};
+var CanApplyTextContentTraitToSvg = () => {
+  const { circle } = SVG({
+    text: useTextContentTrait
+  });
+  const e1 = circle(["text", "test"])();
+  const t1 = e1.outerHTML === "<circle>test</circle>";
+  return { pass: t1 };
+};
+
+// src/State.test.ts
+var CanCreateState = () => {
+  const num = State(1);
+  const t1 = num.val() === 1;
+  return { pass: t1 };
+};
+var CanUpdateState = () => {
+  const num = State(1);
+  num.set(2);
+  const t1 = num.val() === 2;
+  return { pass: t1 };
+};
+var CanSubscribeToState = () => {
+  const num = State(true);
+  let t1 = false;
+  num.sub(() => t1 = true);
+  num.set(false);
+  return { pass: t1 };
+};
+var CanUnSubscribeToState = () => {
+  const num = State(1);
+  let t1 = false;
+  const cb = () => t1 = !t1;
+  num.sub(cb);
+  num.set(2);
+  num.unsub(cb);
+  num.set(3);
+  return { pass: t1 };
+};
+var CanSetStateAndPublish = () => {
+  const num = State({
+    val: 1
+  });
+  let flag = false;
+  num.sub(() => flag = true);
+  num.set({ val: 2 });
+  const t1 = flag && num.val().val === 2;
+  return { pass: t1 };
+};
+var CanTestStateValue = () => {
+  const num = State(5);
+  const str = State("hello");
+  const tests = [
+    num.test(5),
+    num.test(3, false),
+    num.$test(5)(),
+    num.$test(3, false)(),
+    num.test(/5/),
+    num.test(/3/, false),
+    num.$test(/5/)(),
+    num.$test(/3/, false)(),
+    str.test("hello"),
+    str.test("world", false),
+    str.$test("hello")(),
+    str.$test("world", false)(),
+    str.test(/hello/),
+    str.test(/world/, false),
+    str.$test(/hello/)(),
+    str.$test(/world/, false)(),
+    str.test((val) => val === "hello"),
+    str.test((val) => val === "world", false),
+    str.$test((val) => val === "hello")(),
+    str.$test((val) => val === "world", false)()
+  ];
+  return {
+    pass: tests.every((t) => t)
+  };
+};
+
+// src/SVG.test.ts
 var CanApplyMultipleTraitsToSvg = () => {
   const { circle } = SVG({
-    attr: useAttribute,
-    text: useTextContent
+    attr: useAttributeTrait,
+    text: useTextContentTrait
   });
   const e1 = circle(["attr", "id", "test"], ["text", "test"])();
   const t1 = e1.outerHTML === '<circle id="test">test</circle>';
@@ -1192,7 +1236,7 @@ var CanCreateBasicSvgTagWithText = () => {
 };
 var HasValidSvgNamespace = () => {
   const { circle } = SVG({
-    attr: useAttribute
+    attr: useAttributeTrait
   });
   const t1 = circle(["attr", "id", "1"])().namespaceURI === "http://www.w3.org/2000/svg";
   return { pass: t1 };
@@ -1251,36 +1295,36 @@ window.addEventListener("DOMContentLoaded", () => {
       ["has valid namespace", HasValidHtmlNamespace]
     ],
     [
-      "useAttribute",
+      "Trait - useAttributeTrait",
       ["can apply attribute trait to html", CanApplyAttributeTraitToHtml],
       ["can apply attribute trait to svg", CanApplyAttributeTraitToSvg]
     ],
     [
-      "useClassName",
+      "Trait - useClassName",
       ["can apply class name trait to html", CanApplyClassNameTraitToHtml],
       ["can apply class name trait to svg", CanApplyClassNameTraitToSvg]
     ],
     [
-      "useEventListener",
+      "Trait - useEventListenerTrait",
       ["can apply event listener trait to html", CanApplyEventListenerTraitToHtml],
       ["can conditionally apply event listener trait to html", CanConditionallyApplyEventListenerTraitToHtml],
       ["can apply event listener trait to svg", CanApplyEventListenerTraitToSvg],
       ["can conditionally apply event listener trait to svg", CanConditionallyApplyEventListenerTraitToSvg]
     ],
     [
-      "useInnerHTML",
+      "Trait - useInnerHTMLTrait",
       ["can apply inner html trait to html", CanApplyInnerHTMLTraitToHtml],
       ["can apply inner html trait to svg", CanApplyInnerHTMLTraitToSvg]
     ],
-    ["useMap", ["can map list of elements", CanMapListOfElements]],
+    ["Trait - useMapTrait", ["can map list of elements", CanMapListOfElements]],
     [
-      "useStyle",
+      "Trait - useStyleTrait",
       ["can apply style trait to html", CanApplyStyleTraitToHtml],
       ["can apply style trait to svg", CanApplyStyleTraitToSvg],
       ["can apply css var with style trait to html", CanApplyCssVarWithStyleTraitToHtml]
     ],
     [
-      "useTextContent",
+      "Trait - useTextContentTrait",
       ["can apply text content trait to html", CanApplyTextContentTraitToHtml],
       ["can apply text content trait to svg", CanApplyTextContentTraitToSvg]
     ],
@@ -1299,7 +1343,8 @@ window.addEventListener("DOMContentLoaded", () => {
       ["can reset state", CanSubscribeToState],
       ["can set state and publish", CanSetStateAndPublish],
       ["can test state value", CanTestStateValue]
-    ]
+    ],
+    ["State - useMediaQueryState", ["can create media query state", CanKeepTrackOfMediaQueryState]]
   ]);
 });
 </script>

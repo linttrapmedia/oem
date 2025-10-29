@@ -12,7 +12,7 @@ export type StateType<T> = {
   $test: (regex: RegExp | T | ((atom: T) => boolean), checkFor?: true | false) => () => boolean;
 };
 
-export type HtmlTraitFunc<Args extends any[]> = (el: HTMLElement, ...args: Args) => HTMLElement;
+export type HtmlTraitFunc<Args extends any[]> = (el: HTMLElement, ...args: Args) => () => void;
 
 type HtmlTags = keyof HTMLElementTagNameMap;
 
