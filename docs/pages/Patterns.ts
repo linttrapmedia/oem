@@ -16,17 +16,55 @@ export const Patterns = () =>
         'column',
         10,
         html.div(['style', 'textAlign', 'center'])(
-          `Here's the basic outline of a trait that responds to state changes and only applies when a condition is met:`,
+          `Here's a documented version of the useStyleTrait available in the Factory section.`,
         ),
-        html.pre(['prism'])(`function useStyleTraitTrait(props) { // <-- configurable
-  return function(el, prop, val, cond) { // <-- your trait function
-    const apply = () => { // <-- your apply function
-      if (cond ? cond() : true) { ... } // <-- the condition to apply
-    };
-    if (props.state) state.sub(apply); // <-- respond to state changes
-    apply(); // <-- initial application
+        html.pre(['prism'])(`// Your trait's props
+type Props = [
+
+  // element must be first
+  el: HTMLElement,
+
+  // CSS property or custom property
+  prop: keyof CSSStyleDeclaration,
+
+  // value or function that returns the value
+  val: (() => string | number | undefined) | (string | number | undefined),
+  
+  // optional condition to apply the style
+  condition?: boolean | (() => boolean),
+
+  // state objects to subscribe to for re-evaluation
+  ...states: StateType<any>[],
+];
+
+// The useStyleTrait definition
+export const useStyleTrait = Trait((...props: Props) => {
+
+  // destructure props and define defaults
+  const [el, prop, val, condition = true, ...states] = props;
+
+  // function to apply the trait's behavior
+  const apply = () => {
+
+    // determine the value
+    const _val = typeof val === 'function' ? val() : val;
+
+    // determine the condition
+    const _condition = typeof condition === 'function' ? condition() : condition;
+
+    // if condition is met, apply the style
+    if (_condition) (el.style[prop as any] = _val as any);
   };
-}`),
+
+  // initial application
+  apply();
+
+  // subscribe to state changes
+  const unsubs = states.map((state) => state.sub(apply));
+
+  // return a cleanup function
+  return () => unsubs.forEach((unsub) => unsub());
+});`),
         html.div(['style', 'textAlign', 'center'])(
           `The Locality of Behavior pattern: Using the template above you can not only register this trait across multiple template engines, but same engine, multiple times. Prefixing with the trait name and what it applies to helps keeps things straight`,
         ),

@@ -5,10 +5,6 @@ import { Page } from '../parts/Page';
 import { Section } from '../parts/Section';
 import { Note } from '../parts/Text';
 
-const useStyleTrait = (el: HTMLElement, prop: keyof CSSStyleDeclaration, value: any) => {
-  el.style[prop as any] = value;
-};
-
 export const Traits = () =>
   Page(
     Page.Header('Traits', 'Adding functionality to your templating engine with traits'),
@@ -18,12 +14,13 @@ export const Traits = () =>
       content: Box(
         'column',
         20,
-        html.div(['style', 'textAlign', 'center'])(`Here's the basic template for a trait function:`),
-        html.div(['prism'])(`const useStyleTrait = (el: HTMLElement) => {...}`),
+        html.div(['style', 'textAlign', 'center'])(`Use the Trait function to define a trait:`),
+        html.div(['prism'])(`import { Trait } from 'oem';
+const useStyleTrait = Trait(el: HTMLElement) => {...}`),
         html.div(['style', 'textAlign', 'center'])(
           'Here is an example of a very simple "style" trait for applying css styles to an element.',
         ),
-        html.div(['prism'])(`const useStyleTrait = (el: HTMLElement, prop: string, value: string) => {
+        html.div(['prism'])(`const useStyleTrait = Trait(el: HTMLElement, prop: string, value: string) => {
   el.style[prop] = value;
 }`),
         html.div(['style', 'textAlign', 'center'])('This trait can now be added to your templating engine like this:'),

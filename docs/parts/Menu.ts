@@ -10,11 +10,9 @@ const Item = (txt: string, stateKey: MenuStateTypes) => {
     ['style', 'cursor', 'pointer'],
     ['style', 'transition', 'background-color 0.3s'],
     ['style', 'textTransform', 'uppercase'],
+    ['style', 'color', 'yellow', true, hovered, menuState],
+    ['style', 'color', 'white', () => hovered.test(false) && menuState.test(stateKey, false), hovered, menuState],
     ['event', 'click', menuState.$set(stateKey)],
-    ['style', 'color', 'yellow', hovered.$test(true), hovered],
-    ['style', 'color', 'white', hovered.$test(false), hovered],
-    ['style', 'color', 'yellow', menuState.$test(stateKey), menuState],
-    ['style', 'color', 'white', menuState.$test(stateKey, false), menuState],
     ['event', 'mouseover', hovered.$set(true)],
     ['event', 'mouseout', hovered.$set(false)],
   )(txt);
