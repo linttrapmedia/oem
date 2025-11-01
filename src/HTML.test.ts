@@ -2,11 +2,8 @@ import { HTML } from '@/HTML';
 import { useAttributeTrait } from '@/lib/traits/Attribute';
 import { useTextContentTrait } from '@/lib/traits/TextContent';
 import { Test } from '@/types';
-import ResizeObserver from 'resize-observer-polyfill';
 
-globalThis.ResizeObserver = ResizeObserver;
-
-export const CanApplyMultipleTraitsToHtml: Test = () => {
+export const CanApplyMultipleTraitsToHtml: Test = async () => {
   const { div } = HTML({
     attr: useAttributeTrait,
     text: useTextContentTrait,
@@ -16,20 +13,20 @@ export const CanApplyMultipleTraitsToHtml: Test = () => {
   return { pass: t1 };
 };
 
-export const CanCreateBasicHtmlTagWithText: Test = () => {
+export const CanCreateBasicHtmlTagWithText: Test = async () => {
   const { div } = HTML();
   const test = div()('test');
   const t1 = test.outerHTML === '<div>test</div>';
   return { pass: t1 };
 };
 
-export const CanCreateEmptyHtmlTag: Test = () => {
+export const CanCreateEmptyHtmlTag: Test = async () => {
   const { div } = HTML();
   const t1 = div()().outerHTML === '<div></div>';
   return { pass: t1 };
 };
 
-export const HasValidHtmlNamespace: Test = () => {
+export const HasValidHtmlNamespace: Test = async () => {
   const { div } = HTML({
     attr: useAttributeTrait,
   });

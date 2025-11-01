@@ -4,7 +4,7 @@ import { SVG } from '@/SVG';
 import { Test } from '@/types';
 import { useInnerHTMLTrait } from './InnerHTML';
 
-export const CanApplyInnerHTMLTraitToHtml: Test = () => {
+export const CanApplyInnerHTMLTraitToHtml: Test = async () => {
   const state = State<{ value: string }>({ value: 'asdf' });
   const { div } = HTML({ html: useInnerHTMLTrait });
 
@@ -44,7 +44,7 @@ export const CanApplyInnerHTMLTraitToHtml: Test = () => {
   return { pass: tests.every((t) => t) };
 };
 
-export const CanApplyInnerHTMLTraitToSvg: Test = () => {
+export const CanApplyInnerHTMLTraitToSvg: Test = async () => {
   const state = State({ value: 'asdf' });
   const { circle } = SVG({ html: useInnerHTMLTrait });
 

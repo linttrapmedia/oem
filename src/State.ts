@@ -87,5 +87,6 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
     $reduce: $reduce,
     $set: $set,
     $test: $test,
+    _subs,
   };
 }

@@ -94,7 +94,7 @@ publish: ## Publish the project to npm
 
 test: ## Run tests
 	@echo $(STATUS) Testing...
-	@bun run ./cmd/test.ts FILTER=$(FILTER)
+	@bun ./test/unit.html
 
 
 

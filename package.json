@@ -20,13 +20,10 @@
   },
   "homepage": "https://oem.js.org",
   "devDependencies": {
-    "jsdom": "^21.1.0",
-    "prettier": "2.7.1",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "prettier": "2.7.1"
   },
-  "dependencies": {
-    "resize-observer-polyfill": "^1.5.1"
-  },
+  "dependencies": {},
   "private": false,
   "peerDependencies": {
     "typescript": "^5"

@@ -19,7 +19,7 @@ if (!window.matchMedia) {
   };
 }
 
-export const CanKeepTrackOfMediaQueryState: Test = () => {
+export const CanKeepTrackOfMediaQueryState: Test = async () => {
   Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1024 });
 
   const mq1 = useMediaQueryState({

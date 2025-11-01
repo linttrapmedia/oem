@@ -1,21 +1,24 @@
 import { Trait } from '@/Trait';
-import { StateType } from '@/types';
+import { Condition, StateType } from '@/types';
 
 type Props = [
   el: HTMLElement,
   event: keyof GlobalEventHandlersEventMap,
   cb: (evt?: GlobalEventHandlersEventMap[keyof GlobalEventHandlersEventMap]) => void,
-  condition?: (() => boolean) | boolean | (() => boolean),
-  ...states: StateType<any>[],
+  conditions?: Condition | Condition[],
+  states?: StateType<any> | StateType<any>[],
 ];
 
 export const useEventTrait = Trait((...props: Props) => {
-  const [el, evt, cb, condition = true, ...states] = props;
+  const [el, evt, cb, conditions = true, states = []] = props;
   let listenerAttached = false;
 
   const apply = () => {
-    const _condition = typeof condition === 'function' ? condition() : condition;
-    if (_condition && !listenerAttached) {
+    const _conditions = Array.isArray(conditions) ? conditions : [conditions];
+    const isConditionMet = _conditions.some((condition) => {
+      return typeof condition === 'function' ? condition() : condition;
+    });
+    if (isConditionMet && !listenerAttached) {
       el.addEventListener(evt, cb);
       listenerAttached = true;
     } else {
@@ -25,7 +28,8 @@ export const useEventTrait = Trait((...props: Props) => {
   };
 
   apply();
-  const unsubs = states.map((state) => state.sub(apply));
+  const _states = Array.isArray(states) ? states.flat() : [states];
+  const unsubs = _states.map((state) => state.sub(apply));
   return () => {
     el.removeEventListener(evt, cb);
     unsubs.forEach((unsub) => unsub());

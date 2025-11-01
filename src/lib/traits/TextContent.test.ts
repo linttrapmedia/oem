@@ -4,7 +4,7 @@ import { SVG } from '@/SVG';
 import { Test } from '@/types';
 import { useTextContentTrait } from './TextContent';
 
-export const CanApplyTextContentTraitToHtml: Test = () => {
+export const CanApplyTextContentTraitToHtml: Test = async () => {
   const state = State({ value: 'asdf' });
   const { div } = HTML({
     text: useTextContentTrait,
@@ -36,7 +36,7 @@ export const CanApplyTextContentTraitToHtml: Test = () => {
   return { pass: tests.every(Boolean) };
 };
 
-export const CanApplyTextContentTraitToSvg: Test = () => {
+export const CanApplyTextContentTraitToSvg: Test = async () => {
   const { circle } = SVG({
     text: useTextContentTrait,
   });

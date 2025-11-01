@@ -4,7 +4,7 @@ import { SVG } from '@/SVG';
 import { Test } from '@/types';
 import { useStyleTrait } from './Style';
 
-export const CanApplyStyleTraitToHtml: Test = () => {
+export const CanApplyStyleTraitToHtml: Test = async () => {
   const state = State<{ fontSize: string }>({ fontSize: '13px' });
   const { div } = HTML({ style: useStyleTrait });
   const e1 = div(['style', 'fontSize', '12px'])();
@@ -26,14 +26,14 @@ export const CanApplyStyleTraitToHtml: Test = () => {
   return { pass: tests.every(Boolean) };
 };
 
-export const CanApplyCssVarWithStyleTraitToHtml: Test = () => {
+export const CanApplyCssVarWithStyleTraitToHtml: Test = async () => {
   const { div } = HTML({ style: useStyleTrait });
   const e1 = div(['style', '--test-var', 'testing'])();
   const t1 = e1.outerHTML === '<div style="--test-var: testing;"></div>';
   return { pass: t1 };
 };
 
-export const CanApplyStyleTraitToSvg: Test = () => {
+export const CanApplyStyleTraitToSvg: Test = async () => {
   const { circle } = SVG({ style: useStyleTrait });
   const e1 = circle(['style', 'fontSize', '12px'])();
   const t1 = e1.outerHTML === '<circle style="font-size: 12px;"></circle>';

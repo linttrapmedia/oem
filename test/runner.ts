@@ -1,7 +1,7 @@
-import args from '../cmd/util/args';
 import { Test } from '../src/types';
 
-export function runner(tests: [string, ...[string, Test][]][]) {
+export async function runner(tests: [string, ...[string, Test][]][]) {
+  const FILTER = '';
   const sandbox = document.querySelector('#test-sandbox') as HTMLElement;
   const results = document.querySelector('#test-results') as HTMLElement;
   results.style.display = 'grid';
@@ -9,16 +9,16 @@ export function runner(tests: [string, ...[string, Test][]][]) {
   results.style.rowGap = '2px';
   results.style.gridTemplateColumns = 'auto auto auto 1fr';
 
-  tests.forEach(([module, ...assertions]) => {
+  for (const [module, ...assertions] of tests) {
     assertions
       .filter((t) => {
-        if (args.FILTER) return (t[1].name as any) === args.FILTER;
+        if (FILTER) return (t[1].name as any) === FILTER;
         return true;
       })
-      .forEach(([desc, test]) => {
+      .forEach(async ([desc, test]) => {
         let testResult;
         try {
-          testResult = test(sandbox);
+          testResult = await test(sandbox);
         } catch (err: any) {
           testResult = { pass: false, message: err.message };
         }
@@ -41,7 +41,12 @@ export function runner(tests: [string, ...[string, Test][]][]) {
         messageEl.innerText = testResult.message || '';
         messageEl.style.color = testResult.pass ? 'green' : 'red';
 
-        results.append(statusEl, moduleEl, descEl, messageEl);
+        // if test failed prepend to results
+        if (!testResult.pass) {
+          results.prepend(statusEl, moduleEl, descEl, messageEl);
+        } else {
+          results.append(statusEl, moduleEl, descEl, messageEl);
+        }
       });
-  });
+  }
 }

@@ -3,7 +3,7 @@ import { useTextContentTrait } from '@/lib/traits/TextContent';
 import { Test } from '@/types';
 import { SVG } from './SVG';
 
-export const CanApplyMultipleTraitsToSvg: Test = () => {
+export const CanApplyMultipleTraitsToSvg: Test = async () => {
   const { circle } = SVG({
     attr: useAttributeTrait,
     text: useTextContentTrait,
@@ -13,20 +13,20 @@ export const CanApplyMultipleTraitsToSvg: Test = () => {
   return { pass: t1 };
 };
 
-export const CanCreateBasicSvgTagWithText: Test = () => {
+export const CanCreateBasicSvgTagWithText: Test = async () => {
   const { circle } = SVG();
   const test = circle()('test');
   const t1 = test.outerHTML === '<circle>test</circle>';
   return { pass: t1 };
 };
 
-export const CanCreateEmptySvgTag: Test = () => {
+export const CanCreateEmptySvgTag: Test = async () => {
   const { circle } = SVG();
   const t1 = circle()().outerHTML === '<circle></circle>';
   return { pass: t1 };
 };
 
-export const HasValidSvgNamespace: Test = () => {
+export const HasValidSvgNamespace: Test = async () => {
   const { circle } = SVG({
     attr: useAttributeTrait,
   });

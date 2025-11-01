@@ -4,7 +4,7 @@ import { useMapTraitTrait } from '@/lib/traits/Map';
 import { State } from '@/State';
 import { Test } from '@/types';
 
-export const CanMapListOfElements: Test = () => {
+export const CanMapListOfElements: Test = async () => {
   // inline state
   const items1 = State<string[]>(['item1', 'item2']);
   const tmpl1 = HTML({

@@ -4,41 +4,54 @@ import { State } from '@/State';
 import { SVG } from '@/SVG';
 import { Test } from '@/types';
 
-export const CanApplyAttributeTraitToHtml: Test = () => {
+export const CanApplyAttributeTraitToHtml: Test = async () => {
   const disabled = State(false);
+  const other = State('value');
+  const tests: boolean[] = [];
+  let el;
+
   const { div } = HTML({
-    staticAttr: useAttributeTrait,
-    dynamicAttr: useAttributeTrait,
+    attr: useAttributeTrait,
   });
 
-  // static tests
-  const e1 = div(['staticAttr', 'id', 'test'])();
-  const t1 = e1.outerHTML === '<div id="test"></div>';
-  const e2 = div(['staticAttr', 'disabled', 'true'])();
-  const t2 = e2.outerHTML === '<div disabled="true"></div>';
+  // can add basic attribute
+  el = div(['attr', 'id', 'test'])();
+  tests.push(el.outerHTML === '<div id="test"></div>');
 
-  // dynamic tests
+  // can use call back for value
+  el = div(['attr', 'id', () => 'callback'])();
+  tests.push(el.outerHTML === '<div id="callback"></div>');
+
+  // can react to state change
   disabled.set(true);
-  const e5 = div(['dynamicAttr', 'disabled', disabled.val, true, disabled])();
-  const t5 = e5.outerHTML === '<div disabled="true"></div>';
+  el = div(['attr', 'disabled', disabled.val, true, disabled])();
+  tests.push(el.outerHTML === '<div disabled="true"></div>');
 
+  // can use bit condition
+  el = div(['attr', 'disabled', disabled.val, 1, disabled])();
+  tests.push(el.outerHTML === '<div disabled="true"></div>');
+
+  // respects 0 condition
+  el = div(['attr', 'id', "don't apply", 0, disabled])();
+  tests.push(el.outerHTML === '<div></div>');
+
+  // respects multiple conditions
+  el = div(['attr', 'id', 'multi', [false, () => true], disabled])();
+  tests.push(el.outerHTML === '<div id="multi"></div>');
+
+  // removes attribute when value is undefined
+  el = div(['attr', 'id', undefined, 1, disabled])();
+  tests.push(el.outerHTML === '<div></div>');
+
+  // reacts to state changes again
   disabled.set(false);
-  const e6 = div(['dynamicAttr', 'disabled', disabled.val, true, disabled])();
-  const t6 = e6.outerHTML === '<div disabled="false"></div>';
+  el = div(['attr', 'disabled', disabled.val, 1, [disabled, other]])();
+  tests.push(el.outerHTML === '<div disabled="false"></div>');
 
-  // condition tests
-  disabled.set(true);
-  const e7 = div(['dynamicAttr', 'disabled', 'true', disabled.val])();
-  const t7 = e7.outerHTML === '<div disabled="true"></div>';
-
-  disabled.set(false);
-  const e8 = div(['dynamicAttr', 'disabled', 'true', disabled.val])();
-  const t8 = e8.outerHTML === '<div></div>';
-
-  return { pass: t1 && t2 && t5 && t6 && t7 && t8 };
+  return { pass: tests.every(Boolean) };
 };
 
-export const CanApplyAttributeTraitToSvg: Test = () => {
+export const CanApplyAttributeTraitToSvg: Test = async () => {
   const { circle } = SVG({
     attr: useAttributeTrait,
   });

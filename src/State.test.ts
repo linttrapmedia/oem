@@ -1,20 +1,20 @@
 import { State } from '@/State';
 import { Test } from './types';
 
-export const CanCreateState: Test = () => {
+export const CanCreateState: Test = async () => {
   const num = State(1);
   const t1 = num.val() === 1;
   return { pass: t1 };
 };
 
-export const CanUpdateState: Test = () => {
+export const CanUpdateState: Test = async () => {
   const num = State(1);
   num.set(2);
   const t1 = num.val() === 2;
   return { pass: t1 };
 };
 
-export const CanSubscribeToState: Test = () => {
+export const CanSubscribeToState: Test = async () => {
   const num = State(true);
   let t1 = false;
   num.sub(() => (t1 = true));
@@ -22,7 +22,7 @@ export const CanSubscribeToState: Test = () => {
   return { pass: t1 };
 };
 
-export const CanUnSubscribeToState: Test = () => {
+export const CanUnSubscribeToState: Test = async () => {
   const num = State(1);
   let t1 = false;
   const cb = () => (t1 = !t1);
@@ -33,7 +33,7 @@ export const CanUnSubscribeToState: Test = () => {
   return { pass: t1 };
 };
 
-export const CanSetStateAndPublish: Test = () => {
+export const CanSetStateAndPublish: Test = async () => {
   const num = State({
     val: 1,
   });
@@ -45,7 +45,7 @@ export const CanSetStateAndPublish: Test = () => {
   return { pass: t1 };
 };
 
-export const CanTestStateValue: Test = () => {
+export const CanTestStateValue: Test = async () => {
   const num = State(5);
   const str = State('hello');
   const tests = [

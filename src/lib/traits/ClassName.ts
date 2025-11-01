@@ -1,21 +1,23 @@
 import { Trait } from '@/Trait';
-import { StateType } from '@/types';
+import { Condition, StateType } from '@/types';
 
 type Props = [
   el: HTMLElement,
   className: string | (() => string),
-  condition?: boolean | (() => boolean),
-  ...states: StateType<any>[],
+  conditions?: Condition | Condition[],
+  states?: StateType<any> | StateType<any>[],
 ];
 
 export const useClassNameTrait = Trait((...props: Props) => {
-  const [el, className, condition = true, ...states] = props;
+  const [el, className, conditions = true, states = []] = props;
   const apply = () => {
     const _className = typeof className === 'function' ? className() : className;
-    const _condition = typeof condition === 'function' ? condition() : condition;
-    if (_condition) el.setAttribute('class', String(_className));
+    const _conditions = Array.isArray(conditions) ? conditions : [conditions];
+    const isConditionMet = _conditions.some((condition) => (typeof condition === 'function' ? condition() : condition));
+    if (isConditionMet) el.setAttribute('class', String(_className));
   };
   apply();
-  const unsubs = states.map((state) => state.sub(apply));
+  const _states = Array.isArray(states) ? states.flat() : [states];
+  const unsubs = _states.map((state) => state.sub(apply));
   return () => unsubs.forEach((unsub) => unsub());
 });
