@@ -1,19 +1,22 @@
 import { Trait } from '@/Trait';
-import { StateType } from '@/types';
+import { Condition, StateType } from '@/types';
 
 type Props = [
   el: HTMLElement,
   items: () => any[],
   renderer: (item: any, index: number) => HTMLElement,
-  condition: boolean | (() => boolean),
+  conditions: Condition | Condition[],
   ...states: StateType<any>[],
 ];
 
-export const useMapTraitTrait = Trait((...props: Props) => {
-  const [el, items, renderer, condition = true, ...states] = props;
+export const useMapTrait = Trait((...props: Props) => {
+  const [el, items, renderer, conditions = true, ...states] = props;
   const apply = () => {
-    const cond = typeof condition === 'function' ? condition() : condition;
-    if (!cond) return;
+    const _conditions = Array.isArray(conditions) ? conditions : [conditions];
+    const isConditionMet = _conditions.some((condition) => {
+      return typeof condition === 'function' ? condition() : condition;
+    });
+    if (!isConditionMet) return;
     items().forEach((item, index) => {
       const itemEl = renderer(item, index);
       const itemKey = itemEl.getAttribute('key');

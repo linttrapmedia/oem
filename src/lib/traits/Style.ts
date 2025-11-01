@@ -1,20 +1,23 @@
 import { Trait } from '@/Trait';
-import { StateType } from '@/types';
+import { Condition, StateType } from '@/types';
 
 type Props = [
   el: HTMLElement,
   prop: keyof CSSStyleDeclaration | `--${string}`,
   val: (() => string | number | undefined) | (string | number | undefined),
-  condition?: boolean | (() => boolean),
+  conditions?: Condition | Condition[],
   ...states: StateType<any>[],
 ];
 
 export const useStyleTrait = Trait((...props: Props) => {
-  const [el, prop, val, condition = true, ...states] = props;
+  const [el, prop, val, conditions = true, ...states] = props;
   const apply = () => {
     const _val = typeof val === 'function' ? val() : val;
-    const _condition = typeof condition === 'function' ? condition() : condition;
-    if (_condition) {
+    const _conditions = Array.isArray(conditions) ? conditions : [conditions];
+    const isConditionMet = _conditions.some((condition) => {
+      return typeof condition === 'function' ? condition() : condition;
+    });
+    if (isConditionMet) {
       (prop as string).startsWith('--')
         ? el.style.setProperty(prop as string, _val as string)
         : (el.style[prop as any] = _val as any);

@@ -1,5 +1,5 @@
 import { Trait } from '@/Trait';
-import { StateType } from '@/types';
+import { Condition, StateType } from '@/types';
 
 type Props = [
   el: HTMLElement,
@@ -10,16 +10,19 @@ type Props = [
     | SVGElement
     | undefined
     | (string | number | HTMLElement | SVGElement | undefined)[],
-  condition?: (() => boolean) | boolean,
+  conditions?: Condition | Condition[],
   ...states: StateType<any>[],
 ];
 
 export const useInnerHTMLTrait = Trait((...props: Props) => {
-  const [el, children, condition = true, ...states] = props;
+  const [el, children, conditions = true, ...states] = props;
   const apply = () => {
     const _children = children();
-    const _condition = typeof condition === 'function' ? condition() : condition;
-    if (_condition) {
+    const _conditions = Array.isArray(conditions) ? conditions : [conditions];
+    const isConditionMet = _conditions.some((condition) => {
+      return typeof condition === 'function' ? condition() : condition;
+    });
+    if (isConditionMet) {
       el.innerHTML = '';
       if (_children !== undefined) {
         if (Array.isArray(_children)) {

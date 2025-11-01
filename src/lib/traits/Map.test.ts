@@ -1,6 +1,6 @@
 import { HTML } from '@/HTML';
 import { useAttributeTrait } from '@/lib/traits/Attribute';
-import { useMapTraitTrait } from '@/lib/traits/Map';
+import { useMapTrait } from '@/lib/traits/Map';
 import { State } from '@/State';
 import { Test } from '@/types';
 
@@ -8,7 +8,7 @@ export const CanMapListOfElements: Test = async () => {
   // inline state
   const items1 = State<string[]>(['item1', 'item2']);
   const tmpl1 = HTML({
-    map: useMapTraitTrait,
+    map: useMapTrait,
     attr: useAttributeTrait,
   });
   const render1 = (item: string) => tmpl1.div(['attr', 'key', item])(item);
@@ -18,7 +18,7 @@ export const CanMapListOfElements: Test = async () => {
   // configured state
   const items2 = State<string[]>(['item1', 'item2']);
   const tmpl2 = HTML({
-    map: useMapTraitTrait,
+    map: useMapTrait,
     attr: useAttributeTrait,
   });
   const render2 = (item: string) => tmpl2.div(['attr', 'key', item])(item);
@@ -29,7 +29,7 @@ export const CanMapListOfElements: Test = async () => {
   const items3a = State<string[]>(['item1', 'item2']);
   const items3b = State<number[]>([1, 2, 10]);
   const tmpl3 = HTML({
-    map: useMapTraitTrait,
+    map: useMapTrait,
     attr: useAttributeTrait,
   });
   const render3 = (item: string, i: number) => tmpl3.div(['attr', 'key', i], ['attr', 'id', items3b.val()[i]])(item);

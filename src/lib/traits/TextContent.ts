@@ -1,19 +1,22 @@
 import { Trait } from '@/Trait';
-import { StateType } from '@/types';
+import { Condition, StateType } from '@/types';
 
 type Props = [
   el: HTMLElement,
   children: (() => string | number) | string | number,
-  condition?: (() => boolean) | boolean,
+  conditions?: Condition | Condition[],
   ...states: StateType<any>[],
 ];
 
 export const useTextContentTrait = Trait((...props: Props) => {
-  const [el, children, condition, ...states] = props;
+  const [el, children, conditions = true, ...states] = props;
   const apply = () => {
     const _children = typeof children === 'function' ? children() : children;
-    const _condition = typeof condition === 'function' ? condition() : condition ?? true;
-    if (_condition) {
+    const _conditions = Array.isArray(conditions) ? conditions : [conditions];
+    const isConditionMet = _conditions.some((condition) => {
+      return typeof condition === 'function' ? condition() : condition;
+    });
+    if (isConditionMet) {
       el.textContent = String(_children);
     }
   };
