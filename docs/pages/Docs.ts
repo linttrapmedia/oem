@@ -67,28 +67,6 @@ color.$test((val) => val === 'red'); // by function, cb version
       ),
     }),
     Section({
-      title: 'Trait',
-      subtitle: `Traits are functions that extend the functionality of HTML elements. They can be used to add attributes, styles, event listeners, and more.`,
-      content: Box(
-        'column',
-        10,
-        html.pre(['prism'])(`import { HTML, Trait } from 'oem';
-
-// create a trait
-const useAttrTrait = Trait((el: HTMLElement, key: string, value: string) => {
-  el.setAttribute(key, value);
-})
-
-// create a template engine and map the trait
-const tmpl = HTML({ attr: useAttrTrait });
-
-// use it
-tmpl.div(['attr','id','test'])('Hello, OEM!');
-// <div id="test">Hello, OEM!</div>
-`),
-      ),
-    }),
-    Section({
       title: 'Learn (~10min)',
       subtitle: `Get started with OEM by following our step-by-step guide. You'll be building a small app in no time!`,
       content: FooterNav({

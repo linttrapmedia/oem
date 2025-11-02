@@ -26,10 +26,8 @@ const color = State<'red' | 'green'>('red');`),
       content: Box(
         'column',
         10,
-        html.div(['style', 'textAlign', 'center'])('Get the current value with the  ', InlineCode('val'), ' property.'),
-        html.pre(['prism'])(`color.val;`),
-        html.div(['style', 'textAlign', 'center'])('Or with the method  ', InlineCode('$val()'), '.'),
-        html.pre(['prism'])(`color.$val();`),
+        html.div(['style', 'textAlign', 'center'])('Or with the method  ', InlineCode('val()'), '.'),
+        html.pre(['prism'])(`color.val();`),
       ),
     }),
 

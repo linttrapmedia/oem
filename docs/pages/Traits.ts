@@ -9,19 +9,23 @@ export const Traits = () =>
   Page(
     Page.Header('Traits', 'Adding functionality to your templating engine with traits'),
     Section({
-      title: 'The Trait Function',
+      title: 'Creating Traits',
       subtitle: `A "trait" is just a function that takes an element as its first argument and does something to it.`,
       content: Box(
         'column',
         20,
-        html.div(['style', 'textAlign', 'center'])(`Use the Trait function to define a trait:`),
+        html.div(['style', 'textAlign', 'center'])(`Here's the basic structure of a trait function:`),
         html.div(['prism'])(`import { Trait } from 'oem';
-const useStyleTrait = Trait(el: HTMLElement) => {...}`),
+const useStyleTrait = (el: HTMLElement) => {
+  // do something with the element
+  return () => { /* optional cleanup function */ }
+}`),
         html.div(['style', 'textAlign', 'center'])(
           'Here is an example of a very simple "style" trait for applying css styles to an element.',
         ),
-        html.div(['prism'])(`const useStyleTrait = Trait(el: HTMLElement, prop: string, value: string) => {
+        html.div(['prism'])(`const useStyleTrait = (el: HTMLElement, prop: string, value: string) => {
   el.style[prop] = value;
+  return () => {}; // nothing to clean up in this case
 }`),
         html.div(['style', 'textAlign', 'center'])('This trait can now be added to your templating engine like this:'),
         html.div(['prism'])(`const tmpl = HTML({ "style": useStyleTrait });`),
