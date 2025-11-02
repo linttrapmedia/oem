@@ -1,4 +1,3 @@
-import { Trait } from '@/Trait';
 import { Condition, StateType } from '@/types';
 
 type Props = [
@@ -9,7 +8,7 @@ type Props = [
   ...states: StateType<any>[],
 ];
 
-export const useMapTrait = Trait((...props: Props) => {
+export const useMapTrait = (...props: Props) => {
   const [el, items, renderer, conditions = true, ...states] = props;
   const apply = () => {
     const _conditions = Array.isArray(conditions) ? conditions : [conditions];
@@ -30,4 +29,4 @@ export const useMapTrait = Trait((...props: Props) => {
   apply();
   const unsubs = states.map((state) => state.sub(apply));
   return () => unsubs.forEach((unsub) => unsub());
-});
+};

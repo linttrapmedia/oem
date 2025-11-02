@@ -1,4 +1,3 @@
-import { Trait } from '@/Trait';
 import { Condition, StateType } from '@/types';
 
 type Props = [
@@ -9,7 +8,7 @@ type Props = [
   states?: StateType<any> | StateType<any>[],
 ];
 
-export const useEventTrait = Trait((...props: Props) => {
+export const useEventTrait = (...props: Props) => {
   const [el, evt, cb, conditions = true, states = []] = props;
   let listenerAttached = false;
 
@@ -34,4 +33,4 @@ export const useEventTrait = Trait((...props: Props) => {
     el.removeEventListener(evt, cb);
     unsubs.forEach((unsub) => unsub());
   };
-});
+};

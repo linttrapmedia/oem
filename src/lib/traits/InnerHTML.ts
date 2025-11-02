@@ -1,4 +1,3 @@
-import { Trait } from '@/Trait';
 import { Condition, StateType } from '@/types';
 
 type Props = [
@@ -14,7 +13,7 @@ type Props = [
   ...states: StateType<any>[],
 ];
 
-export const useInnerHTMLTrait = Trait((...props: Props) => {
+export const useInnerHTMLTrait = (...props: Props) => {
   const [el, children, conditions = true, ...states] = props;
   const apply = () => {
     const _children = children();
@@ -43,4 +42,4 @@ export const useInnerHTMLTrait = Trait((...props: Props) => {
   apply();
   const unsubs = states.map((state) => state.sub(apply));
   return () => unsubs.forEach((unsub) => unsub());
-});
+};

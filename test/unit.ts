@@ -1,4 +1,10 @@
-import { CanApplyMultipleTraitsToHtml, CanCreateBasicHtmlTagWithText, HasValidHtmlNamespace } from '@/HTML.test';
+import {
+  CanApplyMultipleTraitsToHtml,
+  CanCreateBasicHtmlTagWithText,
+  CanCreateBasicTrait,
+  HasValidHtmlNamespace,
+  WillCleanupTraitOnElementRemoval,
+} from '@/HTML.test';
 import { CanKeepTrackOfMediaQueryState } from '@/lib/states/MediaQuery.test';
 import { CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg } from '@/lib/traits/Attribute.test';
 import { CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg } from '@/lib/traits/ClassName.test';
@@ -19,7 +25,6 @@ import {
 import { CanApplyTextContentTraitToHtml, CanApplyTextContentTraitToSvg } from '@/lib/traits/TextContent.test';
 import * as state from '@/State.test';
 import { CanApplyMultipleTraitsToSvg, CanCreateBasicSvgTagWithText, HasValidSvgNamespace } from '@/SVG.test';
-import { CanCreateBasicTrait } from '@/Trait.test';
 import { runner } from './runner';
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -29,6 +34,12 @@ window.addEventListener('DOMContentLoaded', async () => {
       ['can apply multiple traits', CanApplyMultipleTraitsToHtml],
       ['can create basic tag with text', CanCreateBasicHtmlTagWithText],
       ['has valid namespace', HasValidHtmlNamespace],
+      ['can create basic trait', CanCreateBasicTrait],
+      ['will cleanup trait on element removal', WillCleanupTraitOnElementRemoval],
+      [
+        'can remove event listener from state object when element is removed',
+        CanRemoveEventListenerFromStateObjectWhenElementIsRemoved,
+      ],
     ],
 
     [
@@ -47,15 +58,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       ['can set state and publish', state.CanSetStateAndPublish],
       ['can test state value', state.CanTestStateValue],
     ],
-    [
-      'Trait',
-      ['can create basic trait', CanCreateBasicTrait],
-      ['will cleanup trait on element removal', CanCreateBasicTrait],
-      [
-        'can remove event listener from state object when element is removed',
-        CanRemoveEventListenerFromStateObjectWhenElementIsRemoved,
-      ],
-    ],
+
     [
       'Lib',
       ['useAttributeTrait can apply attribute trait to html', CanApplyAttributeTraitToHtml],

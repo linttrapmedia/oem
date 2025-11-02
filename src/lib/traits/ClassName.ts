@@ -1,4 +1,3 @@
-import { Trait } from '@/Trait';
 import { Condition, StateType } from '@/types';
 
 type Props = [
@@ -8,7 +7,7 @@ type Props = [
   states?: StateType<any> | StateType<any>[],
 ];
 
-export const useClassNameTrait = Trait((...props: Props) => {
+export const useClassNameTrait = (...props: Props) => {
   const [el, className, conditions = true, states = []] = props;
   const apply = () => {
     const _className = typeof className === 'function' ? className() : className;
@@ -20,4 +19,4 @@ export const useClassNameTrait = Trait((...props: Props) => {
   const _states = Array.isArray(states) ? states.flat() : [states];
   const unsubs = _states.map((state) => state.sub(apply));
   return () => unsubs.forEach((unsub) => unsub());
-});
+};
