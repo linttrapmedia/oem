@@ -1,7 +1,7 @@
 import { Test } from '../src/types';
 
 export async function runner(tests: [string, ...[string, Test][]][]) {
-  const FILTER = 'WillCleanupTraitOnElementRemoval';
+  const FILTER = '';
   const sandbox = document.querySelector('#test-sandbox') as HTMLElement;
   const results = document.querySelector('#test-results') as HTMLElement;
   results.style.display = 'grid';
