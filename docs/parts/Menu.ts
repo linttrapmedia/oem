@@ -65,6 +65,8 @@ export const Menu = () =>
             ['style', 'fontFamily', 'Splash'],
             ['style', 'gap', '5px'],
             ['style', 'fontWeight', 'normal'],
+            ['style', 'cursor', 'pointer'],
+            ['event', 'click', menuState.$set('introduction')],
           )(
             'oem',
             html.span(

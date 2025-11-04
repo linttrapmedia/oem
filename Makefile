@@ -28,12 +28,8 @@ clean: ## Clean the project
 
 dev: ## Run the project in development mode
 	@echo $(STATUS) Running in development mode...
-	@open ./docs/index.html
-	@bun build ./docs/app.ts \
-		--watch \
-		--outdir=./docs \
-		--sourcemap \
-		--minify
+	@open http://localhost:3000
+	@bun ./docs/index.html
 
 deploy: ## Deploy the project to GitHub Pages/oem.js.org
 	@echo $(STATUS) Deploying...

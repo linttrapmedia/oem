@@ -1,3 +1,4 @@
+import { Table } from 'docs/parts/Table';
 import { html } from '../config';
 import { Box } from '../parts/Box';
 import { FooterNav } from '../parts/FooterNav';
@@ -106,6 +107,25 @@ color.$test((val) => val === 'red', false); // callback version NOT equal
 color.test(/red/, false); // NOT equal
 color.$test(/red/); // callback version
 color.$test(/red/, false); // callback version NOT equal`),
+      ),
+    }),
+    Section({
+      title: 'Ready-Made States',
+      subtitle: `Here's a set of powerful pre-built states which covers 95% of use cases out of the box.`,
+      content: Table.Grid(
+        Table.Header('State'),
+        Table.Header('Description'),
+        Table.Cell(
+          html.a(
+            [
+              'attr',
+              'href',
+              'https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/src/lib/states/MediaQuery.ts',
+            ],
+            ['attr', 'target', '_blank'],
+          )('useMediaQueryState'),
+        ),
+        Table.Cell('Tracks window resize event and matches against a media query'),
       ),
     }),
     Section({
