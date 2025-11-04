@@ -39,7 +39,7 @@ export const usePrism = (el: HTMLElement) => {
   return el;
 };
 
-export type MenuStateTypes = 'introduction' | 'docs' | 'templates' | 'state' | 'traits' | 'patterns' | 'factory';
+export type MenuStateTypes = 'introduction' | 'docs' | 'templates' | 'state' | 'traits' | 'patterns';
 
 export const menuState = State<MenuStateTypes>('introduction', {
   key: 'menuState',

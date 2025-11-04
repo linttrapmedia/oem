@@ -92,7 +92,6 @@ export const Menu = () =>
           Item('Traits', 'traits'),
           Item('State', 'state'),
           Item('Patterns', 'patterns'),
-          Item('Factory', 'factory'),
           html.a(
             ['style', 'marginTop', '20px'],
             ['style', 'color', 'white'],

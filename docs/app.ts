@@ -1,6 +1,5 @@
 import { html, isMobile, isTablet, menuState } from './config';
 import { Docs } from './pages/Docs';
-import { Factory } from './pages/Factory';
 import { Introduction } from './pages/Introduction';
 import { Patterns } from './pages/Patterns';
 import { State } from './pages/State';
@@ -16,7 +15,8 @@ function App() {
     ['style', 'gridTemplateColumns', '1fr', isMobile.val, isMobile],
     ['style', 'gridTemplateRows', 'auto', isTablet.val, isTablet],
     ['style', 'gridTemplateColumns', 'max-content 1fr', isTablet.val, isTablet],
-    ['style', 'height', '100vh'],
+    ['style', 'height', '100vh', isTablet.val, isTablet],
+    ['style', 'height', 'auto', isMobile.val, isMobile],
     ['style', 'justifyContent', 'start'],
     ['style', 'width', '100vw'],
     ['style', 'overflow', 'hidden'],
@@ -41,7 +41,6 @@ function App() {
       ['html', Traits, menuState.$test('traits'), menuState],
       ['html', State, menuState.$test('state'), menuState],
       ['html', Patterns, menuState.$test('patterns'), menuState],
-      ['html', Factory, menuState.$test('factory'), menuState],
     )(),
   );
 }

@@ -170,11 +170,11 @@ tmpl.div(
     }),
 
     Section({
-      title: 'Factory',
-      subtitle: `Now that you know the basics of creating elements with templates, manipulating it with traits and managing state, let's look at some common patterns to build a real application.`,
+      title: 'Thank You',
+      subtitle: `We appreciate your interest in OEM. We hope you find this project useful. Feel free to contribute or provide feedback!`,
       content: FooterNav({
-        prev: { title: 'State', menuState: 'state' },
-        next: { title: 'Factory', menuState: 'factory' },
+        next: { title: 'State', menuState: 'state' },
+        prev: { title: 'Introduction', menuState: 'introduction' },
       }),
     }),
   );
