@@ -16,78 +16,59 @@ export const Patterns = () =>
         'column',
         10,
         html.div(['style', 'textAlign', 'center'])(
-          `Here's a documented version of the useStyleTrait available in the Factory section.`,
+          `Here's a documented version of the useClassNameTrait available in the Factory section.`,
         ),
-        html.pre(['prism'])(`// Your trait's props
+        html.pre(['prism'])(`import { Condition, StateType } from '@/types';
+
+// Props for the useClassNameTrait
 type Props = [
-
-  // element must be first
-  el: HTMLElement,
-
-  // CSS property or custom property
-  prop: keyof CSSStyleDeclaration,
-
-  // value or function that returns the value
-  val: (() => string | number | undefined) | (string | number | undefined),
-  
-  // optional condition to apply the style
-  condition?: boolean | (() => boolean),
-
-  // state objects to subscribe to for re-evaluation
-  ...states: StateType<any>[],
+  el: HTMLElement, 
+  className: string | (() => string),
+  conditions?: Condition | Condition[],
+  states?: StateType<any> | StateType<any>[],
 ];
 
-// The useStyleTrait definition
-export const useStyleTrait = Trait((...props: Props) => {
-
-  // destructure props and define defaults
-  const [el, prop, val, condition = true, ...states] = props;
-
-  // function to apply the trait's behavior
+export const useClassNameTrait = (...props: Props) => {
+  // destructure props with default values
+  const [el, className, conditions = true, states = []] = props;
+  // function to apply the class name based on conditions
   const apply = () => {
-
-    // determine the value
-    const _val = typeof val === 'function' ? val() : val;
-
-    // determine the condition
-    const _condition = typeof condition === 'function' ? condition() : condition;
-
-    // if condition is met, apply the style
-    if (_condition) (el.style[prop as any] = _val as any);
+    const _className = typeof className === 'function' ? className() : className;
+    // normalize conditions to an array
+    const _conditions = Array.isArray(conditions) ? conditions : [conditions];
+    // check if all conditions are met
+    const isConditionMet = _conditions.every((condition) => (typeof condition === 'function' ? condition() : condition));
+    // apply the class name if conditions are met
+    if (isConditionMet) el.setAttribute('class', String(_className));
   };
-
   // initial application
   apply();
-
-  // subscribe to state changes
-  const unsubs = states.map((state) => state.sub(apply));
-
-  // return a cleanup function
+  // subscribe to state changes to re-apply the class name
+  const _states = Array.isArray(states) ? states.flat() : [states];
+  // map over states to create unsubscribe functions
+  const unsubs = _states.map((state) => state.sub(apply));
+  // return a cleanup function to unsubscribe from all states should the element be removed
   return () => unsubs.forEach((unsub) => unsub());
-});`),
+};
+`),
         html.div(['style', 'textAlign', 'center'])(
           `The Locality of Behavior pattern: Using the template above you can not only register this trait across multiple template engines, but same engine, multiple times. Prefixing with the trait name and what it applies to helps keeps things straight`,
         ),
-        html.pre(['prism'])(`// register the trait multiple times and 
-// have them respond to different state objects
-const tmpl = HTML({
-  'style:a': useStyleTraitTrait({ state: stateObjectA }),
-  'style:b': useStyleTraitTrait({ state: stateObjectB }),
-});
+        html.pre(['prism'])(`// define some state
+const someSwitch = State(false);
 
-// somewhere in your app
-// use both traits, multiple times
-// on state change, re-evaluate and re-apply
-// this is the Locality of Behavior pattern
+// create a template engine with the style trait
+const tmpl = HTML({ 'style': useStyleTraitTrait});
+
+// use the style trait with conditions based on state
+// note: you can apply the same trait multiple times with different conditions
 tmpl.div(
-  ['style:a', 'color', 'red', isAchecked],
-  ['style:a', 'color', 'green', isAunchecked],
-  ['style:b', 'fontSize', '10px', isBchecked],
-  ['style:b', 'fontSize', '20px', isBunchecked],
+  ['style', 'color', 'red', someSwitch.$test(true)],
+  ['style', 'color', 'green', someSwitch.$test(false)],
 )();
 `),
         Note(
-          `Notice how with this pattern you can conditionally apply the same style property multiple times based on different state objects? You can't do that with JSX or CSS without ugly if statements or complex class management. This keeps your code declarative and easy to reason about.`,
+          `Notice how with this pattern you can apply the same style property multiple times based on different conditions? You can't do that with JSX or CSS without ugly if statements or complex class management. This keeps your code declarative and easy to reason about.`,
         ),
       ),
     }),
@@ -123,14 +104,25 @@ const App = () =>
           `What if you don't want to use the same template engine for your entire app? No problem, just define a template engine within your component! Heck, you even use more than one template engine within the same component if you want.`,
         ),
         html.pre(['prism'])(`// define a component with its own template engine
-const Card = (title, content) => {
-  const cardTmpl = HTML({ /* traits specific to Card */ });
+const Card = (title, content, tmpl) => {
+
+  // local state
+  const alertState = State(0);
+
+  // local template engine 
+  const cardTmpl = HTML({ 
+   myCustomTrait: useMyCustomTrait,
+   style: useStyleTrait
+  });
+
+  // use the local template engine to create the card
   return cardTmpl.div(
     ['style', 'border', '1px solid #ccc'],
     ['style', 'padding', '20px'],
-    ['style', 'borderRadius', '5px']
+    ['style', 'borderRadius', '5px'],
+    ['myCustomTrait', 'someValue']
   )(
-    tmpl.h2( // <-- using the global tmpl engine
+    cardTmpl.h2(
       ['style', 'color', 'red', alertState.$test(1)],
       ['style', 'color', 'black', alertState.$test(1, false)]
     )(title),

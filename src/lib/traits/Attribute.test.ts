@@ -36,8 +36,12 @@ export const CanApplyAttributeTraitToHtml: Test = async () => {
   tests.push(el.outerHTML === '<div></div>');
 
   // respects multiple conditions
-  el = div(['attr', 'id', 'multi', [false, () => true], disabled])();
+  el = div(['attr', 'id', 'multi', [true, () => true], disabled])();
   tests.push(el.outerHTML === '<div id="multi"></div>');
+
+  // respects multiple conditions with one false
+  el = div(['attr', 'id', 'multi', [true, () => false], disabled])();
+  tests.push(el.outerHTML === '<div></div>');
 
   // removes attribute when value is undefined
   el = div(['attr', 'id', undefined, 1, disabled])();

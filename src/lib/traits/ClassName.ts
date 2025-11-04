@@ -12,7 +12,9 @@ export const useClassNameTrait = (...props: Props) => {
   const apply = () => {
     const _className = typeof className === 'function' ? className() : className;
     const _conditions = Array.isArray(conditions) ? conditions : [conditions];
-    const isConditionMet = _conditions.some((condition) => (typeof condition === 'function' ? condition() : condition));
+    const isConditionMet = _conditions.every((condition) =>
+      typeof condition === 'function' ? condition() : condition,
+    );
     if (isConditionMet) el.setAttribute('class', String(_className));
   };
   apply();

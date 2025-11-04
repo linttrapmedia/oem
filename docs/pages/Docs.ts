@@ -7,7 +7,7 @@ import { InlineCode, Note } from '../parts/Text';
 
 export const Docs = () =>
   Page(
-    Page.Header('Docs', "OEM only has three functions — HTML, State, and Trait. Here's how they work."),
+    Page.Header('Docs', "OEM only has two functions — HTML and State. Here's how they work."),
     Section({
       title: 'HTML',
       subtitle: `OEM's HTML template engine is a lightweight and efficient way to create and manage HTML elements in your application.`,

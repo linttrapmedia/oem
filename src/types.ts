@@ -26,17 +26,7 @@ export type HtmlReturnType<P extends Record<string, HtmlTraitFunc<any>>> = Recor
       [I in keyof K]-?: [K[I], ...RestArgs<Parameters<P[K[I]]>>];
     }
   ) => (...nodes: any[]) => HTMLElement
-> & {
-  el: (
-    element: HTMLElement,
-  ) => <K extends Array<keyof P>>(
-    ...attributes: { [I in keyof K]-?: [K[I], ...RestArgs<Parameters<P[K[I]]>>] }
-  ) => (...nodes: any[]) => HTMLElement;
-  $el: (
-    selector: string,
-    watch?: boolean,
-  ) => <K extends Array<keyof P>>(...attributes: { [I in keyof K]-?: [K[I], ...RestArgs<Parameters<P[K[I]]>>] }) => any;
-};
+>;
 
 export type SvgTraitFunc<Args extends any[]> = (el: SVGElement, ...args: Args) => SVGElement;
 
@@ -49,16 +39,6 @@ export type SvgReturnType<P extends Record<string, SvgTraitFunc<any>>> = Record<
       [I in keyof K]-?: [K[I], ...RestArgs<Parameters<P[K[I]]>>];
     }
   ) => (...nodes: any[]) => SVGElement
-> & {
-  el: (
-    element: SVGElement,
-  ) => <K extends Array<keyof P>>(
-    ...attributes: { [I in keyof K]-?: [K[I], ...RestArgs<Parameters<P[K[I]]>>] }
-  ) => (...nodes: any[]) => SVGElement;
-  $el: (
-    selector: string,
-    watch?: boolean,
-  ) => <K extends Array<keyof P>>(...attributes: { [I in keyof K]-?: [K[I], ...RestArgs<Parameters<P[K[I]]>>] }) => any;
-};
+>;
 
 export type Test = (sandbox?: HTMLElement) => Promise<{ pass: boolean; message?: string }>;

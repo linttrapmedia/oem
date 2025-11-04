@@ -12,7 +12,7 @@ export const useMapTrait = (...props: Props) => {
   const [el, items, renderer, conditions = true, ...states] = props;
   const apply = () => {
     const _conditions = Array.isArray(conditions) ? conditions : [conditions];
-    const isConditionMet = _conditions.some((condition) => {
+    const isConditionMet = _conditions.every((condition) => {
       return typeof condition === 'function' ? condition() : condition;
     });
     if (!isConditionMet) return;
