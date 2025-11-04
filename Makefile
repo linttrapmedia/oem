@@ -29,7 +29,7 @@ clean: ## Clean the project
 dev: ## Run the project in development mode
 	@echo $(STATUS) Running in development mode...
 	@open http://localhost:3000
-	@bun ./docs/index.html
+	@bun ./docs/dev.html
 
 deploy: ## Deploy the project to GitHub Pages/oem.js.org
 	@echo $(STATUS) Deploying...
@@ -56,8 +56,9 @@ dist: ## Build distribution files
 docs: ## Build docs
 	@rm -rf ./dist
 	@echo $(STATUS) Building docs...
-	@bun build ./docs/app.ts \
+	@bun build ./docs/index.html \
 		--outdir=./docs \
+		--entry-naming=[dir]/index.[ext] \
 		--sourcemap \
 		--minify \
 		--bundle

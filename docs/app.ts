@@ -18,7 +18,8 @@ function App() {
     ['style', 'height', '100vh', isTablet.val, isTablet],
     ['style', 'height', 'auto', isMobile.val, isMobile],
     ['style', 'justifyContent', 'start'],
-    ['style', 'width', '100vw'],
+    ['style', 'width', '100vw', isTablet.val, isTablet],
+    ['style', 'width', 'auto', isMobile.val, isMobile],
     ['style', 'overflow', 'hidden'],
     ['style', 'minWidth', 0],
   )(
@@ -67,8 +68,7 @@ document.addEventListener('keydown', (e) => {
     templates: key === 'ArrowRight' ? 'traits' : 'docs',
     traits: key === 'ArrowRight' ? 'state' : 'templates',
     state: key === 'ArrowRight' ? 'patterns' : 'traits',
-    patterns: key === 'ArrowRight' ? 'factory' : 'state',
-    factory: key === 'ArrowRight' ? 'introduction' : 'patterns',
+    patterns: key === 'ArrowRight' ? 'introduction' : 'state',
   };
   const newState = caseMap[val] as typeof val;
   if (!newState) return;
