@@ -29,11 +29,7 @@ clean: ## Clean the project
 dev: ## Run the project in development mode
 	@echo $(STATUS) Running in development mode...
 	@open http://localhost:3000
-	@bun build ./docs/app.ts \
-		--sourcemap \
-		--minify \
-		--bundle
-	@bun ./docs/dev.ts
+	@bun ./docs/dev.html --watch
 
 deploy: ## Deploy the project to GitHub Pages/oem.js.org
 	@echo $(STATUS) Deploying...
@@ -58,12 +54,14 @@ dist: ## Build distribution files
 	@echo 'window.oem = ' | cat - ./dist/index.js > temp && mv temp ./dist/index.js
 
 docs: ## Build docs
-	@rm -rf ./dist
 	@echo $(STATUS) Building docs...
 	@bun build ./docs/app.ts \
 		--sourcemap \
 		--minify \
-		--bundle
+		--bundle \
+		--format=iife \
+		--outfile=./docs/app.js \
+		--target=browser \
 
 dev_todo: ## Dev todo example
 	@echo $(STATUS) Building examples...

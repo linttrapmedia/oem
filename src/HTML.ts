@@ -18,7 +18,7 @@ const observer = new MutationObserver((mutations) => {
 });
 
 // Start observing once
-observer.observe(document.body, { childList: true, subtree: true });
+observer.observe(document.documentElement, { childList: true, subtree: true });
 
 function Trait<T extends any[]>(traitFn: (...args: T) => () => void) {
   return (...traitProps: T) => {
