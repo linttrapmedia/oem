@@ -1,4 +1,4 @@
-import { SvgReturnType } from '@/types';
+import { SvgReturnType } from './types';
 
 function SvgTag(el: SVGElement, traits: any[] = [], config: any = {}) {
   traits.forEach(([trait, ...args]) => config[trait](el, ...args));

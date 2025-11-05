@@ -1,4 +1,4 @@
-import { HtmlReturnType } from '@/types';
+import { HtmlReturnType } from './types';
 
 // Global observer and registry
 const traitCleanupMap = new WeakMap<HTMLElement, (() => void)[]>();
