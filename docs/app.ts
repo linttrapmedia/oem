@@ -63,7 +63,7 @@ document.addEventListener('keydown', (e) => {
   const val = menuState.val();
   if (key !== 'ArrowRight' && key !== 'ArrowLeft') return;
   const caseMap = {
-    introduction: key === 'ArrowRight' ? 'docs' : 'factory',
+    introduction: key === 'ArrowRight' ? 'docs' : 'patterns',
     docs: key === 'ArrowRight' ? 'templates' : 'introduction',
     templates: key === 'ArrowRight' ? 'traits' : 'docs',
     traits: key === 'ArrowRight' ? 'state' : 'templates',
