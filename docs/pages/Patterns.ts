@@ -173,8 +173,8 @@ tmpl.div(
       title: 'Thank You!',
       subtitle: `We appreciate your interest in OEM. We hope you find this project useful. Feel free to contribute or provide feedback!`,
       content: FooterNav({
-        next: { title: 'State', menuState: 'state' },
-        prev: { title: 'Introduction', menuState: 'introduction' },
+        prev: { title: 'State', menuState: 'state' },
+        next: { title: 'Introduction', menuState: 'introduction' },
       }),
     }),
   );
