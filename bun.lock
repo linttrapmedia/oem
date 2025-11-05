@@ -3,6 +3,9 @@
   "workspaces": {
     "": {
       "name": "@linttrap/oem",
+      "dependencies": {
+        "@linttrap/oem": "^1.0.0",
+      },
       "devDependencies": {
         "@types/bun": "latest",
         "prettier": "2.7.1",
@@ -13,6 +16,8 @@
     },
   },
   "packages": {
+    "@linttrap/oem": ["@linttrap/oem@1.0.0", "", { "peerDependencies": { "typescript": "^5" } }, "sha512-7Seo40EDlgTFPuXTIOMkCaNEjpjepuHG6/iOQozBjHWPa5BdHwl5sQt+NA6Mdz3LFsXHek3ss6Ur5N1YQHit4w=="],
+
     "@types/bun": ["@types/bun@1.3.0", "", { "dependencies": { "bun-types": "1.3.0" } }, "sha512-+lAGCYjXjip2qY375xX/scJeVRmZ5cY0wyHYyCYxNcdEXrQ4AOe3gACgd4iQ8ksOslJtW4VNxBJ8llUwc3a6AA=="],
 
     "@types/node": ["@types/node@18.19.76", "", { "dependencies": { "undici-types": "~5.26.4" } }, "sha512-yvR7Q9LdPz2vGpmpJX5LolrgRdWvB67MJKDPSgIIzpFbaf9a1j/f5DnLp5VDyHGMR0QZHlTr1afsD87QCXFHKw=="],

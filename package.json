@@ -23,7 +23,9 @@
     "@types/bun": "latest",
     "prettier": "2.7.1"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@linttrap/oem": "^1.0.0"
+  },
   "private": false,
   "peerDependencies": {
     "typescript": "^5"
