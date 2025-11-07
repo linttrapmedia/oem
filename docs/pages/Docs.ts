@@ -38,8 +38,7 @@ tmpl.div()('Hello, OEM!');
 const color = State<'green' | 'red'>('red');
 
 // getting
-color.val;
-color.$val(); // method version
+color.val();
 
 // setting
 color.set('green'); 
