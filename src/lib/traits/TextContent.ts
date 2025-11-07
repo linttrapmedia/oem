@@ -4,11 +4,11 @@ type Props = [
   el: HTMLElement,
   children: (() => string | number) | string | number,
   conditions?: Condition | Condition[],
-  ...states: StateType<any>[],
+  states?: StateType<any> | StateType<any>[],
 ];
 
 export const useTextContentTrait = (...props: Props) => {
-  const [el, children, conditions = true, ...states] = props;
+  const [el, children, conditions = true, states = []] = props;
   const apply = () => {
     const _children = typeof children === 'function' ? children() : children;
     const _conditions = Array.isArray(conditions) ? conditions : [conditions];
@@ -20,6 +20,7 @@ export const useTextContentTrait = (...props: Props) => {
     }
   };
   apply();
-  const unsubs = states.map((state) => state.sub(apply));
+  const _states = Array.isArray(states) ? states.flat() : [states];
+  const unsubs = _states.map((state) => state.sub(apply));
   return () => unsubs.forEach((unsub) => unsub());
 };

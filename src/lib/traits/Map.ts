@@ -5,11 +5,11 @@ type Props = [
   items: () => any[],
   renderer: (item: any, index: number) => HTMLElement,
   conditions: Condition | Condition[],
-  ...states: StateType<any>[],
+  states: StateType<any> | StateType<any>[],
 ];
 
 export const useMapTrait = (...props: Props) => {
-  const [el, items, renderer, conditions = true, ...states] = props;
+  const [el, items, renderer, conditions = true, states = []] = props;
   const apply = () => {
     const _conditions = Array.isArray(conditions) ? conditions : [conditions];
     const isConditionMet = _conditions.every((condition) => {
@@ -27,6 +27,7 @@ export const useMapTrait = (...props: Props) => {
     });
   };
   apply();
-  const unsubs = states.map((state) => state.sub(apply));
+  const _states = Array.isArray(states) ? states.flat() : [states];
+  const unsubs = _states.map((state) => state.sub(apply));
   return () => unsubs.forEach((unsub) => unsub());
 };

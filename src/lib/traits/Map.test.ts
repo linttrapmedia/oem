@@ -33,7 +33,7 @@ export const CanMapListOfElements: Test = async () => {
     attr: useAttributeTrait,
   });
   const render3 = (item: string, i: number) => tmpl3.div(['attr', 'key', i], ['attr', 'id', items3b.val()[i]])(item);
-  const e3 = tmpl3.div(['map', items3a.val, render3, true, items3b, items3a])();
+  const e3 = tmpl3.div(['map', items3a.val, render3, true, [items3b, items3a]])();
   items3b.set([3, 4, 10]);
   const t3 = e3.outerHTML === '<div><div key="0" id="3">item1</div><div key="1" id="4">item2</div></div>';
   items3a.reduce((prev) => [...prev, 'item3']);
