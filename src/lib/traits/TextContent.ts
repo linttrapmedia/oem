@@ -1,13 +1,13 @@
 import { Condition, StateType } from '@/types';
 
-type Props = [
-  el: HTMLElement,
-  children: (() => string | number) | string | number,
-  conditions?: Condition | Condition[],
-  states?: StateType<any> | StateType<any>[],
-];
-
-export const useTextContentTrait = (...props: Props) => {
+export const useTextContentTrait = (
+  ...props: [
+    el: HTMLElement,
+    children: (() => string | number) | string | number,
+    conditions?: Condition | Condition[],
+    states?: StateType<any> | StateType<any>[],
+  ]
+) => {
   const [el, children, conditions = true, states = []] = props;
   const apply = () => {
     const _children = typeof children === 'function' ? children() : children;

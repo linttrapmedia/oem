@@ -1,14 +1,14 @@
 import { Condition, StateType } from '@/types';
 
-type Props = [
-  el: HTMLElement,
-  items: () => any[],
-  renderer: (item: any, index: number) => HTMLElement,
-  conditions: Condition | Condition[],
-  states: StateType<any> | StateType<any>[],
-];
-
-export const useMapTrait = (...props: Props) => {
+export const useMapTrait = (
+  ...props: [
+    el: HTMLElement,
+    items: () => any[],
+    renderer: (item: any, index: number) => HTMLElement,
+    conditions: Condition | Condition[],
+    states: StateType<any> | StateType<any>[],
+  ]
+) => {
   const [el, items, renderer, conditions = true, states = []] = props;
   const apply = () => {
     const _conditions = Array.isArray(conditions) ? conditions : [conditions];
@@ -16,6 +16,7 @@ export const useMapTrait = (...props: Props) => {
       return typeof condition === 'function' ? condition() : condition;
     });
     if (!isConditionMet) return;
+    el.innerHTML = '';
     items().forEach((item, index) => {
       const itemEl = renderer(item, index);
       const itemKey = itemEl.getAttribute('key');

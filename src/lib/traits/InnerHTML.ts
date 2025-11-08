@@ -1,19 +1,19 @@
 import { Condition, StateType } from '@/types';
 
-type Props = [
-  el: HTMLElement,
-  children: () =>
-    | string
-    | number
-    | HTMLElement
-    | SVGElement
-    | undefined
-    | (string | number | HTMLElement | SVGElement | undefined)[],
-  conditions?: Condition | Condition[],
-  states?: StateType<any> | StateType<any>[],
-];
-
-export const useInnerHTMLTrait = (...props: Props) => {
+export const useInnerHTMLTrait = (
+  ...props: [
+    el: HTMLElement,
+    children: () =>
+      | string
+      | number
+      | HTMLElement
+      | SVGElement
+      | undefined
+      | (string | number | HTMLElement | SVGElement | undefined)[],
+    conditions?: Condition | Condition[],
+    states?: StateType<any> | StateType<any>[],
+  ]
+) => {
   const [el, children, conditions = true, states = []] = props;
   const apply = () => {
     const _children = children();

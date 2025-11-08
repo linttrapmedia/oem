@@ -1,13 +1,13 @@
 import { Condition, StateType } from '@/types';
 
-type Props = [
-  el: HTMLElement,
-  className: string | (() => string),
-  conditions?: Condition | Condition[],
-  states?: StateType<any> | StateType<any>[],
-];
-
-export const useClassNameTrait = (...props: Props) => {
+export const useClassNameTrait = (
+  ...props: [
+    el: HTMLElement,
+    className: string | (() => string),
+    conditions?: Condition | Condition[],
+    states?: StateType<any> | StateType<any>[],
+  ]
+) => {
   const [el, className, conditions = true, states = []] = props;
   const apply = () => {
     const _className = typeof className === 'function' ? className() : className;

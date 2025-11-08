@@ -1,14 +1,14 @@
 import { Condition, StateType } from '@/types';
 
-type Props = [
-  el: HTMLElement,
-  prop: keyof CSSStyleDeclaration | `--${string}`,
-  val: (() => string | number | undefined) | (string | number | undefined),
-  conditions?: Condition | Condition[],
-  states?: StateType<any> | StateType<any>[],
-];
-
-export const useStyleTrait = (...props: Props) => {
+export const useStyleTrait = (
+  ...props: [
+    el: HTMLElement,
+    prop: keyof CSSStyleDeclaration | `--${string}`,
+    val: (() => string | number | undefined) | (string | number | undefined),
+    conditions?: Condition | Condition[],
+    states?: StateType<any> | StateType<any>[],
+  ]
+) => {
   const [el, prop, val, conditions = true, states = []] = props;
   const apply = () => {
     const _val = typeof val === 'function' ? val() : val;

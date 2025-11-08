@@ -1,14 +1,14 @@
 import { Condition, StateType } from '@/types';
 
-type Props = [
-  el: HTMLElement,
-  event: keyof GlobalEventHandlersEventMap,
-  cb: (evt?: GlobalEventHandlersEventMap[keyof GlobalEventHandlersEventMap]) => void,
-  conditions?: Condition | Condition[],
-  states?: StateType<any> | StateType<any>[],
-];
-
-export const useEventTrait = (...props: Props) => {
+export const useEventTrait = (
+  ...props: [
+    el: HTMLElement,
+    event: keyof GlobalEventHandlersEventMap,
+    cb: (evt?: GlobalEventHandlersEventMap[keyof GlobalEventHandlersEventMap]) => void,
+    conditions?: Condition | Condition[],
+    states?: StateType<any> | StateType<any>[],
+  ]
+) => {
   const [el, evt, cb, conditions = true, states = []] = props;
   let listenerAttached = false;
 
