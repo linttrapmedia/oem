@@ -4,7 +4,7 @@
     "": {
       "name": "@linttrap/oem",
       "dependencies": {
-        "@linttrap/oem": "^1.0.0",
+        "@linttrap/oem": "^1.0.2",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -16,7 +16,7 @@
     },
   },
   "packages": {
-    "@linttrap/oem": ["@linttrap/oem@1.0.0", "", { "peerDependencies": { "typescript": "^5" } }, "sha512-7Seo40EDlgTFPuXTIOMkCaNEjpjepuHG6/iOQozBjHWPa5BdHwl5sQt+NA6Mdz3LFsXHek3ss6Ur5N1YQHit4w=="],
+    "@linttrap/oem": ["@linttrap/oem@1.0.2", "", { "dependencies": { "@linttrap/oem": "^1.0.0" }, "peerDependencies": { "typescript": "^5" } }, "sha512-QMugNIDHFHdEum3b0hfAP7RY8Micgpi5UnoT6YrHlAbVLSXCkkvEA6F5O/p3IZtTekVPxyQtI+jkEjNxet44kQ=="],
 
     "@types/bun": ["@types/bun@1.3.0", "", { "dependencies": { "bun-types": "1.3.0" } }, "sha512-+lAGCYjXjip2qY375xX/scJeVRmZ5cY0wyHYyCYxNcdEXrQ4AOe3gACgd4iQ8ksOslJtW4VNxBJ8llUwc3a6AA=="],
 

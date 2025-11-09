@@ -63,23 +63,9 @@ docs: ## Build docs
 		--outfile=./docs/app.js \
 		--target=browser \
 
-dev_todo: ## Dev todo example
+examples: ## Dev todo example
 	@echo $(STATUS) Building examples...
-	@open ./examples/todo/index.html
-	@bun build ./examples/todo/src/index.ts \
-		--watch \
-		--outdir=./examples/todo \
-		--sourcemap \
-		--minify
-
-dev_todo2: ## Dev todo example
-	@echo $(STATUS) Building examples...
-	@open ./examples/todo2/index.html
-	@bun build ./examples/todo2/src/index.ts \
-		--watch \
-		--outdir=./examples/todo2 \
-		--sourcemap \
-		--minify
+	@bun ./examples/index.html --watch
 
 install: ## Install the project
 	@echo $(STATUS) Installing...

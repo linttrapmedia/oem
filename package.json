@@ -1,33 +1,33 @@
 {
   "name": "@linttrap/oem",
-  "author": "@linttrapmedia",
-  "title": "oem",
   "version": "1.0.2",
-  "description": "A novel UI library for writing reactive html with vanilla javascript",
-  "type": "module",
-  "exports": {
-    ".": "./src/index.ts"
-  },
-  "main": "./src/index.ts",
-  "module": "./src/index.ts",
+  "author": "@linttrapmedia",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/linttrapmedia/oem.git"
   },
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/linttrapmedia/oem/issues"
-  },
-  "homepage": "https://oem.js.org",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
   "devDependencies": {
     "@types/bun": "latest",
     "prettier": "2.7.1"
   },
-  "dependencies": {
-    "@linttrap/oem": "^1.0.0"
-  },
-  "private": false,
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "bugs": {
+    "url": "https://github.com/linttrapmedia/oem/issues"
+  },
+  "description": "A novel UI library for writing reactive html with vanilla javascript",
+  "homepage": "https://oem.js.org",
+  "license": "MIT",
+  "private": false,
+  "title": "oem",
+  "type": "module",
+  "dependencies": {
+    "@linttrap/oem": "^1.0.2"
   }
 }
