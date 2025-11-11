@@ -1,24 +1,21 @@
 import { Condition, StateType } from '@/types';
 
-export const useClassNameTrait = (
-  ...props: [
-    el: HTMLElement,
-    className: string | (() => string),
-    conditions?: Condition | Condition[],
-    states?: StateType<any> | StateType<any>[],
-  ]
-) => {
-  const [el, className, conditions = true, states = []] = props;
+function useClassNameTrait(
+  el: HTMLElement,
+  className: string | (() => string),
+  ...rest: (StateType<any> | Condition)[]
+) {
+  const isStateObj = (i: any) => Object.keys(i).includes('sub');
+  const states = [className, ...rest].filter(isStateObj) as StateType<any>[];
+  const conditions = rest.filter((item) => !isStateObj(item));
   const apply = () => {
     const _className = typeof className === 'function' ? className() : className;
-    const _conditions = Array.isArray(conditions) ? conditions : [conditions];
-    const isConditionMet = _conditions.every((condition) =>
-      typeof condition === 'function' ? condition() : condition,
-    );
-    if (isConditionMet) el.setAttribute('class', String(_className));
+    const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));
+    if (applies) el.setAttribute('class', String(_className));
   };
   apply();
-  const _states = Array.isArray(states) ? states.flat() : [states];
-  const unsubs = _states.map((state) => state.sub(apply));
+  const unsubs = states.map((state) => state.sub(apply));
   return () => unsubs.forEach((unsub) => unsub());
-};
+}
+
+export { useClassNameTrait };

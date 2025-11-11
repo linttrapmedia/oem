@@ -1,22 +1,18 @@
 import { Condition, StateType } from '@/types';
 
 export const useAttributeTrait = (
-  ...props: [
-    el: HTMLElement,
-    prop: string,
-    val: (() => string | number | boolean | undefined) | (string | number | boolean | undefined),
-    conditions?: Condition | Condition[],
-    states?: StateType<any> | StateType<any>[],
-  ]
+  el: HTMLElement,
+  prop: string,
+  val: (() => string | number | boolean | undefined) | (string | number | boolean | undefined),
+  ...rest: (StateType<any> | Condition)[]
 ) => {
-  const [el, prop, val, conditions = true, states = []] = props;
+  const isStateObj = (i: any) => Object.keys(i).includes('sub');
+  const states = [val ?? '', ...rest].filter(isStateObj) as StateType<any>[];
+  const conditions = rest.filter((item) => !isStateObj(item));
   const apply = () => {
     const _val = typeof val === 'function' ? val() : val;
-    const _conditions = Array.isArray(conditions) ? conditions : [conditions];
-    const isConditionMet = _conditions.every((condition) => {
-      return typeof condition === 'function' ? condition() : condition;
-    });
-    if (isConditionMet) {
+    const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));
+    if (applies) {
       if (_val === undefined) {
         el.removeAttribute(prop);
       } else {
@@ -27,7 +23,6 @@ export const useAttributeTrait = (
     }
   };
   apply();
-  const _states = Array.isArray(states) ? states : [states];
-  const unsubs = _states.map((state) => state.sub(apply));
+  const unsubs = states.map((state) => state.sub(apply));
   return () => unsubs.forEach((unsub) => unsub());
 };

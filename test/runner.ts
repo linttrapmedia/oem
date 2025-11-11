@@ -1,7 +1,7 @@
 import { Test } from '../src/types';
 
-export async function runner(tests: [string, ...[string, Test][]][]) {
-  const FILTER = '';
+export async function runner(tests: [string, ...Test[]][]) {
+  const FILTER = new URLSearchParams(window.location.search).get('filter');
   const sandbox = document.querySelector('#test-sandbox') as HTMLElement;
   const results = document.querySelector('#test-results') as HTMLElement;
   results.style.display = 'grid';
@@ -12,10 +12,10 @@ export async function runner(tests: [string, ...[string, Test][]][]) {
   for (const [module, ...assertions] of tests) {
     assertions
       .filter((t) => {
-        if (FILTER) return (t[1].name as any) === FILTER;
+        if (FILTER) return (t.name as any) === FILTER;
         return true;
       })
-      .forEach(async ([desc, test]) => {
+      .forEach(async (test) => {
         let testResult;
         try {
           testResult = await test(sandbox);
@@ -30,11 +30,11 @@ export async function runner(tests: [string, ...[string, Test][]][]) {
         statusEl.className = testResult.pass ? 'pass' : 'fail';
 
         const moduleEl = document.createElement('div');
-        moduleEl.innerText = module;
+        moduleEl.innerText = `${module}`;
         moduleEl.style.color = testResult.pass ? 'green' : 'red';
 
         const descEl = document.createElement('div');
-        descEl.innerText = desc;
+        descEl.innerText = `${test.name}`;
         descEl.style.color = testResult.pass ? 'green' : 'red';
 
         const messageEl = document.createElement('div');

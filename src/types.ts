@@ -12,6 +12,7 @@ export type StateType<T> = {
   $reduce: (cb: (prev: T) => T) => () => void;
   $set: (atom: T) => () => void;
   $test: (regex: RegExp | T | ((atom: T) => boolean), checkFor?: true | false) => () => boolean;
+  $val: () => T;
   _subs: Set<(atom: T) => any>;
 };
 

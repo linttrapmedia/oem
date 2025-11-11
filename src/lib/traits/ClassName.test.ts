@@ -5,10 +5,10 @@ import { Test } from '@/types';
 import { useClassNameTrait } from './ClassName';
 
 export const CanApplyClassNameTraitToHtml: Test = async () => {
-  const classA = State('one');
-  const classB = State(false);
   const tests: boolean[] = [];
   let el;
+  let stateA: any;
+  let stateB: any;
   const { div } = HTML({
     classname: useClassNameTrait,
   });
@@ -17,29 +17,32 @@ export const CanApplyClassNameTraitToHtml: Test = async () => {
   el = div(['classname', 'c1'], ['classname', 'c1'])();
   tests.push(el.outerHTML === '<div class="c1"></div>');
 
-  // add multiple classes
+  // // add multiple classes
   el = div(['classname', 'c1 c2'])();
   tests.push(el.outerHTML === '<div class="c1 c2"></div>');
 
-  // dynamic class name
+  // // dynamic class name
   el = div(['classname', () => 'c1'])();
   tests.push(el.outerHTML === '<div class="c1"></div>');
 
   // state driven class name
-  el = div(['classname', classA.val, 1, classA])();
+  stateA = State('one');
+  el = div(['classname', stateA.val, stateA])();
   tests.push(el.outerHTML === '<div class="one"></div>');
-  classA.set('two');
+  stateA.set('two');
   tests.push(el.outerHTML === '<div class="two"></div>');
 
   // multiple states
-  el = div(['classname', 'c1 c2', 1, [classA, classB]])();
-  tests.push(el.outerHTML === '<div class="c1 c2"></div>');
-  classB.set(true);
-  tests.push(el.outerHTML === '<div class="c1 c2"></div>');
-  classA.set('three');
-  tests.push(el.outerHTML === '<div class="c1 c2"></div>');
+  stateA = State('a');
+  stateB = State('b');
+  el = div(['classname', () => `${stateA.val()} ${stateB.val()}`, stateA, stateB])();
+  tests.push(el.outerHTML === '<div class="a b"></div>');
+  stateB.set('c');
+  tests.push(el.outerHTML === '<div class="a c"></div>');
+  stateA.set('d');
+  tests.push(el.outerHTML === '<div class="d c"></div>');
 
-  // conditional class names
+  // // conditional class names
   el = div(['classname', 'c1', false])();
   tests.push(el.outerHTML === '<div></div>');
 
@@ -76,6 +79,22 @@ export const CanApplyClassNameTraitToHtml: Test = async () => {
   // multiple attr tests
   el = div(['classname', 'c1 c2', true], ['classname', '', true])();
   tests.push(el.outerHTML === '<div class=""></div>');
+
+  // test subscription tunneling on $test, also test to make sure subs are deduped
+  const autoSubState = State(true);
+  el = div(
+    ['classname', 'c1 c2', autoSubState.$test(true)],
+    ['classname', '', autoSubState.$test(false), autoSubState, autoSubState, autoSubState, autoSubState.$test(true)],
+  )();
+  autoSubState.set(false);
+  tests.push(el.outerHTML === '<div class=""></div>');
+  tests.push(autoSubState._subs.size === 2);
+
+  // test value tunneling on $val, also test to make sure subs are deduped
+  stateA = State('a');
+  el = div(['classname', stateA.$val])();
+  stateA.set('tunneled');
+  tests.push(el.outerHTML === '<div class="tunneled"></div>');
 
   return { pass: tests.every(Boolean) };
 };
