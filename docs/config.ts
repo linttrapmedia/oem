@@ -1,9 +1,9 @@
-import { HTML, State, SVG } from '@/index';
-import { useMediaQueryState } from '@/lib/states/MediaQuery';
-import { useAttributeTrait } from '@/lib/traits/Attribute';
-import { useEventTrait } from '@/lib/traits/Event';
-import { useInnerHTMLTrait } from '@/lib/traits/InnerHTML';
-import { useStyleTrait } from '@/lib/traits/Style';
+import { HTML, State, SVG } from '@/oem';
+import { useMediaQueryState } from '@/states/MediaQuery';
+import { useAttributeTrait } from '@/traits/Attribute';
+import { useEventTrait } from '@/traits/Event';
+import { useInnerHTMLTrait } from '@/traits/InnerHTML';
+import { useStyleTrait } from '@/traits/Style';
 
 declare namespace Prism {
   const highlight: any;

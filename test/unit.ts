@@ -1,36 +1,36 @@
 import {
   CanApplyMultipleTraitsToHtml,
+  CanApplyMultipleTraitsToSvg,
   CanCreateBasicHtmlTagWithText,
+  CanCreateBasicSvgTagWithText,
   CanCreateBasicTrait,
-  HasValidHtmlNamespace,
-  WillCleanupTraitOnElementRemoval,
-} from '@/HTML.test';
-import { CanKeepTrackOfMediaQueryState } from '@/lib/states/MediaQuery.test';
-import { CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg } from '@/lib/traits/Attribute.test';
-import { CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg } from '@/lib/traits/ClassName.test';
-import {
-  CanApplyEventListenerTraitToHtml,
-  CanApplyEventListenerTraitToSvg,
-  CanConditionallyApplyEventListenerTraitToHtml,
-  CanConditionallyApplyEventListenerTraitToSvg,
-  CanRemoveEventListenerFromStateObjectWhenElementIsRemoved,
-} from '@/lib/traits/Event.test';
-import { CanApplyInnerHTMLTraitToHtml, CanApplyInnerHTMLTraitToSvg } from '@/lib/traits/InnerHTML.test';
-import {
-  CanApplyCssVarWithStyleTraitToHtml,
-  CanApplyStyleTraitToHtml,
-  CanApplyStyleTraitToSvg,
-} from '@/lib/traits/Style.test';
-import { CanApplyTextContentTraitToHtml, CanApplyTextContentTraitToSvg } from '@/lib/traits/TextContent.test';
-import {
   CanCreateState,
   CanSetStateAndPublish,
   CanSubscribeToState,
   CanTestStateValue,
   CanUnSubscribeToState,
   CanUpdateState,
-} from '@/State.test';
-import { CanApplyMultipleTraitsToSvg, CanCreateBasicSvgTagWithText, HasValidSvgNamespace } from '@/SVG.test';
+  HasValidHtmlNamespace,
+  HasValidSvgNamespace,
+  WillCleanupTraitOnElementRemoval,
+} from '@/oem.test';
+import { CanKeepTrackOfMediaQueryState } from '@/states/MediaQuery.test';
+import { CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg } from '@/traits/Attribute.test';
+import { CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg } from '@/traits/ClassName.test';
+import {
+  CanApplyEventListenerTraitToHtml,
+  CanApplyEventListenerTraitToSvg,
+  CanConditionallyApplyEventListenerTraitToHtml,
+  CanConditionallyApplyEventListenerTraitToSvg,
+  CanRemoveEventListenerFromStateObjectWhenElementIsRemoved,
+} from '@/traits/Event.test';
+import { CanApplyInnerHTMLTraitToHtml, CanApplyInnerHTMLTraitToSvg } from '@/traits/InnerHTML.test';
+import {
+  CanApplyCssVarWithStyleTraitToHtml,
+  CanApplyStyleTraitToHtml,
+  CanApplyStyleTraitToSvg,
+} from '@/traits/Style.test';
+import { CanApplyTextContentTraitToHtml, CanApplyTextContentTraitToSvg } from '@/traits/TextContent.test';
 import { runner } from './runner';
 
 window.addEventListener('DOMContentLoaded', async () => {

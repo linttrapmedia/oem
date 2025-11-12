@@ -1,8 +1,5 @@
-import { HTML } from '@/HTML';
-import { useAttributeTrait } from '@/lib/traits/Attribute';
-import { State } from '@/State';
-import { SVG } from '@/SVG';
-import { Test } from '@/types';
+import { HTML, State, SVG, Test } from '@/oem';
+import { useAttributeTrait } from '@/traits/Attribute';
 
 export const CanApplyAttributeTraitToHtml: Test = async () => {
   const disabled = State(false);

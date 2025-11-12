@@ -1,5 +1,5 @@
-import { useMediaQueryState } from '@/lib/states/MediaQuery';
-import { Test } from '@/types';
+import { Test } from '@/oem';
+import { useMediaQueryState } from '@/states/MediaQuery';
 
 // polyfill window.matchMedia for testing environment
 if (!window.matchMedia) {

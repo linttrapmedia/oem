@@ -1,9 +1,6 @@
-import { HTML } from '@/HTML';
-import { useAttributeTrait } from '@/lib/traits/Attribute';
-import { useEventTrait } from '@/lib/traits/Event';
-import { State } from '@/State';
-import { SVG } from '@/SVG';
-import { Test } from '@/types';
+import { HTML, State, SVG, Test } from '@/oem';
+import { useAttributeTrait } from '@/traits/Attribute';
+import { useEventTrait } from '@/traits/Event';
 
 export const CanApplyEventListenerTraitToHtml: Test = async () => {
   const { div } = HTML({

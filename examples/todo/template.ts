@@ -1,10 +1,10 @@
 import { HTML } from '@/HTML';
-import { useAttributeTrait } from '@/lib/traits/Attribute';
-import { useEventTrait } from '@/lib/traits/Event';
-import { useFocusTrait } from '@/lib/traits/Focus';
-import { useInnerHTMLTrait } from '@/lib/traits/InnerHTML';
-import { useInputValueTrait } from '@/lib/traits/InputValue';
-import { useStyleTrait } from '@/lib/traits/Style';
+import { useAttributeTrait } from '@/traits/Attribute';
+import { useEventTrait } from '@/traits/Event';
+import { useFocusTrait } from '@/traits/Focus';
+import { useInnerHTMLTrait } from '@/traits/InnerHTML';
+import { useInputValueTrait } from '@/traits/InputValue';
+import { useStyleTrait } from '@/traits/Style';
 
 export const tmpl = HTML({
   event: useEventTrait,

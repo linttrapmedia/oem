@@ -1,4 +1,4 @@
-import { State } from '@/index';
+import { State } from '@/oem';
 import pkg from '../../package.json';
 import { html, isMobile, isTablet, menuOpen, menuState, MenuStateTypes } from '../config';
 

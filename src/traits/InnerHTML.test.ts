@@ -1,9 +1,5 @@
-import { HTML } from '@/HTML';
-import { State } from '@/State';
-import { SVG } from '@/SVG';
-import { Test } from '@/types';
+import { HTML, State, SVG, Test } from '@/oem';
 import { useInnerHTMLTrait } from './InnerHTML';
-
 export const CanApplyInnerHTMLTraitToHtml: Test = async () => {
   const state = State<{ value: string }>({ value: 'asdf' });
   const { div } = HTML({ html: useInnerHTMLTrait });

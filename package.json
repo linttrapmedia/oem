@@ -6,8 +6,8 @@
     "type": "git",
     "url": "git+https://github.com/linttrapmedia/oem.git"
   },
-  "main": "./src/index.ts",
-  "module": "./src/index.ts",
+  "main": "./src/oem.ts",
+  "module": "./src/oem.ts",
   "devDependencies": {
     "@types/bun": "latest",
     "prettier": "2.7.1"
@@ -16,7 +16,7 @@
     "typescript": "^5"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/oem.ts"
   },
   "bugs": {
     "url": "https://github.com/linttrapmedia/oem/issues"

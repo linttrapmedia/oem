@@ -1,7 +1,4 @@
-import { HTML } from '@/HTML';
-import { State } from '@/State';
-import { SVG } from '@/SVG';
-import { Test } from '@/types';
+import { HTML, State, SVG, Test } from '@/oem';
 import { useTextContentTrait } from './TextContent';
 
 export const CanApplyTextContentTraitToHtml: Test = async () => {
