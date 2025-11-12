@@ -1,4 +1,4 @@
-import { Condition, StateType } from '@/types';
+import { Condition, StateType } from '@/oem';
 
 export function useInnerHTMLTrait(
   el: HTMLElement,
@@ -8,7 +8,8 @@ export function useInnerHTMLTrait(
     | HTMLElement
     | SVGElement
     | undefined
-    | (string | number | HTMLElement | SVGElement | undefined)[],
+    | unknown
+    | (string | number | HTMLElement | SVGElement | undefined | unknown)[],
   ...rest: (StateType<any> | Condition)[]
 ) {
   const isStateObj = (i: any) => Object.keys(i).includes('sub');
@@ -27,6 +28,7 @@ export function useInnerHTMLTrait(
               if (c instanceof HTMLElement || c instanceof SVGElement) el.appendChild(c);
               else el.appendChild(document.createTextNode(String(c)));
             });
+          console.log(applies, _children);
         } else if (_children instanceof HTMLElement || _children instanceof SVGElement) {
           el.appendChild(_children);
         } else {

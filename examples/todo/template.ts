@@ -1,4 +1,4 @@
-import { HTML } from '@/HTML';
+import { HTML } from '@/oem';
 import { useAttributeTrait } from '@/traits/Attribute';
 import { useEventTrait } from '@/traits/Event';
 import { useFocusTrait } from '@/traits/Focus';

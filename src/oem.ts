@@ -117,9 +117,12 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
 
           if (typeof fn === 'function') {
             // assert fn is callable
-            return (...args: any[]) =>
-              () =>
-                (fn as (...args: any[]) => any).apply(boxedVal, args);
+            return (...args: any[]) => {
+              // tunnel subscription to $ callbacks
+              const closure = () => (fn as (...args: any[]) => any).apply(_val(), args);
+              closure.sub = _sub;
+              return closure;
+            };
           }
 
           return () => fn; // for properties
@@ -168,14 +171,6 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
 
   return methods;
 }
-
-const customTypeState = State<{ name: string }>({ name: 'test' });
-customTypeState.proto.name; // "test"
-console.log(customTypeState.proto.$name);
-
-const genericStringState = State<string>('hello');
-console.log(genericStringState.proto.at(1)); // "e"
-console.log(genericStringState.proto.$at(1)()); // "o"
 
 // HTML
 
