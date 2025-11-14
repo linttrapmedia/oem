@@ -3,6 +3,7 @@ import { useAttributeTrait } from '@/traits/Attribute';
 import { useEventTrait } from '@/traits/Event';
 import { useFocusTrait } from '@/traits/Focus';
 import { useInnerHTMLTrait } from '@/traits/InnerHTML';
+import { useInputEvent } from '@/traits/InputEvent';
 import { useInputValueTrait } from '@/traits/InputValue';
 import { useStyleTrait } from '@/traits/Style';
 
@@ -21,5 +22,6 @@ export const [tag, trait] = HTML2({
   attr: useAttributeTrait,
   focus: useFocusTrait,
   value: useInputValueTrait,
+  input: useInputEvent,
   html: useInnerHTMLTrait,
 });

@@ -1,5 +1,5 @@
 import { HTML, State, SVG, Test } from '@/oem';
-import { useClassNameTrait } from './ClassName';
+import { useClassNameTrait } from '@/traits/ClassName copy';
 
 export const CanApplyClassNameTraitToHtml: Test = async () => {
   const tests: boolean[] = [];

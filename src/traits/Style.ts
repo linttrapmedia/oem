@@ -1,4 +1,4 @@
-import { Condition, StateType } from '@/types';
+import { Condition, StateType } from '@/oem';
 
 export function useStyleTrait(
   el: HTMLElement,

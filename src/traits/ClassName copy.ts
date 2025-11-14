@@ -1,4 +1,4 @@
-import { Condition, StateType } from '@/types';
+import { Condition, StateType } from '@/oem';
 
 function useClassNameTrait(
   el: HTMLElement,

@@ -114,7 +114,7 @@ const App = () =>
         html.div(['style', 'textAlign', 'center'])(
           `Here's a documented version of the useClassNameTrait available in the Factory section.`,
         ),
-        html.pre(['prism'])(`import { Condition, StateType } from '@/types';
+        html.pre(['prism'])(`import { Condition, StateType } from '@/oem';
 
 // Props for the useClassNameTrait
 type Props = [
