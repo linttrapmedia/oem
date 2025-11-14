@@ -1,42 +1,54 @@
 import { $fsm } from './fsm';
 import state from './state';
-import { tmpl } from './template';
+import { tag, trait } from './template';
 import { TodoType } from './types';
 
-export default tmpl.div(
-  ['style', 'borderColor', 'black'],
-  ['style', 'borderWidth', '2px'],
-  ['style', 'borderStyle', 'solid'],
-  ['style', 'padding', '20px'],
-)(
-  tmpl.h2(['style', 'margin', 0])('Todo Example'),
-  tmpl.form(['event', 'submit', (e) => e!.preventDefault()])(
-    tmpl.input(
-      ['attr', 'id', 'new-todo'],
-      ['attr', 'type', 'text'],
-      ['attr', 'placeholder', 'New todo...'],
-      ['attr', 'autofocus', 'true'],
-      ['event', 'input', (e) => state.newTodo.set((e!.target as HTMLInputElement).value)],
-      ['value', state.newTodo.val, state.newTodo],
-      ['focus', state.newTodo.$test(''), state.newTodo],
-    )(),
-    tmpl.button(['event', 'click', $fsm({ type: 'ADD' })])('Add'),
-  ),
-  tmpl.ul(
-    ['style', 'listStyleType', 'none'],
-    ['style', 'padding', 0],
-    [
-      'html',
-      state.todos.proto.$map((todo: TodoType) =>
-        tmpl.li(['style', 'display', 'flex'], ['style', 'gap', '10px'], ['style', 'alignItems', 'center'])(
-          tmpl.span(
-            ['style', 'textDecoration', 'line-through', todo.completed],
-            ['style', 'textDecoration', 'none', !todo.completed],
-          )(todo.title),
-          tmpl.button(['event', 'click', $fsm({ type: 'TOGGLE', todo })])('Toggle'),
-          tmpl.button(['event', 'click', $fsm({ type: 'DELETE', todo })])('Delete'),
+export default tag.div(
+  trait.style('borderColor', 'black'),
+  trait.style('borderWidth', '2px'),
+  trait.style('borderStyle', 'solid'),
+  trait.style('padding', '20px'),
+  trait.style('boxSizing', 'border-box'),
+  trait.html([
+    tag.h2(trait.style('margin', '0'), 'Todo Example'),
+    tag.form(
+      trait.event('submit', (e) => e!.preventDefault()),
+      trait.html([
+        tag.input(
+          trait.attr('id', 'new-todo'),
+          trait.attr('type', 'text'),
+          trait.attr('placeholder', 'New todo...'),
+          trait.attr('autofocus', 'true'),
+          trait.focus(state.newTodo.$test('')),
+          trait.event('input', (e) => state.newTodo.set((e!.target as HTMLInputElement).value)),
+          trait.value(state.newTodo.val, state.newTodo),
+        ),
+        tag.button(trait.event('click', $fsm('ADD')), 'Add'),
+      ]),
+    ),
+    tag.ul(
+      trait.style('listStyleType', 'none'),
+      trait.style('padding', '0'),
+      trait.style('display', 'flex'),
+      trait.style('flexDirection', 'column'),
+      trait.style('gap', '10px'),
+      trait.style('maxWidth', '400px'),
+      trait.html(
+        state.todos.proto.$map((todo: TodoType) =>
+          tag.li(
+            trait.style('display', 'grid'),
+            trait.style('gridTemplateColumns', 'auto min-content min-content'),
+            trait.style('gap', '10px'),
+            trait.style('alignItems', 'center'),
+            trait.style('textDecoration', 'none', !todo.completed),
+            trait.html([
+              tag.span(trait.style('textDecoration', 'line-through', todo.completed), todo.title),
+              tag.button(trait.event('click', $fsm('TOGGLE', todo)), 'Toggle'),
+              tag.button(trait.event('click', $fsm('DELETE', todo)), 'Delete'),
+            ]),
+          ),
         ),
       ),
-    ],
-  )(),
+    ),
+  ]),
 );

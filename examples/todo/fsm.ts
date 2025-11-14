@@ -1,10 +1,10 @@
 import state from './state';
 import { ActionTypes, TodoType } from './types';
 
-export const fsm = (action: ActionTypes) => {
+export function fsm(...[action, payload]: ActionTypes) {
   switch (state.machine.val()) {
     case 'READY':
-      switch (action.type) {
+      switch (action) {
         case 'ADD':
           const todo: TodoType = {
             title: state.newTodo.val(),
@@ -14,11 +14,11 @@ export const fsm = (action: ActionTypes) => {
           state.newTodo.set('');
           break;
         case 'DELETE':
-          state.todos.reduce((curr) => curr.filter((t) => t.title !== action.todo.title));
+          state.todos.reduce((curr) => curr.filter((t) => t.title !== payload.title));
           break;
         case 'TOGGLE':
           state.todos.reduce((curr) =>
-            curr.map((t) => (t.title === action.todo.title ? { ...t, completed: !t.completed } : t)),
+            curr.map((t) => (t.title === payload.title ? { ...t, completed: !t.completed } : t)),
           );
           break;
       }
@@ -27,6 +27,9 @@ export const fsm = (action: ActionTypes) => {
       // Handle ERROR state actions
       break;
   }
-};
+}
 
-export const $fsm = (action: ActionTypes) => () => fsm(action);
+export const $fsm =
+  (...args: ActionTypes) =>
+  () =>
+    fsm(...args);

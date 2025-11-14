@@ -97,12 +97,14 @@ export function State<T>(param: T, persistence?: Persistence): StateType<T> {
   const $test = (predicate: RegExp | T | ((atom: T) => boolean), truthCheck: true | false = true) => {
     const closure = () => test(predicate, truthCheck);
     closure.sub = _sub;
+    closure.type = '$test';
     return closure;
   };
 
   const _val = (): T => _internalVal;
   const $val = (): T => _internalVal;
   $val.sub = _sub;
+  $val.type = '$val';
 
   const _proto = new Proxy(
     {},
@@ -253,6 +255,69 @@ export function HTML<P extends Record<string, any>>(config?: P) {
       get: (_, prop) => CreateEl(prop as string, 'http://www.w3.org/1999/xhtml', config),
     },
   ) as HtmlReturnType<P>;
+}
+
+// ---------------------------
+// Helper types
+// ---------------------------
+type Tail<T extends any[]> = T extends [any, ...infer R] ? R : never;
+type TraitFunc2<Args extends any[] = any[], Return = any> = (...args: Args) => Return;
+
+// A trait is a function that applies itself to an element
+type AppliedTrait = (el: HTMLElement) => void;
+
+// ---------------------------
+// Html2ReturnType
+// ---------------------------
+export type Html2ReturnType<P extends Record<string, TraitFunc2>> = [
+  Record<keyof HTMLElementTagNameMap, (...traits: (string | number | AppliedTrait)[]) => HTMLElement>,
+  {
+    [K in keyof P]: (...args: Tail<Parameters<P[K]>>) => AppliedTrait;
+  },
+];
+
+// ---------------------------
+// HTML2 factory
+// ---------------------------
+export function HTML2<P extends Record<string, TraitFunc2>>(config: P): Html2ReturnType<P> {
+  // Trait proxy: returns functions that apply themselves to an element
+  const traitProxy = new Proxy(
+    {},
+    {
+      get:
+        (_, prop: string) =>
+        (...args: any[]) =>
+        (el: HTMLElement) => {
+          const fn = config[prop as keyof P] as (...args: any[]) => any;
+          fn(el, ...args); // first argument is the element
+        },
+    },
+  ) as Html2ReturnType<P>[1];
+
+  // HTML proxy: creates elements and applies traits
+  const htmlProxy = new Proxy(
+    {},
+    {
+      get: (_, prop: string) => {
+        const tagFunc = (...traits: AppliedTrait[]) => {
+          const el = document.createElement(prop);
+
+          traits.forEach((trait) => {
+            if (typeof trait === 'function') {
+              trait(el);
+            } else {
+              el.append(trait);
+            }
+          });
+          return el;
+        };
+        tagFunc.type = 'tag';
+        return tagFunc;
+      },
+    },
+  ) as Html2ReturnType<P>[0];
+
+  return [htmlProxy, traitProxy];
 }
 
 export type SvgReturnType<P extends Record<string, TraitFunc<any>>> = Record<
