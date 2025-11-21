@@ -1,23 +1,26 @@
-/* latin */
-@font-face {
-  font-family: 'Space Grotesk';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(SpaceGrotesk.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
-    U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+html,
+body {
+  background-color: #727272;
+  font-family: 'Courier New', Courier, monospace;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 14px;
+}
+*::-webkit-scrollbar {
+  width: 12px;
 }
 
-/* latin */
-@font-face {
-  font-family: 'Splash';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(Splash.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
-    U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+*::-webkit-scrollbar-track {
+  background: dimgray;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: grey;
+  border-radius: 20px;
+  border: 3px solid dimgray;
 }
 
 a {
@@ -26,4 +29,26 @@ a {
 
 a:hover {
   color: rgb(106, 106, 106);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  padding: 0;
+}
+
+p,
+pre {
+  margin: 10px 0;
+  box-sizing: border-box;
+  display: block;
+}
+
+ul {
+  margin: 10px 0;
+  padding-left: 20px;
 }

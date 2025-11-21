@@ -1,24 +1,43 @@
-import { State } from '@/oem';
-import { TodoType } from './types';
+import { storage, TodoType } from 'examples/todo/storage';
 
-const newTodo = State('', {
-  key: 'new-todo',
-  storage: localStorage,
-});
+export type ActionTypes = ['INIT'] | ['ADD'] | ['DELETE', TodoType] | ['TOGGLE', TodoType];
 
-const todos = State<TodoType[]>(
-  [
-    {
-      title: 'Learn OEM',
-      completed: false,
-    },
-  ],
-  {
-    key: 'todos',
-    storage: localStorage,
-  },
-);
+export function fsm<T extends ActionTypes>(...args: T) {
+  const [action, payload] = args;
+  switch (storage.data.machine.val()) {
+    case 'LOADING':
+      storage.sync.fetchTodos();
+      storage.data.machine.set('READY');
+      break;
+    case 'READY':
+      switch (action) {
+        case 'ADD':
+          const todo: TodoType = {
+            title: storage.data.newTodo.val(),
+            completed: false,
+          };
+          storage.data.todos.reduce((curr) => [...curr, todo]);
+          storage.data.newTodo.set('');
+          break;
+        case 'DELETE':
+          storage.data.todos.reduce((curr: TodoType[]) =>
+            curr.filter((t) => t.title !== payload.title),
+          );
+          break;
+        case 'TOGGLE':
+          storage.data.todos.reduce((curr: TodoType[]) =>
+            curr.map((t) => (t.title === payload.title ? { ...t, completed: !t.completed } : t)),
+          );
+          break;
+      }
+      break;
+    case 'ERROR':
+      // Handle ERROR state actions
+      break;
+  }
+}
 
-const machine = State<'READY' | 'ERROR'>('READY');
-
-export default { machine, todos, newTodo };
+export const $fsm =
+  <T extends ActionTypes>(...args: T) =>
+  () =>
+    fsm(...args);

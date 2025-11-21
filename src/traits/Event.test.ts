@@ -1,15 +1,15 @@
-import { HTML, State, SVG, Test } from '@/oem';
+import { State, Template, Test } from '@/oem';
 import { useAttributeTrait } from '@/traits/Attribute';
 import { useEventTrait } from '@/traits/Event';
 
 export const CanApplyEventListenerTraitToHtml: Test = async () => {
-  const { div } = HTML({
+  const [tmpl, trait] = Template({
     event: useEventTrait,
     attr: useAttributeTrait,
   });
   let clicked = false;
   const handleClick: any = () => (clicked = true);
-  const e1 = div(['event', 'click', handleClick])();
+  const e1 = tmpl.div(trait.event('click', handleClick));
   e1.click();
   const t1 = clicked;
 
@@ -18,11 +18,14 @@ export const CanApplyEventListenerTraitToHtml: Test = async () => {
 
 export const CanConditionallyApplyEventListenerTraitToHtml: Test = async () => {
   const toggle = State(true);
-  const { div } = HTML({
+  const [tmpl, trait] = Template({
     event: useEventTrait,
   });
   const handleClick: any = () => toggle.set(!toggle.val());
-  const e1 = div(['event', 'click', handleClick, false], ['event', 'click', handleClick, true])();
+  const e1 = tmpl.div(
+    trait.event('click', handleClick, false),
+    trait.event('click', handleClick, true),
+  );
   e1.click();
   const t1 = toggle.val() === false;
   e1.click();
@@ -31,7 +34,7 @@ export const CanConditionallyApplyEventListenerTraitToHtml: Test = async () => {
 };
 
 export const CanApplyEventListenerTraitToSvg: Test = async () => {
-  const { circle } = SVG({
+  const [tmpl, trait] = Template({
     event: useEventTrait,
   });
   let clicked = false;
@@ -41,7 +44,7 @@ export const CanApplyEventListenerTraitToSvg: Test = async () => {
     cancelable: false,
   });
   const handleClick = () => (clicked = true);
-  const e1 = circle(['event', 'click', handleClick])();
+  const e1 = tmpl.circle(trait.event('click', handleClick));
   e1.dispatchEvent(clickEvent);
   const t1 = clicked;
   return { pass: t1 };
@@ -49,7 +52,7 @@ export const CanApplyEventListenerTraitToSvg: Test = async () => {
 
 export const CanConditionallyApplyEventListenerTraitToSvg: Test = async () => {
   const toggle = State(true);
-  const { circle } = SVG({
+  const [tmpl, trait] = Template({
     event: useEventTrait,
   });
   const clickEvent = new MouseEvent('click', {
@@ -59,7 +62,10 @@ export const CanConditionallyApplyEventListenerTraitToSvg: Test = async () => {
   });
   const handleClick: any = () => toggle.set(!toggle.val());
 
-  const e1 = circle(['event', 'click', handleClick, false], ['event', 'click', handleClick, true])();
+  const e1 = tmpl.circle(
+    trait.event('click', handleClick, false),
+    trait.event('click', handleClick, true),
+  );
   e1.dispatchEvent(clickEvent);
   const t1 = toggle.val() === false;
   e1.dispatchEvent(clickEvent);
@@ -70,11 +76,11 @@ export const CanConditionallyApplyEventListenerTraitToSvg: Test = async () => {
 export const CanRemoveEventListenerFromStateObjectWhenElementIsRemoved: Test = async (sandbox) => {
   const tests: boolean[] = [];
   const stateObj = State(false);
-  const { div } = HTML({
+  const [tmpl, trait] = Template({
     event: useEventTrait,
   });
   const handleClick: any = () => stateObj.set(!stateObj.val());
-  const e1 = div(['event', 'click', handleClick, true, stateObj])('Click me');
+  const e1 = tmpl.div(trait.event('click', handleClick, true, stateObj), 'Click me');
   sandbox?.append(e1);
   e1.click();
   tests.push(stateObj.val() === true);

@@ -7,10 +7,10 @@ import { Section } from '../parts/Section';
 
 export const Introduction = () =>
   Page(
-    Page.Header('OEM', 'The flyweight UI library for the modern web'),
+    Page.Header('OEM', 'The DIY Framework, Framework.'),
     Section({
       title: 'Features',
-      subtitle: `OEM is a tiny layer-one utility that provides just enough structure to build powerful micro-templating engines with the following features:`,
+      subtitle: `OEM is a framework that let's you define the language and behavior of your own framework. The result is a code base that reads like plain English, is easy to maintain, and scales with your project.`,
       content: Box(
         'column',
         20,
@@ -42,7 +42,11 @@ export const Introduction = () =>
         )(
           'Or download with unpkg at ',
           html.a(
-            ['attr', 'href', 'https://unpkg.com/@linttrap/oem@latest/dist/oem.min.js'],
+            [
+              'attr',
+              'href',
+              'https://unpkg.com/@linttrap/oem@latest/dist/oem.min.js',
+            ],
             ['attr', 'target', '_blank'],
           )('unpkg'),
         ),

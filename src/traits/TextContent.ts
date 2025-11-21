@@ -1,18 +1,32 @@
 import { Condition, StateType } from '@/oem';
 
+type TextContent = string | number | undefined | unknown;
+
 export function useTextContentTrait(
   el: HTMLElement,
-  children: (() => string | number) | string | number,
+  text: TextContent | TextContent[] | (() => TextContent | TextContent[]),
   ...rest: (StateType<any> | Condition)[]
 ) {
   const isStateObj = (i: any) => Object.keys(i).includes('sub');
-  const states = rest.filter(isStateObj) as StateType<any>[];
-  const conditions = rest.filter((item) => !isStateObj(item));
+  const isStateTest = (i: any) => typeof i === 'function' && i.type === '$test';
+  const states = [text, ...rest].filter(isStateObj) as StateType<any>[];
+  const conditions = rest.filter((item) => !isStateObj(item) || isStateTest(item)) as Condition[];
   const apply = () => {
-    const _children = typeof children === 'function' ? children() : children;
+    const _text = typeof text === 'function' ? text() : text;
     const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));
     if (applies) {
-      el.textContent = String(_children);
+      el.textContent = '';
+      if (_text !== undefined) {
+        if (Array.isArray(_text)) {
+          _text
+            .filter((t) => t !== undefined)
+            .forEach((t) => {
+              el.appendChild(document.createTextNode(String(t)));
+            });
+        } else {
+          el.textContent = String(_text);
+        }
+      }
     }
   };
   apply();

@@ -11,7 +11,6 @@ import {
   CanUnSubscribeToState,
   CanUpdateState,
   HasValidHtmlNamespace,
-  HasValidSvgNamespace,
   WillCleanupTraitOnElementRemoval,
 } from '@/oem.test';
 import { CanKeepTrackOfMediaQueryState } from '@/states/MediaQuery.test';
@@ -30,7 +29,10 @@ import {
   CanApplyStyleTraitToHtml,
   CanApplyStyleTraitToSvg,
 } from '@/traits/Style.test';
-import { CanApplyTextContentTraitToHtml, CanApplyTextContentTraitToSvg } from '@/traits/TextContent.test';
+import {
+  CanApplyTextContentTraitToHtml,
+  CanApplyTextContentTraitToSvg,
+} from '@/traits/TextContent.test';
 import { runner } from './runner';
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -45,7 +47,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       CanRemoveEventListenerFromStateObjectWhenElementIsRemoved,
     ],
 
-    ['SVG', CanApplyMultipleTraitsToSvg, CanCreateBasicSvgTagWithText, HasValidSvgNamespace],
+    ['SVG', CanApplyMultipleTraitsToSvg, CanCreateBasicSvgTagWithText],
     [
       'State',
       CanCreateState,

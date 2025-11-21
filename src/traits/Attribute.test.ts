@@ -1,4 +1,4 @@
-import { HTML, State, SVG, Test } from '@/oem';
+import { State, Template, Test } from '@/oem';
 import { useAttributeTrait } from '@/traits/Attribute';
 
 export const CanApplyAttributeTraitToHtml: Test = async () => {
@@ -7,57 +7,57 @@ export const CanApplyAttributeTraitToHtml: Test = async () => {
   const tests: boolean[] = [];
   let el;
 
-  const { div } = HTML({
+  const [tmpl, trait] = Template({
     attr: useAttributeTrait,
   });
 
   // can add basic attribute
-  el = div(['attr', 'id', 'test'])();
+  el = tmpl.div(trait.attr('id', 'test'));
   tests.push(el.outerHTML === '<div id="test"></div>');
 
   // can use call back for value
-  el = div(['attr', 'id', () => 'callback'])();
+  el = tmpl.div(trait.attr('id', () => 'callback'));
   tests.push(el.outerHTML === '<div id="callback"></div>');
 
   // can react to state change
   disabled.set(true);
-  el = div(['attr', 'disabled', disabled.val, disabled])();
+  el = tmpl.div(trait.attr('disabled', disabled.val, disabled));
   tests.push(el.outerHTML === '<div disabled="true"></div>');
 
   // can use bit condition
-  el = div(['attr', 'disabled', disabled.val, disabled])();
+  el = tmpl.div(trait.attr('disabled', disabled.val, disabled));
   tests.push(el.outerHTML === '<div disabled="true"></div>');
 
   // respects 0 condition
-  el = div(['attr', 'id', "don't apply", disabled, 0])();
+  el = tmpl.div(trait.attr('id', "don't apply", disabled, 0));
   tests.push(el.outerHTML === '<div></div>');
 
   // respects multiple conditions
-  el = div(['attr', 'id', 'multi', disabled, true, () => true])();
+  el = tmpl.div(trait.attr('id', 'multi', disabled, true, () => true));
   tests.push(el.outerHTML === '<div id="multi"></div>');
 
   // respects multiple conditions with one false
-  el = div(['attr', 'id', 'multi', disabled, true, () => false])();
+  el = tmpl.div(trait.attr('id', 'multi', disabled, true, () => false));
   tests.push(el.outerHTML === '<div></div>');
 
   // removes attribute when value is undefined
-  el = div(['attr', 'id', undefined, disabled])();
+  el = tmpl.div(trait.attr('id', undefined, disabled));
   tests.push(el.outerHTML === '<div></div>');
 
   // reacts to state changes again
   disabled.set(false);
-  el = div(['attr', 'disabled', disabled.val, disabled, other])();
+  el = tmpl.div(trait.attr('disabled', disabled.val, disabled));
   tests.push(el.outerHTML === '<div disabled="false"></div>');
 
   // tunnels state through $val
   other.set('newValue');
-  el = div(['attr', 'data-test', other.$val])();
+  el = tmpl.div(trait.attr('data-test', other.$val));
   other.set('updatedValue');
   tests.push(el.outerHTML === '<div data-test="updatedValue"></div>');
 
   // tunnels state through $test
   const testState = State(1);
-  el = div(['attr', 'data-test', testState.val, testState.$test(1)])();
+  el = tmpl.div(trait.attr('data-test', testState.val, testState.$test(1)));
   testState.set(2);
   tests.push(el.outerHTML === '<div data-test="2"></div>');
 
@@ -65,10 +65,10 @@ export const CanApplyAttributeTraitToHtml: Test = async () => {
 };
 
 export const CanApplyAttributeTraitToSvg: Test = async () => {
-  const { circle } = SVG({
+  const [tmpl, trait] = Template({
     attr: useAttributeTrait,
   });
-  const e1 = circle(['attr', 'id', 'test'])();
+  const e1 = tmpl.circle(trait.attr('id', 'test'));
   const t1 = e1.outerHTML === '<circle id="test"></circle>';
   return { pass: t1 };
 };

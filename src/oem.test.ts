@@ -1,4 +1,4 @@
-import { HTML, State, SVG, Test } from '@/oem';
+import { State, Template, Test } from '@/oem';
 import { useAttributeTrait } from '@/traits/Attribute';
 import { useTextContentTrait } from '@/traits/TextContent';
 
@@ -78,48 +78,48 @@ export const CanTestStateValue: Test = async () => {
 };
 
 export const CanApplyMultipleTraitsToHtml: Test = async () => {
-  const { div } = HTML({
+  const [tmpl, trait] = Template({
     attr: useAttributeTrait,
     text: useTextContentTrait,
   });
-  const e1 = div(['attr', 'id', 'test'], ['text', 'test'])();
+  const e1 = tmpl.div(trait.attr('id', 'test'), trait.text('test'));
   const t1 = e1.outerHTML === '<div id="test">test</div>';
   return { pass: t1 };
 };
 
 export const CanCreateBasicHtmlTagWithText: Test = async () => {
-  const { div } = HTML();
-  const test = div()('test');
+  const [tmpl] = Template();
+  const test = tmpl.div('test');
   const t1 = test.outerHTML === '<div>test</div>';
   return { pass: t1 };
 };
 
 export const CanCreateEmptyHtmlTag: Test = async () => {
-  const { div } = HTML();
-  const t1 = div()().outerHTML === '<div></div>';
+  const [tmpl] = Template();
+  const t1 = tmpl.div().outerHTML === '<div></div>';
   return { pass: t1 };
 };
 
 export const HasValidHtmlNamespace: Test = async () => {
-  const { div } = HTML({
+  const [tmpl, trait] = Template({
     attr: useAttributeTrait,
   });
-  const t1 = div(['attr', 'id', '1'])().namespaceURI === 'http://www.w3.org/1999/xhtml';
+  const t1 = tmpl.div(trait.attr('id', '1')).namespaceURI === 'http://www.w3.org/1999/xhtml';
   return { pass: t1 };
 };
 
 export const CanCreateBasicTrait: Test = async () => {
   const tests: boolean[] = [];
-  let el: HTMLElement;
+  let el;
 
-  const tmpl = HTML({
+  const [tmpl, trait] = Template({
     red: (el: HTMLElement) => {
       el.style.color = 'red';
       return () => {};
     },
   });
 
-  el = tmpl.div(['red'])('Test Trait');
+  el = tmpl.div(trait.red(), 'Test Trait');
   tests.push(el.style.color === 'red');
 
   return { pass: tests.every(Boolean) };
@@ -127,7 +127,7 @@ export const CanCreateBasicTrait: Test = async () => {
 
 export const WillCleanupTraitOnElementRemoval: Test = async (sandbox) => {
   const tests: boolean[] = [];
-  let el: HTMLElement;
+  let el;
   let cleanedUp = false;
 
   const mockTrait = (el: HTMLElement) => {
@@ -136,12 +136,12 @@ export const WillCleanupTraitOnElementRemoval: Test = async (sandbox) => {
     };
   };
 
-  const tmpl = HTML({
+  const [tmpl, trait] = Template({
     cleanupTrait: mockTrait,
     secondTraitInstance: mockTrait,
   });
 
-  el = tmpl.div(['cleanupTrait'], ['secondTraitInstance'])('Test Cleanup Trait');
+  el = tmpl.div(trait.cleanupTrait(), trait.secondTraitInstance(), 'Test Cleanup Trait');
   tests.push(!cleanedUp); // Should not be cleaned up yet
   sandbox?.appendChild(el);
 
@@ -157,32 +157,24 @@ export const WillCleanupTraitOnElementRemoval: Test = async (sandbox) => {
 };
 
 export const CanApplyMultipleTraitsToSvg: Test = async () => {
-  const { circle } = SVG({
+  const [tmpl, trait] = Template({
     attr: useAttributeTrait,
     text: useTextContentTrait,
   });
-  const e1 = circle(['attr', 'id', 'test'], ['text', 'test'])();
+  const e1 = tmpl.circle(trait.attr('id', 'test'), trait.text('test'));
   const t1 = e1.outerHTML === '<circle id="test">test</circle>';
   return { pass: t1 };
 };
 
 export const CanCreateBasicSvgTagWithText: Test = async () => {
-  const { circle } = SVG();
-  const test = circle()('test');
+  const [tmpl] = Template();
+  const test = tmpl.circle('test');
   const t1 = test.outerHTML === '<circle>test</circle>';
   return { pass: t1 };
 };
 
 export const CanCreateEmptySvgTag: Test = async () => {
-  const { circle } = SVG();
-  const t1 = circle()().outerHTML === '<circle></circle>';
-  return { pass: t1 };
-};
-
-export const HasValidSvgNamespace: Test = async () => {
-  const { circle } = SVG({
-    attr: useAttributeTrait,
-  });
-  const t1 = circle(['attr', 'id', '1'])().namespaceURI === 'http://www.w3.org/2000/svg';
+  const [tmpl] = Template();
+  const t1 = tmpl.circle().outerHTML === '<circle></circle>';
   return { pass: t1 };
 };

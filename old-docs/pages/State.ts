@@ -1,4 +1,4 @@
-import { Table } from 'docs/parts/Table';
+import { Table } from 'old-docs/parts/Table';
 import { html } from '../config';
 import { Box } from '../parts/Box';
 import { FooterNav } from '../parts/FooterNav';
@@ -15,7 +15,9 @@ export const State = () =>
       content: Box(
         'column',
         10,
-        html.div(['style', 'textAlign', 'center'])('Import the State function to create a state object'),
+        html.div(['style', 'textAlign', 'center'])(
+          'Import the State function to create a state object',
+        ),
         html.pre(['prism'])(`import { State } from 'oem';
 const color = State<'red' | 'green'>('red');`),
       ),
@@ -27,7 +29,11 @@ const color = State<'red' | 'green'>('red');`),
       content: Box(
         'column',
         10,
-        html.div(['style', 'textAlign', 'center'])('Or with the method  ', InlineCode('val()'), '.'),
+        html.div(['style', 'textAlign', 'center'])(
+          'Or with the method  ',
+          InlineCode('val()'),
+          '.',
+        ),
         html.pre(['prism'])(`color.val();`),
       ),
     }),
@@ -38,7 +44,11 @@ const color = State<'red' | 'green'>('red');`),
       content: Box(
         'column',
         10,
-        html.div(['style', 'textAlign', 'center'])('Set state with the  ', InlineCode('set'), ' method.'),
+        html.div(['style', 'textAlign', 'center'])(
+          'Set state with the  ',
+          InlineCode('set'),
+          ' method.',
+        ),
         html.pre(['prism'])(`color.set('blue');`),
         html.div(['style', 'textAlign', 'center'])(
           'Or create callback version of it with  ',
@@ -58,7 +68,9 @@ setToBlue();`),
           InlineCode('$reduce'),
           ' to call it later.',
         ),
-        html.pre(['prism'])(`const toggleColor = color.$reduce((prev) => prev === 'red' ? 'blue' : 'red');
+        html.pre([
+          'prism',
+        ])(`const toggleColor = color.$reduce((prev) => prev === 'red' ? 'blue' : 'red');
 toggleColor();`),
       ),
     }),
@@ -68,7 +80,11 @@ toggleColor();`),
       content: Box(
         'column',
         10,
-        html.div(['style', 'textAlign', 'center'])('Subscribe by calling the ', InlineCode('sub'), ' method.'),
+        html.div(['style', 'textAlign', 'center'])(
+          'Subscribe by calling the ',
+          InlineCode('sub'),
+          ' method.',
+        ),
         html.pre(['prism'])(`const cb = (val) => console.log(val)
 color.sub(cb);`),
         html.div(['style', 'textAlign', 'center'])(

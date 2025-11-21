@@ -1,4 +1,4 @@
-import { Table } from 'docs/parts/Table';
+import { Table } from 'old-docs/parts/Table';
 import { html } from '../config';
 import { Box } from '../parts/Box';
 import { FooterNav } from '../parts/FooterNav';
@@ -15,7 +15,9 @@ export const Traits = () =>
       content: Box(
         'column',
         20,
-        html.div(['style', 'textAlign', 'center'])(`Here's the basic structure of a trait function:`),
+        html.div(['style', 'textAlign', 'center'])(
+          `Here's the basic structure of a trait function:`,
+        ),
         html.div(['prism'])(`import { Trait } from 'oem';
 const useStyleTrait = (el: HTMLElement) => {
   // do something with the element
@@ -24,11 +26,15 @@ const useStyleTrait = (el: HTMLElement) => {
         html.div(['style', 'textAlign', 'center'])(
           'Here is an example of a very simple "style" trait for applying css styles to an element.',
         ),
-        html.div(['prism'])(`const useStyleTrait = (el: HTMLElement, prop: string, value: string) => {
+        html.div([
+          'prism',
+        ])(`const useStyleTrait = (el: HTMLElement, prop: string, value: string) => {
   el.style[prop] = value;
   return () => {}; // nothing to clean up in this case
 }`),
-        html.div(['style', 'textAlign', 'center'])('This trait can now be added to your templating engine like this:'),
+        html.div(['style', 'textAlign', 'center'])(
+          'This trait can now be added to your templating engine like this:',
+        ),
         html.div(['prism'])(`const tmpl = HTML({ "style": useStyleTrait });`),
         html.div(['style', 'textAlign', 'center'])(
           `Now, when you render an element, the first curried function takes a list of traits to apply to the element. 'style' will be intellisensed along with it's arguments 'prop' and 'value' (everything after the 'el' argument in your trait function). Here is how you would use the "style" trait to make some text red, 24px, and centered:`,

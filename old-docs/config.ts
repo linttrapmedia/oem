@@ -1,4 +1,4 @@
-import { Storage, Template } from '@/oem';
+import { State, Template } from '@/oem';
 import { useMediaQueryState } from '@/states/MediaQuery';
 import { useAttributeTrait } from '@/traits/Attribute';
 import { useEventTrait } from '@/traits/Event';
@@ -10,13 +10,12 @@ declare namespace Prism {
   const languages: any;
 }
 
-// Custom trait for code highlighting
-export const usePrism = (el: HTMLElement, language: string) => {
+export const usePrism = (el: HTMLElement) => {
   el.style.display = 'block';
   el.style.whiteSpace = 'pre';
-  el.style.fontFamily = "'Courier New', Courier, monospace";
+  el.style.fontFamily = 'monospace';
   el.style.color = 'white';
-  el.style.backgroundColor = '#222222';
+  el.style.backgroundColor = 'black';
   el.style.padding = '30px';
   el.style.borderRadius = '5px';
   el.style.overflowX = 'auto';
@@ -40,25 +39,23 @@ export const usePrism = (el: HTMLElement, language: string) => {
   return el;
 };
 
-export const storage = Storage({
-  data: {
-    isMobile: {
-      key: 'isMobile',
-      state: useMediaQueryState({ type: 'screen', minWidth: 0, maxWidth: 959 }),
-      storage: 'memory',
-    },
-    isTablet: {
-      key: 'isTablet',
-      state: useMediaQueryState({ type: 'screen', minWidth: 960, maxWidth: Infinity }),
-      storage: 'memory',
-    },
-  },
-});
+export type MenuStateTypes =
+  | 'introduction'
+  | 'docs'
+  | 'templates'
+  | 'state'
+  | 'traits'
+  | 'patterns';
 
-export const [tag, trait] = Template({
+export const menuState = State<MenuStateTypes>('introduction');
+export const menuOpen = State(false);
+export const isMobile = useMediaQueryState({ type: 'screen', minWidth: 0, maxWidth: 959 });
+export const isTablet = useMediaQueryState({ type: 'screen', minWidth: 960, maxWidth: Infinity });
+
+export const [html, trait] = Template({
   attr: useAttributeTrait,
   event: useEventTrait,
+  prism: usePrism,
   style: useStyleTrait,
   html: useInnerHTMLTrait,
-  prism: usePrism,
 });
