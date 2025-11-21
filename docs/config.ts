@@ -1,5 +1,4 @@
-import { Storage, Template } from '@/oem';
-import { useMediaQueryState } from '@/states/MediaQuery';
+import { Template } from '@/oem';
 import { useAttributeTrait } from '@/traits/Attribute';
 import { useEventTrait } from '@/traits/Event';
 import { useInnerHTMLTrait } from '@/traits/InnerHTML';
@@ -39,21 +38,6 @@ export const usePrism = (el: HTMLElement, language: string) => {
   observer.observe(el, { childList: true });
   return el;
 };
-
-export const storage = Storage({
-  data: {
-    isMobile: {
-      key: 'isMobile',
-      state: useMediaQueryState({ type: 'screen', minWidth: 0, maxWidth: 959 }),
-      storage: 'memory',
-    },
-    isTablet: {
-      key: 'isTablet',
-      state: useMediaQueryState({ type: 'screen', minWidth: 960, maxWidth: Infinity }),
-      storage: 'memory',
-    },
-  },
-});
 
 export const [tag, trait] = Template({
   attr: useAttributeTrait,

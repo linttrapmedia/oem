@@ -7,12 +7,38 @@ import { Section } from './parts/Section';
 export const Docs = () =>
   Page(
     Page.Header('OEM', 'The roll your your own framework framework'),
+
+    Section({
+      title: 'Menu',
+      type: 'main',
+      content: Box(
+        'column',
+        0,
+        tag.ul(
+          tag.li(tag.a(trait.attr('href', '#what-is-oem'), 'What is OEM?')),
+          tag.li(tag.a(trait.attr('href', '#why-oem'), 'Why OEM?')),
+
+          tag.li(tag.a(trait.attr('href', '#state'), 'State')),
+          tag.li(tag.a(trait.attr('href', '#templating'), 'Templating')),
+          tag.li(tag.a(trait.attr('href', '#components'), 'Components')),
+          tag.li(tag.a(trait.attr('href', '#svg-support'), 'SVG Support')),
+          tag.li(tag.a(trait.attr('href', '#storage'), 'Storage')),
+          tag.li(tag.a(trait.attr('href', '#traits'), 'Traits')),
+          tag.li(tag.a(trait.attr('href', '#reactive-pattern'), 'The Reactive Pattern')),
+          tag.li(tag.a(trait.attr('href', '#creating-custom-traits'), 'Creating Custom Traits')),
+          tag.li(tag.a(trait.attr('href', '#core-methods'), 'Core Methods')),
+        ),
+      ),
+    }),
+
     Section({
       title: 'What is OEM?',
+      type: 'main',
       subtitle: 'Building blocks for creating your own framework. There are three:',
       content: Box(
         'column',
         20,
+
         tag.ul(
           trait.style('listStyle', 'none'),
           tag.li(
@@ -30,6 +56,7 @@ export const Docs = () =>
 
     Section({
       title: 'Why OEM?',
+      type: 'main',
       subtitle:
         'Understand the code you write (and AI generates) down to every single line of your framework',
       content: Box(
@@ -77,6 +104,7 @@ const app = tag.div(
 
     Section({
       title: 'State',
+      type: 'main',
       subtitle: 'Create a state object with an initial value:',
       content: Code(`import { State } from '@linttrap/oem';
 
@@ -357,6 +385,7 @@ tag.div(
 
     Section({
       title: 'Templating',
+      type: 'main',
       subtitle:
         'The Template function takes a configuration object mapping trait names to functions:',
       content: Code(`import { Template } from '@linttrap/oem';
@@ -436,7 +465,26 @@ tag.ul(
     }),
 
     Section({
+      title: 'Subscribing to State Changes',
+      content: Box(
+        'column',
+        0,
+        tag.p('Using ', InlineCode('$val()'), ' in traits automatically subscribes to changes:'),
+        Code(`tag.p(someState.$val)`),
+        tag.p(
+          'To subscribe manually, simply add the state object to the trait arguments (trait must support it):',
+        ),
+        Code(`trait.style('display', 'block', isVisible.val, isVisible)`),
+        tag.p(
+          'This pattern then supports multiple state objects. The value needs to be a function (so you can recompute it when the state changes):',
+        ),
+        Code(`trait.style('opacity', () => 'computed value', stateObject1, stateObject2)`),
+      ),
+    }),
+
+    Section({
       title: 'Component Functions',
+      type: 'main',
       subtitle: 'Components are just functions that return elements:',
       content: Code(`function Button(text: string, onClick: () => void) {
   return tag.button(
@@ -459,6 +507,7 @@ const app = tag.div(
 
     Section({
       title: 'SVG Support',
+      type: 'main',
       subtitle: 'Full support for SVG elements:',
       content: Code(`const icon = tag.svg(
   trait.attr('width', '24'),
@@ -480,7 +529,8 @@ const app = tag.div(
     }),
 
     Section({
-      title: 'Creating Storage',
+      title: 'Storage',
+      type: 'main',
       subtitle: 'Automatically sync state with localStorage, sessionStorage, or memory:',
       content: Code(`import { Storage, State } from '@linttrap/oem';
 
@@ -570,7 +620,7 @@ await storage.sync.saveTodo({ title: 'New Todo', completed: false });`),
     }),
 
     Section({
-      title: 'Complete Example',
+      title: 'Complete Storage Example',
       subtitle: 'Todo app with persistent storage:',
       content: Code(`import { Storage, State } from '@linttrap/oem';
 
@@ -610,7 +660,8 @@ const storage = Storage({
     }),
 
     Section({
-      title: 'What Are Traits?',
+      title: 'Traits?',
+      type: 'main',
       subtitle: 'A trait is a function that takes an element and applies behavior to it:',
       content: Code(`function useMyTrait(
   el: HTMLElement,
@@ -629,443 +680,8 @@ const storage = Storage({
 
     Section({
       title: 'Built-in Traits',
-      content: Box(
-        'column',
-        0,
-        tag.p('Apply HTML attributes to elements'),
-        Code(`import { useAttributeTrait } from '@linttrap/oem/traits/Attribute';
-
-trait.attr('type', 'text')
-trait.attr('placeholder', 'Enter name')
-trait.attr('disabled', 'true', isDisabled.val, isDisabled)`),
-
-        tag.p('Manage CSS classes'),
-        Code(`import { useClassNameTrait } from '@linttrap/oem/traits/ClassName';
-
-trait.class('container')
-trait.class('active', isActive.val, isActive)`),
-
-        tag.p('Attach event listeners'),
-        Code(`import { useEventTrait } from '@linttrap/oem/traits/Event';
-
-trait.event('click', handleClick)
-trait.event('submit', handleSubmit, isEnabled.val, isEnabled)`),
-
-        tag.p('Apply CSS styles'),
-        Code(`import { useStyleTrait } from '@linttrap/oem/traits/Style';
-
-trait.style('padding', '20px')
-trait.style('color', 'red')
-trait.style('--custom-var', 'blue') // CSS variables`),
-
-        tag.p('Set innerHTML reactively with arrays of elements'),
-        Code(`import { useInnerHTMLTrait } from '@linttrap/oem/traits/InnerHTML';
-
-trait.html('<strong>Bold</strong>')
-trait.html(items.$call('map', item => tag.li(item)))
-trait.html('Visible', isVisible.val, isVisible)`),
-
-        tag.p('Bind input values to state'),
-        Code(`import { useInputValueTrait } from '@linttrap/oem/traits/InputValue';
-
-tag.input(trait.value(name.val, name))`),
-
-        tag.p('Control element focus'),
-        Code(`import { useFocusTrait } from '@linttrap/oem/traits/Focus';
-
-trait.focus(shouldFocus.val, shouldFocus)`),
-      ),
-    }),
-
-    Section({
-      title: 'The Reactive Pattern',
-      subtitle: 'All traits support reactive parameters:',
-      content: Box(
-        'column',
-        0,
-        tag.p('State objects passed as patterns automatically subscribe to changes:'),
-        Code(`const isVisible = State(true);
-
-tag.div(
-  // Apply when isVisible is true
-  trait.style('display', 'block', isVisible.val, isVisible),
-  // Apply when isVisible is false
-  trait.style('display', 'none', isVisible.$test(false), isVisible)
-)`),
-        tag.p('Traits automatically re-run when subscribed states change.'),
-      ),
-    }),
-
-    Section({
-      title: 'Creating Custom Traits',
-      subtitle: 'Build your own trait functions:',
-      content: Code(`function useTooltipTrait(
-  el: HTMLElement,
-  text: string,
-  ...rest: (StateType<any> | Condition)[]
-) {
-  const isStateObj = (i: any) => i && 'sub' in i;
-  const states = rest.filter(isStateObj);
-  const conditions = rest.filter(i => !isStateObj(i));
-
-  const apply = () => {
-    const applies = conditions.every(c =>
-      typeof c === 'function' ? c() : c
-    );
-    if (applies) {
-      el.setAttribute('title', text);
-    } else {
-      el.removeAttribute('title');
-    }
-  };
-
-  apply();
-  const unsubs = states.map(state => state.sub(apply));
-
-  return () => unsubs.forEach(unsub => unsub());
-}
-
-// Use it
-const [tag, trait] = Template({
-  tooltip: useTooltipTrait,
-});
-
-tag.button(
-  trait.tooltip('Click to submit'),
-  'Submit'
-)`),
-    }),
-
-    Section({
-      title: 'Counter App',
-      subtitle: 'A simple counter demonstrating state and events:',
-      content: Code(`import { State, Template } from '@linttrap/oem';
-import { useStyleTrait } from '@linttrap/oem/traits/Style';
-import { useEventTrait } from '@linttrap/oem/traits/Event';
-import { useInnerHTMLTrait } from '@linttrap/oem/traits/InnerHTML';
-
-const [tag, trait] = Template({
-  style: useStyleTrait,
-  event: useEventTrait,
-  html: useInnerHTMLTrait,
-});
-
-const count = State(0);
-
-const counter = tag.div(
-  trait.style('padding', '40px'),
-  trait.style('textAlign', 'center'),
-
-  tag.h1(
-    trait.style('fontSize', '72px'),
-    trait.html(count.$call('toString'))
-  ),
-
-  tag.div(
-    trait.style('display', 'flex'),
-    trait.style('gap', '10px'),
-    trait.style('justifyContent', 'center'),
-
-    tag.button(
-      trait.event('click', count.$reduce((n) => n - 1)),
-      '-'
-    ),
-    tag.button(
-      trait.event('click', count.$set(0)),
-      'Reset'
-    ),
-    tag.button(
-      trait.event('click', count.$reduce((n) => n + 1)),
-      '+'
-    )
-  )
-);
-
-document.body.appendChild(counter);`),
-    }),
-
-    Section({
-      title: 'Todo List',
-      subtitle: 'Complete todo app with localStorage persistence:',
-      content: Code(`import { State, Storage, Template } from '@linttrap/oem';
-import { useStyleTrait } from '@linttrap/oem/traits/Style';
-import { useEventTrait } from '@linttrap/oem/traits/Event';
-import { useInputValueTrait } from '@linttrap/oem/traits/InputValue';
-import { useInputEvent } from '@linttrap/oem/traits/InputEvent';
-import { useInnerHTMLTrait } from '@linttrap/oem/traits/InnerHTML';
-
-type Todo = { id: number; title: string; completed: boolean };
-
-const [tag, trait] = Template({
-  style: useStyleTrait,
-  event: useEventTrait,
-  value: useInputValueTrait,
-  input: useInputEvent,
-  html: useInnerHTMLTrait,
-});
-
-const storage = Storage({
-  data: {
-    newTodo: {
-      key: 'todo-input',
-      state: State(''),
-      storage: 'localStorage',
-    },
-    todos: {
-      key: 'todos',
-      state: State<Todo[]>([]),
-      storage: 'localStorage',
-    },
-  },
-  sync: {
-    addTodo: () => {
-      const title = storage.data.newTodo.val().trim();
-      if (title) {
-        storage.data.todos.reduce((curr) => [
-          ...curr,
-          { id: Date.now(), title, completed: false }
-        ]);
-        storage.data.newTodo.set('');
-      }
-    },
-    toggleTodo: (id: number) => {
-      storage.data.todos.reduce((curr) =>
-        curr.map((t) => t.id === id ? { ...t, completed: !t.completed } : t)
-      );
-    },
-    deleteTodo: (id: number) => {
-      storage.data.todos.reduce((curr) => curr.filter((t) => t.id !== id));
-    },
-  },
-});
-
-const app = tag.div(
-  trait.style('maxWidth', '600px'),
-  trait.style('margin', '50px auto'),
-
-  tag.h1('Todo App'),
-
-  tag.input(
-    trait.value(storage.data.newTodo.val, storage.data.newTodo),
-    trait.input('input', storage.data.newTodo.set)
-  ),
-
-  tag.button(
-    trait.event('click', storage.sync.addTodo),
-    'Add'
-  ),
-
-  tag.ul(
-    trait.html(
-      storage.data.todos.$call('map', (todo: Todo) =>
-        tag.li(
-          tag.span(
-            trait.style(
-              'textDecoration',
-              todo.completed ? 'line-through' : 'none'
-            ),
-            todo.title
-          ),
-          tag.button(
-            trait.event('click', () => storage.sync.toggleTodo(todo.id)),
-            'Toggle'
-          ),
-          tag.button(
-            trait.event('click', () => storage.sync.deleteTodo(todo.id)),
-            'Delete'
-          )
-        )
-      )
-    )
-  )
-);
-
-document.body.appendChild(app);`),
-    }),
-
-    Section({
-      title: 'Modal Dialog',
-      subtitle: 'Reusable modal component:',
-      content:
-        Code(`function Modal(title: string, content: HTMLElement, isOpen: StateType<boolean>) {
-  return tag.div(
-    trait.style('display', 'none', isOpen.$test(false), isOpen),
-    trait.style('display', 'flex', isOpen.val, isOpen),
-    trait.style('position', 'fixed'),
-    trait.style('top', '0'),
-    trait.style('left', '0'),
-    trait.style('right', '0'),
-    trait.style('bottom', '0'),
-    trait.style('backgroundColor', 'rgba(0,0,0,0.5)'),
-    trait.style('alignItems', 'center'),
-    trait.style('justifyContent', 'center'),
-    trait.event('click', isOpen.$set(false)),
-
-    tag.div(
-      trait.event('click', (e) => e.stopPropagation()),
-      trait.style('backgroundColor', 'white'),
-      trait.style('padding', '20px'),
-      trait.style('borderRadius', '8px'),
-      trait.style('maxWidth', '500px'),
-
-      tag.h2(title),
-      content,
-
-      tag.button(
-        trait.event('click', isOpen.$set(false)),
-        'Close'
-      )
-    )
-  );
-}
-
-// Usage
-const isModalOpen = State(false);
-
-const app = tag.div(
-  tag.button(
-    trait.event('click', isModalOpen.$set(true)),
-    'Open Modal'
-  ),
-
-  Modal(
-    'Example Modal',
-    tag.p('This is modal content'),
-    isModalOpen
-  )
-);`),
-    }),
-
-    Section({
-      title: 'Dark Mode Toggle',
-      subtitle: 'Theme switching with persistence:',
-      content: Code(`const storage = Storage({
-  data: {
-    theme: {
-      key: 'app-theme',
-      state: State<'light' | 'dark'>('light'),
-      storage: 'localStorage',
-    },
-  },
-});
-
-// Apply theme
-storage.data.theme.sub((theme) => {
-  document.body.style.backgroundColor =
-    theme === 'light' ? 'white' : '#1a1a1a';
-  document.body.style.color =
-    theme === 'light' ? 'black' : 'white';
-});
-
-const app = tag.div(
-  tag.button(
-    trait.event('click', () => {
-      const current = storage.data.theme.val();
-      storage.data.theme.set(current === 'light' ? 'dark' : 'light');
-    }),
-    'Toggle Theme'
-  )
-);`),
-    }),
-
-    Section({
-      title: 'State<T>(initialValue)',
-      subtitle: 'Create reactive state objects',
-      content: Box(
-        'column',
-        20,
-        tag.h4('Signature'),
-        Code(`State<T>(initialValue: T): StateType<T>`),
-
-        tag.h4('Methods'),
-        tag.ul(
-          trait.style('lineHeight', '1.8'),
-          tag.li(InlineCode('val()'), ' - Get current value'),
-          tag.li(InlineCode('set(value)'), ' - Set new value'),
-          tag.li(InlineCode('reduce(fn)'), ' - Update based on previous value'),
-          tag.li(
-            InlineCode('sub(callback)'),
-            ' - Subscribe to changes, returns unsubscribe function',
-          ),
-          tag.li(InlineCode('test(predicate, truthCheck?)'), ' - Test value against condition'),
-          tag.li(InlineCode('call(method, ...args)'), ' - Call methods on boxed primitives'),
-          tag.li(InlineCode('chain(...calls)'), ' - Chain method calls'),
-        ),
-
-        tag.h4('$ Versions'),
-        tag.p('All methods have $ prefixed versions that return closures:'),
-        tag.ul(
-          trait.style('lineHeight', '1.8'),
-          tag.li(
-            InlineCode('$val()'),
-            ', ',
-            InlineCode('$set()'),
-            ', ',
-            InlineCode('$reduce()'),
-            ', ',
-            InlineCode('$test()'),
-            ', ',
-            InlineCode('$call()'),
-            ', ',
-            InlineCode('$chain()'),
-          ),
-        ),
-      ),
-    }),
-
-    Section({
-      title: 'Template<P>(config)',
-      subtitle: 'Create custom templating engines',
-      content: Box(
-        'column',
-        0,
-        tag.h4('Signature'),
-        Code(`Template<P>(config?: P): [TagProxy, TraitProxy]`),
-
-        tag.h4('Returns'),
-        tag.p('Tuple of [tag, trait] proxies:'),
-        tag.ul(
-          trait.style('lineHeight', '1.8'),
-          tag.li(InlineCode('tag'), ' - Creates HTML/SVG elements'),
-          tag.li(InlineCode('trait'), ' - Applies configured behaviors'),
-        ),
-
-        tag.h4('Example'),
-        Code(`const [tag, trait] = Template({
-  style: useStyleTrait,
-  event: useEventTrait,
-});`),
-      ),
-    }),
-
-    Section({
-      title: 'Storage<Data, Sync>(config)',
-      subtitle: 'Create persistent state with browser storage',
-      content: Box(
-        'column',
-        0,
-        tag.h4('Signature'),
-        Code(`Storage<Data, Sync>(config): { data, sync }`),
-
-        tag.h4('Storage Types'),
-        tag.ul(
-          trait.style('lineHeight', '1.8'),
-          tag.li(InlineCode('localStorage'), ' - Persists across sessions'),
-          tag.li(InlineCode('sessionStorage'), ' - Current session only'),
-          tag.li(InlineCode('memory'), ' - No persistence'),
-        ),
-
-        tag.h4('Returns'),
-        tag.ul(
-          trait.style('lineHeight', '1.8'),
-          tag.li(InlineCode('data'), ' - Object with state instances'),
-          tag.li(InlineCode('sync'), ' - Object with sync methods'),
-        ),
-      ),
-    }),
-
-    Section({
-      title: 'Built-in Traits',
+      subtitle:
+        'OEM provides a set of traits for common behaviors which covers most use cases but you have to install them separately. Separating them from the core library keeps the core small and lets you pick only what you need, including building your own custom traits.',
       content: Box(
         'column',
         0,
@@ -1195,14 +811,315 @@ const app = tag.div(
     }),
 
     Section({
+      title: 'Example Usage of Built-in Traits',
+
+      content: Box(
+        'column',
+        0,
+        tag.p('Apply HTML attributes to elements'),
+        Code(`import { useAttributeTrait } from '@linttrap/oem/traits/Attribute';
+
+trait.attr('type', 'text')
+trait.attr('placeholder', 'Enter name')
+trait.attr('disabled', 'true', isDisabled.$val)`),
+
+        tag.p('Manage CSS classes'),
+        Code(`import { useClassNameTrait } from '@linttrap/oem/traits/ClassName';
+
+trait.class('container')
+trait.class('active', isActive.$val)`),
+
+        tag.p('Attach event listeners'),
+        Code(`import { useEventTrait } from '@linttrap/oem/traits/Event';
+
+trait.event('click', handleClick)
+trait.event('submit', handleSubmit, 'Click me')`),
+
+        tag.p('Apply CSS styles'),
+        Code(`import { useStyleTrait } from '@linttrap/oem/traits/Style';
+
+trait.style('padding', '20px')
+trait.style('color', 'red')
+trait.style('--custom-var', 'blue') // CSS variables
+trait.style('display', 'block', isVisible.$test(true)) // Show when true
+trait.style('display', 'none', isVisible.$test(false)) // Hide when false
+`),
+
+        tag.p('Set innerHTML reactively with arrays of elements'),
+        Code(`import { useInnerHTMLTrait } from '@linttrap/oem/traits/InnerHTML';
+
+trait.html('<strong>Bold</strong>')
+trait.html(items.$call('map', item => tag.li(item))) // Reactive list
+trait.html('Visible', isVisible.$val)`),
+
+        tag.p('Bind input values to state'),
+        Code(`import { useInputValueTrait } from '@linttrap/oem/traits/InputValue';
+
+tag.input(trait.value(name.$val))`),
+
+        tag.p('Control element focus'),
+        Code(`import { useFocusTrait } from '@linttrap/oem/traits/Focus';
+
+trait.focus(shouldFocus.$val)`),
+      ),
+    }),
+
+    Section({
+      title: 'The Reactive Pattern',
+      type: 'main',
+      subtitle: 'All Ready-Made traits support reactive parameters:',
+      content: Box(
+        'column',
+        0,
+        tag.p(
+          'You can subscribe to state changes two ways. Support is 100% dependent on the trait implementation.',
+        ),
+        Code(`
+// by using a $ methods
+trait.style('display', 'block', isVisible.$val)
+trait.style('display', 'none', isVisible.$test(false))
+trait.style('display', 'flex', isVisible.$call('toString'))
+
+// by passing state objects as additional arguments
+trait.style('opacity', () => 'computed value', stateObject1, stateObject2)
+          `),
+      ),
+    }),
+
+    Section({
+      title: 'Creating Custom Traits',
+      subtitle: `Here's the basic ou1tline for creating a custom trait:`,
+      content: Code(`function useMyCustomTrait(
+  el: HTMLElement,
+  text: string,
+  ...rest: (StateType<any> | Condition)[]
+) {
+
+  // get your list of conditions and state
+  const isStateObj = (i: any) => i && 'sub' in i;
+  const states = rest.filter(isStateObj);
+  const conditions = rest.filter(i => !isStateObj(i));
+
+  // create an apply function to set the trait behavior
+  const apply = () => {
+    const applies = conditions.every(c =>
+      typeof c === 'function' ? c() : c
+    );
+    if (applies) {
+      // YOUR CODE GOES HERE
+    }
+  };
+
+  // initial application
+  apply();
+
+  // subscribe to state changes
+  const unsubs = states.map(state => state.sub(apply));
+
+  // return cleanup function
+  return () => unsubs.forEach(unsub => unsub());
+}
+
+// Use it
+const [tag, trait] = Template({
+  tooltip: useTooltipTrait,
+});
+
+tag.button(
+  trait.tooltip('Click to submit'),
+  'Submit'
+)`),
+    }),
+
+    Section({
+      title: 'Counter App',
+      subtitle: 'A simple counter demonstrating state and events:',
+      content: Code(`// Create template with traits
+const [tag, trait] = Template({
+  style: useStyleTrait,
+  event: useEventTrait,
+  html: useInnerHTMLTrait,
+  text: useTextContentTrait,
+});
+
+// Create reactive state
+const count = State(0);
+
+// Build UI
+const app = tag.div(
+  tag.h1(count.$val),
+  tag.button(
+    trait.event(
+      'click',
+      count.$reduce((n) => n + 1),
+    ),
+    'Increment',
+  ),
+);`),
+    }),
+
+    Section({
+      title: 'Todo List',
+      subtitle: 'Complete todo app with localStorage persistence:',
+      content: Code(`
+const [tag, trait] = Template({
+  event: useEventTrait,
+  style: useStyleTrait,
+  attr: useAttributeTrait,
+  focus: useFocusTrait,
+  value: useInputValueTrait,
+  input: useInputEvent,
+  html: useInnerHTMLTrait,
+});
+
+const view = tag.div(
+  tag.form(
+    trait.event('submit', (e) => e!.preventDefault()),
+    tag.input(
+      trait.attr('id', 'new-todo'),
+      trait.attr('type', 'text'),
+      trait.attr('placeholder', 'New todo...'),
+      trait.attr('autofocus', 'true'),
+      trait.focus(storage.data.newTodo.$test('')),
+      trait.input('input', storage.data.newTodo.set),
+      trait.value(storage.data.newTodo.val, storage.data.newTodo),
+    ),
+    tag.button(trait.event('click', $fsm('ADD')), 'Add'),
+  ),
+  tag.ul(
+    trait.html(
+      storage.data.todos.$call('map', (todo: TodoType) =>
+        tag.li(
+          trait.style('display', 'grid'),
+          trait.style('gridTemplateColumns', 'auto min-content min-content'),
+          tag.span(trait.style('textDecoration', 'line-through', todo.completed), todo.title),
+          tag.button(trait.event('click', $fsm('TOGGLE', todo)), 'Toggle'),
+          tag.button(trait.event('click', $fsm('DELETE', todo)), 'Delete'),
+        ),
+      ),
+    ),
+  ),
+);`),
+    }),
+
+    Section({
+      title: 'Core Methods',
+      subtitle: 'Method signatures for core OEM functions:',
+      type: 'main',
+      content: Box('column', 20),
+    }),
+
+    Section({
+      title: 'State<T>(initialValue)',
+      subtitle: 'State objects provide the following methods:',
+      content: Box(
+        'column',
+        0,
+        Code(`State<T>(initialValue: T): StateType<T>`),
+        tag.ul(
+          trait.style('lineHeight', '1.8'),
+          tag.li(InlineCode('val()'), ' - Get current value'),
+          tag.li(InlineCode('set(value)'), ' - Set new value'),
+          tag.li(InlineCode('reduce(fn)'), ' - Update based on previous value'),
+          tag.li(
+            InlineCode('sub(callback)'),
+            ' - Subscribe to changes, returns unsubscribe function',
+          ),
+          tag.li(InlineCode('test(predicate, truthCheck?)'), ' - Test value against condition'),
+          tag.li(InlineCode('call(method, ...args)'), ' - Call methods on boxed primitives'),
+          tag.li(InlineCode('chain(...calls)'), ' - Chain method calls'),
+        ),
+
+        tag.p('All methods have $ prefixed versions that return closures:'),
+        tag.ul(
+          trait.style('lineHeight', '1.8'),
+          tag.li(
+            InlineCode('$val()'),
+            ', ',
+            InlineCode('$set()'),
+            ', ',
+            InlineCode('$reduce()'),
+            ', ',
+            InlineCode('$test()'),
+            ', ',
+            InlineCode('$call()'),
+            ', ',
+            InlineCode('$chain()'),
+          ),
+        ),
+      ),
+    }),
+
+    Section({
+      title: 'Template<P>(config)',
+      subtitle: 'Create custom templating engines',
+      content: Box(
+        'column',
+        0,
+        tag.h4('Signature'),
+        Code(`Template<P>(config?: P): [TagProxy, TraitProxy]`),
+
+        tag.h4('Returns'),
+        tag.p('Tuple of [tag, trait] proxies:'),
+        tag.ul(
+          trait.style('lineHeight', '1.8'),
+          tag.li(InlineCode('tag'), ' - Creates HTML/SVG elements'),
+          tag.li(InlineCode('trait'), ' - Applies configured behaviors'),
+        ),
+
+        tag.h4('Example'),
+        Code(`const [tag, trait] = Template({
+  style: useStyleTrait,
+  event: useEventTrait,
+});`),
+      ),
+    }),
+
+    Section({
+      title: 'Storage<Data, Sync>(config)',
+      subtitle: 'Create persistent state with browser storage',
+      content: Box(
+        'column',
+        0,
+        tag.h4('Signature'),
+        Code(`Storage<Data, Sync>(config): { data, sync }`),
+
+        tag.h4('Storage Types'),
+        tag.ul(
+          trait.style('lineHeight', '1.8'),
+          tag.li(InlineCode('localStorage'), ' - Persists across sessions'),
+          tag.li(InlineCode('sessionStorage'), ' - Current session only'),
+          tag.li(InlineCode('memory'), ' - No persistence'),
+        ),
+
+        tag.h4('Returns'),
+        tag.ul(
+          trait.style('lineHeight', '1.8'),
+          tag.li(InlineCode('data'), ' - Object with state instances'),
+          tag.li(InlineCode('sync'), ' - Object with sync methods'),
+        ),
+      ),
+    }),
+
+    Section({
       title: 'Browser Support',
+      type: 'main',
       content: Box(
         'column',
         10,
-        tag.p(
-          'OEM works in all modern browsers that support ES6+, Proxy, WeakMap, Set, and MutationObserver.',
-        ),
+        tag.p('OEM works in all modern browsers that support ES6+'),
         tag.p('Minimum versions: Chrome 49+, Firefox 18+, Safari 10+, Edge 12+'),
+      ),
+    }),
+
+    Section({
+      title: 'License',
+      type: 'main',
+      content: Box(
+        'column',
+        10,
+        tag.p('MIT License'),
+        tag.p('© ', new Date().getFullYear(), ' Lint Trap Media'),
       ),
     }),
   );
