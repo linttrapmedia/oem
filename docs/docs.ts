@@ -1201,10 +1201,7 @@ tag.button(
       subtitle: 'A simple counter demonstrating state and events:',
       content: Code(`// Create template with traits
 const [tag, trait] = Template({
-  style: useStyleTrait,
   event: useEventTrait,
-  html: useInnerHTMLTrait,
-  text: useTextContentTrait,
 });
 
 // Create reactive state
@@ -1228,9 +1225,9 @@ const app = tag.div(
       subtitle: 'Complete todo app with localStorage persistence:',
       content: Code(`
 const [tag, trait] = Template({
+  attr: useAttributeTrait,
   event: useEventTrait,
   style: useStyleTrait,
-  attr: useAttributeTrait,
   focus: useFocusTrait,
   value: useInputValueTrait,
   input: useInputEvent,
