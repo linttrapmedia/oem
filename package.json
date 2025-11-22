@@ -1,0 +1,33 @@
+{
+  "name": "@linttrap/oem",
+  "version": "2.0.0",
+  "author": "@linttrapmedia",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/linttrapmedia/oem.git"
+  },
+  "main": "./src/oem.ts",
+  "module": "./src/oem.ts",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prettier": "2.7.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "exports": {
+    ".": "./src/oem.ts"
+  },
+  "bugs": {
+    "url": "https://github.com/linttrapmedia/oem/issues"
+  },
+  "description": "A novel UI library for writing reactive html with vanilla javascript",
+  "homepage": "https://oem.js.org",
+  "license": "MIT",
+  "private": false,
+  "title": "oem",
+  "type": "module",
+  "dependencies": {
+    "@linttrap/oem": "^1.0.2"
+  }
+}
