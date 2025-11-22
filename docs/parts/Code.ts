@@ -6,7 +6,7 @@ export const Code = (code: string, language: string = 'typescript') => {
 
 export const InlineCode = (text: string) => {
   return tag.code(
-    trait.style('backgroundColor', '#535353ff'),
+    trait.style('backgroundColor', '#858585'),
     trait.style('color', '#d4d4d4'),
     trait.style('padding', '2px 6px'),
     trait.style('borderRadius', '3px'),

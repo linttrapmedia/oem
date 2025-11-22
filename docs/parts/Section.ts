@@ -14,10 +14,22 @@ export const Section = (props: {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, ''),
     ),
-    trait.html([
+    tag.div(
+      trait.style('display', 'flex'),
+      trait.style('alignItems', 'center'),
+      trait.style('gap', '10px'),
       props.type === 'main' ? tag.h2(props.title) : tag.h3(props.title),
-      props.subtitle && tag.p(props.subtitle),
-      props.content,
-    ]),
+      tag.a(
+        trait.style('fontSize', '14px'),
+        trait.style('textDecoration', 'none'),
+        trait.style('border', '1px solid #a4a4a4ff'),
+        trait.style('padding', '2px 6px'),
+        trait.style('borderRadius', '4px'),
+        trait.attr('href', `#`),
+        '¶',
+      ),
+    ),
+    props.subtitle ? tag.p(props.subtitle) : '',
+    props.content,
   );
 };

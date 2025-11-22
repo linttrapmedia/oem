@@ -1,3 +1,4 @@
+import pkg from '../../package.json';
 import { tag, trait } from '../config';
 
 export const Page = (...children: any[]) => {
@@ -13,5 +14,23 @@ export const Page = (...children: any[]) => {
 };
 
 Page.Header = (title: string, subtitle: string) => {
-  return tag.div(trait.html([tag.h1(title), tag.p(subtitle)]));
+  return tag.div(
+    trait.style('position', 'relative'),
+    tag.h1(
+      trait.style('fontFamily', 'Splash'),
+      trait.style('fontSize', '64px'),
+      trait.style('fontWeight', 'normal'),
+      title,
+      tag.small(
+        trait.style('fontSize', '10px'),
+        trait.style('fontFamily', 'Arial, sans-serif'),
+        trait.style('top', '20px'),
+        trait.style('position', 'absolute'),
+        trait.style('marginLeft', '10px'),
+        trait.style('opacity', '0.4'),
+        pkg.version,
+      ),
+    ),
+    tag.p(subtitle),
+  );
 };

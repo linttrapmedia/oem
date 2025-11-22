@@ -6,7 +6,7 @@ import { Section } from './parts/Section';
 
 export const Docs = () =>
   Page(
-    Page.Header('OEM', 'The roll your your own framework framework'),
+    Page.Header('oem', 'The roll your your own framework framework'),
 
     Section({
       title: 'Menu',
@@ -679,7 +679,7 @@ const storage = Storage({
     }),
 
     Section({
-      title: 'Built-in Traits',
+      title: 'Ready-Made Traits',
       subtitle:
         'OEM provides a set of traits for common behaviors which covers most use cases but you have to install them separately. Separating them from the core library keeps the core small and lets you pick only what you need, including building your own custom traits.',
       content: Box(
@@ -811,7 +811,7 @@ const storage = Storage({
     }),
 
     Section({
-      title: 'Example Usage of Built-in Traits',
+      title: 'Example Usage of Ready-Made Traits',
 
       content: Box(
         'column',
