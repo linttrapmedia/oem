@@ -6,7 +6,7 @@ import { Section } from './parts/Section';
 
 export const Docs = () =>
   Page(
-    Page.Header('oem', 'The roll your your own framework framework'),
+    Page.Header('oem', 'The roll your own framework framework'),
 
     Section({
       title: 'Menu',
@@ -16,16 +16,21 @@ export const Docs = () =>
         0,
         tag.ul(
           tag.li(tag.a(trait.attr('href', '#what-is-oem'), 'What is OEM?')),
+          tag.li(tag.a(trait.attr('href', '#philosophy'), 'Philosophy')),
           tag.li(tag.a(trait.attr('href', '#why-oem'), 'Why OEM?')),
-
+          tag.li(tag.a(trait.attr('href', '#installation'), 'Installation')),
+          tag.li(tag.a(trait.attr('href', '#quick-example'), 'Quick Example')),
           tag.li(tag.a(trait.attr('href', '#state'), 'State')),
+          tag.li(tag.a(trait.attr('href', '#the-dollar-pattern'), 'The $ Pattern')),
           tag.li(tag.a(trait.attr('href', '#templating'), 'Templating')),
           tag.li(tag.a(trait.attr('href', '#components'), 'Components')),
           tag.li(tag.a(trait.attr('href', '#svg-support'), 'SVG Support')),
           tag.li(tag.a(trait.attr('href', '#storage'), 'Storage')),
           tag.li(tag.a(trait.attr('href', '#traits'), 'Traits')),
           tag.li(tag.a(trait.attr('href', '#reactive-pattern'), 'The Reactive Pattern')),
+          tag.li(tag.a(trait.attr('href', '#ready-made-states'), 'Ready-Made States')),
           tag.li(tag.a(trait.attr('href', '#creating-custom-traits'), 'Creating Custom Traits')),
+          tag.li(tag.a(trait.attr('href', '#examples'), 'Examples')),
           tag.li(tag.a(trait.attr('href', '#core-methods'), 'Core Methods')),
         ),
       ),
@@ -34,22 +39,74 @@ export const Docs = () =>
     Section({
       title: 'What is OEM?',
       type: 'main',
-      subtitle: 'Building blocks for creating your own framework. There are three:',
+      subtitle: 'A ~2KB micro-library for building reactive UIs with vanilla TypeScript',
       content: Box(
         'column',
         20,
+        tag.p(
+          'OEM provides three minimal building blocks that you combine to create your own UI framework. ',
+          'Think of it as a construction kit rather than a complete framework.',
+        ),
 
         tag.ul(
           trait.style('listStyle', 'none'),
+          trait.style('marginTop', '20px'),
           tag.li(
             tag.strong(trait.style('fontWeight', 'bold'), 'State'),
             ' - Reactive state management with pub/sub pattern',
           ),
           tag.li(
             tag.strong('Template'),
-            ' - Create custom templating engines with trait-based behaviors',
+            ' - Proxy-based HTML/SVG element creation with trait behaviors',
           ),
-          tag.li(tag.strong('Storage'), ' - Persistent state with web storage and remote syncing'),
+          tag.li(
+            tag.strong('Storage'),
+            ' - Persistent state with web storage and custom sync methods',
+          ),
+        ),
+
+        tag.p(
+          trait.style('marginTop', '20px'),
+          'OEM itself is just the core. Traits (event handlers, styles, attributes, etc.) are ',
+          tag.strong('reference implementations'),
+          ' you copy and customize for your needs.',
+        ),
+      ),
+    }),
+
+    Section({
+      title: 'Philosophy',
+      type: 'main',
+      subtitle: 'Understand every line of code in your framework',
+      content: Box(
+        'column',
+        20,
+        tag.p(
+          'Most frameworks are black boxes. OEM is different - it gives you the minimal core and ',
+          tag.strong('shows you how to build the rest'),
+          '. This means:',
+        ),
+
+        tag.ul(
+          trait.style('marginTop', '20px'),
+          tag.li(
+            tag.strong('You control the code'),
+            ' - Traits are copied into your project, not imported from a package',
+          ),
+          tag.li(tag.strong('No magic'), ' - The entire core is ~300 lines of readable TypeScript'),
+          tag.li(
+            tag.strong('Learn by doing'),
+            ' - Modify traits or create new ones to understand how reactivity works',
+          ),
+          tag.li(
+            tag.strong('AI-friendly'),
+            ' - Simple, predictable patterns that AI assistants can understand and extend',
+          ),
+        ),
+
+        tag.p(
+          trait.style('marginTop', '20px'),
+          'When you use OEM, you\'re not "using a framework" - you\'re building your own with guidance.',
         ),
       ),
     }),
@@ -57,19 +114,18 @@ export const Docs = () =>
     Section({
       title: 'Why OEM?',
       type: 'main',
-      subtitle:
-        'Understand the code you write (and AI generates) down to every single line of your framework',
       content: Box(
         'column',
         0,
         tag.ul(
           trait.style('listStyle', 'none'),
-          tag.li('✓ Lightweight (~2KB minified)'),
+          tag.li('✓ Lightweight (~2KB minified core)'),
           tag.li('✓ Zero dependencies'),
-          tag.li('✓ Locality of behavior patterns with traits'),
-          tag.li('✓ Build your own declarative UI framework'),
-          tag.li('✓ Full TypeScript support'),
-          tag.li('✓ Reactive DOM without a virtual DOM'),
+          tag.li('✓ Locality of behavior - traits keep behavior next to markup'),
+          tag.li('✓ Full TypeScript support with excellent type inference'),
+          tag.li('✓ Reactive DOM without virtual DOM overhead'),
+          tag.li('✓ Copy only what you need - no bloat'),
+          tag.li('✓ Perfect for learning reactive patterns'),
         ),
       ),
     }),
@@ -244,14 +300,56 @@ tag.div(
 
     Section({
       title: 'The $ Pattern',
-      subtitle:
-        'Methods prefixed with $ return closures that can be passed as callbacks. Additionally, they support reactive traits:',
+      type: 'main',
+      subtitle: 'Understanding closures and reactive bindings',
       content: Box(
         'column',
-        0,
+        20,
+        tag.p(
+          'Every State method has a $ version that returns a ',
+          tag.strong('closure'),
+          ' - a function you can call later. This is crucial for two reasons:',
+        ),
+
+        tag.h4(trait.style('marginTop', '20px'), '1. Event Handlers'),
+        tag.p("Without closures, you'd need wrapper functions everywhere:"),
+        Code(`// Without $ pattern - verbose
+tag.button(
+  trait.event('click', () => count.set(0)),
+  'Reset'
+)
+
+// With $ pattern - clean
+tag.button(
+  trait.event('click', count.$set(0)),
+  'Reset'
+)`),
+
+        tag.h4(trait.style('marginTop', '20px'), '2. Reactive UI Updates'),
+        tag.p(
+          'The Template system automatically subscribes to ',
+          InlineCode('$val'),
+          ', ',
+          InlineCode('$test'),
+          ', and other $ methods, updating the UI when state changes:',
+        ),
+        Code(`const count = State(0);
+
+// This text auto-updates when count changes
+tag.h1(count.$val)
+
+// This button appears/disappears based on count
+tag.div(
+  trait.style('display', 'block', count.$test(0, false)), // Hide when count is 0
+  trait.style('display', 'none', count.$test(0)),          // Show when count is 0
+  'Count is not zero'
+)`),
+
+        tag.h4(trait.style('marginTop', '20px'), 'Complete Method Reference'),
         tag.table(
           trait.style('width', '100%'),
           trait.style('borderCollapse', 'collapse'),
+          trait.style('marginTop', '20px'),
           trait.html([
             tag.thead(
               trait.html(
@@ -273,7 +371,7 @@ tag.div(
                       trait.style('textAlign', 'left'),
                       trait.style('padding', '10px'),
                       trait.style('borderBottom', '2px solid black'),
-                      'Use Case',
+                      'Primary Use',
                     ),
                   ]),
                 ),
@@ -296,7 +394,7 @@ tag.div(
                     tag.td(
                       trait.style('padding', '10px'),
                       trait.style('borderBottom', '1px solid black'),
-                      'Get value reactively',
+                      'Reactive text/content',
                     ),
                   ]),
                 ),
@@ -353,7 +451,7 @@ tag.div(
                     tag.td(
                       trait.style('padding', '10px'),
                       trait.style('borderBottom', '1px solid black'),
-                      'Conditional traits',
+                      'Conditional visibility/styles',
                     ),
                   ]),
                 ),
@@ -372,7 +470,7 @@ tag.div(
                     tag.td(
                       trait.style('padding', '10px'),
                       trait.style('borderBottom', '1px solid black'),
-                      'Reactive innerHTML',
+                      'Transform values (map, filter, etc.)',
                     ),
                   ]),
                 ),
@@ -529,6 +627,57 @@ const app = tag.div(
     }),
 
     Section({
+      title: 'How It All Works Together',
+      type: 'main',
+      subtitle: 'Understanding the complete picture',
+      content: Box(
+        'column',
+        20,
+        tag.p("Let's connect the dots on how OEM's pieces create a reactive UI:"),
+
+        tag.h4(trait.style('marginTop', '20px'), '1. You Create State'),
+        Code(`const count = State(0);`),
+
+        tag.h4(trait.style('marginTop', '20px'), '2. You Configure a Template with Traits'),
+        Code(`const [tag, trait] = Template({
+  event: useEventTrait,
+  style: useStyleTrait,
+});`),
+
+        tag.h4(trait.style('marginTop', '20px'), '3. You Build Elements with Reactive Bindings'),
+        Code(`const app = tag.div(
+  // This text updates when count changes
+  tag.h1(count.$val),
+
+  // This button modifies count
+  tag.button(
+    trait.event('click', count.$reduce(n => n + 1)),
+    'Increment'
+  )
+);`),
+
+        tag.h4(trait.style('marginTop', '20px'), '4. Behind the Scenes'),
+        tag.ul(
+          trait.style('marginTop', '10px'),
+          tag.li(
+            'The Template sees ',
+            InlineCode('count.$val'),
+            ' and automatically subscribes to it',
+          ),
+          tag.li('When you click the button, ', InlineCode('count.$reduce'), ' updates the state'),
+          tag.li("State notifies all subscribers (including the h1's text node)"),
+          tag.li('The UI updates automatically - no manual DOM manipulation needed'),
+        ),
+
+        tag.p(
+          trait.style('marginTop', '20px'),
+          tag.strong('This is the entire reactive loop.'),
+          ' No virtual DOM diffing, no complex lifecycle hooks, no magic. Just pub/sub with smart subscription management.',
+        ),
+      ),
+    }),
+
+    Section({
       title: 'Storage',
       type: 'main',
       subtitle: 'Automatically sync state with localStorage, sessionStorage, or memory:',
@@ -660,10 +809,19 @@ const storage = Storage({
     }),
 
     Section({
-      title: 'Traits?',
+      title: 'What are Traits?',
       type: 'main',
-      subtitle: 'A trait is a function that takes an element and applies behavior to it:',
-      content: Code(`function useMyTrait(
+      subtitle: "The secret sauce behind OEM's extensibility",
+      content: Box(
+        'column',
+        20,
+        tag.p(
+          'A trait is a function that applies behavior to a DOM element. Traits are what make OEM powerful - ',
+          "they're how you add event handlers, styles, attributes, and any other behavior you can imagine.",
+        ),
+
+        tag.h4(trait.style('marginTop', '20px'), 'Basic Structure'),
+        Code(`function useMyTrait(
   el: HTMLElement,
   param1: string,
   ...rest: (StateType<any> | Condition)[]
@@ -673,15 +831,25 @@ const storage = Storage({
 
   // Return cleanup function
   return () => {
-    // Clean up resources
+    // Clean up resources when element is removed
   };
 }`),
+
+        tag.p(
+          trait.style('marginTop', '20px'),
+          tag.strong('Key Point:'),
+          ' Traits are ',
+          tag.strong('NOT imported from OEM'),
+          '. You copy the reference implementations from the ',
+          InlineCode('src/traits/'),
+          ' folder into your project and customize them as needed.',
+        ),
+      ),
     }),
 
     Section({
       title: 'Ready-Made Traits',
-      subtitle:
-        'OEM provides a set of traits for common behaviors which covers most use cases but you have to install them separately. Separating them from the core library keeps the core small and lets you pick only what you need, including building your own custom traits.',
+      subtitle: 'Pre-built traits you can copy from src/traits/ and install in your project',
       content: Box(
         'column',
         0,
@@ -887,6 +1055,88 @@ trait.style('opacity', () => 'computed value', stateObject1, stateObject2)
     }),
 
     Section({
+      title: 'Ready-Made States',
+      type: 'main',
+      subtitle: 'Pre-built state utilities you can copy from src/states/ and install in your project',
+      content: Box(
+        'column',
+        20,
+        tag.p(
+          'Just like traits, OEM provides ready-made State utilities that handle common patterns. ',
+          'These are located in ',
+          InlineCode('src/states/'),
+          ' and you copy them into your project as needed.',
+        ),
+
+        tag.h4(trait.style('marginTop', '20px'), 'Available States'),
+        tag.table(
+          trait.style('width', '100%'),
+          trait.style('borderCollapse', 'collapse'),
+          trait.style('marginTop', '10px'),
+          tag.thead(
+            tag.tr(
+              tag.th(
+                trait.style('textAlign', 'left'),
+                trait.style('padding', '10px'),
+                trait.style('borderBottom', '2px solid black'),
+                'State',
+              ),
+              tag.th(
+                trait.style('textAlign', 'left'),
+                trait.style('padding', '10px'),
+                trait.style('borderBottom', '2px solid black'),
+                'Description',
+              ),
+            ),
+          ),
+          tag.tbody(
+            tag.tr(
+              tag.td(
+                trait.style('padding', '10px'),
+                trait.style('borderBottom', '1px solid black'),
+                InlineCode('useMediaQueryState'),
+              ),
+              tag.td(
+                trait.style('padding', '10px'),
+                trait.style('borderBottom', '1px solid black'),
+                'Reactive media query state that updates on window resize',
+              ),
+            ),
+          ),
+        ),
+
+        tag.h4(trait.style('marginTop', '20px'), 'Example: Media Query State'),
+        Code(`import { useMediaQueryState } from '@linttrap/oem/states/MediaQuery';
+
+// Create reactive state for mobile breakpoint
+const isMobile = useMediaQueryState({
+  maxWidth: 768,
+});
+
+// Use it in your UI
+const nav = tag.nav(
+  trait.style('display', 'block', isMobile.$test(true)),
+  trait.style('display', 'none', isMobile.$test(false)),
+  'Mobile Navigation'
+);
+
+// Or with desktop
+const isDesktop = useMediaQueryState({
+  minWidth: 1024,
+});`),
+
+        tag.p(
+          trait.style('marginTop', '20px'),
+          tag.strong('More coming soon! '),
+          'We\'re adding more ready-made state utilities like router state, form state, async data state, and more. ',
+          'Check ',
+          InlineCode('src/states/'),
+          ' for the latest additions.',
+        ),
+      ),
+    }),
+
+    Section({
       title: 'Creating Custom Traits',
       subtitle: `Here's the basic ou1tline for creating a custom trait:`,
       content: Code(`function useMyCustomTrait(
@@ -932,7 +1182,14 @@ tag.button(
     }),
 
     Section({
-      title: 'Counter App',
+      title: 'Examples',
+      type: 'main',
+      subtitle: 'Real-world examples showing how the pieces fit together',
+      content: Box('column', 0),
+    }),
+
+    Section({
+      title: 'Example: Counter App',
       subtitle: 'A simple counter demonstrating state and events:',
       content: Code(`// Create template with traits
 const [tag, trait] = Template({
@@ -959,7 +1216,7 @@ const app = tag.div(
     }),
 
     Section({
-      title: 'Todo List',
+      title: 'Example: Todo List',
       subtitle: 'Complete todo app with localStorage persistence:',
       content: Code(`
 const [tag, trait] = Template({

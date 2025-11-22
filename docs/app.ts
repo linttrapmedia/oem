@@ -1,6 +1,5 @@
-import { tag } from 'docs/config';
+import { tag, trait } from 'docs/config';
 import { Docs } from 'docs/docs';
-import { trait } from 'old-docs/config';
 
 function App() {
   return tag.div(

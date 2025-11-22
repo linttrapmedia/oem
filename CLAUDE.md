@@ -10,7 +10,7 @@ OEM is a ~2KB lightweight library for building reactive UIs with vanilla TypeScr
 2. **Template** - Proxy-based HTML/SVG element creation with trait system
 3. **Storage** - Persistent state with localStorage/sessionStorage/memory
 
-**Key Philosophy**: OEM is a "roll your own framework" framework - minimal core with extensible trait-based behaviors. No virtual DOM, zero dependencies. **Traits are NOT bundled** - users must copy reference implementations from `src/traits/` or create their own.
+**Key Philosophy**: OEM is a "roll your own framework" framework - minimal core with extensible trait-based behaviors. No virtual DOM, zero dependencies. **Traits and States are NOT bundled** - users must copy ready-made implementations from `src/traits/` and `src/states/` or create their own.
 
 ## Development Commands
 
@@ -65,17 +65,29 @@ Methods:
 - `call(method, ...args)` - Call methods on boxed primitives (String, Number, Boolean)
 - `chain(...calls)` - Chain multiple method calls
 
-**The $ Pattern**: All methods have `$`-prefixed versions (`$val`, `$set`, `$reduce`, `$test`, `$call`, `$chain`) that return closures for delayed execution and enable reactive trait subscriptions.
+**The $ Pattern**: All methods have `$`-prefixed versions (`$val`, `$set`, `$reduce`, `$test`, `$call`, `$chain`) that return closures. This is crucial for two reasons:
 
+1. **Event Handlers** - Avoids verbose wrapper functions:
 ```typescript
-// Direct usage
-count.set(5);
+// Without $ - verbose
+tag.button(trait.event('click', () => count.set(0)), 'Reset')
 
-// Closure for event handlers
-button.onclick = count.$set(5);
+// With $ - clean
+tag.button(trait.event('click', count.$set(0)), 'Reset')
+```
 
-// Reactive trait binding
-tag.h1(count.$val);  // Auto-updates when count changes
+2. **Reactive UI Updates** - Template automatically subscribes to $ methods:
+```typescript
+const count = State(0);
+
+// Text auto-updates when count changes
+tag.h1(count.$val)
+
+// Conditional visibility
+tag.div(
+  trait.style('display', 'block', count.$test(0, false)), // Hide when 0
+  'Count is not zero'
+)
 ```
 
 **`Template<P>(config?: P)`** - Creates HTML/SVG element factory with trait system
@@ -122,13 +134,13 @@ const storage = Storage({
 storage.data.username.set('Alice'); // Auto-saves to localStorage
 ```
 
-### Traits System (`src/traits/`)
+### Ready-Made Traits (`src/traits/`)
 
-**IMPORTANT**: Traits are **reference implementations only**. They are NOT exported from the core library. Users must:
+**IMPORTANT**: Traits are **ready-made implementations** that are NOT exported from the core library. Users must:
 1. Copy trait implementations from `src/traits/` into their projects
 2. Create their own custom traits following the same pattern
 
-The `src/traits/` directory provides reference implementations for common use cases:
+The `src/traits/` directory provides ready-made traits for common use cases:
 - `useAttributeTrait` - Set/remove HTML attributes
 - `useClassNameTrait` - Manage CSS classes
 - `useEventTrait` - Attach/remove event listeners
@@ -179,10 +191,27 @@ trait.style('opacity', () => computeOpacity(), state1, state2)
 
 **Condition Type**: `(() => boolean) | boolean | 1 | 0`
 
-### States (`src/states/`)
+### Ready-Made States (`src/states/`)
 
-Reference implementations of specialized state utilities:
-- `MediaQuery(query: string)` - Reactive media query state tracking
+**IMPORTANT**: Like traits, state utilities are **ready-made implementations** that are NOT exported from the core library. Users must copy them from `src/states/` into their projects.
+
+The `src/states/` directory provides ready-made state utilities for common patterns:
+- `useMediaQueryState` - Reactive media query state that updates on window resize
+
+Example usage:
+```typescript
+import { useMediaQueryState } from '@linttrap/oem/states/MediaQuery';
+
+const isMobile = useMediaQueryState({ maxWidth: 768 });
+
+// Use in UI
+tag.nav(
+  trait.style('display', 'block', isMobile.$test(true)),
+  'Mobile Navigation'
+);
+```
+
+**More coming soon**: Router state, form state, async data state, and other common patterns will be added to `src/states/`.
 
 ### Component Pattern
 
@@ -235,8 +264,8 @@ Tests are organized in `test/unit.ts` by category (HTML, SVG, State, Lib) and in
 ## Project Structure
 
 - `src/oem.ts` - Core library (State, Template, Storage) - **this is what gets published**
-- `src/traits/` - Reference trait implementations (copy these or create your own)
-- `src/states/` - Reference state utilities (MediaQuery)
+- `src/traits/` - Ready-made trait implementations (copy these or create your own)
+- `src/states/` - Ready-made state utilities (copy these or create your own)
 - `test/` - Test runner and test suites
 - `docs/` - Self-hosted documentation site built with OEM
   - `config.ts` - Shared Template instance with traits
@@ -245,6 +274,27 @@ Tests are organized in `test/unit.ts` by category (HTML, SVG, State, Lib) and in
   - `parts/` - Reusable UI components
 - `examples/` - Sample applications (counter, todo)
 - `dist/` - Built distribution files (IIFE format with `window.oem`)
+
+## How It All Works Together
+
+Understanding the complete reactive loop:
+
+1. **Create State**: `const count = State(0);`
+2. **Configure Template with Traits**: `const [tag, trait] = Template({ event: useEventTrait });`
+3. **Build Elements with Reactive Bindings**:
+   ```typescript
+   const app = tag.div(
+     tag.h1(count.$val),  // Template sees $val and subscribes
+     tag.button(trait.event('click', count.$reduce(n => n + 1)), 'Increment')
+   );
+   ```
+4. **Behind the Scenes**:
+   - Template detects `count.$val` and automatically subscribes to state changes
+   - When button is clicked, `count.$reduce` updates the state
+   - State notifies all subscribers (including the h1's text node)
+   - UI updates automatically without manual DOM manipulation
+
+**This is the entire reactive loop**: No virtual DOM diffing, no complex lifecycle hooks. Just pub/sub with smart subscription management via WeakMap and MutationObserver for cleanup.
 
 ## Key Implementation Details
 
@@ -291,7 +341,8 @@ tag.input(
 
 ## Important Notes
 
-- **Core is minimal**: Only State, Template, and Storage are exported. Traits must be copied/created by users.
+- **Core is minimal**: Only State, Template, and Storage are exported. Traits and state utilities are ready-made implementations that must be copied/created by users.
+- **Ready-made implementations**: Both `src/traits/` and `src/states/` contain pre-built implementations to copy into your project, not import from the library.
 - **Browser-only**: No server-side rendering support
 - **ES6+ required**: Minimum browser versions: Chrome 49+, Firefox 18+, Safari 10+, Edge 12+
 - **Type safety**: Heavy use of TypeScript generics and conditional types
