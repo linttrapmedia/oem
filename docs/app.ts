@@ -21,8 +21,3 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!root) return;
   root.appendChild(App());
 });
-
-// Scroll to top when page changes
-function scrollAppContentToTop() {
-  document.querySelector("[data-part='AppContent']")?.scrollTo({ top: 0 });
-}

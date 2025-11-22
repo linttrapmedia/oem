@@ -15,6 +15,13 @@ export const Docs = () =>
         'column',
         0,
         tag.ul(
+          tag.li(
+            tag.a(
+              trait.attr('href', 'https://github.com/linttrapmedia/oem'),
+              trait.attr('target', '_blank'),
+              'GITHUB',
+            ),
+          ),
           tag.li(tag.a(trait.attr('href', '#what-is-oem'), 'What is OEM?')),
           tag.li(tag.a(trait.attr('href', '#philosophy'), 'Philosophy')),
           tag.li(tag.a(trait.attr('href', '#why-oem'), 'Why OEM?')),
@@ -1057,7 +1064,8 @@ trait.style('opacity', () => 'computed value', stateObject1, stateObject2)
     Section({
       title: 'Ready-Made States',
       type: 'main',
-      subtitle: 'Pre-built state utilities you can copy from src/states/ and install in your project',
+      subtitle:
+        'Pre-built state utilities you can copy from src/states/ and install in your project',
       content: Box(
         'column',
         20,
@@ -1128,7 +1136,7 @@ const isDesktop = useMediaQueryState({
         tag.p(
           trait.style('marginTop', '20px'),
           tag.strong('More coming soon! '),
-          'We\'re adding more ready-made state utilities like router state, form state, async data state, and more. ',
+          "We're adding more ready-made state utilities like router state, form state, async data state, and more. ",
           'Check ',
           InlineCode('src/states/'),
           ' for the latest additions.',
