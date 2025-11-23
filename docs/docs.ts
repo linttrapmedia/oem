@@ -28,13 +28,13 @@ export const Docs = () =>
           tag.li(tag.a(trait.attr('href', '#installation'), 'Installation')),
           tag.li(tag.a(trait.attr('href', '#quick-example'), 'Quick Example')),
           tag.li(tag.a(trait.attr('href', '#state'), 'State')),
-          tag.li(tag.a(trait.attr('href', '#the-dollar-pattern'), 'The $ Pattern')),
+          tag.li(tag.a(trait.attr('href', '#the-pattern'), 'The $ Pattern')),
           tag.li(tag.a(trait.attr('href', '#templating'), 'Templating')),
           tag.li(tag.a(trait.attr('href', '#components'), 'Components')),
           tag.li(tag.a(trait.attr('href', '#svg-support'), 'SVG Support')),
           tag.li(tag.a(trait.attr('href', '#storage'), 'Storage')),
           tag.li(tag.a(trait.attr('href', '#traits'), 'Traits')),
-          tag.li(tag.a(trait.attr('href', '#reactive-pattern'), 'The Reactive Pattern')),
+          tag.li(tag.a(trait.attr('href', '#the-reactive-pattern'), 'The Reactive Pattern')),
           tag.li(tag.a(trait.attr('href', '#ready-made-states'), 'Ready-Made States')),
           tag.li(tag.a(trait.attr('href', '#creating-custom-traits'), 'Creating Custom Traits')),
           tag.li(tag.a(trait.attr('href', '#examples'), 'Examples')),
@@ -588,7 +588,7 @@ tag.ul(
     }),
 
     Section({
-      title: 'Component Functions',
+      title: 'Components',
       type: 'main',
       subtitle: 'Components are just functions that return elements:',
       content: Code(`function Button(text: string, onClick: () => void) {
@@ -816,7 +816,7 @@ const storage = Storage({
     }),
 
     Section({
-      title: 'What are Traits?',
+      title: 'Traits',
       type: 'main',
       subtitle: "The secret sauce behind OEM's extensibility",
       content: Box(
