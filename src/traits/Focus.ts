@@ -1,11 +1,16 @@
 import { Condition, StateType } from '@/oem';
 
-type FocusProps = [el: HTMLElement, conditions?: Condition | Condition[], states?: StateType<any> | StateType<any>[]];
+type FocusProps = [
+  el: HTMLElement,
+  conditions?: Condition | Condition[],
+  states?: StateType<any> | StateType<any>[],
+];
 
 export const useFocusTrait = (el: HTMLElement, ...rest: (StateType<any> | Condition)[]) => {
   const isStateObj = (i: any) => Object.keys(i).includes('sub');
+  const isTestCond = (i: any) => typeof i === 'function' && i.type === '$test';
   const states = rest.filter(isStateObj) as StateType<any>[];
-  const conditions = rest.filter((item) => !isStateObj(item));
+  const conditions = rest.filter((item) => !isStateObj(item) || isTestCond(item));
   const apply = () => {
     const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));
     if (applies) el.focus();

@@ -8,9 +8,9 @@ export function useInnerHTMLTrait(
   ...rest: (StateType<any> | Condition)[]
 ) {
   const isStateObj = (i: any) => Object.keys(i).includes('sub');
-  const isStateTest = (i: any) => typeof i === 'function' && i.type === '$test';
+  const isTestCond = (i: any) => typeof i === 'function' && i.type === '$test';
   const states = [children, ...rest].filter(isStateObj) as StateType<any>[];
-  const conditions = rest.filter((item) => !isStateObj(item) || isStateTest(item)) as Condition[];
+  const conditions = rest.filter((item) => !isStateObj(item) || isTestCond(item)) as Condition[];
   const apply = () => {
     const _children = typeof children === 'function' ? children() : children;
     const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));

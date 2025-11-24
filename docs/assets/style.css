@@ -2,11 +2,10 @@ html,
 body {
   background-color: #c7c7c7;
   font-family: 'Courier New', Courier, monospace;
-  line-height: 1.1;
+  line-height: 1.2;
   padding: 0;
   margin: 0;
   width: 100%;
-  height: 100%;
   font-size: 14px;
 }
 
@@ -26,7 +25,7 @@ body {
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: grey;
+  background-color: rgb(158, 158, 158);
   border-radius: 20px;
   border: 3px solid #c7c7c7;
 }
@@ -51,12 +50,34 @@ h6 {
 
 p,
 pre {
-  margin: 10px 0;
+  margin: 0;
   box-sizing: border-box;
   display: block;
+  line-height: 1.4;
 }
 
 ul {
-  margin: 10px 0;
-  padding-left: 20px;
+  margin: 0;
+  padding-left: 1rem;
+}
+
+html.prism-ada {
+  body {
+    background-color: white;
+    font-size: 18px;
+  }
+
+  *::-webkit-scrollbar {
+    width: 24px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: white;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: black;
+    border-radius: 20px;
+    border: 3px solid white;
+  }
 }

@@ -1,13 +1,13 @@
 {
   "name": "@linttrap/oem",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": "@linttrapmedia",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/linttrapmedia/oem.git"
   },
-  "main": "./src/oem.ts",
-  "module": "./src/oem.ts",
+  "main": "./src/registry.ts",
+  "module": "./src/registry.ts",
   "devDependencies": {
     "@types/bun": "latest",
     "prettier": "2.7.1"

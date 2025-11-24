@@ -1,4 +1,4 @@
-import { Template } from '@/oem';
+import { State, Template } from '@/oem';
 import { useAttributeTrait } from '@/traits/Attribute';
 import { useEventTrait } from '@/traits/Event';
 import { useInnerHTMLTrait } from '@/traits/InnerHTML';
@@ -38,6 +38,9 @@ export const usePrism = (el: HTMLElement, language: string) => {
   observer.observe(el, { childList: true });
   return el;
 };
+
+export const theme = State<'grey' | 'ada'>('grey');
+export const prismCss = State('');
 
 export const [tag, trait] = Template({
   attr: useAttributeTrait,

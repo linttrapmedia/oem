@@ -7,8 +7,9 @@ export function useEventTrait(
   ...rest: (StateType<any> | Condition)[]
 ) {
   const isStateObj = (i: any) => Object.keys(i).includes('sub');
+  const isTestCond = (i: any) => typeof i === 'function' && i.type === '$test';
   const states = rest.filter(isStateObj) as StateType<any>[];
-  const conditions = rest.filter((item) => !isStateObj(item));
+  const conditions = rest.filter((item) => !isStateObj(item) || isTestCond(item));
   let listenerAttached = false;
 
   const apply = () => {
