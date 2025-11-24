@@ -1,43 +1,77 @@
-# OEM
+# OEM - <small>The Roll Your Own Framework Framework</small>
 
-A tiny (~2KB) layer-one utility for building reactive UIs with vanilla TypeScript. Roll your own framework with just the features you need.
+[**Full Docs at oem.js.org**](https://oem.js.org)
 
-<img src="docs/assets/oem.png" width="200" style="border-radius:5px; margin:20px 0;" alt="OEM Logo" />
+OEM is a minimal, convention-driven toolkit for crafting your own reactive, component-based UI layer—fully local, fully understood, and entirely yours.
 
-**🎯 Why OEM?**
+## TOC
 
-- ✓ Lightweight (~2KB minified) with zero dependencies
-- ✓ Reactive state management without virtual DOM overhead
-- ✓ Build your own framework - copy only the traits and states you need
-- ✓ Full TypeScript support with excellent type inference
-- ✓ Locality of behavior with trait-based patterns
+- [Philosophy](#philosophy)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [How It Works](#how-it-works)
+- [State](#state)
+- [Templating](#templating)
+- [Storage](#storage)
+- [Traits](#traits)
 
-📚 **[Full Documentation at oem.js.org](https://oem.js.org)**
+## Philosophy
+
+### Transparency by Design
+
+OEM’s primary goal is **transparency**. It strips away the “black box” complexity of modern frameworks and replaces it with small, local behaviors you can actually reason about.
+
+- **Readable Core:** ~300 lines of plain TypeScript you can grasp in a single sitting
+- **Local Behavior:** Features are implemented as **Traits**—small files that live next to your markup and are meant to be **copied, edited, and extended**
+- **No Hidden Magic:** Everything reduces to simple reactive patterns (pub/sub, observers, state flows) that you can inspect and reshape
+
+### Why OEM?
+
+- ✓ ~2.7KB minified core, zero dependencies
+- ✓ Reactive DOM with no virtual DOM layer
+- ✓ Locality of behavior makes reasoning—and debugging—trivial
+- ✓ AI can generate Traits directly, and you can understand and refine every line
+- ✓ Full TypeScript types without framework overhead
+- ✓ Copy only what you need; no bulk, no lock-in
+
+OEM is small enough for **humans to master** and **AI to extend**—a feedback loop where you understand the code, adjust it, and let the AI build on your exact patterns.
 
 ## Installation
+
+## Download
+
+ke it yours! You don't need to "install" anything. Use the [OEM Download Generator](https://oem.js.org) to customize and download a package with only the Traits and States you need.
+
+### Using npm
 
 ```bash
 npm install @linttrap/oem
 ```
 
-## Quick Start
+## 🎯 Quick Start
+
+This is the simplest way to show how **State** and **Templating** work together to create a reactive component.
 
 ```typescript
-import { State, Template } from '@linttrap/oem';
-import { useEventTrait } from '@linttrap/oem/traits/Event';
-
-// Create template with traits
+// 1. Configure the template with needed traits
 const [tag, trait] = Template({
   event: useEventTrait,
+  style: useStyleTrait,
 });
 
-// Create reactive state
+// 2. Create reactive state
 const count = State(0);
 
-// Build UI
+// 3. Generate DOM with reactive bindings
 const app = tag.div(
+  // Reactive text: auto-updates when count changes
   tag.h1(count.$val),
+
+  // Style trait: applies CSS styles
+  // Event trait: uses the $ pattern for clean syntax
   tag.button(
+    trait.style('padding', '10px'),
+    trait.style('font-size', '16px'),
     trait.event(
       'click',
       count.$reduce((n) => n + 1),
@@ -49,121 +83,70 @@ const app = tag.div(
 document.body.appendChild(app);
 ```
 
-## Core Concepts
+## How It Works
 
-### State - Reactive State Management
+Understanding the complete reactive loop:
 
-Create reactive state with pub/sub pattern:
+1. **Create State**: `const count = State(0);`
+2. **Configure Template with Traits**: `const [tag, trait] = Template({ event: useEventTrait });`
+3. **Build Elements with Reactive Bindings**:
+   ```typescript
+   const app = tag.div(
+     tag.h1(count.$val), // Template sees $val and subscribes
+     tag.button(
+       trait.event(
+         'click',
+         count.$reduce((n) => n + 1),
+       ),
+       'Increment',
+     ),
+   );
+   ```
+4. **Behind the Scenes**:
+   - Template detects `count.$val` and automatically subscribes to state changes
+   - When button is clicked, `count.$reduce` updates the state
+   - State notifies all subscribers (including the h1's text node)
+   - UI updates automatically without manual DOM manipulation
 
-```typescript
-const count = State(0);
+**This is the entire reactive loop**: No virtual DOM diffing, no complex lifecycle hooks. Just pub/sub with smart subscription management via WeakMap and MutationObserver for cleanup.
 
-// Get value
-count.val(); // 0
+## State
 
-// Set value
-count.set(5);
+The `State` object provides simple reactive state management using the **pub/sub pattern**.
 
-// Update based on previous value
-count.reduce((n) => n + 1);
+| Method       | `$` Version       | Description                                         |
+| :----------- | :---------------- | :-------------------------------------------------- |
+| `val()`      | **`$val()`**      | Get the value                                       |
+| `set(v)`     | **`$set(v)`**     | Set a new value                                     |
+| `reduce(fn)` | **`$reduce(fn)`** | Update value based on the previous value            |
+| `sub(cb)`    | N/A               | Subscribe to state changes (returns unsubscribe fn) |
+| `test(p)`    | **`$test(p)`**    | Test if the value matches a predicate/condition     |
+| `call(m)`    | **`$call(m)`**    | Call methods on boxed primitives                    |
 
-// Subscribe to changes
-const unsub = count.sub((value) => {
-  console.log('Count changed:', value);
-});
+**Understanding the $ Pattern**
 
-// The $ Pattern - closures for delayed execution
-const increment = count.$reduce((n) => n + 1);
-button.onclick = increment;
-```
+The dollar sign (`$`) prefix on State methods is essential for reactivity and clean syntax:
 
-### Template - Proxy-Based Element Creation
-
-Create HTML/SVG elements with a trait-based behavior system:
-
-```typescript
-const [tag, trait] = Template({
-  style: useStyleTrait,
-  event: useEventTrait,
-  attr: useAttributeTrait,
-});
-
-const button = tag.button(
-  trait.style('padding', '10px 20px'),
-  trait.style('backgroundColor', 'blue'),
-  trait.event('click', handleClick),
-  trait.attr('type', 'button'),
-  'Click me',
-);
-```
-
-### Storage - Persistent State
-
-Sync state with localStorage, sessionStorage, or memory:
+1. **Reactive UI Updates:** When you use a `$` method inside a template function (e.g., `tag.h1(count.$val)`), the template automatically **subscribes** to that state. When the state changes, the UI updates.
+2. **Clean Event Handlers:** It returns a **closure** (a function that executes later), allowing for clean, wrapper-free event binding.
 
 ```typescript
-const storage = Storage({
-  data: {
-    theme: {
-      key: 'app-theme',
-      state: State<'light' | 'dark'>('light'),
-      storage: 'localStorage',
-    },
-  },
-});
+// Verbose: Needs an arrow function wrapper
+trait.event('click', () => count.set(0));
 
-// Automatically persists to localStorage
-storage.data.theme.set('dark');
+// Clean: Use the $ pattern
+trait.event('click', count.$set(0));
 ```
 
-## Ready-Made Traits
+### Ready-Made States
 
-**Traits are NOT bundled** - you copy ready-made implementations from `src/traits/` or create your own. This keeps the core tiny and lets you customize everything.
-
-### Available Traits
-
-Copy these from `src/traits/`:
-
-- `useAttributeTrait` - HTML attributes
-- `useClassNameTrait` - CSS classes
-- `useEventTrait` - Event listeners
-- `useFocusTrait` - Element focus
-- `useInnerHTMLTrait` - Inner HTML
-- `useInputValueTrait` - Input value binding
-- `useInputEventTrait` - Input events
-- `useStyleTrait` - CSS styles
-- `useTextContentTrait` - Text content
-
-### Creating Custom Traits
-
-```typescript
-function useTooltipTrait(el: HTMLElement, text: string, ...rest: (StateType<any> | Condition)[]) {
-  const isStateObj = (i: any) => Object.keys(i).includes('sub');
-  const states = rest.filter(isStateObj);
-  const conditions = rest.filter((i) => !isStateObj(i));
-
-  const apply = () => {
-    const applies = conditions.every((c) => (typeof c === 'function' ? c() : c));
-    if (applies) {
-      el.setAttribute('title', text);
-    }
-  };
-
-  apply();
-  const unsubs = states.map((state) => state.sub(apply));
-  return () => unsubs.forEach((unsub) => unsub());
-}
-```
-
-## Ready-Made States
-
-Like traits, **state utilities are NOT bundled** - you copy ready-made implementations from `src/states/` into your project.
+**state utilities are NOT bundled** - you copy ready-made implementations from `src/states/` into your project or build your own.
 
 ### Available States
 
-Copy these from `src/states/`:
-
-- `useMediaQueryState` - Reactive media query state that updates on window resize
+| State                | Description                                              |
+| :------------------- | :------------------------------------------------------- |
+| `useMediaQueryState` | Reactive media query state that updates on window resize |
 
 ### Example Usage
 
@@ -182,56 +165,134 @@ const isDesktop = useMediaQueryState({ minWidth: 1024 });
 
 **More coming soon!** We're adding router state, form state, async data state, and more. Check `src/states/` for updates.
 
-## Component Pattern
+## Templating
 
-Components are just functions that return elements:
+The `Template` function creates the DOM-building tools you need by configuring available **Traits**.
+
+**Configuration:**
 
 ```typescript
+import { Template } from '@linttrap/oem';
+import { useStyleTrait } from '@linttrap/oem/traits/Style';
+import { useEventTrait } from '@linttrap/oem/traits/Event';
+
+// This returns two proxies:
+const [tag, trait] = Template({
+  style: useStyleTrait,
+  event: useEventTrait,
+});
+```
+
+- **The `tag` Proxy:** Creates standard HTML and SVG elements (`tag.div()`, `tag.h1()`, `tag.svg()`, etc.) with full TypeScript support
+- **The `trait` Proxy:** Provides access to the configured trait functions (`trait.style(...)`, `trait.event(...)`, etc.)
+
+**Components and Children:**
+
+```typescript
+// Components are just functions that return elements
 function Button(text: string, onClick: () => void) {
-  return tag.button(
-    trait.style('padding', '10px 20px'),
-    trait.style('backgroundColor', 'blue'),
-    trait.style('color', 'white'),
-    trait.event('click', onClick),
-    text,
-  );
+  return tag.button(trait.event('click', onClick), text);
 }
 
-const app = tag.div(Button('Save', () => console.log('Saved!')));
+const app = tag.div(Button('Click Me', () => console.log('Hi')));
 ```
 
-## Development
+## Storage
 
-This project uses [Bun](https://bun.sh) for development:
+The `Storage` utility automatically manages and syncs state objects with web storage (`localStorage`, `sessionStorage`) or custom sync methods.
 
-```bash
-# Install dependencies
-bun install
+```typescript
+import { Storage, State } from '@linttrap/oem';
 
-# Run tests
-bun ./test/unit.html
+const storage = Storage({
+  data: {
+    username: {
+      key: 'app-username',
+      state: State(''),
+      storage: 'localStorage', // Persists across sessions
+    },
+  },
+  sync: {
+    // Custom method to load data from an API
+    fetchTodos: async () => {
+      // ... API fetch logic ...
+      storage.data.todos.set(todos);
+    },
+  },
+});
 
-# Build distribution
-make dist
-
-# Run documentation site in dev mode
-make dev
-
-# Run examples
-make examples
+// Access state directly
+storage.data.username.set('Alice'); // Auto-saves to localStorage
 ```
 
-## Philosophy
+## Traits
 
-OEM is a "roll your own framework" framework. The core (~2KB) provides:
+A **Trait** is a function that applies behavior to a DOM element.
 
-1. **State** - Reactive state management
-2. **Template** - Element creation with trait system
-3. **Storage** - Persistent state
+**Key Concept: Localized Behavior**
 
-Everything else is up to you. Copy ready-made traits and state utilities, modify them, or create your own. Understand every line of code in your framework.
+Traits keep behavior directly alongside your markup, preserving Locality of Behavior. You can attach multiple traits—even multiple of the same kind—to a single element. This produces a clean, declarative syntax that eliminates messy conditionals and manual DOM manipulation.
 
-## Browser Support
+```typescript
+tag.input(
+  trait.value(name.$val), // Input value binding
+  trait.event('input', handler), // Event handler
+  trait.style('color', 'red', isAlert.$test(true)), // conditional style
+  trait.style('color', 'blue', isAlert.$test(false)), // conditional style
+);
+```
+
+**Trait Availability and Customization**
+
+Traits are your framework: you build and manage your own library of traits. Ready-made traits live in src/traits/. Simply copy what you need into your project, and customize or extend them as you like.
+
+### Ready-Made Traits
+
+| Trait                 | Description                                      |
+| :-------------------- | :----------------------------------------------- |
+| `useAttributeTrait`   | Apply HTML attributes (`disabled`, `type`, etc.) |
+| `useStyleTrait`       | Apply CSS styles                                 |
+| `useEventTrait`       | Attach event listeners                           |
+| `useInputValueTrait`  | Bind input values to state                       |
+| `useInnerHTMLTrait`   | Set `innerHTML` reactively (useful for lists)    |
+| `useClassNameTrait`   | Manage CSS classes                               |
+| `useFocusTrait`       | Control element focus                            |
+| `useTextContentTrait` | Set text content reactively                      |
+
+### Creating Custom Traits
+
+A trait is simply a function whose first argument is the element it modifies, and it returns a cleanup function. All behavior—including "reactivity"—is handled inside the trait itself. Here’s the basic anatomy of a reactive trait:
+
+```typescript
+function useMyCustomTrait(
+  el: HTMLElement,
+  aCustomProperty: string,
+  anotherCustomProperty: number,
+  ...rest: (StateType<any> | Condition)[]
+) {
+  // Separate State objects from static conditions
+  const isStateObj = (i: any) => Object.keys(i).includes('sub');
+  const states = [val ?? '', ...rest].filter(isStateObj) as StateType<any>[];
+  const conditions = rest.filter((item) => !isStateObj(item));
+
+  // 1. Define the logic that applies the behavior
+  const apply = () => {
+    // YOUR CODE GOES HERE: Apply text, change style, etc.
+  };
+
+  // 2. Initial application
+  apply();
+
+  // 3. Subscribe to all passed State objects
+  const states = rest.filter(/* ... logic to find state objects ... */);
+  const unsubs = states.map((state) => state.sub(apply));
+
+  // 4. Return cleanup function (crucial for memory management)
+  return () => unsubs.forEach((unsub) => unsub());
+}
+```
+
+## 🌐 Browser Support
 
 Requires ES6+ support:
 
@@ -240,10 +301,10 @@ Requires ES6+ support:
 - Safari 10+
 - Edge 12+
 
-## License
+## 📄 License
+
+<img src="docs/assets/oem.png" width="150" style="border-radius:5px; margin:20px 0;" alt="OEM Logo" />
 
 MIT License
 
-©Copyright 2024. All rights reserved. Made in the USA 🇺🇸 by [Kevin Lint](http://kevinlint.com) as a product of [Lint Trap Media](http://linttrap.media).
-
-OEM is part of the [Lint Trap UI Project](https://github.com/linttrapmedia).
+©Copyright 2024. All rights reserved. Made in the USA 🇺🇸 by [Lint Trap Media](http://linttrap.media).
