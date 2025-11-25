@@ -13,6 +13,7 @@ export const useAttributeTrait = (
   const apply = () => {
     const _val = typeof val === 'function' ? val() : val;
     const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));
+    console.log(_val, applies);
     if (applies) {
       if (_val === undefined) {
         el.removeAttribute(prop);
