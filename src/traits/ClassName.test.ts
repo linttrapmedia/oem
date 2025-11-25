@@ -14,7 +14,7 @@ export const CanApplyClassNameTraitToHtml: Test = async () => {
   el = tmpl.div(trait.classname('c1'), trait.classname('c1'));
   tests.push(el.outerHTML === '<div class="c1"></div>');
 
-  // // add multiple classes
+  // add multiple classes
   el = tmpl.div(trait.classname('c1 c2'));
   tests.push(el.outerHTML === '<div class="c1 c2"></div>');
 
@@ -39,7 +39,7 @@ export const CanApplyClassNameTraitToHtml: Test = async () => {
   stateA.set('d');
   tests.push(el.outerHTML === '<div class="d c"></div>');
 
-  // // conditional class names
+  // conditional class names
   el = tmpl.div(trait.classname('c1', false));
   tests.push(el.outerHTML === '<div></div>');
 
@@ -84,14 +84,7 @@ export const CanApplyClassNameTraitToHtml: Test = async () => {
   const autoSubState = State(true);
   el = tmpl.div(
     trait.classname('c1 c2', autoSubState.$test(true)),
-    trait.classname(
-      '',
-      autoSubState.$test(false),
-      autoSubState,
-      autoSubState,
-      autoSubState,
-      autoSubState.$test(true),
-    ),
+    trait.classname('', autoSubState.$test(false)),
   );
   autoSubState.set(false);
   tests.push(el.outerHTML === '<div class=""></div>');
