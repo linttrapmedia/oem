@@ -1,13 +1,8 @@
-(()=>{var f=new WeakMap,M=new MutationObserver((a)=>{for(let l of a)if(l.type==="childList")l.removedNodes.forEach((c)=>{if(c instanceof HTMLElement&&f.has(c))f.get(c).forEach((u)=>u()),f.delete(c)})});M.observe(document.documentElement,{childList:!0,subtree:!0});function T(a){let l=new Proxy({},{get:(g,u)=>{let h=(...b)=>{let p=document.createElement(u);return b.forEach((m)=>{if(m.type==="trait")m(p);else if(typeof m==="function")if(m.hasOwnProperty("sub")){let s=document.createTextNode("");p.appendChild(s);let y=()=>s.data=m(p);y();let d=m.sub(y);f.set(p,[...f.get(p)||[],d])}else p.append(m(p));else p.append(m)}),p};return h.type="tag",h}}),c=new Proxy({},{get:(g,u)=>(...h)=>{let b=(p)=>{let m=a[u],s=m(p,...h),y=f.get(p)||[];y.push(s),f.set(p,y)};return b.type="trait",b}});return[l,c]}var x=(a,l,c,...g)=>{let u=(s)=>Object.keys(s).includes("sub"),h=[c??"",...g].filter(u),b=g.filter((s)=>!u(s)),p=()=>{let s=typeof c==="function"?c():c;if(b.every((d)=>typeof d==="function"?d():d))if(s===void 0)a.removeAttribute(l);else a.setAttribute(l,String(s));else a.removeAttribute(l)};p();let m=h.map((s)=>s.sub(p));return()=>m.forEach((s)=>s())};function S(a,l,c,...g){let u=(y)=>Object.keys(y).includes("sub"),h=g.filter(u),b=g.filter((y)=>!u(y)),p=!1,m=()=>{if(b.every((d)=>typeof d==="function"?d():d)&&!p)a.addEventListener(l,c),p=!0;else a.removeEventListener(l,c),p=!1};m();let s=h.map((y)=>y.sub(m));return()=>{a.removeEventListener(l,c),s.forEach((y)=>y())}}function w(a,l,...c){let g=(s)=>Object.keys(s).includes("sub"),u=(s)=>typeof s==="function"&&s.type==="$test",h=[l,...c].filter(g),b=c.filter((s)=>!g(s)||u(s)),p=()=>{let s=typeof l==="function"?l():l;if(b.every((d)=>typeof d==="function"?d():d)){if(a.innerHTML="",s!==void 0)if(Array.isArray(s))s.filter((d)=>d).forEach((d)=>{if(d instanceof HTMLElement||d instanceof SVGElement)a.appendChild(d);else a.appendChild(document.createTextNode(String(d)))});else if(s instanceof HTMLElement||s instanceof SVGElement)a.appendChild(s);else a.innerHTML=String(s)}};p();let m=h.map((s)=>s.sub(p));return()=>m.forEach((s)=>s())}function k(a,l,c,...g){let u=(s)=>Object.keys(s).includes("sub"),h=g.filter(u),b=g.filter((s)=>!u(s)),p=()=>{let s=typeof c==="function"?c():c;if(b.every((d)=>typeof d==="function"?d():d))l.startsWith("--")?a.style.setProperty(l,s):a.style[l]=s};p();let m=h.map((s)=>s.sub(p));return()=>m.forEach((s)=>s())}var $=(a,l)=>{a.style.display="block",a.style.whiteSpace="pre",a.style.fontFamily="'Courier New', Courier, monospace",a.style.color="white",a.style.backgroundColor="#222222",a.style.padding="30px",a.style.borderRadius="5px",a.style.overflowX="auto",a.style.maxWidth="100%",a.style.width="100%",a.style.minWidth="0",a.style.boxSizing="border-box",a.style.wordBreak="normal";let c=new MutationObserver((g)=>{g.forEach((u)=>{if(u.type==="childList"){if(u.addedNodes.length>0){c.disconnect();let h=Prism.highlight(a.innerText,Prism.languages.typescript);a.innerHTML=h}}})});return c.observe(a,{childList:!0}),a},[t,e]=T({attr:x,event:S,style:k,html:w,prism:$});var r=(a,l,...c)=>{return t.div(e.style("display","flex"),e.style("flexDirection",a),e.style("gap",`${l}px`),e.style("width","100%"),...c)};var i=(a,l="typescript")=>{return t.pre(e.prism(l),a.trim())},o=(a)=>{return t.code(e.style("backgroundColor","#858585"),e.style("color","#d4d4d4"),e.style("padding","2px 6px"),e.style("borderRadius","3px"),e.style("fontSize","12px"),a)};var C={name:"@linttrap/oem",version:"2.0.0",author:"@linttrapmedia",repository:{type:"git",url:"git+https://github.com/linttrapmedia/oem.git"},main:"./src/oem.ts",module:"./src/oem.ts",devDependencies:{"@types/bun":"latest",prettier:"2.7.1"},peerDependencies:{typescript:"^5"},exports:{".":"./src/oem.ts"},bugs:{url:"https://github.com/linttrapmedia/oem/issues"},description:"A novel UI library for writing reactive html with vanilla javascript",homepage:"https://oem.js.org",license:"MIT",private:!1,title:"oem",type:"module",dependencies:{"@linttrap/oem":"^1.0.2"}};var v=(...a)=>{return t.div(e.style("display","flex"),e.style("flexDirection","column"),e.style("gap","30px"),e.style("maxWidth","900px"),e.style("margin","0 auto"),e.style("width","100%"),...a)};v.Header=(a,l)=>{return t.div(e.style("position","relative"),t.h1(e.style("fontFamily","Splash"),e.style("fontSize","64px"),e.style("fontWeight","normal"),a,t.small(e.style("fontSize","10px"),e.style("fontFamily","Arial, sans-serif"),e.style("top","20px"),e.style("position","absolute"),e.style("marginLeft","10px"),e.style("opacity","0.4"),C.version)),t.p(l))};var n=(a)=>{return t.div(e.attr("id",a.title.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")),t.div(e.style("display","flex"),e.style("alignItems","center"),e.style("gap","10px"),a.type==="main"?t.h2(a.title):t.h3(a.title),t.a(e.style("fontSize","14px"),e.style("textDecoration","none"),e.style("border","1px solid #a4a4a4ff"),e.style("padding","2px 6px"),e.style("borderRadius","4px"),e.attr("href","#"),"¶")),a.subtitle?t.p(a.subtitle):"",a.content)};var E=()=>v(v.Header("oem","The roll your own framework framework"),n({title:"Menu",type:"main",content:r("column",0,t.ul(t.li(t.a(e.attr("href","https://github.com/linttrapmedia/oem"),e.attr("target","_blank"),"GITHUB")),t.li(t.a(e.attr("href","#what-is-oem"),"What is OEM?")),t.li(t.a(e.attr("href","#philosophy"),"Philosophy")),t.li(t.a(e.attr("href","#why-oem"),"Why OEM?")),t.li(t.a(e.attr("href","#installation"),"Installation")),t.li(t.a(e.attr("href","#quick-example"),"Quick Example")),t.li(t.a(e.attr("href","#state"),"State")),t.li(t.a(e.attr("href","#the-pattern"),"The $ Pattern")),t.li(t.a(e.attr("href","#templating"),"Templating")),t.li(t.a(e.attr("href","#components"),"Components")),t.li(t.a(e.attr("href","#svg-support"),"SVG Support")),t.li(t.a(e.attr("href","#storage"),"Storage")),t.li(t.a(e.attr("href","#traits"),"Traits")),t.li(t.a(e.attr("href","#the-reactive-pattern"),"The Reactive Pattern")),t.li(t.a(e.attr("href","#ready-made-states"),"Ready-Made States")),t.li(t.a(e.attr("href","#creating-custom-traits"),"Creating Custom Traits")),t.li(t.a(e.attr("href","#examples"),"Examples")),t.li(t.a(e.attr("href","#core-methods"),"Core Methods"))))}),n({title:"What is OEM?",type:"main",subtitle:"A ~2KB micro-library for building reactive UIs with vanilla TypeScript",content:r("column",20,t.p("OEM provides three minimal building blocks that you combine to create your own UI framework. ","Think of it as a construction kit rather than a complete framework."),t.ul(e.style("listStyle","none"),e.style("marginTop","20px"),t.li(t.strong(e.style("fontWeight","bold"),"State")," - Reactive state management with pub/sub pattern"),t.li(t.strong("Template")," - Proxy-based HTML/SVG element creation with trait behaviors"),t.li(t.strong("Storage")," - Persistent state with web storage and custom sync methods")),t.p(e.style("marginTop","20px"),"OEM itself is just the core. Traits (event handlers, styles, attributes, etc.) are ",t.strong("reference implementations")," you copy and customize for your needs."))}),n({title:"Philosophy",type:"main",subtitle:"Understand every line of code in your framework",content:r("column",20,t.p("Most frameworks are black boxes. OEM is different - it gives you the minimal core and ",t.strong("shows you how to build the rest"),". This means:"),t.ul(e.style("marginTop","20px"),t.li(t.strong("You control the code")," - Traits are copied into your project, not imported from a package"),t.li(t.strong("No magic")," - The entire core is ~300 lines of readable TypeScript"),t.li(t.strong("Learn by doing")," - Modify traits or create new ones to understand how reactivity works"),t.li(t.strong("AI-friendly")," - Simple, predictable patterns that AI assistants can understand and extend")),t.p(e.style("marginTop","20px"),`When you use OEM, you're not "using a framework" - you're building your own with guidance.`))}),n({title:"Why OEM?",type:"main",content:r("column",0,t.ul(e.style("listStyle","none"),t.li("✓ Lightweight (~2KB minified core)"),t.li("✓ Zero dependencies"),t.li("✓ Locality of behavior - traits keep behavior next to markup"),t.li("✓ Full TypeScript support with excellent type inference"),t.li("✓ Reactive DOM without virtual DOM overhead"),t.li("✓ Copy only what you need - no bloat"),t.li("✓ Perfect for learning reactive patterns")))}),n({title:"Quick Example",subtitle:"Here's a simple counter to show you how OEM works:",content:i(`
-// Create template with traits
-const [tag, trait] = Template({
-  event: useEventTrait,
-});
+(()=>{function h(y){let o=y,t=new Set,r=(d)=>{o=d,t.forEach((l)=>l(d))},E=(d)=>()=>r(d),v=(d)=>r(d(o)),H=(d)=>()=>r(d(f())),u=(d)=>{return t.add(d),()=>t.delete(d)},i=(d,l=!0)=>{let $=JSON.stringify(o);if(d instanceof RegExp){let O=d.test($);return l?O:!O}else if(typeof d==="function"&&d instanceof Function){let O=d(o);return l?O:!O}else{let O=JSON.stringify(d),G=$===O;return l?G:!G}},m=(d,l=!0)=>{let $=()=>i(d,l);return $.sub=u,$.type="$test",$},f=()=>o,x=()=>o;return x.sub=u,x.type="$val",{$call:(d,l)=>{let $=()=>o[d](l);return $.sub=u,$.type="$call",$},$chain:(...d)=>{let l=()=>d.reduce(($,[O,...G])=>$[O](...G),f());return l.sub=u,l.type="$chain",l},$reduce:H,$set:E,$test:m,$val:x,call:(d,...l)=>o[d](...l),chain:(...d)=>d.reduce((l,[$,...O])=>l[$](...O),o),reduce:v,set:r,sub:u,test:i,val:f,_subs:t}}var M=new WeakMap,w=new MutationObserver((y)=>{for(let o of y)if(o.type==="childList")o.removedNodes.forEach((t)=>{if(t instanceof HTMLElement&&M.has(t))M.get(t).forEach((E)=>E()),M.delete(t)})});w.observe(document.documentElement,{childList:!0,subtree:!0});function U(y){let o=new Proxy({},{get:(r,E)=>{let v=(...H)=>{let u=document.createElement(E);return H.forEach((i)=>{if(i.type==="trait")i(u);else if(typeof i==="function")if(i.hasOwnProperty("sub")){let m=document.createTextNode("");u.appendChild(m);let f=()=>m.data=i(u);f();let x=i.sub(f);M.set(u,[...M.get(u)||[],x])}else u.append(i(u));else u.append(i)}),u};return v.type="tag",v}}),t=new Proxy({},{get:(r,E)=>(...v)=>{let H=(u)=>{let i=y[E],m=i(u,...v),f=M.get(u)||[];f.push(m),M.set(u,f)};return H.type="trait",H}});return[o,t]}var z=(y,o,t,...r)=>{let E=(f)=>Object.keys(f).includes("sub"),v=(f)=>typeof f==="function"&&f.type==="$test",H=[t??"",...r].filter(E),u=r.filter((f)=>!E(f)||v(f)),i=()=>{let f=typeof t==="function"?t():t;if(u.every((D)=>typeof D==="function"?D():D))if(f===void 0)y.removeAttribute(o);else y.setAttribute(o,String(f));else y.removeAttribute(o)};i();let m=H.map((f)=>f.sub(i));return()=>m.forEach((f)=>f())};function N(y,o,t,...r){let E=(x)=>Object.keys(x).includes("sub"),v=(x)=>typeof x==="function"&&x.type==="$test",H=r.filter(E),u=r.filter((x)=>!E(x)||v(x)),i=!1,m=()=>{if(u.every((D)=>typeof D==="function"?D():D)&&!i)y.addEventListener(o,t),i=!0;else y.removeEventListener(o,t),i=!1};m();let f=H.map((x)=>x.sub(m));return()=>{y.removeEventListener(o,t),f.forEach((x)=>x())}}function q(y,o,...t){let r=(m)=>Object.keys(m).includes("sub"),E=(m)=>typeof m==="function"&&m.type==="$test",v=[o,...t].filter(r),H=t.filter((m)=>!r(m)||E(m)),u=()=>{let m=typeof o==="function"?o():o;if(H.every((x)=>typeof x==="function"?x():x)){if(y.innerHTML="",m!==void 0)if(Array.isArray(m))m.filter((x)=>x).forEach((x)=>{if(x instanceof HTMLElement||x instanceof SVGElement)y.appendChild(x);else y.appendChild(document.createTextNode(String(x)))});else if(m instanceof HTMLElement||m instanceof SVGElement)y.appendChild(m);else y.innerHTML=String(m)}};u();let i=v.map((m)=>m.sub(u));return()=>i.forEach((m)=>m())}function F(y,o,t,...r){let E=(f)=>Object.keys(f).includes("sub"),v=(f)=>typeof f==="function"&&f.type==="$test",H=r.filter(E),u=r.filter((f)=>!E(f)||v(f));if(y.tagName==="BUTTON"&&o==="backgroundColor");let i=()=>{let f=typeof t==="function"?t():t;if(u.every((D)=>typeof D==="function"?D():D))o.startsWith("--")?y.style.setProperty(o,f):y.style[o]=f};i();let m=H.map((f)=>f.sub(i));return()=>m.forEach((f)=>f())}var C=(y,o)=>{y.style.display="block",y.style.whiteSpace="pre",y.style.fontFamily="'Courier New', Courier, monospace",y.style.color="white",y.style.backgroundColor="#222222",y.style.padding="30px",y.style.borderRadius="5px",y.style.overflowX="auto",y.style.maxWidth="100%",y.style.width="100%",y.style.minWidth="0",y.style.boxSizing="border-box",y.style.wordBreak="normal";let t=new MutationObserver((r)=>{r.forEach((E)=>{if(E.type==="childList"){if(E.addedNodes.length>0){t.disconnect();let v=Prism.highlight(y.innerText,Prism.languages.typescript);y.innerHTML=v}}})});return t.observe(y,{childList:!0}),y},c=h("grey"),fs=h(""),j=h(!1),B=[["useAttributeTrait","src/traits/Attribute.ts","Set HTML attributes"],["useClassNameTrait","src/traits/ClassName.ts","Apply CSS class names"],["useEventTrait","src/traits/Event.ts","Attach event listeners (click, input, etc.)"],["useFocusTrait","src/traits/Focus.ts","Manage focus and blur events"],["useInnerHTMLTrait","src/traits/InnerHTML.ts","Set inner HTML content"],["useInputEventTrait","src/traits/InputEvent.ts","Handle input events"],["useStyleTrait","src/traits/Style.ts","Apply inline styles"],["useTextContentTrait","src/traits/TextContent.ts","Set text content"],["useValueTrait","src/traits/InputValue.ts","Bind to input values"]],R=[["useMediaQueryState","src/states/MediaQuery.ts","Responsive state based on window size"]],Q=[["Single File Todo","examples/singleFileTodo","A simple todo list application using OEM."],["Todo","examples/todo","A todo application demonstrating state management."],["Counter","examples/counter","A simple counter application."]],[n,s]=U({attr:z,event:N,style:F,html:q,prism:C});async function X(y){let o=new JSZip,t=["src/oem.ts",...y];for(let v of t){let H=`https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/${v}`,u=await fetch(H);if(!u.ok){console.error("Failed:",v);continue}let i=await u.arrayBuffer(),m=v.split("/").pop(),f=v.startsWith("src/traits")?"traits/":v.startsWith("src/states")?"states/":"";o.file(f+m,i)}let r=await o.generateAsync({type:"blob"}),E=document.createElement("a");E.href=URL.createObjectURL(r),E.download="oem.zip",E.click(),URL.revokeObjectURL(E.href)}function Y(y){return n.div(s.style("backgroundColor","rgba(255, 255, 255, 0.5)",c.$test("grey")),s.style("backgroundColor","rgba(0, 0, 0, 0.1)",c.$test("ada")),s.style("padding","10px"),s.style("padding","5px 10px"),s.style("fontSize","0.9rem",c.$test("grey")),s.style("fontSize","1rem",c.$test("ada")),s.style("borderRadius","4px"),s.style("lineHeight","1.4"),y)}var e=(...y)=>n.table(s.style("width","100%"),s.style("borderCollapse","collapse"),...y);e.Header=(...y)=>n.thead(s.style("textAlign","left"),...y);e.Body=(...y)=>n.tbody(...y);e.Row=(...y)=>n.tr(s.style("borderBottom","1px solid rgba(0, 0, 0, 0.3)"),...y);e.HeaderCell=(...y)=>n.th(s.style("padding","10px"),s.style("fontWeight","600"),s.style("borderBottom","2px solid black"),...y);e.Cell=(...y)=>n.td(s.style("padding","10px"),...y);var W=(y,o,...t)=>{return n.div(s.style("display","flex"),s.style("flexDirection",y),s.style("gap",`${o}px`),s.style("width","100%"),...t)};var L=(y,o="typescript")=>{return n.pre(s.prism(o),y.trim())},A=(y)=>{return n.code(s.style("backgroundColor","#858585",c.$test("grey")),s.style("backgroundColor","#e0e0e0",c.$test("ada")),s.style("color","#d4d4d4",c.$test("grey")),s.style("color","black",c.$test("ada")),s.style("padding","2px 6px"),s.style("borderRadius","3px"),s.style("fontSize","12px"),y)};var J={name:"@linttrap/oem",version:"2.1.0",author:"@linttrapmedia",repository:{type:"git",url:"git+https://github.com/linttrapmedia/oem.git"},main:"./src/registry.ts",module:"./src/registry.ts",devDependencies:{"@types/bun":"latest",prettier:"2.7.1"},peerDependencies:{typescript:"^5"},exports:{".":"./src/oem.ts"},bugs:{url:"https://github.com/linttrapmedia/oem/issues"},description:"A novel UI library for writing reactive html with vanilla javascript",homepage:"https://oem.js.org",license:"MIT",private:!1,title:"oem",type:"module",dependencies:{"@linttrap/oem":"^1.0.2"}};var k=(...y)=>{return n.div(s.style("display","flex"),s.style("flexDirection","column"),s.style("gap","50px"),s.style("maxWidth","900px"),s.style("margin","0 auto"),s.style("width","100%"),...y)};k.Header=(y,o)=>{return n.div(s.style("position","relative"),n.h1(s.style("fontFamily","Splash"),s.style("fontSize","64px"),s.style("fontWeight","normal"),y,n.small(s.style("fontSize","10px"),s.style("fontFamily","Arial, sans-serif"),s.style("top","20px"),s.style("position","absolute"),s.style("marginLeft","10px"),s.style("opacity","0.4"),J.version)),n.p(o),n.button(s.style("backgroundColor",()=>"grey",c.$test("ada"),c),s.style("backgroundColor",()=>"black",c.$test("grey"),c),s.style("position","absolute"),s.style("top","0"),s.style("right",0),s.event("click",()=>{if(c.val()==="ada")c.set("grey"),document.documentElement.classList.remove("prism-ada"),document.documentElement.classList.add("prism");else document.documentElement.classList.remove("prism"),document.documentElement.classList.add("prism-ada"),c.set("ada")}),s.html("ADA Theme",c.$test("grey")),s.html("Switch to basic theme",c.$test("ada"))))};var p=(y)=>{let o=y.level===1?n.h2(s.style("textTransform","uppercase"),y.title):y.level===2?n.h3(y.title):n.h4(y.title);return n.div(s.style("display","flex"),s.style("flexDirection","column"),s.style("gap","5px"),s.attr("id",y.title.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")),s.html([n.div(s.style("display","flex"),s.style("alignItems","center"),s.style("gap","10px"),o,n.a(s.style("display","block",y.level===1),s.style("display","none",y.level!==1),s.style("fontSize","14px"),s.style("textDecoration","none"),s.style("border","1px solid #a4a4a4ff"),s.style("padding","2px 6px"),s.style("borderRadius","4px"),s.attr("href","#"),"¶")),y.subtitle?n.p(s.style("marginBottom","10px"),y.subtitle):"",n.div(s.style("display","flex"),s.style("flexDirection","column"),s.style("gap","20px"),...Array.isArray(y.content)?y.content:[y.content])]))};var Z=()=>k(k.Header("oem","The Roll Your Own Framework Framework"),p({title:"Table of Contents",level:1,content:n.ul(n.li(n.a(s.attr("href","https://github.com/linttrapmedia/oem"),s.attr("target","_blank"),"GITHUB")),n.li(n.a(s.attr("href","#features"),"Features")),n.li(n.a(s.attr("href","#philosophy"),"Philosophy")),n.li(n.a(s.attr("href","#installation"),"Installation")),n.li(n.a(s.attr("href","#quick-start"),"Quick Start")),n.li(n.a(s.attr("href","#state"),"State")),n.li(n.a(s.attr("href","#templating"),"Templating")),n.li(n.a(s.attr("href","#traits"),"Traits")),n.li(n.a(s.attr("href","#storage"),"Storage")),n.li(n.a(s.attr("href","#examples"),"Examples")))}),p({title:"Features",subtitle:"OEM’s syntax is simple and transparent enough for humans to fully grasp and for AI to reliably extend—creating a feedback loop where you understand the code, refine it, and the AI builds on the exact patterns you’ve established.",level:1,content:[n.ul(n.li("✓ ~2.7KB minified core, zero dependencies"),n.li("✓ Reactive DOM with no virtual DOM layer"),n.li("✓ Locality of behavior makes reasoning—and debugging—trivial"),n.li("✓ AI can generate Traits directly, and you can understand and refine every line"),n.li("✓ Full TypeScript types without framework overhead"),n.li("✓ Copy only what you need; no bulk, no lock-in"))]}),p({title:"Philosophy",level:1,subtitle:"OEM is a minimal, convention-driven toolkit for crafting your own reactive, component-based UI layer—fully local, fully understood, and entirely yours.",content:[p({title:"Transparent",level:2,content:[n.p("OEM's primary goal is ",n.strong("transparency"),'. It strips away the "black box" complexity of modern frameworks and replaces it with small, local behaviors you can actually reason about.'),n.ul(n.li(n.strong("Readable Core:")," ~300 lines of plain TypeScript you can grasp in a single sitting"),n.li(n.strong("Local Behavior:")," Features are implemented as ",n.strong("Traits"),"—small files that live next to your markup and are meant to be ",n.strong("copied, edited, and extended")),n.li(n.strong("No Hidden Magic:")," Everything reduces to simple reactive patterns (pub/sub, observers, state flows) that you can inspect and reshape"))]}),p({title:"Why 'Roll Your Own Framework'?",level:2,content:[n.p("Modern frameworks try to be all things to all people, resulting in bulky, complex systems that are hard to master and extend. OEM embraces the idea that ",n.strong("you should build the framework you need, not the other way around"),"."),n.ul(n.li("Start small with just the Traits and States you need"),n.li("Evolve your toolkit organically as your project grows"),n.li("Maintain full control over every line of code and behavior"))]})]}),p({title:"Installation",subtitle:"Get started quickly with OEM in your project",level:1,content:[p({title:"Automatically",subtitle:"If you want to maintain OEM as a dependency, it's available via npm:",level:2,content:L("npm install @linttrap/oem","bash")}),p({title:"Manually",level:2,content:[n.p("Why not make it yours? The core is 300 LOC and the traits are simple. Use the tool below to customize and download a package with only the Traits and States you need."),n.form(n.div(s.style("lineHeight","2"),n.div(s.style("display","flex"),s.style("gap","10px"),n.input(s.attr("type","checkbox"),s.attr("name","modules"),s.attr("value","core"),s.attr("id","core"),s.attr("checked","true"),s.attr("disabled","true")),n.label(s.attr("for","core"),n.span(s.style("fontWeight","bold"),"Core"),n.span(" - Core library (required)"))),...B.map(([y,o,t])=>n.div(s.style("display","flex"),s.style("gap","10px"),n.input(s.attr("type","checkbox"),s.attr("name","modules"),s.attr("value",o),s.attr("id",`trait-${y}`),s.attr("checked","true")),n.label(s.attr("for",`trait-${y}`),n.span(s.style("fontWeight","bold"),y),n.span(` - ${t}`)))),...R.map(([y,o,t])=>n.div(s.style("display","flex"),s.style("gap","10px"),n.input(s.attr("type","checkbox"),s.attr("name","modules"),s.attr("value",o),s.attr("id",`state-${y}`),s.attr("checked","true")),n.label(s.attr("for",`state-${y}`),n.span(s.style("fontWeight","bold"),y),n.span(` - ${t}`))))),n.br(),n.button(s.attr("type","button"),s.attr("disabled","true",j.$test(!0)),s.attr("disabled",void 0,j.$test(!1)),s.style("opacity","0.6",j.$test(!0)),s.style("opacity","1",j.$test(!1)),s.style("cursor","not-allowed",j.$test(!0)),s.event("click",()=>{j.set(!0);let y=document.querySelector("form"),t=new FormData(y).getAll("modules");X(t).finally(()=>{j.set(!1)})}),s.html("Download Zip",j.$test(!1)),s.html("Preparing...",j.$test(!0))))]})]}),p({title:"Quick Start",level:1,subtitle:"This is the simplest way to show how State and Templating work together to create a reactive component.",content:[p({title:"Example",level:2,content:L(`
+const [tag, trait] = Template({ event: useEventTrait });
 
-// Create reactive state
 const count = State(0);
 
-// Generate DOM
 const app = tag.div(
   tag.h1(count.$val),
   tag.button(
@@ -15,418 +10,86 @@ const app = tag.div(
     'Increment',
   ),
 );
-`)}),n({title:"Installation",content:i("npm install @linttrap/oem","bash")}),n({title:"State",type:"main",subtitle:"Create a state object with an initial value:",content:i(`import { State } from '@linttrap/oem';
-
-const count = State(0);
-const name = State('Alice');
-const user = State({ id: 1, name: 'Bob' });
-
-// With TypeScript
-const color = State<'red' | 'green' | 'blue'>('red');`)}),n({title:"Getting Values",content:r("column",0,t.p("Use ",o("val()")," to get the current value:"),i(`const count = State(10);
-count.val(); // 10`),t.p("Use ",o("$val()")," to get a closure that returns the value:"),i(`const getCount = count.$val();
-getCount(); // 10`))}),n({title:"Setting Values",content:r("column",0,t.p("Set a new value with ",o("set(value)"),":"),i("count.set(5);"),t.p("Use ",o("$set(value)")," to get a closure that sets the value when called:"),i(`const setToTen = count.$set(10);
-setToTen(); // count is now 10
-
-// Perfect for event handlers
-tag.button(trait.event('click', count.$set(0)), 'Reset')`),t.p("Update based on previous value with ",o("reduce(fn)"),":"),i("count.reduce((prev) => prev + 1);"),t.p("Use ",o("$reduce(fn)")," to get a closure for event handlers:"),i(`tag.button(
-  trait.event('click', count.$reduce((n) => n + 1)), 'Increment')
-)`))}),n({title:"Subscribing to Changes",content:r("column",0,t.p("Subscribe to state changes. Returns an unsubscribe function:"),i(`const unsub = count.sub((newValue) => {
-  console.log('Count changed:', newValue);
-});
-
-count.set(5); // Logs: "Count changed: 5"
-
-// Unsubscribe
-unsub();`))}),n({title:"Testing Values",content:r("column",0,t.p("Test if current value matches a condition:"),i(`const color = State('red');
-    
-// Direct comparison
-color.test('red'); // true
-color.test('blue'); // false
-
-// Inverse check
-color.test('red', false); // false
-
-// Function predicate
-const items = State([1, 2, 3]);
-items.test((arr) => arr.length > 2); // true
-
-// Regular expression
-const name = State('Alice');
-name.test(/^A/); // true
-
-// Use in traits
-tag.div(
-  trait.style('display', 'block', isVisible.$test(true))
-)`))}),n({title:"Method Calls",content:r("column",0,t.p(o("call(...)")," to call methods on boxed primitives (String, Number, Boolean):"),i(`const text = State('hello world');
-text.call('toUpperCase'); // 'HELLO WORLD'
-
-const num = State(3.14159);
-num.call('toFixed', 2); // '3.14'
-
-// Use $call for reactive updates
-tag.div(
-  trait.html(count.$call('toUpperCase'))
-)`),t.p(o("chain(...)")," to chain multiple method calls:"),i(`const text = State('  hello world  ');
-text.chain(
-  ['trim'],
-  ['toUpperCase'],
-  ['split', ' ']
-); // ['HELLO', 'WORLD']
-
-// Use $chain for reactive updates
-tag.div(
-  trait.html(
-    text.$chain(['toUpperCase'], ['split', ''])
-  )
-)`))}),n({title:"The $ Pattern",type:"main",subtitle:"Understanding closures and reactive bindings",content:r("column",20,t.p("Every State method has a $ version that returns a ",t.strong("closure")," - a function you can call later. This is crucial for two reasons:"),t.h4(e.style("marginTop","20px"),"1. Event Handlers"),t.p("Without closures, you'd need wrapper functions everywhere:"),i(`// Without $ pattern - verbose
-tag.button(
-  trait.event('click', () => count.set(0)),
-  'Reset'
-)
-
-// With $ pattern - clean
-tag.button(
-  trait.event('click', count.$set(0)),
-  'Reset'
-)`),t.h4(e.style("marginTop","20px"),"2. Reactive UI Updates"),t.p("The Template system automatically subscribes to ",o("$val"),", ",o("$test"),", and other $ methods, updating the UI when state changes:"),i(`const count = State(0);
-
-// This text auto-updates when count changes
-tag.h1(count.$val)
-
-// This button appears/disappears based on count
-tag.div(
-  trait.style('display', 'block', count.$test(0, false)), // Hide when count is 0
-  trait.style('display', 'none', count.$test(0)),          // Show when count is 0
-  'Count is not zero'
-)`),t.h4(e.style("marginTop","20px"),"Complete Method Reference"),t.table(e.style("width","100%"),e.style("borderCollapse","collapse"),e.style("marginTop","20px"),e.html([t.thead(e.html(t.tr(e.html([t.th(e.style("textAlign","left"),e.style("padding","10px"),e.style("borderBottom","2px solid black"),"Method"),t.th(e.style("textAlign","left"),e.style("padding","10px"),e.style("borderBottom","2px solid black"),"$ Version"),t.th(e.style("textAlign","left"),e.style("padding","10px"),e.style("borderBottom","2px solid black"),"Primary Use")])))),t.tbody(e.html([t.tr(e.html([t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),e.html(o("val()"))),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),e.html(o("$val()"))),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),"Reactive text/content")])),t.tr(e.html([t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),e.html(o("set(v)"))),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),e.html(o("$set(v)"))),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),"Event handlers")])),t.tr(e.html([t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),e.html(o("reduce(fn)"))),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),e.html(o("$reduce(fn)"))),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),"Event handlers")])),t.tr(e.html([t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),e.html(o("test(p)"))),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),e.html(o("$test(p)"))),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),"Conditional visibility/styles")])),t.tr(e.html([t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),e.html(o("call(m)"))),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),e.html(o("$call(m)"))),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),"Transform values (map, filter, etc.)")]))]))])))}),n({title:"Templating",type:"main",subtitle:"The Template function takes a configuration object mapping trait names to functions:",content:i(`import { Template } from '@linttrap/oem';
-import { useStyleTrait } from '@linttrap/oem/traits/Style';
-import { useEventTrait } from '@linttrap/oem/traits/Event';
-
-const [tag, trait] = Template({
-  style: useStyleTrait,
-  event: useEventTrait,
-});`)}),n({title:"The Tag Proxy",subtitle:"Creates HTML/SVG elements with full TypeScript support:",content:i(`const div = tag.div();
-const button = tag.button();
-const svg = tag.svg();
-const circle = tag.circle();
-
-// All HTML and SVG elements available!`)}),n({title:"The Trait Proxy",subtitle:"Provides access to configured trait functions:",content:i(`// After configuration, you have:
-trait.style('color', 'red');
-trait.event('click', handleClick);
-// ... all your configured traits`)}),n({title:"Applying Traits",subtitle:"Pass traits as arguments to tag functions:",content:r("column",0,i(`tag.div(
-  trait.style('padding', '20px'),
-  trait.style('color', 'blue'),
- ...
-)`))}),n({title:"Working with Children",content:r("column",0,t.p("Simple Children"),i(`tag.p('This is a paragraph')
-tag.h1('Title')
-tag.span(123)`),t.p("Nested Elements"),i(`tag.div(
-  tag.h1('Title'),
-  tag.p('Description'),
-  tag.button('Click me')
-)`),t.p("Dynamic Children"),i(`
-const msg = State('Hello, World!');
-const items = State(['Apple', 'Banana', 'Orange']);
-
-tag.div(msg.$val); // Reactive message
-
-tag.ul(
-  trait.html(
-    items.$call('map', (item) => tag.li(item)) // Reactive list items
-  )
-)`))}),n({title:"Subscribing to State Changes",content:r("column",0,t.p("Using ",o("$val()")," in traits automatically subscribes to changes:"),i("tag.p(someState.$val)"),t.p("To subscribe manually, simply add the state object to the trait arguments (trait must support it):"),i("trait.style('display', 'block', isVisible.val, isVisible)"),t.p("This pattern then supports multiple state objects. The value needs to be a function (so you can recompute it when the state changes):"),i("trait.style('opacity', () => 'computed value', stateObject1, stateObject2)"))}),n({title:"Components",type:"main",subtitle:"Components are just functions that return elements:",content:i(`function Button(text: string, onClick: () => void) {
-  return tag.button(
-    trait.style('padding', '10px 20px'),
-    trait.style('backgroundColor', 'blue'),
-    trait.style('color', 'white'),
-    trait.style('border', 'none'),
-    trait.style('borderRadius', '5px'),
-    trait.style('cursor', 'pointer'),
-    trait.event('click', onClick),
-    text
-  );
-}
-
-// Use it
-const app = tag.div(
-  Button('Click me', () => console.log('Clicked!'))
-);`)}),n({title:"SVG Support",type:"main",subtitle:"Full support for SVG elements:",content:i(`const icon = tag.svg(
-  trait.attr('width', '24'),
-  trait.attr('height', '24'),
-  trait.attr('viewBox', '0 0 24 24'),
-
-  tag.circle(
-    trait.attr('cx', '12'),
-    trait.attr('cy', '12'),
-    trait.attr('r', '10'),
-    trait.style('fill', 'blue')
-  ),
-
-  tag.path(
-    trait.attr('d', 'M12 2L2 22h20L12 2z'),
-    trait.style('fill', 'white')
-  )
-);`)}),n({title:"How It All Works Together",type:"main",subtitle:"Understanding the complete picture",content:r("column",20,t.p("Let's connect the dots on how OEM's pieces create a reactive UI:"),t.h4(e.style("marginTop","20px"),"1. You Create State"),i("const count = State(0);"),t.h4(e.style("marginTop","20px"),"2. You Configure a Template with Traits"),i(`const [tag, trait] = Template({
-  event: useEventTrait,
-  style: useStyleTrait,
-});`),t.h4(e.style("marginTop","20px"),"3. You Build Elements with Reactive Bindings"),i(`const app = tag.div(
-  // This text updates when count changes
-  tag.h1(count.$val),
-
-  // This button modifies count
+`)}),p({title:"How It Works",level:2,subtitle:"Understanding the complete reactive loop",content:[p({title:"1. Create State",subtitle:"State holds reactive data and special methods (prefixed with '$') used to notify subscribers on changes",level:3,content:L("const count = State(0);")}),p({title:"2. Configure Template with Traits",subtitle:"Template provides element creators and access to registered Traits",level:3,content:L("const [tag, trait] = Template({ event: useEventTrait });")}),p({title:"3. Build Elements with Reactive Bindings",subtitle:"Use the tag proxy to create elements and trait proxy to attach behaviors",level:3,content:L(`const app = tag.div(
+  // $val subscribes returns current value and auto-updates on changes
+  tag.h1(count.$val), 
   tag.button(
-    trait.event('click', count.$reduce(n => n + 1)),
-    'Increment'
-  )
-);`),t.h4(e.style("marginTop","20px"),"4. Behind the Scenes"),t.ul(e.style("marginTop","10px"),t.li("The Template sees ",o("count.$val")," and automatically subscribes to it"),t.li("When you click the button, ",o("count.$reduce")," updates the state"),t.li("State notifies all subscribers (including the h1's text node)"),t.li("The UI updates automatically - no manual DOM manipulation needed")),t.p(e.style("marginTop","20px"),t.strong("This is the entire reactive loop.")," No virtual DOM diffing, no complex lifecycle hooks, no magic. Just pub/sub with smart subscription management."))}),n({title:"Storage",type:"main",subtitle:"Automatically sync state with localStorage, sessionStorage, or memory:",content:i(`import { Storage, State } from '@linttrap/oem';
+    // traits attach behavior; $reduce returns a closure
+    // that updates state based on previous value
+    trait.event('click', count.$reduce((n) => n + 1)),
+    // Basic text and tags can be mixed in directly as children
+    'Increment',
+  ),
+);`)})]})]}),p({title:"State",level:1,subtitle:"The State object provides simple reactive state management using the pub/sub pattern.",content:[p({title:"Methods",level:2,subtitle:"State methods are used to get, set, and update reactive data.",content:e(e.Header(e.Row(e.HeaderCell("Method"),e.HeaderCell("$ Version"),e.HeaderCell("Description"))),e.Body(e.Row(e.Cell(A("val()")),e.Cell(A("$val()")),e.Cell("Get the value")),e.Row(e.Cell(A("set(v)")),e.Cell(A("$set(v)")),e.Cell("Set a new value")),e.Row(e.Cell(A("reduce(fn)")),e.Cell(A("$reduce(fn)")),e.Cell("Update value based on the previous value")),e.Row(e.Cell(A("sub(cb)")),e.Cell(A("N/A")),e.Cell("Subscribe to state changes (returns unsubscribe fn)")),e.Row(e.Cell(A("test(p)")),e.Cell(A("$test(p)")),e.Cell("Test if the value matches a predicate/condition")),e.Row(e.Cell(A("call(m)")),e.Cell(A("$call(m)")),e.Cell("Call methods on boxed primitives"))))}),p({title:"The $ Pattern",level:2,subtitle:"The dollar sign ($) prefix on State methods are the closure versions of those methods. Without these closures, you would need to wrap calls in arrow functions to defer execution.",content:[p({title:"Clean Syntax",subtitle:"Using the $ versions of State methods produces cleaner, more concise code.",level:3,content:[L(`// Verbose: Needs an arrow function wrapper
+trait.event('click', () => count.set(0));
 
+// Clean: Use the $ pattern
+trait.event('click', count.$set(0));
+`)]}),p({title:"Introspection Inside Traits",subtitle:"Traits are responsible for managing subscriptions to State objects. By using the $ versions of State methods, Traits can introspect and subscribe automatically.",level:3,content:[L(`
+function showHideTrait(el: HTMLElement, someCondition: () => boolean) {
+  // Check if someCondition is a $test closure by looking for the .type property
+  const isTestClosure = someCondition.type === "$test" && typeof someCondition === "function";
+  const testFn = isTestClosure ? someCondition : () => someCondition;
+  const apply = () =>  el.style.display = testFn() ? "block" : "none";
+  apply();
+  const unsub = isTestClosure ? someCondition.sub(apply) : () => {};
+  return () => unsub();
+}`)]})]}),p({title:"Ready-Made States",level:2,subtitle:"Ready-Made states are like hooks in other frameworks: small, focused utilities that provide specific reactive behaviors.",content:[e(e.Header(e.Row(e.HeaderCell("State"),e.HeaderCell("Description"),e.HeaderCell("Link"))),e.Body(...R.map(([y,o,t])=>e.Row(e.Cell(A(y)),e.Cell(t),e.Cell(n.a(s.attr("href",`https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/${o}`),s.attr("target","_blank"),"download")))))),p({title:"Example: useMediaQueryState",level:3,content:L(`
+const isMobile = useMediaQueryState({ maxWidth: 768 });
+
+const app = tag.div(
+  trait.style('fontSize', '12px', isMobile.$test(true)),
+  trait.style('fontSize', '16px', isMobile.$test(false))
+);`)})]})]}),p({title:"Templating",level:1,subtitle:"The Template function creates the DOM-building tools you need by configuring available Traits.",content:[p({title:"Configuration",level:2,subtitle:"Template takes an optional configuration object that maps trait names to their implementations.",content:L(`const [tag, trait] = Template({
+  style: useStyleTrait,
+  event: useEventTrait,
+});`)}),p({title:"Tag Proxy",level:2,subtitle:"The tag proxy creates standard HTML and SVG elements with full TypeScript support.",content:L(` // Creates a <div> with red text and "Hello, World!" inside
+const el = tag.div('Hello, World!');`)}),p({title:"Nesting Tags and Children",level:3,subtitle:"Elements can be nested arbitrarily, and children can be static values, other elements, or Traits. ",content:L(`const el = tag.div(
+  tag.h1('Title'),
+  tag.p('This is a paragraph.'),
+  tag.ul(
+    tag.li('Item 1'),
+    tag.li('Item 2'),
+    tag.li('Item 3'),
+  ),
+);`)}),Y('Tags can also accept numbers, State closures, and Trait appliers as children. For more advanced usage like dynamic children, see the "useInnerHTMLTrait" Trait.'),p({title:"Trait Proxy",level:2,subtitle:"Traits are applied to elements by passing them as arguments to the tag functions. Their function names are available as properties on the trait proxy.",content:L(`const el = tag.button(
+  trait.style('color', 'white'),
+  trait.style('backgroundColor', 'blue'),
+  trait.event('click', () => alert('Button clicked!')),
+  'Click Me',
+);`)}),p({title:"Combining Tags and Traits",level:2,subtitle:"Tags and Traits work together to create fully reactive, behavior-rich elements.",content:L(`const count = State(0);
+
+const el = tag.div(
+  tag.h1(count.$val),
+  tag.button(
+    trait.event('click', count.$reduce((n) => n + 1)),
+    'Increment',
+  ),
+);`)}),n.p("Note: For a complete list of available Traits, see the 'Traits' section below.")]}),p({title:"Traits",level:1,subtitle:"A Trait is a function that applies behavior to a DOM element.",content:[p({title:"Key Concept: Locality of Behavior",subtitle:"Traits keep behavior directly alongside your markup, preserving Locality of Behavior. You can attach multiple traits—even multiple of the same kind—to a single element. This produces a clean, declarative syntax that eliminates messy conditionals and manual DOM manipulation.",level:2,content:L(`tag.input(
+  trait.value(name.$val), // Input value binding
+  trait.input('input', name.set), // set name on input event
+  trait.style('color', 'red', nameError.$test(true)), // conditional style
+  trait.style('color', 'blue', nameError.$test(false)), // conditional style
+);`)}),p({title:"Ready-Made Traits",level:2,subtitle:"OEM comes with a set of ready-made Traits to cover common use cases.",content:e(e.Header(e.Row(e.HeaderCell("Trait"),e.HeaderCell("Description"),e.HeaderCell("Link"))),e.Body(...B.map(([y,o,t])=>e.Row(e.Cell(A(y)),e.Cell(t),e.Cell(n.a(s.attr("href",`https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/${o}`),s.attr("target","_blank"),"download"))))))})]}),p({title:"Storage",level:1,subtitle:"The Storage utility is a simple helper to assist in persisting state locally and syncing with external sources.",content:L(`
 const storage = Storage({
   data: {
     username: {
       key: 'app-username',
       state: State(''),
-      storage: 'localStorage',
-    },
-    theme: {
-      key: 'app-theme',
-      state: State<'light' | 'dark'>('light'),
-      storage: 'localStorage',
-    },
-    sessionToken: {
-      key: 'app-session',
-      state: State(''),
-      storage: 'sessionStorage',
-    },
-  },
-});`)}),n({title:"Storage Types",content:r("column",0,t.ul(e.style("fontSize","16px"),e.style("lineHeight","1.2"),e.html([t.li(o("localStorage")," - Persists across browser sessions"),t.li(o("sessionStorage")," - Cleared when tab/window closes"),t.li(o("memory")," - No persistence, runtime only")])))}),n({title:"Accessing State",subtitle:"Access state objects directly from the storage:",content:i(`// Get value
-console.log(storage.data.username.val());
-
-// Set value (automatically saves to localStorage)
-storage.data.username.set('Alice');
-
-// Subscribe to changes
-storage.data.username.sub((value) => {
-  console.log('Username changed:', value);
-});`)}),n({title:"Sync Methods",subtitle:"Define custom methods for syncing with external sources:",content:i(`const storage = Storage({
-  data: {
-    todos: {
-      key: 'todos',
-      state: State([]),
-      storage: 'localStorage',
+      storage: 'localStorage', // Persists across sessions
     },
   },
   sync: {
+    // Custom method to load data from an API
     fetchTodos: async () => {
-      const response = await fetch('/api/todos');
-      const todos = await response.json();
+      // ... API fetch logic ...
       storage.data.todos.set(todos);
     },
-    saveTodo: async (todo) => {
-      await fetch('/api/todos', {
-        method: 'POST',
-        body: JSON.stringify(todo),
-      });
-      storage.sync.fetchTodos();
-    },
   },
 });
 
-// Use sync methods
-await storage.sync.fetchTodos();
-await storage.sync.saveTodo({ title: 'New Todo', completed: false });`)}),n({title:"Complete Storage Example",subtitle:"Todo app with persistent storage:",content:i(`import { Storage, State } from '@linttrap/oem';
+// Access state directly
+storage.data.username.set('Alice'); // Auto-saves to localStorage`)}),p({title:"Best Practices",subtitle:"There are no hard rules, but here are some guidelines to keeping your app's data management clean:",level:2,content:[p({title:"Model State in a State Machine",level:3,content:"It's recommended to use a state machine to manage your state. The simplest version of this is a single function with typed actions that update state based on action types.."}),p({title:"Use Storage for Persistence Only",level:3,content:"Storage is best suited for persisting user preferences, session data, and other information that should survive page reloads. Avoid using it for transient UI state that doesn't need to be saved."}),p({title:"Sync Methods for External Data",level:3,content:"Use the sync methods in Storage to handle data fetching and synchronization with external APIs or services. This keeps your data flow organized and encapsulated."})]}),p({title:"Examples",level:1,subtitle:"A collection of example projects built with OEM.",content:e(e.Header(e.Row(e.HeaderCell("Example"),e.HeaderCell("Description"),e.HeaderCell("Link"))),e.Body(...Q.map(([y,o,t])=>e.Row(e.Cell(A(y)),e.Cell(t),e.Cell(n.a(s.attr("href",`https://github.com/linttrapmedia/oem/tree/main/${o}`),s.attr("target","_blank"),"codespace"))))))}),p({title:"Browser Support",level:1,content:W("column",10,n.p("Requires ES6+ support:"),n.ul(n.li("Chrome 49+"),n.li("Firefox 18+"),n.li("Safari 10+"),n.li("Edge 12+")))}),p({title:"License",level:1,content:W("column",10,n.p("MIT License"),n.p("©Copyright 2024. All rights reserved. Made in the USA \uD83C\uDDFA\uD83C\uDDF8 by ",n.a(s.attr("href","http://linttrap.media"),s.attr("target","_blank"),"Lint Trap Media"),"."))}));function P(){return n.div(s.attr("data-app","OEM Documentation"),s.style("padding","2rem"),s.html(n.div(s.attr("data-part","AppContent"),s.style("display","flex"),s.style("flexDirection","column"),s.html(Z))))}document.addEventListener("DOMContentLoaded",()=>{let y=document.getElementById("root");if(!y)return;y.appendChild(P())});})();
 
-const storage = Storage({
-  data: {
-    newTodo: {
-      key: 'todo-input',
-      state: State(''),
-      storage: 'localStorage',
-    },
-    todos: {
-      key: 'todos',
-      state: State([]),
-      storage: 'localStorage',
-    },
-  },
-  sync: {
-    addTodo: () => {
-      const title = storage.data.newTodo.val().trim();
-      if (title) {
-        storage.data.todos.reduce((curr) => [
-          ...curr,
-          { title, completed: false }
-        ]);
-        storage.data.newTodo.set('');
-      }
-    },
-    toggleTodo: (id) => {
-      storage.data.todos.reduce((curr) =>
-        curr.map((t) =>
-          t.id === id ? { ...t, completed: !t.completed } : t
-        )
-      );
-    },
-  },
-});`)}),n({title:"Traits",type:"main",subtitle:"The secret sauce behind OEM's extensibility",content:r("column",20,t.p("A trait is a function that applies behavior to a DOM element. Traits are what make OEM powerful - ","they're how you add event handlers, styles, attributes, and any other behavior you can imagine."),t.h4(e.style("marginTop","20px"),"Basic Structure"),i(`function useMyTrait(
-  el: HTMLElement,
-  param1: string,
-  ...rest: (StateType<any> | Condition)[]
-) {
-  // Apply behavior to element
-  el.textContent = param1;
-
-  // Return cleanup function
-  return () => {
-    // Clean up resources when element is removed
-  };
-}`),t.p(e.style("marginTop","20px"),t.strong("Key Point:")," Traits are ",t.strong("NOT imported from OEM"),". You copy the reference implementations from the ",o("src/traits/")," folder into your project and customize them as needed."))}),n({title:"Ready-Made Traits",subtitle:"Pre-built traits you can copy from src/traits/ and install in your project",content:r("column",0,t.table(e.style("width","100%"),e.style("borderCollapse","collapse"),t.thead(t.tr(t.th(e.style("textAlign","left"),e.style("padding","10px"),e.style("borderBottom","2px solid black"),"Trait"),t.th(e.style("textAlign","left"),e.style("padding","10px"),e.style("borderBottom","2px solid black"),"Description"))),t.tbody(t.tr(t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),o("useAttributeTrait")),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),"Apply HTML attributes")),t.tr(t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),o("useClassNameTrait")),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),"Manage CSS classes")),t.tr(t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),o("useEventTrait")),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),"Attach event listeners")),t.tr(t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),o("useFocusTrait")),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),"Control element focus")),t.tr(t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),o("useInnerHTMLTrait")),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),"Set innerHTML reactively")),t.tr(t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),o("useInputValueTrait")),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),"Bind input values")),t.tr(t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),o("useInputEvent")),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),"Handle input events")),t.tr(t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),o("useStyleTrait")),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),"Apply CSS styles")),t.tr(t.td(e.style("padding","10px"),o("useTextContentTrait")),t.td(e.style("padding","10px"),"Set text content reactively")))))}),n({title:"Example Usage of Ready-Made Traits",content:r("column",0,t.p("Apply HTML attributes to elements"),i(`import { useAttributeTrait } from '@linttrap/oem/traits/Attribute';
-
-trait.attr('type', 'text')
-trait.attr('placeholder', 'Enter name')
-trait.attr('disabled', 'true', isDisabled.$val)`),t.p("Manage CSS classes"),i(`import { useClassNameTrait } from '@linttrap/oem/traits/ClassName';
-
-trait.class('container')
-trait.class('active', isActive.$val)`),t.p("Attach event listeners"),i(`import { useEventTrait } from '@linttrap/oem/traits/Event';
-
-trait.event('click', handleClick)
-trait.event('submit', handleSubmit, 'Click me')`),t.p("Apply CSS styles"),i(`import { useStyleTrait } from '@linttrap/oem/traits/Style';
-
-trait.style('padding', '20px')
-trait.style('color', 'red')
-trait.style('--custom-var', 'blue') // CSS variables
-trait.style('display', 'block', isVisible.$test(true)) // Show when true
-trait.style('display', 'none', isVisible.$test(false)) // Hide when false
-`),t.p("Set innerHTML reactively with arrays of elements"),i(`import { useInnerHTMLTrait } from '@linttrap/oem/traits/InnerHTML';
-
-trait.html('<strong>Bold</strong>')
-trait.html(items.$call('map', item => tag.li(item))) // Reactive list
-trait.html('Visible', isVisible.$val)`),t.p("Bind input values to state"),i(`import { useInputValueTrait } from '@linttrap/oem/traits/InputValue';
-
-tag.input(trait.value(name.$val))`),t.p("Control element focus"),i(`import { useFocusTrait } from '@linttrap/oem/traits/Focus';
-
-trait.focus(shouldFocus.$val)`))}),n({title:"The Reactive Pattern",type:"main",subtitle:"All Ready-Made traits support reactive parameters:",content:r("column",0,t.p("You can subscribe to state changes two ways. Support is 100% dependent on the trait implementation."),i(`
-// by using a $ methods
-trait.style('display', 'block', isVisible.$val)
-trait.style('display', 'none', isVisible.$test(false))
-trait.style('display', 'flex', isVisible.$call('toString'))
-
-// by passing state objects as additional arguments
-trait.style('opacity', () => 'computed value', stateObject1, stateObject2)
-          `))}),n({title:"Ready-Made States",type:"main",subtitle:"Pre-built state utilities you can copy from src/states/ and install in your project",content:r("column",20,t.p("Just like traits, OEM provides ready-made State utilities that handle common patterns. ","These are located in ",o("src/states/")," and you copy them into your project as needed."),t.h4(e.style("marginTop","20px"),"Available States"),t.table(e.style("width","100%"),e.style("borderCollapse","collapse"),e.style("marginTop","10px"),t.thead(t.tr(t.th(e.style("textAlign","left"),e.style("padding","10px"),e.style("borderBottom","2px solid black"),"State"),t.th(e.style("textAlign","left"),e.style("padding","10px"),e.style("borderBottom","2px solid black"),"Description"))),t.tbody(t.tr(t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),o("useMediaQueryState")),t.td(e.style("padding","10px"),e.style("borderBottom","1px solid black"),"Reactive media query state that updates on window resize")))),t.h4(e.style("marginTop","20px"),"Example: Media Query State"),i(`import { useMediaQueryState } from '@linttrap/oem/states/MediaQuery';
-
-// Create reactive state for mobile breakpoint
-const isMobile = useMediaQueryState({
-  maxWidth: 768,
-});
-
-// Use it in your UI
-const nav = tag.nav(
-  trait.style('display', 'block', isMobile.$test(true)),
-  trait.style('display', 'none', isMobile.$test(false)),
-  'Mobile Navigation'
-);
-
-// Or with desktop
-const isDesktop = useMediaQueryState({
-  minWidth: 1024,
-});`),t.p(e.style("marginTop","20px"),t.strong("More coming soon! "),"We're adding more ready-made state utilities like router state, form state, async data state, and more. ","Check ",o("src/states/")," for the latest additions."))}),n({title:"Creating Custom Traits",subtitle:"Here's the basic ou1tline for creating a custom trait:",content:i(`function useMyCustomTrait(
-  el: HTMLElement,
-  text: string,
-  ...rest: (StateType<any> | Condition)[]
-) {
-
-  // get your list of conditions and state
-  const isStateObj = (i: any) => i && 'sub' in i;
-  const states = rest.filter(isStateObj);
-  const conditions = rest.filter(i => !isStateObj(i));
-
-  // create an apply function to set the trait behavior
-  const apply = () => {
-    const applies = conditions.every(c =>
-      typeof c === 'function' ? c() : c
-    );
-    if (applies) {
-      // YOUR CODE GOES HERE
-    }
-  };
-
-  // initial application
-  apply();
-
-  // subscribe to state changes
-  const unsubs = states.map(state => state.sub(apply));
-
-  // return cleanup function
-  return () => unsubs.forEach(unsub => unsub());
-}
-
-// Use it
-const [tag, trait] = Template({
-  tooltip: useTooltipTrait,
-});
-
-tag.button(
-  trait.tooltip('Click to submit'),
-  'Submit'
-)`)}),n({title:"Examples",type:"main",subtitle:"Real-world examples showing how the pieces fit together",content:r("column",0)}),n({title:"Example: Counter App",subtitle:"A simple counter demonstrating state and events:",content:i(`// Create template with traits
-const [tag, trait] = Template({
-  event: useEventTrait,
-});
-
-// Create reactive state
-const count = State(0);
-
-// Build UI
-const app = tag.div(
-  tag.h1(count.$val),
-  tag.button(
-    trait.event(
-      'click',
-      count.$reduce((n) => n + 1),
-    ),
-    'Increment',
-  ),
-);`)}),n({title:"Example: Todo List",subtitle:"Complete todo app with localStorage persistence:",content:i(`
-const [tag, trait] = Template({
-  attr: useAttributeTrait,
-  event: useEventTrait,
-  style: useStyleTrait,
-  focus: useFocusTrait,
-  value: useInputValueTrait,
-  input: useInputEvent,
-  html: useInnerHTMLTrait,
-});
-
-const view = tag.div(
-  tag.form(
-    trait.event('submit', (e) => e!.preventDefault()),
-    tag.input(
-      trait.attr('id', 'new-todo'),
-      trait.attr('type', 'text'),
-      trait.attr('placeholder', 'New todo...'),
-      trait.attr('autofocus', 'true'),
-      trait.focus(storage.data.newTodo.$test('')),
-      trait.input('input', storage.data.newTodo.set),
-      trait.value(storage.data.newTodo.val, storage.data.newTodo),
-    ),
-    tag.button(trait.event('click', $fsm('ADD')), 'Add'),
-  ),
-  tag.ul(
-    trait.html(
-      storage.data.todos.$call('map', (todo: TodoType) =>
-        tag.li(
-          trait.style('display', 'grid'),
-          trait.style('gridTemplateColumns', 'auto min-content min-content'),
-          tag.span(trait.style('textDecoration', 'line-through', todo.completed), todo.title),
-          tag.button(trait.event('click', $fsm('TOGGLE', todo)), 'Toggle'),
-          tag.button(trait.event('click', $fsm('DELETE', todo)), 'Delete'),
-        ),
-      ),
-    ),
-  ),
-);`)}),n({title:"Core Methods",subtitle:"Method signatures for core OEM functions:",type:"main",content:r("column",20)}),n({title:"State<T>(initialValue)",subtitle:"State objects provide the following methods:",content:r("column",0,i("State<T>(initialValue: T): StateType<T>"),t.ul(e.style("lineHeight","1.8"),t.li(o("val()")," - Get current value"),t.li(o("set(value)")," - Set new value"),t.li(o("reduce(fn)")," - Update based on previous value"),t.li(o("sub(callback)")," - Subscribe to changes, returns unsubscribe function"),t.li(o("test(predicate, truthCheck?)")," - Test value against condition"),t.li(o("call(method, ...args)")," - Call methods on boxed primitives"),t.li(o("chain(...calls)")," - Chain method calls")),t.p("All methods have $ prefixed versions that return closures:"),t.ul(e.style("lineHeight","1.8"),t.li(o("$val()"),", ",o("$set()"),", ",o("$reduce()"),", ",o("$test()"),", ",o("$call()"),", ",o("$chain()"))))}),n({title:"Template<P>(config)",subtitle:"Create custom templating engines",content:r("column",0,t.h4("Signature"),i("Template<P>(config?: P): [TagProxy, TraitProxy]"),t.h4("Returns"),t.p("Tuple of [tag, trait] proxies:"),t.ul(e.style("lineHeight","1.8"),t.li(o("tag")," - Creates HTML/SVG elements"),t.li(o("trait")," - Applies configured behaviors")),t.h4("Example"),i(`const [tag, trait] = Template({
-  style: useStyleTrait,
-  event: useEventTrait,
-});`))}),n({title:"Storage<Data, Sync>(config)",subtitle:"Create persistent state with browser storage",content:r("column",0,t.h4("Signature"),i("Storage<Data, Sync>(config): { data, sync }"),t.h4("Storage Types"),t.ul(e.style("lineHeight","1.8"),t.li(o("localStorage")," - Persists across sessions"),t.li(o("sessionStorage")," - Current session only"),t.li(o("memory")," - No persistence")),t.h4("Returns"),t.ul(e.style("lineHeight","1.8"),t.li(o("data")," - Object with state instances"),t.li(o("sync")," - Object with sync methods")))}),n({title:"Browser Support",type:"main",content:r("column",10,t.p("OEM works in all modern browsers that support ES6+"),t.p("Minimum versions: Chrome 49+, Firefox 18+, Safari 10+, Edge 12+"))}),n({title:"License",type:"main",content:r("column",10,t.p("MIT License"),t.p("© ",new Date().getFullYear()," Lint Trap Media"))}));function O(){return t.div(e.attr("data-app","OEM Documentation"),e.style("padding","2rem"),e.html(t.div(e.attr("data-part","AppContent"),e.style("display","flex"),e.style("flexDirection","column"),e.html(E))))}document.addEventListener("DOMContentLoaded",()=>{let a=document.getElementById("root");if(!a)return;a.appendChild(O())});})();
-
-//# debugId=03B310F254710CEB64756E2164756E21
+//# debugId=58624E66E880FDDB64756E2164756E21
 //# sourceMappingURL=app.js.map
