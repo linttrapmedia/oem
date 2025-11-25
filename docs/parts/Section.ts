@@ -3,7 +3,7 @@ import { tag, trait } from '../config';
 export const Section = (props: {
   title: string;
   subtitle?: string;
-  content: HTMLElement[] | HTMLElement;
+  content: HTMLElement[] | HTMLElement | string;
   level?: 1 | 2 | 3;
 }) => {
   const title =

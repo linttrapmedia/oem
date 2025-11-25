@@ -1,5 +1,14 @@
 import { Note } from 'docs/parts/Note';
-import { tag, trait } from './config';
+import { Table } from 'docs/parts/Table';
+import {
+  download,
+  downloading,
+  examplesLibrary,
+  statesLibrary,
+  tag,
+  trait,
+  traitLibrary,
+} from './config';
 import { Box } from './parts/Box';
 import { Code, InlineCode } from './parts/Code';
 import { Page } from './parts/Page';
@@ -32,6 +41,7 @@ export const Docs = () =>
         tag.li(tag.a(trait.attr('href', '#templating'), 'Templating')),
         tag.li(tag.a(trait.attr('href', '#traits'), 'Traits')),
         tag.li(tag.a(trait.attr('href', '#storage'), 'Storage')),
+        tag.li(tag.a(trait.attr('href', '#examples'), 'Examples')),
       ),
     }),
 
@@ -138,6 +148,84 @@ export const Docs = () =>
             tag.p(
               'Why not make it yours? The core is 300 LOC and the traits are simple. Use the tool below to customize and download a package with only the Traits and States you need.',
             ),
+            tag.form(
+              tag.div(
+                trait.style('lineHeight', '2'),
+                tag.div(
+                  trait.style('display', 'flex'),
+                  trait.style('gap', '10px'),
+                  tag.input(
+                    trait.attr('type', 'checkbox'),
+                    trait.attr('name', 'modules'),
+                    trait.attr('value', `core`),
+                    trait.attr('id', `core`),
+                    trait.attr('checked', 'true'),
+                    trait.attr('disabled', 'true'),
+                  ),
+                  tag.label(
+                    trait.attr('for', `core`),
+                    tag.span(trait.style('fontWeight', 'bold'), 'Core'),
+                    tag.span(` - Core library (required)`),
+                  ),
+                ),
+                ...traitLibrary.map(([name, path, desc]) =>
+                  tag.div(
+                    trait.style('display', 'flex'),
+                    trait.style('gap', '10px'),
+                    tag.input(
+                      trait.attr('type', 'checkbox'),
+                      trait.attr('name', 'modules'),
+                      trait.attr('value', path),
+                      trait.attr('id', `trait-${name}`),
+                      trait.attr('checked', 'true'),
+                    ),
+                    tag.label(
+                      trait.attr('for', `trait-${name}`),
+                      tag.span(trait.style('fontWeight', 'bold'), name),
+                      tag.span(` - ${desc}`),
+                    ),
+                  ),
+                ),
+                ...statesLibrary.map(([name, path, desc]) =>
+                  tag.div(
+                    trait.style('display', 'flex'),
+                    trait.style('gap', '10px'),
+                    tag.input(
+                      trait.attr('type', 'checkbox'),
+                      trait.attr('name', 'modules'),
+                      trait.attr('value', path),
+                      trait.attr('id', `state-${name}`),
+                      trait.attr('checked', 'true'),
+                    ),
+                    tag.label(
+                      trait.attr('for', `state-${name}`),
+                      tag.span(trait.style('fontWeight', 'bold'), name),
+                      tag.span(` - ${desc}`),
+                    ),
+                  ),
+                ),
+              ),
+              tag.br(),
+              tag.button(
+                trait.attr('type', 'button'),
+                trait.attr('disabled', 'true', downloading.$test(true)),
+                trait.attr('disabled', undefined, downloading.$test(false)),
+                trait.style('opacity', '0.6', downloading.$test(true)),
+                trait.style('opacity', '1', downloading.$test(false)),
+                trait.style('cursor', 'not-allowed', downloading.$test(true)),
+                trait.event('click', () => {
+                  downloading.set(true);
+                  const form = document.querySelector('form') as HTMLFormElement;
+                  const formData = new FormData(form);
+                  const modules = formData.getAll('modules') as string[];
+                  download(modules).finally(() => {
+                    downloading.set(false);
+                  });
+                }),
+                trait.html('Download Zip', downloading.$test(false)),
+                trait.html('Preparing...', downloading.$test(true)),
+              ),
+            ),
           ],
         }),
       ],
@@ -223,134 +311,44 @@ const app = tag.div(
           title: 'Methods',
           level: 2,
           subtitle: 'State methods are used to get, set, and update reactive data.',
-          content: tag.table(
-            trait.style('width', '100%'),
-            trait.style('borderCollapse', 'collapse'),
-
-            tag.thead(
-              tag.tr(
-                tag.th(
-                  trait.style('textAlign', 'left'),
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '2px solid black'),
-                  'Method',
-                ),
-                tag.th(
-                  trait.style('textAlign', 'left'),
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '2px solid black'),
-                  '$ Version',
-                ),
-                tag.th(
-                  trait.style('textAlign', 'left'),
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '2px solid black'),
-                  'Description',
-                ),
+          content: Table(
+            Table.Header(
+              Table.Row(
+                Table.HeaderCell('Method'),
+                Table.HeaderCell('$ Version'),
+                Table.HeaderCell('Description'),
               ),
             ),
-            tag.tbody(
-              tag.tr(
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  InlineCode('val()'),
-                ),
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  InlineCode('$val()'),
-                ),
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  'Get the value',
-                ),
+            Table.Body(
+              Table.Row(
+                Table.Cell(InlineCode('val()')),
+                Table.Cell(InlineCode('$val()')),
+                Table.Cell('Get the value'),
               ),
-              tag.tr(
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  InlineCode('set(v)'),
-                ),
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  InlineCode('$set(v)'),
-                ),
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  'Set a new value',
-                ),
+              Table.Row(
+                Table.Cell(InlineCode('set(v)')),
+                Table.Cell(InlineCode('$set(v)')),
+                Table.Cell('Set a new value'),
               ),
-              tag.tr(
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  InlineCode('reduce(fn)'),
-                ),
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  InlineCode('$reduce(fn)'),
-                ),
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  'Update value based on the previous value',
-                ),
+              Table.Row(
+                Table.Cell(InlineCode('reduce(fn)')),
+                Table.Cell(InlineCode('$reduce(fn)')),
+                Table.Cell('Update value based on the previous value'),
               ),
-              tag.tr(
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  InlineCode('sub(cb)'),
-                ),
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  'N/A',
-                ),
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  'Subscribe to state changes (returns unsubscribe fn)',
-                ),
+              Table.Row(
+                Table.Cell(InlineCode('sub(cb)')),
+                Table.Cell(InlineCode('N/A')),
+                Table.Cell('Subscribe to state changes (returns unsubscribe fn)'),
               ),
-              tag.tr(
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  InlineCode('test(p)'),
-                ),
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  InlineCode('$test(p)'),
-                ),
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  'Test if the value matches a predicate/condition',
-                ),
+              Table.Row(
+                Table.Cell(InlineCode('test(p)')),
+                Table.Cell(InlineCode('$test(p)')),
+                Table.Cell('Test if the value matches a predicate/condition'),
               ),
-              tag.tr(
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  InlineCode('call(m)'),
-                ),
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  InlineCode('$call(m)'),
-                ),
-                tag.td(
-                  trait.style('padding', '10px'),
-                  trait.style('borderBottom', '1px solid black'),
-                  'Call methods on boxed primitives',
-                ),
+              Table.Row(
+                Table.Cell(InlineCode('call(m)')),
+                Table.Cell(InlineCode('$call(m)')),
+                Table.Cell('Call methods on boxed primitives'),
               ),
             ),
           ),
@@ -402,37 +400,29 @@ function showHideTrait(el: HTMLElement, someCondition: () => boolean) {
           subtitle:
             'Ready-Made states are like hooks in other frameworks: small, focused utilities that provide specific reactive behaviors.',
           content: [
-            tag.table(
-              trait.style('width', '100%'),
-              trait.style('borderCollapse', 'collapse'),
-
-              tag.thead(
-                tag.tr(
-                  tag.th(
-                    trait.style('textAlign', 'left'),
-                    trait.style('padding', '10px'),
-                    trait.style('borderBottom', '2px solid black'),
-                    'State',
-                  ),
-                  tag.th(
-                    trait.style('textAlign', 'left'),
-                    trait.style('padding', '10px'),
-                    trait.style('borderBottom', '2px solid black'),
-                    'Description',
-                  ),
+            Table(
+              Table.Header(
+                Table.Row(
+                  Table.HeaderCell('State'),
+                  Table.HeaderCell('Description'),
+                  Table.HeaderCell('Link'),
                 ),
               ),
-              tag.tbody(
-                tag.tr(
-                  tag.td(
-                    trait.style('padding', '10px'),
-                    trait.style('borderBottom', '1px solid black'),
-                    InlineCode('useMediaQueryState'),
-                  ),
-                  tag.td(
-                    trait.style('padding', '10px'),
-                    trait.style('borderBottom', '1px solid black'),
-                    'Reactive media query state that updates on window resize',
+              Table.Body(
+                ...statesLibrary.map(([name, path, description]) =>
+                  Table.Row(
+                    Table.Cell(InlineCode(name)),
+                    Table.Cell(description),
+                    Table.Cell(
+                      tag.a(
+                        trait.attr(
+                          'href',
+                          `https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/${path}`,
+                        ),
+                        trait.attr('target', '_blank'),
+                        'download',
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -540,169 +530,53 @@ const el = tag.div(
       title: 'Traits',
       level: 1,
       subtitle: 'A Trait is a function that applies behavior to a DOM element.',
-      content: Box(
-        'column',
-        20,
-        tag.h4('Key Concept: Localized Behavior'),
-        tag.p(
-          'Traits keep behavior directly alongside your markup, preserving Locality of Behavior. You can attach multiple traits—even multiple of the same kind—to a single element. This produces a clean, declarative syntax that eliminates messy conditionals and manual DOM manipulation.',
-        ),
-        Code(`tag.input(
+      content: [
+        Section({
+          title: 'Key Concept: Locality of Behavior',
+          subtitle:
+            'Traits keep behavior directly alongside your markup, preserving Locality of Behavior. You can attach multiple traits—even multiple of the same kind—to a single element. This produces a clean, declarative syntax that eliminates messy conditionals and manual DOM manipulation.',
+          level: 2,
+          content: Code(`tag.input(
   trait.value(name.$val), // Input value binding
-  trait.event('input', handler), // Event handler
-  trait.style('color', 'red', isAlert.$test(true)), // conditional style
-  trait.style('color', 'blue', isAlert.$test(false)), // conditional style
+  trait.input('input', name.set), // set name on input event
+  trait.style('color', 'red', nameError.$test(true)), // conditional style
+  trait.style('color', 'blue', nameError.$test(false)), // conditional style
 );`),
+        }),
 
-        tag.h4(trait.style('marginTop', '20px'), 'Trait Availability and Customization'),
-        tag.p(
-          'Traits are your framework: you build and manage your own library of traits. Ready-made traits live in src/traits/. Simply copy what you need into your project, and customize or extend them as you like.',
-        ),
-
-        tag.h4(trait.style('marginTop', '20px'), 'Ready-Made Traits'),
-        tag.table(
-          trait.style('width', '100%'),
-          trait.style('borderCollapse', 'collapse'),
-
-          tag.thead(
-            tag.tr(
-              tag.th(
-                trait.style('textAlign', 'left'),
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '2px solid black'),
-                'Trait',
+        Section({
+          title: 'Ready-Made Traits',
+          level: 2,
+          subtitle: 'OEM comes with a set of ready-made Traits to cover common use cases.',
+          content: Table(
+            Table.Header(
+              Table.Row(
+                Table.HeaderCell('Trait'),
+                Table.HeaderCell('Description'),
+                Table.HeaderCell('Link'),
               ),
-              tag.th(
-                trait.style('textAlign', 'left'),
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '2px solid black'),
-                'Description',
+            ),
+            Table.Body(
+              ...traitLibrary.map(([name, path, description]) =>
+                Table.Row(
+                  Table.Cell(InlineCode(name)),
+                  Table.Cell(description),
+                  Table.Cell(
+                    tag.a(
+                      trait.attr(
+                        'href',
+                        `https://raw.githubusercontent.com/linttrapmedia/oem/refs/heads/main/${path}`,
+                      ),
+                      trait.attr('target', '_blank'),
+                      'download',
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
-          tag.tbody(
-            tag.tr(
-              tag.td(
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '1px solid black'),
-                InlineCode('useAttributeTrait'),
-              ),
-              tag.td(
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '1px solid black'),
-                'Apply HTML attributes (disabled, type, etc.)',
-              ),
-            ),
-            tag.tr(
-              tag.td(
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '1px solid black'),
-                InlineCode('useStyleTrait'),
-              ),
-              tag.td(
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '1px solid black'),
-                'Apply CSS styles',
-              ),
-            ),
-            tag.tr(
-              tag.td(
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '1px solid black'),
-                InlineCode('useEventTrait'),
-              ),
-              tag.td(
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '1px solid black'),
-                'Attach event listeners',
-              ),
-            ),
-            tag.tr(
-              tag.td(
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '1px solid black'),
-                InlineCode('useInputValueTrait'),
-              ),
-              tag.td(
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '1px solid black'),
-                'Bind input values to state',
-              ),
-            ),
-            tag.tr(
-              tag.td(
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '1px solid black'),
-                InlineCode('useInnerHTMLTrait'),
-              ),
-              tag.td(
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '1px solid black'),
-                'Set innerHTML reactively (useful for lists)',
-              ),
-            ),
-            tag.tr(
-              tag.td(
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '1px solid black'),
-                InlineCode('useClassNameTrait'),
-              ),
-              tag.td(
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '1px solid black'),
-                'Manage CSS classes',
-              ),
-            ),
-            tag.tr(
-              tag.td(
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '1px solid black'),
-                InlineCode('useFocusTrait'),
-              ),
-              tag.td(
-                trait.style('padding', '10px'),
-                trait.style('borderBottom', '1px solid black'),
-                'Control element focus',
-              ),
-            ),
-            tag.tr(
-              tag.td(trait.style('padding', '10px'), InlineCode('useTextContentTrait')),
-              tag.td(trait.style('padding', '10px'), 'Set text content reactively'),
-            ),
-          ),
-        ),
-
-        tag.h4(trait.style('marginTop', '20px'), 'Creating Custom Traits'),
-        tag.p(
-          'A trait is simply a function whose first argument is the element it modifies, and it returns a cleanup function. All behavior—including "reactivity"—is handled inside the trait itself. Here\'s the basic anatomy of a reactive trait:',
-        ),
-        Code(`function useMyCustomTrait(
-  el: HTMLElement,
-  aCustomProperty: string,
-  anotherCustomProperty: number,
-  ...rest: (StateType<any> | Condition)[]
-) {
-  // Separate State objects from static conditions
-  const isStateObj = (i: any) => Object.keys(i).includes('sub');
-  const states = [val ?? '', ...rest].filter(isStateObj) as StateType<any>[];
-  const conditions = rest.filter((item) => !isStateObj(item));
-
-  // 1. Define the logic that applies the behavior
-  const apply = () => {
-    // YOUR CODE GOES HERE: Apply text, change style, etc.
-  };
-
-  // 2. Initial application
-  apply();
-
-  // 3. Subscribe to all passed State objects
-  const states = rest.filter(/* ... logic to find state objects ... */);
-  const unsubs = states.map((state) => state.sub(apply));
-
-  // 4. Return cleanup function (crucial for memory management)
-  return () => unsubs.forEach((unsub) => unsub());
-}`),
-      ),
+        }),
+      ],
     }),
 
     // ============================================
@@ -734,6 +608,61 @@ const storage = Storage({
 
 // Access state directly
 storage.data.username.set('Alice'); // Auto-saves to localStorage`),
+    }),
+    Section({
+      title: 'Best Practices',
+      subtitle: `There are no hard rules, but here are some guidelines to keeping your app's data management clean:`,
+      level: 2,
+      content: [
+        Section({
+          title: 'Model State in a State Machine',
+          level: 3,
+          content: `It's recommended to use a state machine to manage your state. The simplest version of this is a single function with typed actions that update state based on action types..`,
+        }),
+        Section({
+          title: 'Use Storage for Persistence Only',
+          level: 3,
+          content: `Storage is best suited for persisting user preferences, session data, and other information that should survive page reloads. Avoid using it for transient UI state that doesn't need to be saved.`,
+        }),
+        Section({
+          title: 'Sync Methods for External Data',
+          level: 3,
+          content: `Use the sync methods in Storage to handle data fetching and synchronization with external APIs or services. This keeps your data flow organized and encapsulated.`,
+        }),
+      ],
+    }),
+
+    // ============================================
+    // BROWSER SUPPORT
+    // ============================================
+    Section({
+      title: 'Examples',
+      level: 1,
+      subtitle: 'A collection of example projects built with OEM.',
+      content: Table(
+        Table.Header(
+          Table.Row(
+            Table.HeaderCell('Example'),
+            Table.HeaderCell('Description'),
+            Table.HeaderCell('Link'),
+          ),
+        ),
+        Table.Body(
+          ...examplesLibrary.map(([name, path, description]) =>
+            Table.Row(
+              Table.Cell(InlineCode(name)),
+              Table.Cell(description),
+              Table.Cell(
+                tag.a(
+                  trait.attr('href', `https://github.com/linttrapmedia/oem/tree/main/${path}`),
+                  trait.attr('target', '_blank'),
+                  'codespace',
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     }),
 
     // ============================================

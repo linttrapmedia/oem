@@ -11,7 +11,6 @@ export function useStyleTrait(
   const states = rest.filter(isStateObj) as StateType<any>[];
   const conditions = rest.filter((item: any) => !isStateObj(item) || isTestCond(item));
   if (el.tagName === 'BUTTON' && prop === 'backgroundColor') {
-    console.log(el, states, conditions);
   }
   const apply = () => {
     const _val = typeof val === 'function' ? val() : val;

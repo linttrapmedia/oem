@@ -1,9 +1,9 @@
 import { Template } from '@/oem';
+import { useInputEventTrait } from '@/registry';
 import { useAttributeTrait } from '@/traits/Attribute';
 import { useEventTrait } from '@/traits/Event';
 import { useFocusTrait } from '@/traits/Focus';
 import { useInnerHTMLTrait } from '@/traits/InnerHTML';
-import { useInputEvent } from '@/traits/InputEvent';
 import { useInputValueTrait } from '@/traits/InputValue';
 import { useStyleTrait } from '@/traits/Style';
 import { storage, TodoType } from 'examples/todo/storage';
@@ -15,7 +15,7 @@ const [tag, trait] = Template({
   attr: useAttributeTrait,
   focus: useFocusTrait,
   value: useInputValueTrait,
-  input: useInputEvent,
+  input: useInputEventTrait,
   html: useInnerHTMLTrait,
 });
 

@@ -38,12 +38,7 @@ Page.Header = (title: string, subtitle: string) => {
       trait.style('position', 'absolute'),
       trait.style('top', '0'),
       trait.style('right', 0),
-      trait.style('color', 'white'),
-      trait.style('border', 'none'),
-      trait.style('borderRadius', '2px'),
-      trait.style('padding', '5px 10px'),
-      trait.style('cursor', 'pointer'),
-      trait.style('fontSize', '12px'),
+
       trait.event('click', () => {
         if (theme.val() === 'ada') {
           theme.set('grey');
