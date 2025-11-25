@@ -1,6 +1,6 @@
 {
   "name": "@linttrap/oem",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "author": "@linttrapmedia",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
     "typescript": "^5"
   },
   "exports": {
-    ".": "./src/oem.ts"
+    ".": "./src/registry.ts"
   },
   "bugs": {
     "url": "https://github.com/linttrapmedia/oem/issues"
