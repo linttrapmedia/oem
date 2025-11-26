@@ -1,4 +1,4 @@
-import { Condition, StateType } from '@/oem';
+import { Condition, extractStatesAndConditions, StateType } from '@/oem';
 
 type Child = string | number | HTMLElement | SVGElement | undefined | unknown;
 
@@ -7,10 +7,7 @@ export function useInnerHTMLTrait(
   children: Child | Child[] | (() => Child | Child[]),
   ...rest: (StateType<any> | Condition)[]
 ) {
-  const isStateObj = (i: any) => Object.keys(i).includes('sub');
-  const isTestCond = (i: any) => typeof i === 'function' && i.type === '$test';
-  const states = [children, ...rest].filter(isStateObj) as StateType<any>[];
-  const conditions = rest.filter((item) => !isStateObj(item) || isTestCond(item)) as Condition[];
+  const { states, conditions } = extractStatesAndConditions(...rest);
   const apply = () => {
     const _children = typeof children === 'function' ? children() : children;
     const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));

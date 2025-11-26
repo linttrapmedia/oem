@@ -1,4 +1,4 @@
-import { Condition, StateType } from '@/oem';
+import { Condition, extractStatesAndConditions, StateType } from '@/oem';
 
 export function useEventTrait(
   el: HTMLElement,
@@ -6,10 +6,7 @@ export function useEventTrait(
   cb: (evt?: GlobalEventHandlersEventMap[keyof GlobalEventHandlersEventMap]) => void,
   ...rest: (StateType<any> | Condition)[]
 ) {
-  const isStateObj = (i: any) => Object.keys(i).includes('sub');
-  const isTestCond = (i: any) => typeof i === 'function' && i.type === '$test';
-  const states = rest.filter(isStateObj) as StateType<any>[];
-  const conditions = rest.filter((item) => !isStateObj(item) || isTestCond(item));
+  const { states, conditions } = extractStatesAndConditions(...rest);
   let listenerAttached = false;
 
   const apply = () => {

@@ -1,4 +1,4 @@
-import { Condition, StateType } from '@/oem';
+import { Condition, extractStatesAndConditions, StateType } from '@/oem';
 
 export function useInputEventTrait(
   el: HTMLElement,
@@ -17,10 +17,7 @@ export function useInputEventTrait(
   setter: (val: any) => void,
   ...rest: (StateType<any> | Condition)[]
 ) {
-  const isStateObj = (i: any) => Object.keys(i).includes('sub');
-  const isTestCond = (i: any) => typeof i === 'function' && i.type === '$test';
-  const states = rest.filter(isStateObj) as StateType<any>[];
-  const conditions = rest.filter((item) => !isStateObj(item) || isTestCond(item)) as Condition[];
+  const { states, conditions } = extractStatesAndConditions(...rest);
   const handler: any = (e: any) => setter((e as any).target.value);
   let listenerAttached = false;
 

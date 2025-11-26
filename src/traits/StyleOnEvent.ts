@@ -1,27 +1,23 @@
 import { Condition, extractStatesAndConditions, StateType } from '@/oem';
 
-export const useAttributeTrait = (
+export function useStyleOnEventTrait(
   el: HTMLElement,
-  prop: string,
-  val: (() => string | number | boolean | undefined) | (string | number | boolean | undefined),
+  evt: MouseEvent | KeyboardEvent | FocusEvent | Event,
+  prop: keyof CSSStyleDeclaration | `--${string}`,
+  val: (() => string | number | undefined) | (string | number | undefined),
   ...rest: (StateType<any> | Condition)[]
-) => {
+) {
   const { states, conditions } = extractStatesAndConditions(val, ...rest);
   const apply = () => {
     const _val = typeof val === 'function' ? val() : val;
     const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));
-    console.log(_val, applies);
     if (applies) {
-      if (_val === undefined) {
-        el.removeAttribute(prop);
-      } else {
-        el.setAttribute(prop, String(_val));
-      }
-    } else {
-      el.removeAttribute(prop);
+      (prop as string).startsWith('--')
+        ? el.style.setProperty(prop as string, _val as string)
+        : (el.style[prop as any] = _val as any);
     }
   };
   apply();
   const unsubs = states.map((state) => state.sub(apply));
   return () => unsubs.forEach((unsub) => unsub());
-};
+}

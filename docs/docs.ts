@@ -150,7 +150,9 @@ export const Docs = () =>
             ),
             tag.form(
               tag.div(
-                trait.style('lineHeight', '2'),
+                trait.style('display', 'grid'),
+                trait.style('gridTemplateColumns', 'repeat(auto-fit, minmax(300px, 1fr))'),
+                trait.style('gap', '10px'),
                 tag.div(
                   trait.style('display', 'flex'),
                   trait.style('gap', '10px'),
@@ -164,8 +166,8 @@ export const Docs = () =>
                   ),
                   tag.label(
                     trait.attr('for', `core`),
-                    tag.span(trait.style('fontWeight', 'bold'), 'Core'),
-                    tag.span(` - Core library (required)`),
+                    tag.div(trait.style('fontWeight', 'bold'), 'Core'),
+                    tag.div(`Core library (required)`),
                   ),
                 ),
                 ...traitLibrary.map(([name, path, desc]) =>
@@ -181,8 +183,9 @@ export const Docs = () =>
                     ),
                     tag.label(
                       trait.attr('for', `trait-${name}`),
-                      tag.span(trait.style('fontWeight', 'bold'), name),
-                      tag.span(` - ${desc}`),
+                      trait.style('lineHeight', '1.4'),
+                      tag.div(trait.style('fontWeight', 'bold'), name),
+                      tag.div(`${desc}`),
                     ),
                   ),
                 ),
@@ -199,8 +202,9 @@ export const Docs = () =>
                     ),
                     tag.label(
                       trait.attr('for', `state-${name}`),
-                      tag.span(trait.style('fontWeight', 'bold'), name),
-                      tag.span(` - ${desc}`),
+                      trait.style('lineHeight', '1.4'),
+                      tag.div(trait.style('fontWeight', 'bold'), name),
+                      tag.div(`${desc}`),
                     ),
                   ),
                 ),

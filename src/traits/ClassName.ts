@@ -1,17 +1,15 @@
-import { Condition, StateType } from '@/oem';
+import { Condition, extractStatesAndConditions, StateType } from '@/oem';
 
 function useClassNameTrait(
   el: HTMLElement,
   className: string | (() => string),
   ...rest: (StateType<any> | Condition)[]
 ) {
-  const isStateObj = (i: any) => Object.keys(i).includes('sub');
-  const isTestCond = (i: any) => typeof i === 'function' && i.type === '$test';
-  const states = [className, ...rest].filter(isStateObj) as StateType<any>[];
-  const conditions = rest.filter((item) => !isStateObj(item) || isTestCond(item));
+  const { states, conditions } = extractStatesAndConditions(className, ...rest);
   const apply = () => {
     const _className = typeof className === 'function' ? className() : className;
     const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));
+    console.log(className, applies, conditions);
     if (applies) el.setAttribute('class', String(_className));
   };
   apply();
