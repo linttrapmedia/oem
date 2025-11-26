@@ -7,26 +7,18 @@ export type TodoType = {
 
 export const storage = Storage({
   data: {
-    machine: {
-      key: 'todo-machine',
-      state: State<'LOADING' | 'READY' | 'ERROR'>('LOADING'),
-      storage: 'memory',
-    },
-    newTodo: {
-      key: 'todo-newTodo',
-      state: State(''),
-      storage: 'localStorage',
-    },
-    todos: {
-      key: 'todo-todos',
-      state: State<TodoType[]>([
+    machine: [State<'LOADING' | 'READY' | 'ERROR'>('LOADING'), 'memory', 'todo-machine'],
+    newTodo: [State(''), 'localStorage', 'todo-newTodo'],
+    todos: [
+      State<TodoType[]>([
         {
           title: 'Learn OEM',
           completed: false,
         },
       ]),
-      storage: 'localStorage',
-    },
+      'localStorage',
+      'todo-todos',
+    ],
   },
   sync: {
     fetchTodos: async () => {

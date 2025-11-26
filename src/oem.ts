@@ -8,11 +8,11 @@ type Tail<T extends any[]> = T extends [any, ...infer R] ? R : never;
 
 type StorageType<Data extends Record<string, any>, Sync extends Record<string, any>> = {
   data: {
-    [K in keyof Data]: {
-      state: StateType<Data[K]>;
-      key: string;
-      storage: 'localStorage' | 'sessionStorage' | 'memory';
-    };
+    [K in keyof Data]: [
+      StateType<Data[K]>,
+      storage: 'localStorage' | 'sessionStorage' | 'memory',
+      key?: string,
+    ];
   };
   sync?: {
     [K in keyof Sync]: () => void;
@@ -28,7 +28,7 @@ export function Storage<Data extends Record<string, any>, Sync extends Record<st
   const { data, sync = {} } = config;
 
   Object.keys(data).forEach((stateKey) => {
-    const { state, key, storage } = data[stateKey];
+    const [state, storage, key = stateKey] = data[stateKey];
 
     if (storage === 'localStorage' || storage === 'sessionStorage') {
       const _storage = storage === 'localStorage' ? window.localStorage : window.sessionStorage;
@@ -60,7 +60,7 @@ export function Storage<Data extends Record<string, any>, Sync extends Record<st
   };
 
   for (const k in data) {
-    methods.data[k] = data[k].state;
+    methods.data[k] = data[k][0];
   }
 
   for (const k in sync) {

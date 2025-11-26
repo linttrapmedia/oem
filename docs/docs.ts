@@ -591,17 +591,13 @@ const el = tag.div(
       content: Code(`
 const storage = Storage({
   data: {
-    username: {
-      key: 'app-username',
-      state: State(''),
-      storage: 'localStorage', // Persists across sessions
-    },
+    username: [State(''), 'localStorage', 'app-username'], // Persists across sessions
   },
   sync: {
     // Custom method to load data from an API
-    fetchTodos: async () => {
+    fetchUser: async () => {
       // ... API fetch logic ...
-      storage.data.todos.set(todos);
+      storage.data.username.set(fetchedUsername);
     },
   },
 });
