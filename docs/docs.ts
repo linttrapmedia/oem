@@ -580,6 +580,17 @@ const el = tag.div(
             ),
           ),
         }),
+
+        Section({
+          title: 'Custom Traits',
+          level: 2,
+          subtitle:
+            'Creating custom Traits is straightforward. A Trait is simply a function that takes an element and any number of arguments, applies behavior, and returns an optional cleanup function. See the Ready-Made Traits source code for examples on making reactive Traits.',
+          content: Code(`function useNoopTrait(el: HTMLElement) {
+  // do anything with the element here
+  return () => {}; // optional cleanup function
+}`),
+        }),
       ],
     }),
 
