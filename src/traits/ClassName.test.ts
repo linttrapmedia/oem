@@ -1,4 +1,4 @@
-import { Template, Test } from '@/oem';
+import { $test, Template, Test } from '@/oem';
 import { useClassNameTrait } from '@/traits/ClassName';
 
 export const CanApplyClassNameTraitToHtml: Test = async () => {
@@ -56,7 +56,12 @@ export const CanApplyClassNameTraitToHtml: Test = async () => {
   // tests.push(el.outerHTML === '<div></div>');
 
   // callback condition
-  el = tmpl.div(trait.classname('c1', () => false));
+  el = tmpl.div(
+    trait.classname(
+      'c1',
+      $test(() => false),
+    ),
+  );
   tests.push(el.outerHTML === '<div></div>');
 
   // // callback condition true
@@ -105,15 +110,25 @@ export const CanApplyClassNameTraitToSvg: Test = async () => {
   const t1 = e1.outerHTML === '<circle class="c1"></circle>';
   const e2 = tmpl.circle(trait.classname('c1 c2'));
   const t2 = e2.outerHTML === '<circle class="c1 c2"></circle>';
-  const e3 = tmpl.circle(trait.classname('c1', false));
+  const e3 = tmpl.circle(trait.classname('c1', $test(false)));
   const t3 = e3.outerHTML === '<circle></circle>';
-  const e4 = tmpl.circle(trait.classname('c1', true));
+  const e4 = tmpl.circle(trait.classname('c1', $test(true)));
   const t4 = e4.outerHTML === '<circle class="c1"></circle>';
-  const e5 = tmpl.circle(trait.classname('c1', () => false));
+  const e5 = tmpl.circle(
+    trait.classname(
+      'c1',
+      $test(() => false),
+    ),
+  );
   const t5 = e5.outerHTML === '<circle></circle>';
-  const e6 = tmpl.circle(trait.classname('c1', () => true));
+  const e6 = tmpl.circle(
+    trait.classname(
+      'c1',
+      $test(() => true),
+    ),
+  );
   const t6 = e6.outerHTML === '<circle class="c1"></circle>';
-  const e7 = tmpl.circle(trait.classname('c1 c2', true), trait.classname('', true));
+  const e7 = tmpl.circle(trait.classname('c1 c2', $test(true)), trait.classname('', $test(true)));
   const t7 = e7.outerHTML === '<circle class=""></circle>';
   const tests = [t1, t2, t3, t4, t5, t6, t7];
   return { pass: tests.every(Boolean) };

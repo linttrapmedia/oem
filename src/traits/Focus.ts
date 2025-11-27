@@ -1,4 +1,4 @@
-import { Condition, extractStatesAndConditions, StateType } from '@/oem';
+import { Condition, StateType } from '@/oem';
 
 type FocusProps = [
   el: HTMLElement,
@@ -6,8 +6,11 @@ type FocusProps = [
   states?: StateType<any> | StateType<any>[],
 ];
 
-export const useFocusTrait = (el: HTMLElement, ...rest: (StateType<any> | Condition)[]) => {
-  const { states, conditions } = extractStatesAndConditions(...rest);
+export const useFocusTrait = (
+  el: HTMLElement,
+  conditions: Condition[] = [],
+  states: StateType<any>[] = [],
+) => {
   const apply = () => {
     const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));
     if (applies) el.focus();

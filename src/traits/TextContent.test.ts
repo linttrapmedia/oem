@@ -1,4 +1,4 @@
-import { State, Template, Test } from '@/oem';
+import { $test, State, Template, Test } from '@/oem';
 import { useTextContentTrait } from './TextContent';
 
 export const CanApplyTextContentTraitToHtml: Test = async () => {
@@ -18,17 +18,20 @@ export const CanApplyTextContentTraitToHtml: Test = async () => {
   tests.push(el.outerHTML === '<div>test</div>');
 
   // dynamic tests
-  el = tmpl.div(trait.text(() => state.val().value, true, state));
-  tests.push(el.outerHTML === '<div>asdf</div>');
-
-  // condition tests
-  el = tmpl.div(trait.text(() => state.val().value, false, state));
-  tests.push(el.outerHTML === '<div></div>');
-
   el = tmpl.div(
     trait.text(
       () => state.val().value,
-      () => false,
+      $test(() => true),
+      state,
+    ),
+  );
+  tests.push(el.outerHTML === '<div>asdf</div>');
+
+  // condition tests
+  el = tmpl.div(
+    trait.text(
+      () => state.val().value,
+      $test(() => false),
       state,
     ),
   );
@@ -37,7 +40,15 @@ export const CanApplyTextContentTraitToHtml: Test = async () => {
   el = tmpl.div(
     trait.text(
       () => state.val().value,
-      () => true,
+      $test(() => false),
+    ),
+  );
+  tests.push(el.outerHTML === '<div></div>');
+
+  el = tmpl.div(
+    trait.text(
+      () => state.val().value,
+      $test(() => true),
       state,
     ),
   );

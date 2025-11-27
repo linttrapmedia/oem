@@ -1,4 +1,4 @@
-import { Condition, extractStatesAndConditions, StateType } from '@/oem';
+import { Condition, extractConditions, extractStates, StateType } from '@/oem';
 
 export function useStyleTrait(
   el: HTMLElement,
@@ -6,7 +6,8 @@ export function useStyleTrait(
   val: (() => string | number | undefined) | (string | number | undefined),
   ...rest: (StateType<any> | Condition)[]
 ) {
-  const { states, conditions } = extractStatesAndConditions(...rest);
+  const states = extractStates(val, ...rest);
+  const conditions = extractConditions(val, ...rest);
   const apply = () => {
     const _val = typeof val === 'function' ? val() : val;
     const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));

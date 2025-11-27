@@ -1,4 +1,4 @@
-import { Condition, extractStatesAndConditions, StateType } from '@/oem';
+import { Condition, extractConditions, extractStates, StateType } from '@/oem';
 
 export function useEventTrait(
   el: HTMLElement,
@@ -6,7 +6,8 @@ export function useEventTrait(
   cb: (evt?: GlobalEventHandlersEventMap[keyof GlobalEventHandlersEventMap]) => void,
   ...rest: (StateType<any> | Condition)[]
 ) {
-  const { states, conditions } = extractStatesAndConditions(...rest);
+  const states = extractStates(...rest);
+  const conditions = extractConditions(...rest);
   let listenerAttached = false;
 
   const apply = () => {

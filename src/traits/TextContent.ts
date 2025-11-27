@@ -1,4 +1,4 @@
-import { Condition, extractStatesAndConditions, StateType } from '@/oem';
+import { Condition, extractConditions, extractStates, StateType } from '@/oem';
 
 type TextContent = string | number | undefined | unknown;
 
@@ -7,16 +7,11 @@ export function useTextContentTrait(
   text: TextContent | TextContent[] | (() => TextContent | TextContent[]),
   ...rest: (StateType<any> | Condition)[]
 ) {
-  const { states, conditions } = extractStatesAndConditions(...rest);
+  const states = extractStates(text, ...rest);
+  const conditions = extractConditions(text, ...rest);
   const apply = () => {
     const _text = typeof text === 'function' ? text() : text;
     const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));
-    console.log(conditions);
-    conditions.forEach((cond, idx) => {
-      if (typeof cond === 'function') {
-        console.log(`Condition ${idx} is ${cond()} `);
-      }
-    });
     if (applies) {
       el.textContent = '';
       if (_text !== undefined) {

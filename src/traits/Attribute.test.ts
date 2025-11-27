@@ -1,4 +1,4 @@
-import { State, Template, Test } from '@/oem';
+import { $test, State, Template, Test } from '@/oem';
 import { useAttributeTrait } from '@/traits/Attribute';
 
 export const CanApplyAttributeTraitToHtml: Test = async () => {
@@ -28,16 +28,32 @@ export const CanApplyAttributeTraitToHtml: Test = async () => {
   el = tmpl.div(trait.attr('disabled', disabled.val, disabled));
   tests.push(el.outerHTML === '<div disabled="true"></div>');
 
-  // respects 0 condition
-  el = tmpl.div(trait.attr('id', "don't apply", disabled, 0));
+  // respects false condition
+  el = tmpl.div(trait.attr('id', "don't apply", disabled, $test(false)));
   tests.push(el.outerHTML === '<div></div>');
 
   // respects multiple conditions
-  el = tmpl.div(trait.attr('id', 'multi', disabled, true, () => true));
+  el = tmpl.div(
+    trait.attr(
+      'id',
+      'multi',
+      disabled,
+      $test(true),
+      $test(() => true),
+    ),
+  );
   tests.push(el.outerHTML === '<div id="multi"></div>');
 
   // respects multiple conditions with one false
-  el = tmpl.div(trait.attr('id', 'multi', disabled, true, () => false));
+  el = tmpl.div(
+    trait.attr(
+      'id',
+      'multi',
+      disabled,
+      $test(true),
+      $test(() => false),
+    ),
+  );
   tests.push(el.outerHTML === '<div></div>');
 
   // removes attribute when value is undefined
@@ -46,7 +62,7 @@ export const CanApplyAttributeTraitToHtml: Test = async () => {
 
   // reacts to state changes again
   disabled.set(false);
-  el = tmpl.div(trait.attr('disabled', disabled.val, disabled));
+  el = tmpl.div(trait.attr('disabled', disabled.val, disabled.$test(false)));
   tests.push(el.outerHTML === '<div disabled="false"></div>');
 
   // tunnels state through $val
@@ -54,6 +70,7 @@ export const CanApplyAttributeTraitToHtml: Test = async () => {
   el = tmpl.div(trait.attr('data-test', other.$val));
   other.set('updatedValue');
   tests.push(el.outerHTML === '<div data-test="updatedValue"></div>');
+  console.log(el.outerHTML);
 
   // tunnels state through $test
   const testState = State(1);

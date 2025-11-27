@@ -8,7 +8,22 @@ export const Section = (props: {
 }) => {
   const title =
     props.level === 1
-      ? tag.h2(trait.style('textTransform', 'uppercase'), props.title)
+      ? tag.h2(
+          trait.style('textTransform', 'uppercase'),
+          trait.style('display', 'flex'),
+          trait.style('flexDirection', 'row'),
+          trait.style('gap', '10px'),
+          props.title,
+          tag.a(
+            trait.style('fontSize', '14px'),
+            trait.style('textDecoration', 'none'),
+            trait.style('border', '1px solid #a4a4a4ff'),
+            trait.style('padding', '2px 6px'),
+            trait.style('borderRadius', '4px'),
+            trait.attr('href', `#`),
+            '¶',
+          ),
+        )
       : props.level === 2
       ? tag.h3(props.title)
       : tag.h4(props.title);
@@ -30,17 +45,6 @@ export const Section = (props: {
         trait.style('alignItems', 'center'),
         trait.style('gap', '10px'),
         title,
-        tag.a(
-          trait.style('display', 'block', props.level === 1),
-          trait.style('display', 'none', props.level !== 1),
-          trait.style('fontSize', '14px'),
-          trait.style('textDecoration', 'none'),
-          trait.style('border', '1px solid #a4a4a4ff'),
-          trait.style('padding', '2px 6px'),
-          trait.style('borderRadius', '4px'),
-          trait.attr('href', `#`),
-          '¶',
-        ),
       ),
       props.subtitle ? tag.p(trait.style('marginBottom', '10px'), props.subtitle) : '',
       tag.div(

@@ -1,4 +1,4 @@
-import { State, Template, Test } from '@/oem';
+import { $test, State, Template, Test } from '@/oem';
 import { useStyleTrait } from './Style';
 
 export const CanApplyStyleTraitToHtml: Test = async () => {
@@ -15,7 +15,7 @@ export const CanApplyStyleTraitToHtml: Test = async () => {
     trait.style(
       'fontSize',
       () => state.val().fontSize,
-      () => false,
+      $test(() => false),
       state,
     ),
   );
@@ -24,7 +24,7 @@ export const CanApplyStyleTraitToHtml: Test = async () => {
     trait.style(
       'fontSize',
       () => state.val().fontSize,
-      () => true,
+      $test(() => true),
       state,
     ),
   );

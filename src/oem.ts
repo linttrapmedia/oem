@@ -4,28 +4,21 @@ export type Condition = (() => boolean) | boolean | 1 | 0;
 export type Test = (sandbox?: HTMLElement) => Promise<{ pass: boolean; message?: string }>;
 type Tail<T extends any[]> = T extends [any, ...infer R] ? R : never;
 
-export const isStateObj = (i: any) => {
-  return i && Object.keys(i).includes('sub');
+export const $test = (cb: (() => boolean) | boolean, truthCheck: boolean = true): Condition => {
+  const closure = () => {
+    const result = typeof cb === 'function' ? (cb as () => boolean)() : cb;
+    return result === truthCheck;
+  };
+  closure.type = '$test';
+  return closure;
 };
 
-export const isTestCond = (i: any) => {
-  return (
-    ((typeof i === 'function' && i.type === '$test') ||
-      typeof i === 'boolean' ||
-      typeof i === 'number') &&
-    !isStateObj(i)
-  );
+export const extractStates = (...rest: any): StateType<any>[] => {
+  return rest.filter((i: any) => i && i.hasOwnProperty('sub')) as StateType<any>[];
 };
 
-export const extractStatesAndConditions = (
-  ...rest: any[]
-): {
-  states: StateType<any>[];
-  conditions: Condition[];
-} => {
-  const states = rest.filter(isStateObj) as StateType<any>[];
-  const conditions = rest.filter(isTestCond);
-  return { states, conditions };
+export const extractConditions = (...rest: any[]): Condition[] => {
+  return rest.filter((i: any) => i && i.type === '$test') as Condition[];
 };
 
 // STORAGE
