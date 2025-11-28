@@ -221,7 +221,7 @@ export function State<T>(param: T): StateType<T> {
 
 // TEMPLATE
 
-const traitCleanupMap = new WeakMap<HTMLElement, (() => void)[]>();
+const traitCleanupMap = new WeakMap<HTMLElement | SVGElement, (() => void)[]>();
 const observer = new MutationObserver((mutations) => {
   for (const mutation of mutations) {
     if (mutation.type === 'childList') {
@@ -264,7 +264,26 @@ export function Template<P extends Record<string, TemplateTraitFunc>>(
     {
       get: (_, prop: string) => {
         const tagFunc = (...traits: TemplateTraitApplier[]) => {
-          const el = document.createElement(prop);
+          const svgTags = new Set([
+            'svg',
+            'g',
+            'rect',
+            'circle',
+            'ellipse',
+            'line',
+            'polyline',
+            'polygon',
+            'path',
+            'text',
+            'defs',
+            'use',
+            'mask',
+            'clipPath',
+          ]);
+
+          const el = svgTags.has(prop)
+            ? document.createElementNS('http://www.w3.org/2000/svg', prop)
+            : document.createElement(prop);
 
           traits.forEach((trait: any) => {
             // apply
