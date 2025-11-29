@@ -1,11 +1,5 @@
 import { Condition, StateType } from '@/oem';
 
-type FocusProps = [
-  el: HTMLElement,
-  conditions?: Condition | Condition[],
-  states?: StateType<any> | StateType<any>[],
-];
-
 export const useFocusTrait = (
   el: HTMLElement,
   conditions: Condition[] = [],

@@ -8,7 +8,7 @@ export function useTextContentTrait(
   ...rest: (StateType<any> | Condition)[]
 ) {
   const states = extractStates(text, ...rest);
-  const conditions = extractConditions(text, ...rest);
+  const conditions = extractConditions(...rest);
   const apply = () => {
     const _text = typeof text === 'function' ? text() : text;
     const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));

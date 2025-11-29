@@ -1,8 +1,8 @@
-import { State, Template } from '@/oem';
+import { $test, State, Template } from '@/oem';
+import { useInputEventTrait } from '@/registry';
 import { useAttributeTrait } from '@/traits/Attribute';
 import { useEventTrait } from '@/traits/Event';
 import { useInnerHTMLTrait } from '@/traits/InnerHTML';
-import { useInputEvent } from '@/traits/InputEvent';
 import { useInputValueTrait } from '@/traits/InputValue';
 import { useStyleTrait } from '@/traits/Style';
 
@@ -10,7 +10,7 @@ const [tag, trait] = Template({
   event: useEventTrait,
   attr: useAttributeTrait,
   value: useInputValueTrait,
-  input: useInputEvent,
+  input: useInputEventTrait,
   html: useInnerHTMLTrait,
   style: useStyleTrait,
 });
@@ -54,8 +54,8 @@ const view = tag.div(
       todos.$call('map', (todo: TodoType) =>
         tag.li(
           tag.span(
-            trait.style('textDecoration', 'line-through', todo.completed),
-            trait.style('textDecoration', 'none', !todo.completed),
+            trait.style('textDecoration', 'line-through', $test(todo.completed)),
+            trait.style('textDecoration', 'none', $test(!todo.completed)),
             todo.task,
           ),
           tag.button(trait.event('click', handlers.toggleTodo.bind(null, todo)), 'Toggle'),

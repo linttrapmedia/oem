@@ -6,7 +6,7 @@ function useClassNameTrait(
   ...rest: (StateType<any> | Condition)[]
 ) {
   const states = extractStates(className, ...rest);
-  const conditions = extractConditions(className, ...rest);
+  const conditions = extractConditions(...rest);
   const apply = () => {
     const _className = typeof className === 'function' ? className() : className;
     const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));

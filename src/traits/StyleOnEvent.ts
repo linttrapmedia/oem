@@ -8,7 +8,7 @@ export function useStyleOnEventTrait(
   ...rest: (StateType<any> | Condition)[]
 ) {
   const states = extractStates(val, ...rest);
-  const conditions = extractConditions(val, ...rest);
+  const conditions = extractConditions(...rest);
   const apply = () => {
     const _val = typeof val === 'function' ? val() : val;
     const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));

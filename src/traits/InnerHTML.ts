@@ -7,7 +7,7 @@ export function useInnerHTMLTrait(
   children: Child | Child[] | (() => Child | Child[]),
   ...rest: (StateType<any> | Condition)[]
 ) {
-  const states = extractStates(...rest);
+  const states = extractStates(children, ...rest);
   const conditions = extractConditions(...rest);
   const apply = () => {
     const _children = typeof children === 'function' ? children() : children;

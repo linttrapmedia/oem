@@ -6,7 +6,7 @@ export function useInputValueTrait(
   ...rest: (StateType<any> | Condition)[]
 ) {
   const states = extractStates(value, ...rest);
-  const conditions = extractConditions(value, ...rest);
+  const conditions = extractConditions(...rest);
   const apply = () => {
     const _val = typeof value === 'function' ? value() : value;
     const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));

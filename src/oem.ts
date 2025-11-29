@@ -14,7 +14,7 @@ export const $test = (cb: (() => boolean) | boolean, truthCheck: boolean = true)
 };
 
 export const extractStates = (...rest: any): StateType<any>[] => {
-  return rest.filter((i: any) => i && i.hasOwnProperty('sub')) as StateType<any>[];
+  return rest.filter((i: any) => Object.hasOwn(i, 'sub')) as StateType<any>[];
 };
 
 export const extractConditions = (...rest: any[]): Condition[] => {

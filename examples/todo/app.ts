@@ -1,4 +1,4 @@
-import { Template } from '@/oem';
+import { $test, Template } from '@/oem';
 import { useInputEventTrait } from '@/registry';
 import { useAttributeTrait } from '@/traits/Attribute';
 import { useEventTrait } from '@/traits/Event';
@@ -31,7 +31,7 @@ const view = tag.div(
       trait.attr('type', 'text'),
       trait.attr('placeholder', 'New todo...'),
       trait.attr('autofocus', 'true'),
-      trait.focus(storage.data.newTodo.$test('')),
+      trait.focus([storage.data.newTodo.$test('')]),
       trait.input('input', storage.data.newTodo.set),
       trait.value(storage.data.newTodo.val, storage.data.newTodo),
     ),
@@ -45,7 +45,11 @@ const view = tag.div(
         tag.li(
           trait.style('display', 'grid'),
           trait.style('gridTemplateColumns', 'auto min-content min-content'),
-          tag.span(trait.style('textDecoration', 'line-through', todo.completed), todo.title),
+          tag.span(
+            trait.style('textDecoration', 'line-through', $test(todo.completed)),
+            trait.style('textDecoration', 'none', $test(!todo.completed)),
+            todo.title,
+          ),
           tag.button(trait.event('click', $fsm('TOGGLE', todo)), 'Toggle'),
           tag.button(trait.event('click', $fsm('DELETE', todo)), 'Delete'),
         ),
