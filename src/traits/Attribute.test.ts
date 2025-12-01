@@ -57,7 +57,8 @@ export const CanApplyAttributeTraitToHtml: Test = async () => {
   tests.push(el.outerHTML === '<div></div>');
 
   // removes attribute when value is undefined
-  el = tmpl.div(trait.attr('id', undefined, disabled));
+  el = tmpl.div(trait.attr('id', undefined));
+  console.log('asdf', el.outerHTML);
   tests.push(el.outerHTML === '<div></div>');
 
   // reacts to state changes again

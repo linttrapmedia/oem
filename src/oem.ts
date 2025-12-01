@@ -4,17 +4,17 @@ export type Condition = (() => boolean) | boolean | 1 | 0;
 export type Test = (sandbox?: HTMLElement) => Promise<{ pass: boolean; message?: string }>;
 type Tail<T extends any[]> = T extends [any, ...infer R] ? R : never;
 
-export const $test = (cb: (() => boolean) | boolean, truthCheck: boolean = true): Condition => {
+export const $test = (val: (() => any) | any, expected: any = true): Condition => {
   const closure = () => {
-    const result = typeof cb === 'function' ? (cb as () => boolean)() : cb;
-    return result === truthCheck;
+    const result = typeof val === 'function' ? (val as () => any)() : val;
+    return result === expected;
   };
   closure.type = '$test';
   return closure;
 };
 
 export const extractStates = (...rest: any): StateType<any>[] => {
-  return rest.filter((i: any) => Object.hasOwn(i, 'sub')) as StateType<any>[];
+  return rest.filter((i: any) => i && Object.hasOwn(i, 'sub')) as StateType<any>[];
 };
 
 export const extractConditions = (...rest: any[]): Condition[] => {

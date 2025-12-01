@@ -41,6 +41,7 @@ export const Docs = () =>
         tag.li(tag.a(trait.attr('href', '#templating'), 'Templating')),
         tag.li(tag.a(trait.attr('href', '#traits'), 'Traits')),
         tag.li(tag.a(trait.attr('href', '#storage'), 'Storage')),
+        tag.li(tag.a(trait.attr('href', '#helpers'), 'Helpers')),
         tag.li(tag.a(trait.attr('href', '#examples'), 'Examples')),
       ),
     }),
@@ -644,7 +645,55 @@ storage.data.username.set('Alice'); // Auto-saves to localStorage`),
     }),
 
     // ============================================
-    // BROWSER SUPPORT
+    // HELPERS
+    // ============================================
+
+    Section({
+      title: 'Helpers',
+      level: 1,
+      subtitle: 'OEM has several helper functions to streamline common tasks.',
+      content: [
+        Section({
+          title: 'The $test Helper',
+          level: 2,
+          subtitle: `The $test helper creates a Condition closure that can be used for testing within Traits and State methods. It has a type key of '$test' to allow Traits to introspect and subscribe to changes automatically (Also see 'extractConditions' helper).`,
+          content: Code(`const isActive = State(false);
+// Value check
+const el = tag.div(
+  trait.style('display', 'block', $test(isActive, true)),
+  trait.style('display', 'none', $test(isActive, false)),
+);
+
+// Function result check
+const el2 = tag.div(
+  trait.style('display', 'block', $test(somefunc, true)),
+  trait.style('display', 'none', $test(someval, 'is this val')),
+);
+`),
+        }),
+        Section({
+          title: 'The extractStates and extractConditions Helpers',
+          level: 2,
+          subtitle: `These two helpers are used within Traits to separate State objects from Condition closures in the arguments passed to a Trait. This allows Traits to manage subscriptions and reactivity properly. Under the hood a "state" is any object with a "sub" method (i.e., a State object), and a condition is any function with a "type" key of "$test".`,
+          content:
+            Code(`function useMultiStateTrait(el: HTMLElement, ...rest: (StateType<any> | Condition)[]) {
+  const states = extractStates(...rest);
+  const conditions = extractConditions(...rest);
+  const apply = () => {
+    // Do something with the current state values if conditions are met
+  };
+  states.forEach((state) => state.sub(apply));
+  apply();
+  return () => {
+    // Cleanup subscriptions if needed
+  };
+}`),
+        }),
+      ],
+    }),
+
+    // ============================================
+    // EXAMPLES
     // ============================================
     Section({
       title: 'Examples',
