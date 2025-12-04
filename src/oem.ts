@@ -152,7 +152,6 @@ export function State<T>(param: T): StateType<T> {
   ) => {
     if (predicate instanceof RegExp) {
       const result = predicate.test(_internalVal as unknown as string);
-      console.log(predicate, _internalVal);
       return truthCheck ? result : !result;
     } else if (typeof predicate === 'function' && predicate instanceof Function) {
       const result = (predicate as (atom: T) => boolean)(_internalVal);
