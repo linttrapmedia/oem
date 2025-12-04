@@ -1,2 +1,5 @@
-- Make content optionally a call back function with "rest" params that are states that trigger redraws or
-  create a useInnerHTMLTrait trait which is probably in order
+1. Nestable States
+2. Move examples to docs
+3. Add StyleOnEvent trait
+4. Document undocumented traits
+5. Add UrlState

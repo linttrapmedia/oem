@@ -150,16 +150,16 @@ export function State<T>(param: T): StateType<T> {
     predicate: RegExp | T | ((atom: T) => boolean),
     truthCheck: true | false = true,
   ) => {
-    const serialized_currentVal = JSON.stringify(_internalVal);
     if (predicate instanceof RegExp) {
-      const result = predicate.test(serialized_currentVal);
+      const result = predicate.test(_internalVal as unknown as string);
+      console.log(predicate, _internalVal);
       return truthCheck ? result : !result;
     } else if (typeof predicate === 'function' && predicate instanceof Function) {
       const result = (predicate as (atom: T) => boolean)(_internalVal);
       return truthCheck ? result : !result;
     } else {
-      const string_comparison = JSON.stringify(predicate);
-      const result = serialized_currentVal === string_comparison;
+      const string_comparison = predicate;
+      const result = _internalVal === string_comparison;
       return truthCheck ? result : !result;
     }
   };

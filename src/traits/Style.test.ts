@@ -29,10 +29,10 @@ export const CanApplyStyleTraitToHtml: Test = async () => {
     ),
   );
   const t4 = e4.outerHTML === '<div style="font-size: 15px;"></div>';
-  const e5 = tmpl.div(
-    trait.style('fontSize', () => state.val().fontSize, state.$test(/15px/), state),
-  );
+  const state2 = State<string>('15px');
+  const e5 = tmpl.div(trait.style('fontSize', state2.$val, state2.$test(/15px/)));
   const t5 = e5.outerHTML === '<div style="font-size: 15px;"></div>';
+  console.log(e5.outerHTML);
 
   const tests = [t1, t2a, t2b, t3, t4, t5];
 

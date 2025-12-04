@@ -114,7 +114,8 @@ export const CanApplyInnerHTMLTraitToSvg: Test = async () => {
   );
   const t8 = e8.outerHTML === '<circle>c1</circle>';
   state.set({ value: 'c2' });
-  const e9 = tmpl.circle(trait.html(() => state.val().value, state.$test(/c2/), state));
+  const state2 = State<string>('15px');
+  const e9 = tmpl.circle(trait.html(() => state.val().value, state2.$test(/15px/), state2));
   const t9 = e9.outerHTML === '<circle>c2</circle>';
   return { pass: t1 && t2 && t3 && t4 && t5 && t6 && t7 && t8 && t9 };
 };
