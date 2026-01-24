@@ -51,6 +51,7 @@ export const traitLibrary = [
   ['useInnerHTMLTrait', 'src/traits/InnerHTML.ts', 'Set inner HTML content'],
   ['useInputEventTrait', 'src/traits/InputEvent.ts', 'Handle input events'],
   ['useStyleTrait', 'src/traits/Style.ts', 'Apply inline styles'],
+  ['useStyleOnEventTrait', 'src/traits/StyleOnEvent.ts', 'Apply styles on specific events'],
   ['useTextContentTrait', 'src/traits/TextContent.ts', 'Set text content'],
   ['useValueTrait', 'src/traits/InputValue.ts', 'Bind to input values'],
 ];
@@ -62,6 +63,7 @@ export const statesLibrary = [
 export const examplesLibrary = [
   ['Single File Todo', 'examples/singleFileTodo', 'A simple todo list application using OEM.'],
   ['Todo', 'examples/todo', 'A todo application demonstrating state management.'],
+  ['Todo Calendar', 'examples/todoCalendar', 'A full-featured todo app with calendar and list views.'],
   ['Counter', 'examples/counter', 'A simple counter application.'],
 ];
 

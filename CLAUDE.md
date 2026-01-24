@@ -4,17 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-OEM is a ~2KB lightweight library for building reactive UIs with vanilla TypeScript. It provides three core building blocks:
+OEM is a ~2KB lightweight library for building reactive UIs with vanilla TypeScript. It provides two core building blocks:
 
 1. **State** - Reactive state management with pub/sub pattern
 2. **Template** - Proxy-based HTML/SVG element creation with trait system
-3. **Storage** - Persistent state with localStorage/sessionStorage/memory
 
-**Key Philosophy**: OEM is a "roll your own framework" framework - minimal core with extensible trait-based behaviors. No virtual DOM, zero dependencies. **Traits and States are NOT bundled** - users must copy ready-made implementations from `src/traits/` and `src/states/` or create their own.
+**Key Philosophy**: OEM is a "roll your own framework" framework - minimal core with extensible trait-based behaviors. No virtual DOM, zero dependencies.
+
+**Package Exports**: The package entry point is `src/registry.ts`, which exports the core functions (State, Template) plus all ready-made traits and state utilities. Users can import directly from `@linttrap/oem` or copy implementations and customize them.
 
 ## Development Commands
 
-**IMPORTANT**: This project uses **Bun exclusively** (not Node.js, npm, vite, or webpack). See `.cursor/rules/use-bun-instead-of-node-vite-npm-pnpm.mdc` for details.
+**IMPORTANT**: This project uses **Bun exclusively** (not Node.js, npm, vite, or webpack).
 
 ```bash
 # Install dependencies
@@ -22,9 +23,6 @@ make install        # or: bun install
 
 # Run tests (opens unit.html in browser)
 make test          # or: bun ./test/unit.html
-
-# Build distribution files (dist/)
-make dist
 
 # Build documentation site (docs/app.js)
 make docs
@@ -52,7 +50,7 @@ make deploy
 
 ### Core Module: `src/oem.ts`
 
-The core library exports **only** three functions: `State`, `Template`, and `Storage`. Everything else (traits, utilities) are reference implementations.
+The core library exports **only** two functions: `State` and `Template`. Traits and state utilities are exported separately via `src/registry.ts`.
 
 **`State<T>(initialValue: T)`** - Creates reactive state with pub/sub pattern
 
@@ -63,9 +61,8 @@ Methods:
 - `sub(callback)` - Subscribe to changes (returns unsubscribe function)
 - `test(predicate, truthCheck?)` - Test value (supports regex, function, or direct comparison)
 - `call(method, ...args)` - Call methods on boxed primitives (String, Number, Boolean)
-- `chain(...calls)` - Chain multiple method calls
 
-**The $ Pattern**: All methods have `$`-prefixed versions (`$val`, `$set`, `$reduce`, `$test`, `$call`, `$chain`) that return closures. This is crucial for two reasons:
+**The $ Pattern**: All methods have `$`-prefixed versions (`$val`, `$set`, `$reduce`, `$test`, `$call`) that return closures. This is crucial for two reasons:
 
 1. **Event Handlers** - Avoids verbose wrapper functions:
 ```typescript
@@ -113,34 +110,10 @@ const app = tag.div(
 
 **Automatic Cleanup**: Uses `WeakMap` + `MutationObserver` to automatically cleanup trait subscriptions when elements are removed from DOM.
 
-**`Storage<Data, Sync>(config)`** - Wraps State objects with storage persistence
-
-```typescript
-const storage = Storage({
-  data: {
-    username: {
-      key: 'app-username',
-      state: State(''),
-      storage: 'localStorage', // or 'sessionStorage' or 'memory'
-    },
-  },
-  sync: {
-    // Optional custom sync methods for remote data
-    fetchData: async () => { ... },
-  },
-});
-
-// Access like normal state
-storage.data.username.set('Alice'); // Auto-saves to localStorage
-```
-
 ### Ready-Made Traits (`src/traits/`)
 
-**IMPORTANT**: Traits are **ready-made implementations** that are NOT exported from the core library. Users must:
-1. Copy trait implementations from `src/traits/` into their projects
-2. Create their own custom traits following the same pattern
+The `src/traits/` directory provides ready-made traits for common use cases. All traits are exported from the package via `src/registry.ts`:
 
-The `src/traits/` directory provides ready-made traits for common use cases:
 - `useAttributeTrait` - Set/remove HTML attributes
 - `useClassNameTrait` - Manage CSS classes
 - `useEventTrait` - Attach/remove event listeners
@@ -149,7 +122,18 @@ The `src/traits/` directory provides ready-made traits for common use cases:
 - `useInputEventTrait` - Handle input events
 - `useInputValueTrait` - Bind input values to state
 - `useStyleTrait` - Apply CSS styles (supports CSS variables with `--` prefix)
+- `useStyleOnEventTrait` - Apply styles on specific events (hover, focus, etc.)
 - `useTextContentTrait` - Set text content
+
+**Usage**: Import traits from the package or copy and customize them:
+
+```typescript
+// Import from package
+import { useStyleTrait, useEventTrait } from '@linttrap/oem';
+
+// Or import from source (when developing in this repo)
+import { useStyleTrait } from '@/traits/Style';
+```
 
 **Trait Pattern**: Standard signature for creating custom traits:
 
@@ -193,14 +177,14 @@ trait.style('opacity', () => computeOpacity(), state1, state2)
 
 ### Ready-Made States (`src/states/`)
 
-**IMPORTANT**: Like traits, state utilities are **ready-made implementations** that are NOT exported from the core library. Users must copy them from `src/states/` into their projects.
+The `src/states/` directory provides ready-made state utilities for common patterns. All state utilities are exported from the package via `src/registry.ts`.
 
-The `src/states/` directory provides ready-made state utilities for common patterns:
+Currently available:
 - `useMediaQueryState` - Reactive media query state that updates on window resize
 
 Example usage:
 ```typescript
-import { useMediaQueryState } from '@linttrap/oem/states/MediaQuery';
+import { useMediaQueryState } from '@linttrap/oem';
 
 const isMobile = useMediaQueryState({ maxWidth: 768 });
 
@@ -263,9 +247,10 @@ Tests are organized in `test/unit.ts` by category (HTML, SVG, State, Lib) and in
 
 ## Project Structure
 
-- `src/oem.ts` - Core library (State, Template, Storage) - **this is what gets published**
-- `src/traits/` - Ready-made trait implementations (copy these or create your own)
-- `src/states/` - Ready-made state utilities (copy these or create your own)
+- `src/oem.ts` - Core library (State, Template) - minimal reactive primitives
+- `src/registry.ts` - **Package entry point** - exports core + all traits and states
+- `src/traits/` - Ready-made trait implementations
+- `src/states/` - Ready-made state utilities
 - `test/` - Test runner and test suites
 - `docs/` - Self-hosted documentation site built with OEM
   - `config.ts` - Shared Template instance with traits
@@ -273,7 +258,27 @@ Tests are organized in `test/unit.ts` by category (HTML, SVG, State, Lib) and in
   - `app.ts` - Application entry point
   - `parts/` - Reusable UI components
 - `examples/` - Sample applications (counter, todo)
-- `dist/` - Built distribution files (IIFE format with `window.oem`)
+- `skill/` - Agent skill for AI tools to generate OEM code
+  - `skill.md` - Comprehensive OEM code generation guidelines
+
+## Agent Skill for Code Generation
+
+The `skill/skill.md` file contains comprehensive guidelines for AI tools to generate proper OEM code. When asked to create OEM components, features, or applications, reference this skill to ensure:
+
+- Correct usage of the `$` pattern for reactive bindings
+- Proper state management and updates
+- Appropriate trait configuration
+- Following OEM conventions and best practices
+- Type-safe code generation
+
+The skill includes:
+- Common patterns (counters, forms, lists, conditional rendering)
+- Event handling best practices
+- Styling patterns and techniques
+- Complete application structure examples
+- Common mistakes to avoid
+
+**When to use the skill**: Reference it when generating any OEM code to ensure correctness and adherence to framework conventions.
 
 ## How It All Works Together
 
@@ -334,15 +339,15 @@ tag.div(
 const name = State('');
 
 tag.input(
-  trait.value(name.val, name),
+  trait.value(name.val(), name),
   trait.event('input', (e) => name.set(e.target.value))
 );
 ```
 
 ## Important Notes
 
-- **Core is minimal**: Only State, Template, and Storage are exported. Traits and state utilities are ready-made implementations that must be copied/created by users.
-- **Ready-made implementations**: Both `src/traits/` and `src/states/` contain pre-built implementations to copy into your project, not import from the library.
+- **Core is minimal**: Only State and Template are in the core. Traits and state utilities are ready-made implementations exported from the package.
+- **Package entry point**: `src/registry.ts` exports everything - core functions, traits, and state utilities.
 - **Browser-only**: No server-side rendering support
 - **ES6+ required**: Minimum browser versions: Chrome 49+, Firefox 18+, Safari 10+, Edge 12+
 - **Type safety**: Heavy use of TypeScript generics and conditional types
