@@ -61,9 +61,11 @@ export const statesLibrary = [
 ];
 
 export const examplesLibrary = [
-  ['Single File Todo', 'examples/singleFileTodo', 'A simple todo list application using OEM.'],
-  ['Todo', 'examples/todo', 'A todo application demonstrating state management.'],
-  ['Todo Calendar', 'examples/todoCalendar', 'A full-featured todo app with calendar and list views.'],
+  [
+    'Todo Calendar',
+    'examples/todoCalendar',
+    'A full-featured todo app with calendar and list views.',
+  ],
   ['Counter', 'examples/counter', 'A simple counter application.'],
 ];
 

@@ -55,6 +55,7 @@ The core library exports **only** two functions: `State` and `Template`. Traits 
 **`State<T>(initialValue: T)`** - Creates reactive state with pub/sub pattern
 
 Methods:
+
 - `val()` - Get current value
 - `set(value)` - Set new value and notify subscribers
 - `reduce(fn)` - Update based on previous value
@@ -65,31 +66,37 @@ Methods:
 **The $ Pattern**: All methods have `$`-prefixed versions (`$val`, `$set`, `$reduce`, `$test`, `$call`) that return closures. This is crucial for two reasons:
 
 1. **Event Handlers** - Avoids verbose wrapper functions:
+
 ```typescript
 // Without $ - verbose
-tag.button(trait.event('click', () => count.set(0)), 'Reset')
+tag.button(
+  trait.event('click', () => count.set(0)),
+  'Reset',
+);
 
 // With $ - clean
-tag.button(trait.event('click', count.$set(0)), 'Reset')
+tag.button(trait.event('click', count.$set(0)), 'Reset');
 ```
 
 2. **Reactive UI Updates** - Template automatically subscribes to $ methods:
+
 ```typescript
 const count = State(0);
 
 // Text auto-updates when count changes
-tag.h1(count.$val)
+tag.h1(count.$val);
 
 // Conditional visibility
 tag.div(
   trait.style('display', 'block', count.$test(0, false)), // Hide when 0
-  'Count is not zero'
-)
+  'Count is not zero',
+);
 ```
 
 **`Template<P>(config?: P)`** - Creates HTML/SVG element factory with trait system
 
 Returns tuple `[tag, trait]`:
+
 - `tag` - Proxy for creating elements: `tag.div()`, `tag.button()`, `tag.svg()`, etc. (all HTML/SVG elements available)
 - `trait` - Proxy for applying configured traits: `trait.style()`, `trait.event()`, etc.
 
@@ -103,8 +110,8 @@ const app = tag.div(
   trait.style('padding', '20px'),
   tag.button(
     trait.event('click', () => console.log('clicked')),
-    'Click me'
-  )
+    'Click me',
+  ),
 );
 ```
 
@@ -138,11 +145,7 @@ import { useStyleTrait } from '@/traits/Style';
 **Trait Pattern**: Standard signature for creating custom traits:
 
 ```typescript
-function useTrait(
-  el: HTMLElement,
-  param1: string,
-  ...rest: (StateType<any> | Condition)[]
-) {
+function useTrait(el: HTMLElement, param1: string, ...rest: (StateType<any> | Condition)[]) {
   // Extract states and conditions from rest params
   const isStateObj = (i: any) => Object.keys(i).includes('sub');
   const states = rest.filter(isStateObj) as StateType<any>[];
@@ -166,11 +169,11 @@ function useTrait(
 
 ```typescript
 // Using $ methods (preferred)
-trait.style('display', 'block', isVisible.$val)
-trait.style('display', 'none', isVisible.$test(false))
+trait.style('display', 'block', isVisible.$val);
+trait.style('display', 'none', isVisible.$test(false));
 
 // Using state objects as additional params
-trait.style('opacity', () => computeOpacity(), state1, state2)
+trait.style('opacity', () => computeOpacity(), state1, state2);
 ```
 
 **Condition Type**: `(() => boolean) | boolean | 1 | 0`
@@ -180,19 +183,18 @@ trait.style('opacity', () => computeOpacity(), state1, state2)
 The `src/states/` directory provides ready-made state utilities for common patterns. All state utilities are exported from the package via `src/registry.ts`.
 
 Currently available:
+
 - `useMediaQueryState` - Reactive media query state that updates on window resize
 
 Example usage:
+
 ```typescript
 import { useMediaQueryState } from '@linttrap/oem';
 
 const isMobile = useMediaQueryState({ maxWidth: 768 });
 
 // Use in UI
-tag.nav(
-  trait.style('display', 'block', isMobile.$test(true)),
-  'Mobile Navigation'
-);
+tag.nav(trait.style('display', 'block', isMobile.$test(true)), 'Mobile Navigation');
 ```
 
 **More coming soon**: Router state, form state, async data state, and other common patterns will be added to `src/states/`.
@@ -203,11 +205,7 @@ Components are just functions that return elements:
 
 ```typescript
 function Button(text: string, onClick: () => void) {
-  return tag.button(
-    trait.style('padding', '10px 20px'),
-    trait.event('click', onClick),
-    text
-  );
+  return tag.button(trait.style('padding', '10px 20px'), trait.event('click', onClick), text);
 }
 
 // Use it
@@ -258,8 +256,7 @@ Tests are organized in `test/unit.ts` by category (HTML, SVG, State, Lib) and in
   - `app.ts` - Application entry point
   - `parts/` - Reusable UI components
 - `examples/` - Sample applications (counter, todo)
-- `skill/` - Agent skill for AI tools to generate OEM code
-  - `skill.md` - Comprehensive OEM code generation guidelines
+- `skill.md` - Comprehensive OEM code generation guidelines
 
 ## Agent Skill for Code Generation
 
@@ -272,6 +269,7 @@ The `skill/skill.md` file contains comprehensive guidelines for AI tools to gene
 - Type-safe code generation
 
 The skill includes:
+
 - Common patterns (counters, forms, lists, conditional rendering)
 - Event handling best practices
 - Styling patterns and techniques
@@ -289,8 +287,14 @@ Understanding the complete reactive loop:
 3. **Build Elements with Reactive Bindings**:
    ```typescript
    const app = tag.div(
-     tag.h1(count.$val),  // Template sees $val and subscribes
-     tag.button(trait.event('click', count.$reduce(n => n + 1)), 'Increment')
+     tag.h1(count.$val), // Template sees $val and subscribes
+     tag.button(
+       trait.event(
+         'click',
+         count.$reduce((n) => n + 1),
+       ),
+       'Increment',
+     ),
    );
    ```
 4. **Behind the Scenes**:
@@ -314,33 +318,29 @@ Understanding the complete reactive loop:
 ## Common Patterns
 
 **Reactive Lists**:
+
 ```typescript
 const items = State(['Apple', 'Banana', 'Orange']);
 
-tag.ul(
-  trait.html(
-    items.$call('map', (item) => tag.li(item))
-  )
-);
+tag.ul(trait.html(items.$call('map', (item) => tag.li(item))));
 ```
 
 **Conditional Rendering**:
+
 ```typescript
 const isVisible = State(true);
 
-tag.div(
-  trait.style('display', 'block', isVisible.$test(true)),
-  'Visible content'
-);
+tag.div(trait.style('display', 'block', isVisible.$test(true)), 'Visible content');
 ```
 
 **Form Input Binding**:
+
 ```typescript
 const name = State('');
 
 tag.input(
   trait.value(name.val(), name),
-  trait.event('input', (e) => name.set(e.target.value))
+  trait.event('input', (e) => name.set(e.target.value)),
 );
 ```
 
