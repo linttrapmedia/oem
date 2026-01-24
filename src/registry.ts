@@ -8,4 +8,5 @@ export { useInnerHTMLTrait } from './traits/InnerHTML';
 export { useInputEventTrait } from './traits/InputEvent';
 export { useInputValueTrait } from './traits/InputValue';
 export { useStyleTrait } from './traits/Style';
+export { useStyleOnEventTrait } from './traits/StyleOnEvent';
 export { useTextContentTrait } from './traits/TextContent';

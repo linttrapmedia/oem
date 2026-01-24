@@ -1,13 +1,12 @@
-import { Condition, extractConditions, extractStates, StateType } from '@/oem';
+import { Condition, extractConditions } from '@/oem';
 
 export function useStyleOnEventTrait(
   el: HTMLElement,
-  evt: MouseEvent | KeyboardEvent | FocusEvent | Event,
+  evt: keyof HTMLElementEventMap,
   prop: keyof CSSStyleDeclaration | `--${string}`,
   val: (() => string | number | undefined) | (string | number | undefined),
-  ...rest: (StateType<any> | Condition)[]
+  ...rest: Condition[]
 ) {
-  const states = extractStates(val, ...rest);
   const conditions = extractConditions(...rest);
   const apply = () => {
     const _val = typeof val === 'function' ? val() : val;
@@ -18,7 +17,6 @@ export function useStyleOnEventTrait(
         : (el.style[prop as any] = _val as any);
     }
   };
-  apply();
-  const unsubs = states.map((state) => state.sub(apply));
-  return () => unsubs.forEach((unsub) => unsub());
+  el.addEventListener(evt, apply);
+  return () => el.removeEventListener(evt, apply);
 }

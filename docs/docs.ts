@@ -33,97 +33,47 @@ export const Docs = () =>
             'GITHUB',
           ),
         ),
-        tag.li(tag.a(trait.attr('href', '#features'), 'Features')),
-        tag.li(tag.a(trait.attr('href', '#philosophy'), 'Philosophy')),
+        tag.li(tag.a(trait.attr('href', '#overview'), 'Overview')),
         tag.li(tag.a(trait.attr('href', '#installation'), 'Installation')),
         tag.li(tag.a(trait.attr('href', '#quick-start'), 'Quick Start')),
         tag.li(tag.a(trait.attr('href', '#state'), 'State')),
         tag.li(tag.a(trait.attr('href', '#templating'), 'Templating')),
         tag.li(tag.a(trait.attr('href', '#traits'), 'Traits')),
-        tag.li(tag.a(trait.attr('href', '#storage'), 'Storage')),
         tag.li(tag.a(trait.attr('href', '#helpers'), 'Helpers')),
         tag.li(tag.a(trait.attr('href', '#examples'), 'Examples')),
       ),
     }),
 
     // ============================================
-    // FEATURES
+    // OVERVIEW
     // ============================================
 
     Section({
-      title: 'Features',
-      subtitle:
-        'OEM’s syntax is simple and transparent enough for humans to fully grasp and for AI to reliably extend—creating a feedback loop where you understand the code, refine it, and the AI builds on the exact patterns you’ve established.',
+      title: 'Overview',
+      subtitle: 'A UI toolkit built for the age of AI-assisted development.',
       level: 1,
       content: [
-        tag.ul(
-          tag.li('✓ ~2.7KB minified core, zero dependencies'),
-          tag.li('✓ Reactive DOM with no virtual DOM layer'),
-          tag.li('✓ Locality of behavior makes reasoning—and debugging—trivial'),
-          tag.li('✓ AI can generate Traits directly, and you can understand and refine every line'),
-          tag.li('✓ Full TypeScript types without framework overhead'),
-          tag.li('✓ Copy only what you need; no bulk, no lock-in'),
+        tag.p(
+          'OEM is designed so that both AI and humans can work with the same codebase effectively. The framework is small and predictable enough for AI to parse and reason about, while the code you write stays readable and maintainable by humans.',
         ),
-      ],
-    }),
-
-    // ============================================
-    // PHILOSOPHY
-    // ============================================
-
-    Section({
-      title: 'Philosophy',
-      level: 1,
-      subtitle:
-        'OEM is a minimal, convention-driven toolkit for crafting your own reactive, component-based UI layer—fully local, fully understood, and entirely yours.',
-      content: [
-        Section({
-          title: 'Transparent',
-          level: 2,
-          content: [
-            tag.p(
-              "OEM's primary goal is ",
-              tag.strong('transparency'),
-              '. It strips away the "black box" complexity of modern frameworks and replaces it with small, local behaviors you can actually reason about.',
-            ),
-
-            tag.ul(
-              tag.li(
-                tag.strong('Readable Core:'),
-                ' ~300 lines of plain TypeScript you can grasp in a single sitting',
-              ),
-              tag.li(
-                tag.strong('Local Behavior:'),
-                ' Features are implemented as ',
-                tag.strong('Traits'),
-                '—small files that live next to your markup and are meant to be ',
-                tag.strong('copied, edited, and extended'),
-              ),
-              tag.li(
-                tag.strong('No Hidden Magic:'),
-                ' Everything reduces to simple reactive patterns (pub/sub, observers, state flows) that you can inspect and reshape',
-              ),
-            ),
-          ],
-        }),
-
-        Section({
-          title: "Why 'Roll Your Own Framework'?",
-          level: 2,
-          content: [
-            tag.p(
-              'Modern frameworks try to be all things to all people, resulting in bulky, complex systems that are hard to master and extend. OEM embraces the idea that ',
-              tag.strong('you should build the framework you need, not the other way around'),
-              '.',
-            ),
-
-            tag.ul(
-              tag.li('Start small with just the Traits and States you need'),
-              tag.li('Evolve your toolkit organically as your project grows'),
-              tag.li('Maintain full control over every line of code and behavior'),
-            ),
-          ],
-        }),
+        tag.ul(
+          tag.li(
+            tag.strong('AI-parseable: '),
+            'The entire framework and your code on top of it can be easily understood and extended by AI',
+          ),
+          tag.li(
+            tag.strong('Human-readable: '),
+            'The code remains clean, maintainable, and easy to reason about',
+          ),
+          tag.li(
+            tag.strong('Declarative & local: '),
+            'Logic is expressed with locality of behavior—each behavior lives next to the element it affects',
+          ),
+          tag.li(
+            tag.strong('Fully testable: '),
+            'The trait-based architecture makes every single line testable',
+          ),
+        ),
       ],
     }),
 
@@ -313,6 +263,19 @@ const app = tag.div(
         'The State object provides simple reactive state management using the pub/sub pattern.',
       content: [
         Section({
+          title: 'Creating State',
+          level: 2,
+          subtitle: 'State is created by calling the State function with an initial value.',
+          content: Code(`const count = State(0); // creates a State holding the number 0`),
+        }),
+        Section({
+          title: 'Creating Typed State',
+          level: 2,
+          subtitle:
+            'You can create typed State objects by providing a type parameter to the State function.',
+          content: Code(`const name = State<string>(''); // creates a State holding a string`),
+        }),
+        Section({
           title: 'Methods',
           level: 2,
           subtitle: 'State methods are used to get, set, and update reactive data.',
@@ -367,10 +330,14 @@ const app = tag.div(
             Section({
               title: 'Clean Syntax',
               subtitle:
-                'Using the $ versions of State methods produces cleaner, more concise code.',
+                'Using the $ callback versions of State methods produces cleaner, more concise code.',
               level: 3,
               content: [
-                Code(`// Verbose: Needs an arrow function wrapper
+                Code(`
+// Create a State to hold a count
+const count = State(0);                  
+                  
+// Verbose: Needs an arrow function wrapper
 trait.event('click', () => count.set(0));
 
 // Clean: Use the $ pattern
@@ -591,55 +558,6 @@ const el = tag.div(
   // do anything with the element here
   return () => {}; // optional cleanup function
 }`),
-        }),
-      ],
-    }),
-
-    // ============================================
-    // STORAGE
-    // ============================================
-
-    Section({
-      title: 'Storage',
-      level: 1,
-      subtitle:
-        'The Storage utility is a simple helper to assist in persisting state locally and syncing with external sources.',
-      content: Code(`
-const storage = Storage({
-  data: {
-    username: [State(''), 'localStorage', 'app-username'], // Persists across sessions
-  },
-  sync: {
-    // Custom method to load data from an API
-    fetchUser: async () => {
-      // ... API fetch logic ...
-      storage.data.username.set(fetchedUsername);
-    },
-  },
-});
-
-// Access state directly
-storage.data.username.set('Alice'); // Auto-saves to localStorage`),
-    }),
-    Section({
-      title: 'Best Practices',
-      subtitle: `There are no hard rules, but here are some guidelines to keeping your app's data management clean:`,
-      level: 2,
-      content: [
-        Section({
-          title: 'Model State in a State Machine',
-          level: 3,
-          content: `It's recommended to use a state machine to manage your state. The simplest version of this is a single function with typed actions that update state based on action types..`,
-        }),
-        Section({
-          title: 'Use Storage for Persistence Only',
-          level: 3,
-          content: `Storage is best suited for persisting user preferences, session data, and other information that should survive page reloads. Avoid using it for transient UI state that doesn't need to be saved.`,
-        }),
-        Section({
-          title: 'Sync Methods for External Data',
-          level: 3,
-          content: `Use the sync methods in Storage to handle data fetching and synchronization with external APIs or services. This keeps your data flow organized and encapsulated.`,
         }),
       ],
     }),

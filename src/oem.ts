@@ -21,72 +21,6 @@ export const extractConditions = (...rest: any[]): Condition[] => {
   return rest.filter((i: any) => i && i.type === '$test') as Condition[];
 };
 
-// STORAGE
-
-type StorageType<Data extends Record<string, any>, Sync extends Record<string, any>> = {
-  data: {
-    [K in keyof Data]: [
-      StateType<Data[K]>,
-      storage: 'localStorage' | 'sessionStorage' | 'memory',
-      key?: string,
-    ];
-  };
-  sync?: {
-    [K in keyof Sync]: () => void;
-  };
-};
-
-export function Storage<Data extends Record<string, any>, Sync extends Record<string, any> = {}>(
-  config: StorageType<Data, Sync>,
-): {
-  data: { [K in keyof Data]: StateType<Data[K]> };
-  sync: { [K in keyof Sync]: () => void };
-} {
-  const { data, sync = {} } = config;
-
-  Object.keys(data).forEach((stateKey) => {
-    const [state, storage, key = stateKey] = data[stateKey];
-
-    if (storage === 'localStorage' || storage === 'sessionStorage') {
-      const _storage = storage === 'localStorage' ? window.localStorage : window.sessionStorage;
-
-      const storedVal = _storage.getItem(key);
-      if (storedVal) {
-        try {
-          const parsedVal = JSON.parse(storedVal);
-          state.set(parsedVal);
-        } catch (e) {
-          console.error(`Failed to parse stored value for key "${key}":`, e);
-        }
-      }
-
-      state.sub((val) => {
-        try {
-          const serializedVal = JSON.stringify(val);
-          _storage.setItem(key, serializedVal);
-        } catch (e) {
-          console.error(`Failed to serialize value for key "${key}":`, e);
-        }
-      });
-    }
-  });
-
-  const methods = {
-    data: {} as { [K in keyof Data]: StateType<Data[K]> },
-    sync: {} as { [K in keyof Sync]: () => void },
-  };
-
-  for (const k in data) {
-    methods.data[k] = data[k][0];
-  }
-
-  for (const k in sync) {
-    (methods.sync as any)[k] = (<any>sync)[k];
-  }
-
-  return methods;
-}
-
 // STATE
 
 export type MethodKeys<T> = {
@@ -103,19 +37,13 @@ export type Boxed<T> = T extends string
 
 type MethodFn<T, K extends keyof T> = T[K] extends (...args: any[]) => any ? T[K] : never;
 
-type MethodCall<T, K extends keyof Boxed<T> = keyof Boxed<T>> = K extends K
-  ? [K, ...Parameters<MethodFn<Boxed<T>, K>>]
-  : never;
-
 export type StateType<T> = {
   call: <K extends keyof Boxed<T>>(method: K, ...params: Parameters<MethodFn<Boxed<T>, K>>) => any;
-  chain: (...calls: MethodCall<T>[]) => any;
   reduce: (cb: (prev: T) => T) => void;
   set: (atom: T) => void;
   sub: (cb: (atom: T) => any) => () => void;
   test: (regex: RegExp | T | ((atom: T) => boolean), checkFor?: true | false) => boolean;
   val: () => T;
-  $chain: (...calls: MethodCall<T>[]) => () => any;
   $call: <K extends keyof Boxed<T>>(
     method: K,
     ...params: Parameters<MethodFn<Boxed<T>, K>>
@@ -187,26 +115,13 @@ export function State<T>(param: T): StateType<T> {
     return closure;
   };
 
-  const chain = (...calls: MethodCall<T>[]) =>
-    calls.reduce((acc: any, [method, ...params]) => acc[method](...params), _internalVal);
-
-  const $chain = (...calls: MethodCall<T>[]) => {
-    const closure = () =>
-      calls.reduce((acc: any, [method, ...params]) => acc[method](...params), _val());
-    closure.sub = _sub;
-    closure.type = '$chain';
-    return closure;
-  };
-
   const methods: any = {
     $call: $call,
-    $chain: $chain,
     $reduce: $reduce,
     $set: $set,
     $test: $test,
     $val: $val,
     call: call,
-    chain: chain,
     reduce: _reduce,
     set: _set,
     sub: _sub,

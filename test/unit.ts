@@ -30,6 +30,17 @@ import {
   CanApplyStyleTraitToSvg,
 } from '@/traits/Style.test';
 import {
+  CanApplyCssVarOnEvent,
+  CanApplyMultipleStylesOnEvent,
+  CanApplyNumericStyleOnEvent,
+  CanApplyStyleOnEventWithConditionFalse,
+  CanApplyStyleOnEventWithConditionTrue,
+  CanApplyStyleOnEventWithFunctionValue,
+  CanApplyStyleOnEventWithState,
+  CanApplyStyleOnEventWithStateAndCondition,
+  CanApplyStyleOnEventWithStaticValue,
+} from '@/traits/StyleOnEvent.test';
+import {
   CanApplyTextContentTraitToHtml,
   CanApplyTextContentTraitToSvg,
 } from '@/traits/TextContent.test';
@@ -74,6 +85,15 @@ window.addEventListener('DOMContentLoaded', async () => {
       CanApplyInnerHTMLTraitToSvg,
       CanApplyStyleTraitToHtml,
       CanApplyStyleTraitToSvg,
+      CanApplyStyleOnEventWithStaticValue,
+      CanApplyStyleOnEventWithFunctionValue,
+      CanApplyStyleOnEventWithState,
+      CanApplyStyleOnEventWithConditionTrue,
+      CanApplyStyleOnEventWithConditionFalse,
+      CanApplyStyleOnEventWithStateAndCondition,
+      CanApplyCssVarOnEvent,
+      CanApplyNumericStyleOnEvent,
+      CanApplyMultipleStylesOnEvent,
       CanApplyCssVarWithStyleTraitToHtml,
       CanApplyTextContentTraitToHtml,
       CanApplyTextContentTraitToSvg,
