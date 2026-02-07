@@ -339,6 +339,12 @@ const DEFAULT_NOTIFICATIONS: Notification[] = [
 // Dashboard Component
 // ---------------------------------------------------------------------------
 
+const activePage = State<string>('overview');
+
+setTimeout(() => {
+  activePage.set('hello');
+}, 1000);
+
 export function Dashboard(config: DashboardConfig = {}) {
   const theme: DashboardTheme = { ...DEFAULT_THEME, ...config.theme };
   const title = config.title ?? 'Command Center';
@@ -359,7 +365,6 @@ export function Dashboard(config: DashboardConfig = {}) {
   // State
   // -------------------------------------------------------------------------
 
-  const activePage = State<string>('overview');
   const sidebarCollapsed = State<boolean>(false);
   const notificationsOpen = State<boolean>(false);
   const searchQuery = State<string>('');
