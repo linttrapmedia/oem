@@ -1,4 +1,4 @@
-import { $test, Template, Test } from '@/oem';
+import { $test, Template, Test } from '@/core/oem';
 import { useClassNameTrait } from '@/traits/ClassName';
 
 export const CanApplyClassNameTraitToHtml: Test = async () => {

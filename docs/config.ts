@@ -1,4 +1,4 @@
-import { State, Template } from '@/oem';
+import { State, Template } from '@/core/oem';
 import { useAttributeTrait } from '@/traits/Attribute';
 import { useEventTrait } from '@/traits/Event';
 import { useInnerHTMLTrait } from '@/traits/InnerHTML';
@@ -98,8 +98,8 @@ export async function download(paths: string[]) {
     const folder = path.startsWith('src/traits')
       ? 'traits/'
       : path.startsWith('src/states')
-      ? 'states/'
-      : '';
+        ? 'states/'
+        : '';
 
     zip.file(folder + fileName, fileData);
   }

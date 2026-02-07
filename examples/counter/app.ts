@@ -1,4 +1,4 @@
-import { State, Template } from '@/oem';
+import { State, Template } from '@/core/oem';
 import { useEventTrait } from '@/traits/Event';
 import { useInnerHTMLTrait } from '@/traits/InnerHTML';
 import { useStyleTrait } from '@/traits/Style';

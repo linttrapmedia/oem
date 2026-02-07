@@ -1,4 +1,4 @@
-import { Condition, extractConditions, extractStates, StateType } from '@/oem';
+import { Condition, extractConditions, extractStates, StateType } from '@/core/oem';
 
 type Child = string | number | HTMLElement | SVGElement | undefined | unknown;
 

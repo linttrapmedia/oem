@@ -1,4 +1,4 @@
-import { State, Template } from '@/oem';
+import { State, Template } from '@/core/oem';
 import { useAttributeTrait } from '@/traits/Attribute';
 import { useClassNameTrait } from '@/traits/ClassName';
 import { useEventTrait } from '@/traits/Event';
@@ -627,19 +627,16 @@ function Dialog() {
           trait.style('fontSize', '24px'),
           trait.style('fontWeight', '600'),
           trait.style('color', '#333'),
-          trait.html(
-            () => {
-              const date = dialogDate.val();
-              if (!date) return 'Todos';
-              return date.toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              });
-            },
-            dialogDate,
-          ),
+          trait.html(() => {
+            const date = dialogDate.val();
+            if (!date) return 'Todos';
+            return date.toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            });
+          }, dialogDate),
         ),
 
         tag.button(
@@ -668,26 +665,30 @@ function Dialog() {
         trait.style('flexDirection', 'column'),
         trait.style('gap', '12px'),
 
-        trait.html(() => {
-          const date = dialogDate.val();
-          if (!date) return [];
+        trait.html(
+          () => {
+            const date = dialogDate.val();
+            if (!date) return [];
 
-          const dateStr = formatDate(date);
-          const dayTodos = getTodosForDate(dateStr);
+            const dateStr = formatDate(date);
+            const dayTodos = getTodosForDate(dateStr);
 
-          if (dayTodos.length === 0) {
-            return [
-              tag.div(
-                trait.style('textAlign', 'center'),
-                trait.style('padding', '48px'),
-                trait.style('color', '#999'),
-                'No todos for this date',
-              ),
-            ];
-          }
+            if (dayTodos.length === 0) {
+              return [
+                tag.div(
+                  trait.style('textAlign', 'center'),
+                  trait.style('padding', '48px'),
+                  trait.style('color', '#999'),
+                  'No todos for this date',
+                ),
+              ];
+            }
 
-          return dayTodos.map((todo) => TodoItem(todo));
-        }, dialogDate, todos),
+            return dayTodos.map((todo) => TodoItem(todo));
+          },
+          dialogDate,
+          todos,
+        ),
       ),
     ),
   );

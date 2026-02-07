@@ -1,5 +1,5 @@
-export * from './oem';
-export { useMediaQueryState } from './states/MediaQuery';
+export * from './core/oem';
+export { useMediaQueryState } from './states/MediaQueryState';
 export { useAttributeTrait } from './traits/Attribute';
 export { useClassNameTrait } from './traits/ClassName';
 export { useEventTrait } from './traits/Event';

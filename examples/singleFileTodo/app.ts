@@ -1,4 +1,4 @@
-import { $test, State, Template } from '@/oem';
+import { $test, State, Template } from '@/core/oem';
 import { useInputEventTrait } from '@/registry';
 import { useAttributeTrait } from '@/traits/Attribute';
 import { useEventTrait } from '@/traits/Event';

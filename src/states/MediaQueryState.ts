@@ -1,4 +1,4 @@
-import { State } from '@/oem';
+import { State } from '@/core/oem';
 
 export const useMediaQueryState = (props: {
   type?: 'screen' | 'print' | 'all';

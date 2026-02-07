@@ -1,4 +1,4 @@
-import { State, Template, Test } from '@/oem';
+import { State, Template, Test } from '@/core/oem';
 import { useAttributeTrait } from '@/traits/Attribute';
 import { useEventTrait } from '@/traits/Event';
 

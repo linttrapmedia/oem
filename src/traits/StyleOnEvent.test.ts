@@ -1,4 +1,4 @@
-import { $test, State, Template, Test } from '@/oem';
+import { $test, State, Template, Test } from '@/core/oem';
 import { useEventTrait } from './Event';
 import { useStyleOnEventTrait } from './StyleOnEvent';
 

@@ -1,4 +1,4 @@
-import { Condition, extractConditions, extractStates, StateType } from '@/oem';
+import { Condition, extractConditions, extractStates, StateType } from '@/core/oem';
 
 export function useEventTrait(
   el: HTMLElement,

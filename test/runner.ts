@@ -1,4 +1,4 @@
-import { Test } from '@/oem';
+import { Test } from '@/core/oem';
 
 export async function runner(tests: [string, ...Test[]][]) {
   const FILTER = new URLSearchParams(window.location.search).get('filter');

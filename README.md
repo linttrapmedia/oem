@@ -12,7 +12,6 @@ OEM is a minimal, convention-driven toolkit for crafting your own reactive, comp
 - [How It Works](#how-it-works)
 - [State](#state)
 - [Templating](#templating)
-- [Storage](#storage)
 - [Traits](#traits)
 
 ## Philosophy
@@ -195,34 +194,6 @@ function Button(text: string, onClick: () => void) {
 }
 
 const app = tag.div(Button('Click Me', () => console.log('Hi')));
-```
-
-## Storage
-
-The `Storage` utility automatically manages and syncs state objects with web storage (`localStorage`, `sessionStorage`) or custom sync methods.
-
-```typescript
-import { Storage, State } from '@linttrap/oem';
-
-const storage = Storage({
-  data: {
-    username: {
-      key: 'app-username',
-      state: State(''),
-      storage: 'localStorage', // Persists across sessions
-    },
-  },
-  sync: {
-    // Custom method to load data from an API
-    fetchTodos: async () => {
-      // ... API fetch logic ...
-      storage.data.todos.set(todos);
-    },
-  },
-});
-
-// Access state directly
-storage.data.username.set('Alice'); // Auto-saves to localStorage
 ```
 
 ## Traits

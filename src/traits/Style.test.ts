@@ -1,4 +1,4 @@
-import { $test, State, Template, Test } from '@/oem';
+import { $test, State, Template, Test } from '@/core/oem';
 import { useStyleTrait } from './Style';
 
 export const CanApplyStyleTraitToHtml: Test = async () => {

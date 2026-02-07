@@ -1,3 +1,4 @@
+import { Test } from '@/core/oem';
 import {
   CanApplyMultipleTraitsToHtml,
   CanApplyMultipleTraitsToSvg,
@@ -12,8 +13,8 @@ import {
   CanUpdateState,
   HasValidHtmlNamespace,
   WillCleanupTraitOnElementRemoval,
-} from '@/oem.test';
-import { CanKeepTrackOfMediaQueryState } from '@/states/MediaQuery.test';
+} from '@/core/oem.test';
+import { CanKeepTrackOfMediaQueryState } from '@/states/MediaQueryState.test';
 import { CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg } from '@/traits/Attribute.test';
 import { CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg } from '@/traits/ClassName.test';
 import {
@@ -47,7 +48,7 @@ import {
 import { runner } from './runner';
 
 window.addEventListener('DOMContentLoaded', async () => {
-  await runner([
+  const tests: [string, ...Test[]][] = [
     [
       'HTML',
       CanApplyMultipleTraitsToHtml,
@@ -57,7 +58,6 @@ window.addEventListener('DOMContentLoaded', async () => {
       WillCleanupTraitOnElementRemoval,
       CanRemoveEventListenerFromStateObjectWhenElementIsRemoved,
     ],
-
     ['SVG', CanApplyMultipleTraitsToSvg, CanCreateBasicSvgTagWithText],
     [
       'State',
@@ -71,7 +71,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     ],
 
     [
-      'Lib',
+      'Trait',
       CanApplyAttributeTraitToHtml,
       CanApplyAttributeTraitToSvg,
       CanApplyClassNameTraitToHtml,
@@ -99,5 +99,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       CanApplyTextContentTraitToSvg,
       CanKeepTrackOfMediaQueryState,
     ],
-  ]);
+  ];
+
+  await runner(tests);
 });
