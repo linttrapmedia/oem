@@ -75,3 +75,148 @@ export const CanTestStateValue: Test = async () => {
     pass: tests.every((t) => t),
   };
 };
+
+export const CanUseCustomMethods: Test = async () => {
+  const counter = State(
+    { count: 0 },
+    {
+      increment: (state) => {
+        state.reduce((prev) => ({ count: prev.count + 1 }));
+      },
+      decrement: (state) => {
+        state.reduce((prev) => ({ count: prev.count - 1 }));
+      },
+    },
+  );
+
+  counter.increment();
+  const t1 = counter.val().count === 1;
+
+  counter.increment();
+  const t2 = counter.val().count === 2;
+
+  counter.decrement();
+  const t3 = counter.val().count === 1;
+
+  return { pass: t1 && t2 && t3 };
+};
+
+export const CanUseCustomMethodsWithParameters: Test = async () => {
+  const counter = State(
+    { count: 0 },
+    {
+      incrementBy: (state, amount: number) => {
+        state.reduce((prev) => ({ count: prev.count + amount }));
+      },
+      multiplyBy: (state, factor: number) => {
+        state.reduce((prev) => ({ count: prev.count * factor }));
+      },
+    },
+  );
+
+  counter.incrementBy(5);
+  const t1 = counter.val().count === 5;
+
+  counter.incrementBy(3);
+  const t2 = counter.val().count === 8;
+
+  counter.multiplyBy(2);
+  const t3 = counter.val().count === 16;
+
+  return { pass: t1 && t2 && t3 };
+};
+
+export const CanUseDeferredCustomMethods: Test = async () => {
+  const counter = State(
+    { count: 0 },
+    {
+      increment: (state) => {
+        state.reduce((prev) => ({ count: prev.count + 1 }));
+      },
+    },
+  );
+
+  // Get deferred version
+  const deferredIncrement = counter.$increment();
+
+  // Should not execute yet
+  const t1 = counter.val().count === 0;
+
+  // Execute the deferred function
+  deferredIncrement();
+  const t2 = counter.val().count === 1;
+
+  deferredIncrement();
+  const t3 = counter.val().count === 2;
+
+  return { pass: t1 && t2 && t3 };
+};
+
+export const CanUseDeferredCustomMethodsWithParameters: Test = async () => {
+  const counter = State(
+    { count: 0 },
+    {
+      incrementBy: (state, amount: number) => {
+        state.reduce((prev) => ({ count: prev.count + amount }));
+      },
+    },
+  );
+
+  // Get deferred version with parameter
+  const addFive = counter.$incrementBy(5);
+  const addTen = counter.$incrementBy(10);
+
+  // Should not execute yet
+  const t1 = counter.val().count === 0;
+
+  // Execute the deferred functions
+  addFive();
+  const t2 = counter.val().count === 5;
+
+  addTen();
+  const t3 = counter.val().count === 15;
+
+  addFive();
+  const t4 = counter.val().count === 20;
+
+  return { pass: t1 && t2 && t3 && t4 };
+};
+
+export const CanAccessStateMethodsInCustomMethods: Test = async () => {
+  let subscriptionCalled = false;
+
+  const counter = State(
+    { count: 0, name: 'test' },
+    {
+      reset: (state) => {
+        const currentName = state.val().name;
+        state.set({ count: 0, name: currentName });
+      },
+      getCount: (state) => {
+        return state.val().count;
+      },
+      doubleIfPositive: (state) => {
+        if (state.test((val) => val.count > 0)) {
+          state.reduce((prev) => ({ ...prev, count: prev.count * 2 }));
+        }
+      },
+    },
+  );
+
+  counter.sub(() => {
+    subscriptionCalled = true;
+  });
+
+  counter.reduce((prev) => ({ ...prev, count: 5 }));
+  const t1 = counter.getCount() === 5;
+  const t2 = subscriptionCalled;
+
+  counter.doubleIfPositive();
+  const t3 = counter.val().count === 10;
+
+  counter.reset();
+  const t4 = counter.val().count === 0;
+  const t5 = counter.val().name === 'test';
+
+  return { pass: t1 && t2 && t3 && t4 && t5 };
+};

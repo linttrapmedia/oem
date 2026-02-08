@@ -1,4 +1,4 @@
-import { Test } from 'oem';
+import { Test } from '@/registry';
 
 export async function runner(tests: [string, ...Test[]][]) {
   const FILTER = new URLSearchParams(window.location.search).get('filter');
@@ -7,7 +7,7 @@ export async function runner(tests: [string, ...Test[]][]) {
   results.style.display = 'grid';
   results.style.columnGap = '10px';
   results.style.rowGap = '2px';
-  results.style.gridTemplateColumns = 'auto auto auto 1fr';
+  results.style.gridTemplateColumns = 'auto auto 1fr';
 
   for (const [module, ...assertions] of tests) {
     assertions
@@ -22,16 +22,11 @@ export async function runner(tests: [string, ...Test[]][]) {
         } catch (err: any) {
           testResult = { pass: false, message: err.message };
         }
-        const statusEl = document.createElement('div');
-        statusEl.style.fontFamily = 'monospace';
-        statusEl.style.fontSize = '14px';
-        statusEl.style.color = testResult.pass ? 'green' : 'red';
-        statusEl.innerText = testResult.pass ? '+' : 'x';
-        statusEl.className = testResult.pass ? 'pass' : 'fail';
 
         const moduleEl = document.createElement('div');
         moduleEl.innerText = `${module}`;
         moduleEl.style.color = testResult.pass ? 'green' : 'red';
+        moduleEl.style.textAlign = 'right';
 
         const descEl = document.createElement('div');
         descEl.innerText = `${test.name}`;
@@ -43,9 +38,9 @@ export async function runner(tests: [string, ...Test[]][]) {
 
         // if test failed prepend to results
         if (!testResult.pass) {
-          results.prepend(statusEl, moduleEl, descEl, messageEl);
+          results.prepend(moduleEl, descEl, messageEl);
         } else {
-          results.append(statusEl, moduleEl, descEl, messageEl);
+          results.append(moduleEl, descEl, messageEl);
         }
       });
   }

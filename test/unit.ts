@@ -1,10 +1,15 @@
 import {
+  CanAccessStateMethodsInCustomMethods,
   CanCreateState,
   CanSetStateAndPublish,
   CanSubscribeToState,
   CanTestStateValue,
   CanUnSubscribeToState,
   CanUpdateState,
+  CanUseDeferredCustomMethods,
+  CanUseDeferredCustomMethodsWithParameters,
+  CanUseCustomMethods,
+  CanUseCustomMethodsWithParameters,
 } from '@/core/state.test';
 import {
   CanApplyMultipleTraitsToHtml,
@@ -70,6 +75,11 @@ window.addEventListener('DOMContentLoaded', async () => {
       CanRemoveEventListenerFromStateObjectWhenElementIsRemoved,
       CanSetStateAndPublish,
       CanTestStateValue,
+      CanUseCustomMethods,
+      CanUseCustomMethodsWithParameters,
+      CanUseDeferredCustomMethods,
+      CanUseDeferredCustomMethodsWithParameters,
+      CanAccessStateMethodsInCustomMethods,
     ],
 
     [

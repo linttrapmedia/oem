@@ -12,7 +12,20 @@ export type Boxed<T> = T extends string
 
 type MethodFn<T, K extends keyof T> = T[K] extends (...args: any[]) => any ? T[K] : never;
 
-export type StateType<T> = {
+type CustomMethods<T, M> = {
+  [K in keyof M]: M[K] extends (state: StateType<T, M>, ...args: infer P) => infer R
+    ? (...args: P) => R
+    : never;
+} & {
+  [K in keyof M as `$${string & K}`]: M[K] extends (
+    state: StateType<T, M>,
+    ...args: infer P
+  ) => infer R
+    ? (...args: P) => () => R
+    : never;
+};
+
+export type StateType<T, M = {}> = {
   call: <K extends keyof Boxed<T>>(method: K, ...params: Parameters<MethodFn<Boxed<T>, K>>) => any;
   reduce: (cb: (prev: T) => T) => void;
   set: (atom: T) => void;
@@ -29,9 +42,12 @@ export type StateType<T> = {
   $val: () => T;
 
   _subs: Set<(atom: T) => any>;
-};
+} & CustomMethods<T, M>;
 
-export function State<T>(param: T): StateType<T> {
+export function State<
+  T,
+  M extends Record<string, (state: StateType<T, M>, ...args: any[]) => any> = {},
+>(param: T, customMethods?: M): StateType<T, M> {
   let _internalVal: T = param;
   const _subs: Set<(param: T) => any> = new Set();
 
@@ -40,7 +56,6 @@ export function State<T>(param: T): StateType<T> {
     _subs.forEach((i) => i(atom));
   };
   const $set = (atom: T) => () => _set(atom);
-
   const _reduce = (cb: (prev: T) => T) => _set(cb(_internalVal));
   const $reduce = (cb: (prev: T) => T) => () => _set(cb(_val()));
 
@@ -83,8 +98,8 @@ export function State<T>(param: T): StateType<T> {
 
   const call = (method: any, ...params: any) => (<any>_internalVal)[method](...params);
 
-  const $call = (method: any, params: any) => {
-    const closure = () => (<any>_internalVal)[method](params);
+  const $call = (method: any, ...params: any) => {
+    const closure = () => (<any>_internalVal)[method](...params);
     closure.sub = _sub;
     closure.type = '$call';
     return closure;
@@ -104,6 +119,19 @@ export function State<T>(param: T): StateType<T> {
     val: _val,
     _subs,
   };
+
+  // Add custom methods with the state object bound as first parameter
+  if (customMethods) {
+    for (const key in customMethods) {
+      // Regular method
+      methods[key] = (...args: any[]) => customMethods[key](methods, ...args);
+      // $ callback version
+      methods[`$${key}`] =
+        (...args: any[]) =>
+        () =>
+          customMethods[key](methods, ...args);
+    }
+  }
 
   return methods;
 }

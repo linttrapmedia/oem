@@ -14,18 +14,37 @@ Use this module when you need reactive data binding between your application sta
 
 ## Key Exports
 
-### `State<T>`
+### `State<T, M>`
 - **Type**: Function
-- **Signature**: `function State<T>(param: T): StateType<T>`
-- **Description**: Creates a reactive state container that holds a value and notifies subscribers when it changes
+- **Signature**: `function State<T, M>(param: T, customMethods?: M): StateType<T, M>`
+- **Description**: Creates a reactive state container that holds a value and notifies subscribers when it changes. Optionally accepts custom methods to extend state behavior.
 - **Parameters**:
   - `param`: The initial value for the state
-- **Returns**: A `StateType<T>` object with methods for state management
+  - `customMethods` (optional): An object containing custom methods that receive the state object as their first parameter
+- **Returns**: A `StateType<T, M>` object with methods for state management
 - **Usage Example**:
 ```typescript
+// Basic usage
 const count = State(0);
 count.sub((value) => console.log('Count changed:', value));
 count.set(5); // Logs: "Count changed: 5"
+
+// With custom methods
+const counter = State(
+  { count: 0 },
+  {
+    increment: (state) => {
+      state.reduce(prev => ({ count: prev.count + 1 }));
+    },
+    incrementBy: (state, amount: number) => {
+      state.reduce(prev => ({ count: prev.count + amount }));
+    }
+  }
+);
+
+counter.increment(); // Increments count by 1
+counter.incrementBy(5); // Increments count by 5
+counter.$increment()(); // Deferred increment
 ```
 
 ### `StateType<T>`
@@ -88,6 +107,57 @@ Each core method has a dollar-prefixed version (`$val`, `$set`, `$reduce`, `$tes
 const getDouble = count.$reduce(prev => prev * 2);
 // Later: getDouble() executes the reduction
 ```
+
+#### Custom Methods
+
+State supports extending functionality with custom methods via the second parameter. Custom methods:
+- Receive the state object as their first parameter
+- Can accept additional parameters
+- Have automatic deferred execution versions ($ prefix)
+- Provide full TypeScript intellisense and type safety
+
+**Usage Example**:
+```typescript
+type CounterState = { count: number; name: string };
+
+const counter = State<CounterState>(
+  { count: 0, name: 'MyCounter' },
+  {
+    increment: (state) => {
+      state.reduce(prev => ({ ...prev, count: prev.count + 1 }));
+    },
+    incrementBy: (state, amount: number) => {
+      state.reduce(prev => ({ ...prev, count: prev.count + amount }));
+    },
+    reset: (state) => {
+      state.set({ count: 0, name: state.val().name });
+    },
+    getDisplayText: (state) => {
+      const { count, name } = state.val();
+      return `${name}: ${count}`;
+    }
+  }
+);
+
+// Direct execution
+counter.increment();
+counter.incrementBy(5);
+console.log(counter.getDisplayText()); // "MyCounter: 6"
+
+// Deferred execution with $ prefix
+const incrementBtn = document.querySelector('#increment');
+incrementBtn.addEventListener('click', counter.$increment());
+
+const addFiveBtn = document.querySelector('#add-five');
+addFiveBtn.addEventListener('click', counter.$incrementBy(5));
+```
+
+Custom methods have access to all state methods:
+- `state.val()` - Get current value
+- `state.set(newValue)` - Set new value
+- `state.reduce(cb)` - Update based on previous value
+- `state.sub(cb)` - Subscribe to changes
+- `state.test(predicate)` - Test current value
 
 ### Type Utilities
 
