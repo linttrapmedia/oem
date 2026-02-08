@@ -1,4 +1,4 @@
-import { Condition, extractConditions, extractStates, StateType } from '@/core/oem';
+import { Condition, extractConditions, extractStates, StateType } from '@/registry';
 
 export const useAttributeTrait = (
   el: HTMLElement,

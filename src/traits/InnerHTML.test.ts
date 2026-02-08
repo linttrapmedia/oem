@@ -1,4 +1,4 @@
-import { $test, State, Template, Test } from '@/core/oem';
+import { $test, State, Template, Test } from '@/registry';
 import { useInnerHTMLTrait } from './InnerHTML';
 export const CanApplyInnerHTMLTraitToHtml: Test = async () => {
   const state = State<{ value: string }>({ value: 'asdf' });

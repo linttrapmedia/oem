@@ -1,8 +1,5 @@
-import { State, Template } from '@/core/oem';
-import { useEventTrait } from '@/traits/Event';
-import { useInnerHTMLTrait } from '@/traits/InnerHTML';
-import { useStyleTrait } from '@/traits/Style';
-import { useTextContentTrait } from '@/traits/TextContent';
+import { useEventTrait, useInnerHTMLTrait, useStyleTrait, useTextContentTrait } from '@/registry';
+import { State, Template } from 'oem';
 
 // Create template with traits
 const [tag, trait] = Template({

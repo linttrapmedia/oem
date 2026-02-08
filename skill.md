@@ -630,11 +630,7 @@ You can optionally create a template configuration for app-level composition, bu
 
 ```typescript
 import { Template } from '@linttrap/oem';
-import {
-  useStyleTrait,
-  useEventTrait,
-  useInnerHTMLTrait,
-} from '@linttrap/oem';
+import { useStyleTrait, useEventTrait, useInnerHTMLTrait } from '@linttrap/oem';
 
 // Optional: App-level template for composition in index.ts
 export const [tag, trait] = Template({
@@ -1096,6 +1092,198 @@ tag.span(count.$val); // Correct!
 tag.span(trait.html(() => count.val() * 2, count)); // Correct!
 tag.div(trait.html(() => myFunction(), myState)); // Correct!
 ```
+
+Here’s a **drop-in Markdown section** you can paste straight into `skill.md`.
+It’s opinionated, boring, and designed to _eliminate_ TypeScript name collisions rather than manage them.
+
+You can trim later, but I’d start with this as-is.
+
+---
+
+## Naming Conventions (TypeScript)
+
+These conventions exist to prevent conflicts between **types**, **functions**, and **classes**, and to keep the codebase predictable at scale.
+
+> Guiding principle:  
+> **Runtime values do things. Types describe things. Their names must never compete.**
+
+---
+
+### 1. Types Never Share Names With Runtime Values
+
+A name that exists at runtime (function, class, const, enum) must **never** be reused as a type or interface name.
+
+❌ Bad
+
+```ts
+class User {}
+type User = { id: string };
+```
+
+✅ Good
+
+```ts
+class User {}
+type UserType = { id: string };
+```
+
+---
+
+### 2. All Types Use Explicit Suffixes
+
+Types and interfaces must use a suffix that does not exist at runtime.
+
+Approved suffixes:
+
+- `Type`
+- `Props`
+- `Options`
+- `Config`
+- `State`
+- `Params`
+- `Result`
+- `Input`
+- `Output`
+- `DTO`
+
+```ts
+type UserType = { id: string };
+type CreateUserInput = { email: string };
+type FetchOptions = { cache: boolean };
+```
+
+**Bare type names are not allowed** unless no runtime value with that concept exists.
+
+---
+
+### 3. Functions Use Verbs, Types Use Nouns
+
+Function names must describe an action.
+Type names must describe a thing.
+
+```ts
+function createSession(input: CreateSessionInput): SessionType {}
+type SessionType = { id: string };
+```
+
+If a function name reads like a noun, rename the function.
+
+---
+
+### 4. Classes Are Runtime-Only Concepts
+
+Classes represent runtime behavior and identity.
+
+- Classes use **PascalCase**
+- Classes do not share names with types
+- Class shape is **not** duplicated as a type
+
+```ts
+class SessionManager {}
+type SessionState = { active: boolean };
+```
+
+If shape-only modeling is sufficient, prefer `type` + functions instead of classes.
+
+---
+
+### 5. Prefer `type` Over `interface`
+
+Use `type` by default.
+
+`interface` is reserved for:
+
+- Public APIs
+- Contracts intended for external implementation
+
+```ts
+export interface StorageAdapter {
+  get(key: string): Promise<string | null>;
+}
+```
+
+Declaration merging is otherwise avoided.
+
+---
+
+### 6. No Namespace Merging for Types
+
+Do not rely on TypeScript namespace merging for grouping.
+
+❌ Avoid
+
+```ts
+type User = {};
+namespace User {
+  export type Role = 'admin';
+}
+```
+
+✅ Prefer
+
+```ts
+type UserType = {
+  role: UserRole;
+};
+
+type UserRole = 'admin' | 'user';
+```
+
+---
+
+### 7. File Structure Carries Semantic Weight
+
+Related concepts are grouped by file, not overloaded names.
+
+Recommended patterns:
+
+```
+user.ts - contains runtime code related to User (classes, functions, constants)
+user.types.ts - contains all TypeScript types related to User
+user.class.ts - contains User class if needed
+user.tests.ts - contains tests related to User
+user.md - contains documentation related to User
+```
+
+```ts
+// user.types.ts
+export type UserType = { ... }
+export type UserRole = ...
+```
+
+```ts
+// user.ts
+import type { UserType } from './user.types';
+```
+
+---
+
+### 8. Name Reuse Is Explicit and Rare
+
+Using the same name for a type and a value is allowed **only** when they intentionally represent the same concept and are defined together.
+
+```ts
+type UserType = { id: string }
+
+const User = {
+  create(): UserType { ... }
+}
+```
+
+This pattern should be uncommon and deliberate.
+
+---
+
+### 9. Consistency Beats Cleverness
+
+When in doubt:
+
+- Choose the longer name
+- Add the suffix
+- Avoid reuse
+- Favor clarity over brevity
+
+The goal is for names to be boring, predictable, and conflict-free.
 
 ## Summary Checklist
 

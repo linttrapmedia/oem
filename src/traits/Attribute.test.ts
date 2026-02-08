@@ -1,5 +1,4 @@
-import { $test, State, Template, Test } from '@/core/oem';
-import { useAttributeTrait } from '@/traits/Attribute';
+import { $test, State, Template, Test, useAttributeTrait } from '@/registry';
 
 export const CanApplyAttributeTraitToHtml: Test = async () => {
   const disabled = State(false);

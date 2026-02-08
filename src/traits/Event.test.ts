@@ -1,6 +1,4 @@
-import { State, Template, Test } from '@/core/oem';
-import { useAttributeTrait } from '@/traits/Attribute';
-import { useEventTrait } from '@/traits/Event';
+import { State, Template, Test, useAttributeTrait, useEventTrait } from '@/registry';
 
 export const CanApplyEventListenerTraitToHtml: Test = async () => {
   const [tmpl, trait] = Template({

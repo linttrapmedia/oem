@@ -1,5 +1,4 @@
-import { $test, Template, Test } from '@/core/oem';
-import { useClassNameTrait } from '@/traits/ClassName';
+import { $test, Template, Test, useClassNameTrait } from '@/registry';
 
 export const CanApplyClassNameTraitToHtml: Test = async () => {
   const tests: boolean[] = [];

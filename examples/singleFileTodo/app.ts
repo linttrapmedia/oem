@@ -1,10 +1,12 @@
-import { $test, State, Template } from '@/core/oem';
-import { useInputEventTrait } from '@/registry';
-import { useAttributeTrait } from '@/traits/Attribute';
-import { useEventTrait } from '@/traits/Event';
-import { useInnerHTMLTrait } from '@/traits/InnerHTML';
-import { useInputValueTrait } from '@/traits/InputValue';
-import { useStyleTrait } from '@/traits/Style';
+import {
+  useAttributeTrait,
+  useEventTrait,
+  useInnerHTMLTrait,
+  useInputEventTrait,
+  useInputValueTrait,
+  useStyleTrait,
+} from '@/registry';
+import { $test, State, Template } from 'oem';
 
 const [tag, trait] = Template({
   event: useEventTrait,

@@ -1,4 +1,4 @@
-import { Condition, StateType } from '@/core/oem';
+import { Condition, StateType } from '@/registry';
 
 export const useFocusTrait = (
   el: HTMLElement,

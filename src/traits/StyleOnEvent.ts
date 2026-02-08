@@ -1,4 +1,4 @@
-import { Condition, extractConditions } from '@/core/oem';
+import { Condition, extractConditions } from '@/registry';
 
 export function useStyleOnEventTrait(
   el: HTMLElement,

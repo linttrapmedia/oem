@@ -1,4 +1,4 @@
-import { $test, State, Template, Test } from '@/core/oem';
+import { $test, State, Template, Test } from '@/registry';
 import { useTextContentTrait } from './TextContent';
 
 export const CanApplyTextContentTraitToHtml: Test = async () => {

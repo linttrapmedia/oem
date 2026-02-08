@@ -5,13 +5,13 @@ import {
   State,
   StateType,
   Template,
-} from '@/core/oem';
-import { useMediaQueryState } from '@/states/MediaQueryState';
-import { useAttributeTrait } from '@/traits/Attribute';
-import { useClassNameTrait } from '@/traits/ClassName';
-import { useEventTrait } from '@/traits/Event';
-import { useInnerHTMLTrait } from '@/traits/InnerHTML';
-import { useStyleTrait } from '@/traits/Style';
+  useAttributeTrait,
+  useClassNameTrait,
+  useEventTrait,
+  useInnerHTMLTrait,
+  useMediaQueryState,
+  useStyleTrait,
+} from '@/registry';
 
 // ---------------------------------------------------------------------------
 // Custom Trait: SVG Attribute (for chart rendering on SVG elements)

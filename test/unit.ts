@@ -1,19 +1,21 @@
-import { Test } from '@/core/oem';
 import {
-  CanApplyMultipleTraitsToHtml,
-  CanApplyMultipleTraitsToSvg,
-  CanCreateBasicHtmlTagWithText,
-  CanCreateBasicSvgTagWithText,
-  CanCreateBasicTrait,
   CanCreateState,
   CanSetStateAndPublish,
   CanSubscribeToState,
   CanTestStateValue,
   CanUnSubscribeToState,
   CanUpdateState,
+} from '@/core/state.test';
+import {
+  CanApplyMultipleTraitsToHtml,
+  CanApplyMultipleTraitsToSvg,
+  CanCreateBasicHtmlTagWithText,
+  CanCreateBasicSvgTagWithText,
+  CanCreateBasicTrait,
   HasValidHtmlNamespace,
   WillCleanupTraitOnElementRemoval,
-} from '@/core/oem.test';
+} from '@/core/template.test';
+import { Test } from '@/registry';
 import { CanKeepTrackOfMediaQueryState } from '@/states/MediaQueryState.test';
 import { CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg } from '@/traits/Attribute.test';
 import { CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg } from '@/traits/ClassName.test';

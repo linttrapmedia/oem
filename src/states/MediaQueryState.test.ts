@@ -1,4 +1,4 @@
-import { Test } from '@/core/oem';
+import { Test } from '@/registry';
 import { useMediaQueryState } from '@/states/MediaQueryState';
 
 // polyfill window.matchMedia for testing environment

@@ -1,8 +1,5 @@
-import { State, Template } from '@/core/oem';
-import { useAttributeTrait } from '@/traits/Attribute';
-import { useEventTrait } from '@/traits/Event';
-import { useInnerHTMLTrait } from '@/traits/InnerHTML';
-import { useStyleTrait } from '@/traits/Style';
+import { useAttributeTrait, useEventTrait, useInnerHTMLTrait, useStyleTrait } from '@/registry';
+import { State, Template } from 'oem';
 
 declare namespace Prism {
   const highlight: any;
