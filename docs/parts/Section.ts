@@ -1,4 +1,4 @@
-import { tag, trait } from '../config';
+import { tag, trait } from '../../lab/config';
 
 export const Section = (props: {
   title: string;
@@ -25,8 +25,8 @@ export const Section = (props: {
           ),
         )
       : props.level === 2
-      ? tag.h3(props.title)
-      : tag.h4(props.title);
+        ? tag.h3(props.title)
+        : tag.h4(props.title);
 
   return tag.div(
     trait.style('display', 'flex'),

@@ -1,9 +1,9 @@
-# Types
+## Types
 
-## Overview
+### Overview
 The types module provides common TypeScript type definitions used throughout the OEM framework. These types establish shared contracts for reactive conditions, testing, and utility type transformations.
 
-## Purpose
+### Purpose
 Types serves as a central location for common type definitions, ensuring type consistency across the OEM codebase. It provides:
 - Type definitions for conditional expressions
 - Test function signatures for unit testing
@@ -11,9 +11,9 @@ Types serves as a central location for common type definitions, ensuring type co
 
 Use this module when you need to import common type definitions or understand the type contracts used across OEM.
 
-## Key Exports
+### Key Exports
 
-### `Condition`
+#### `Condition`
 - **Type**: Type alias
 - **Signature**: `type Condition = (() => boolean) | boolean | 1 | 0`
 - **Description**: Represents a conditional expression that can be evaluated to determine truthiness
@@ -38,7 +38,7 @@ const element = h.div(
   - Control flow in reactive systems
   - Feature flags and toggles
 
-### `Test`
+#### `Test`
 - **Type**: Type alias
 - **Signature**: `type Test = (sandbox?: HTMLElement) => Promise<{ pass: boolean; message?: string }>`
 - **Description**: Defines the signature for test functions in OEM's testing system
@@ -66,7 +66,7 @@ const myTest: Test = async (sandbox) => {
   - Integration testing with isolated DOM sandboxes
   - Automated test suites
 
-### `Tail<T>`
+#### `Tail<T>`
 - **Type**: Utility type
 - **Signature**: `type Tail<T extends any[]> = T extends [any, ...infer R] ? R : never`
 - **Description**: Extracts all elements from a tuple type except the first element
@@ -89,27 +89,27 @@ type TraitParams = Tail<Parameters<TraitFunction>>;
   - Type-level tuple manipulation
   - Generic type transformations
 
-## Implementation Details
+### Implementation Details
 
-### Condition Design
+#### Condition Design
 The `Condition` type is designed to be flexible and accommodate various patterns:
 - **Function form**: Enables dynamic conditions that can re-evaluate
 - **Boolean form**: For static conditions known at creation time
 - **Numeric form**: Allows using 1/0 as truthy/falsy, common in certain programming paradigms
 
-### Test Design
+#### Test Design
 The `Test` type follows the async test pattern common in modern testing frameworks:
 - **Async by nature**: Returns a Promise to support async operations in tests
 - **Sandbox parameter**: Provides isolation for DOM tests
 - **Structured result**: Object with `pass` boolean and optional `message` for clear test output
 
-### Tail Type Mechanics
+#### Tail Type Mechanics
 The `Tail` type uses TypeScript's conditional types and `infer` keyword:
 - Matches tuple types with at least one element `[any, ...infer R]`
 - Infers the rest of the tuple as `R`
 - Returns `never` for non-matching types (type safety)
 
-## Related Modules
+### Related Modules
 - [state.ts](src/core/state.ts) - Uses `Condition` type indirectly through util functions
 - [util.ts](src/core/util.ts) - Provides runtime utilities for working with Condition types
 - [template.ts](src/core/template.ts) - Uses `Tail` for trait parameter type inference

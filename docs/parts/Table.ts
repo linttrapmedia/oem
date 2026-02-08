@@ -1,4 +1,4 @@
-import { tag, trait } from 'docs/config';
+import { tag, trait } from 'lab/config';
 
 type Content = HTMLElement | string | number;
 

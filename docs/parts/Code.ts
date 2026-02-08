@@ -1,4 +1,4 @@
-import { tag, theme, trait } from '../config';
+import { tag, theme, trait } from '../../lab/config';
 
 export const Code = (code: string, language: string = 'typescript') => {
   return tag.pre(trait.prism(language), code.trim());

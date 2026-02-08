@@ -25,11 +25,10 @@ clean: ## Clean the project
 	@echo $(STATUS) Cleaning...
 	@rm -rf ./docs/bundle.min.js ./docs/bundle.min.js.map ./node_modules ./package-lock.json ./dist
 
-
 dev: ## Run the project in development mode
 	@echo $(STATUS) Running in development mode...
 	@open http://localhost:3000
-	@bun ./docs/dev.html --watch
+	@bun ./docs/index.dev.html --watch
 
 deploy: ## Deploy the project to GitHub Pages/oem.js.org
 	@echo $(STATUS) Deploying...
@@ -39,7 +38,7 @@ deploy: ## Deploy the project to GitHub Pages/oem.js.org
 	@git push -f origin gh-pages
 	@git checkout main
 
-docs: ## Build docs
+build: ## Build docs
 	@echo $(STATUS) Building docs...
 	@bun build ./docs/app.ts \
 		--sourcemap \
@@ -60,6 +59,10 @@ install: ## Install the project
 publish: ## Publish the project to npm
 	@echo $(STATUS) Publish package...
 	@npm publish --access public
+
+docs: ## Generate README.md
+	@echo $(STATUS) Generating README.md, SKILL.md...
+	@bun ./scripts/gen-docs.ts
 
 test: ## Run tests
 	@echo $(STATUS) Testing...

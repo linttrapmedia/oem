@@ -1,5 +1,5 @@
+import { tag, theme, trait } from '../../lab/config';
 import pkg from '../../package.json';
-import { tag, theme, trait } from '../config';
 
 export const Page = (...children: any[]) => {
   return tag.div(

@@ -1,4 +1,4 @@
-import { tag, theme, trait } from 'docs/config';
+import { tag, theme, trait } from 'lab/config';
 
 export function Note(text: string) {
   return tag.div(

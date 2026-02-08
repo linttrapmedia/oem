@@ -1,9 +1,9 @@
-# State
+## State
 
-## Overview
+### Overview
 The state module provides a reactive state management system for OEM applications. It implements a publish-subscribe pattern with support for primitive type method calls through boxed types.
 
-## Purpose
+### Purpose
 State solves the problem of managing reactive data in applications where UI components need to automatically update when data changes. It provides a lightweight alternative to more complex state management libraries, with built-in support for:
 - Reactive subscriptions
 - State transformations
@@ -12,9 +12,9 @@ State solves the problem of managing reactive data in applications where UI comp
 
 Use this module when you need reactive data binding between your application state and UI components.
 
-## Key Exports
+### Key Exports
 
-### `State<T, M>`
+#### `State<T, M>`
 - **Type**: Function
 - **Signature**: `function State<T, M>(param: T, customMethods?: M): StateType<T, M>`
 - **Description**: Creates a reactive state container that holds a value and notifies subscribers when it changes. Optionally accepts custom methods to extend state behavior.
@@ -47,26 +47,26 @@ counter.incrementBy(5); // Increments count by 5
 counter.$increment()(); // Deferred increment
 ```
 
-### `StateType<T>`
+#### `StateType<T>`
 - **Type**: Interface/Type
 - **Description**: The return type of `State()` function, providing methods for state manipulation and observation
 
-#### Methods
+##### Methods
 
-##### `val()`
+###### `val()`
 - **Returns**: The current state value
 - **Usage**: `const currentValue = count.val();`
 
-##### `set(atom: T)`
+###### `set(atom: T)`
 - **Description**: Sets a new state value and notifies all subscribers
 - **Parameters**: `atom` - The new value to set
 
-##### `reduce(cb: (prev: T) => T)`
+###### `reduce(cb: (prev: T) => T)`
 - **Description**: Updates state based on the previous value
 - **Parameters**: `cb` - A function that receives the current value and returns the new value
 - **Usage**: `count.reduce(prev => prev + 1);`
 
-##### `sub(cb: (atom: T) => any)`
+###### `sub(cb: (atom: T) => any)`
 - **Description**: Subscribes to state changes
 - **Parameters**: `cb` - Callback function called with new value on each change
 - **Returns**: An unsubscribe function
@@ -76,7 +76,7 @@ const unsub = count.sub(value => console.log(value));
 // Later: unsub() to stop listening
 ```
 
-##### `test(predicate, checkFor?)`
+###### `test(predicate, checkFor?)`
 - **Description**: Tests the current state value against a predicate
 - **Parameters**:
   - `predicate`: A RegExp, value, or function to test against
@@ -88,7 +88,7 @@ const isZero = count.test(0); // true if count is 0
 const isPositive = count.test(v => v > 0);
 ```
 
-##### `call(method, ...params)`
+###### `call(method, ...params)`
 - **Description**: Calls a method on the boxed version of primitive types
 - **Parameters**:
   - `method`: The method name to call
@@ -96,7 +96,7 @@ const isPositive = count.test(v => v > 0);
 - **Returns**: The result of the method call
 - **Usage**: `stringState.call('toUpperCase')`
 
-#### Deferred Execution Methods ($ prefix)
+##### Deferred Execution Methods ($ prefix)
 
 Each core method has a dollar-prefixed version (`$val`, `$set`, `$reduce`, `$test`, `$call`) that returns a closure for deferred execution. These closures include:
 - A `sub` property for subscribing to changes
@@ -108,7 +108,7 @@ const getDouble = count.$reduce(prev => prev * 2);
 // Later: getDouble() executes the reduction
 ```
 
-#### Custom Methods
+##### Custom Methods
 
 State supports extending functionality with custom methods via the second parameter. Custom methods:
 - Receive the state object as their first parameter
@@ -159,17 +159,17 @@ Custom methods have access to all state methods:
 - `state.sub(cb)` - Subscribe to changes
 - `state.test(predicate)` - Test current value
 
-### Type Utilities
+#### Type Utilities
 
-#### `MethodKeys<T>`
+##### `MethodKeys<T>`
 - **Type**: Type utility
 - **Description**: Extracts only the method keys from a type
 
-#### `Boxed<T>`
+##### `Boxed<T>`
 - **Type**: Type utility
 - **Description**: Maps primitive types to their boxed equivalents (string → String, number → Number, boolean → Boolean)
 
-## Implementation Details
+### Implementation Details
 
 The state module uses a closure-based approach to maintain private state:
 - Internal value is stored in `_internalVal`
@@ -177,6 +177,6 @@ The state module uses a closure-based approach to maintain private state:
 - When state changes via `set()` or `reduce()`, all subscribers are notified synchronously
 - The boxed type system allows calling methods like `toUpperCase()` on string states
 
-## Related Modules
+### Related Modules
 - [util.ts](src/core/util.ts) - Provides utility functions for extracting and working with State objects
 - [template.ts](src/core/template.ts) - Integrates with State for reactive DOM rendering

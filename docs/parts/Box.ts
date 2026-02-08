@@ -1,4 +1,4 @@
-import { tag, trait } from '../config';
+import { tag, trait } from '../../lab/config';
 
 export const Box = (direction: 'row' | 'column', gap: number, ...children: any[]) => {
   return tag.div(
@@ -6,6 +6,6 @@ export const Box = (direction: 'row' | 'column', gap: number, ...children: any[]
     trait.style('flexDirection', direction),
     trait.style('gap', `${gap}px`),
     trait.style('width', '100%'),
-    ...children
+    ...children,
   );
 };
