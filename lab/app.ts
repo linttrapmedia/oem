@@ -6,12 +6,12 @@ import {
   useInnerHTMLTrait,
   useStyleTrait,
 } from '@/registry';
-import { Box } from 'docs/parts/Box';
-import { Code, InlineCode } from 'docs/parts/Code';
-import { Note } from 'docs/parts/Note';
-import { Page } from 'docs/parts/Page';
-import { Section } from 'docs/parts/Section';
-import { Table } from 'docs/parts/Table';
+import { Box } from 'www/parts/Box';
+import { Code, InlineCode } from 'www/parts/Code';
+import { Note } from 'www/parts/Note';
+import { Page } from 'www/parts/Page';
+import { Section } from 'www/parts/Section';
+import { Table } from 'www/parts/Table';
 
 declare namespace Prism {
   const highlight: any;
@@ -107,8 +107,8 @@ export async function download(paths: string[]) {
     const folder = path.startsWith('src/traits')
       ? 'traits/'
       : path.startsWith('src/states')
-        ? 'states/'
-        : '';
+      ? 'states/'
+      : '';
 
     zip.file(folder + fileName, fileData);
   }

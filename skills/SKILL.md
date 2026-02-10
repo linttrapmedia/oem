@@ -2,11 +2,9 @@
 
 UI, on command.
 
-[**Full Docs at oem.js.org**](https://oem.js.org)
+[**Human Docs at oem.js.org**](https://oem.js.org)
 
 OEM is a minimal, convention-driven toolkit for crafting your own reactive, component-based UI layer that an AI agent can actually understand and generate.
-
-
 ## TOC
 
 - [Philosophy](#philosophy)
@@ -15,8 +13,6 @@ OEM is a minimal, convention-driven toolkit for crafting your own reactive, comp
 - [State](#state)
 - [Templating](#templating)
 - [Traits](#traits)
-
-
 ## Quick Start
 
 ### Design Principles
@@ -47,8 +43,6 @@ npm install @linttrap/oem
 ```bash
 npx skills add https://github.com/linttrapmedia/oem/tree/main/docs/agent-skills
 ```
-
-
 ## State
 
 ### Overview
@@ -232,6 +226,8 @@ The state module uses a closure-based approach to maintain private state:
 - [util.ts](src/core/util.ts) - Provides utility functions for extracting and working with State objects
 - [template.ts](src/core/template.ts) - Integrates with State for reactive DOM rendering
 
+### Available States
+- [UrlState](./references/UrlState.md) - State Object to track the current URL in the application.
 
 ## Template
 
@@ -389,270 +385,13 @@ SVG elements are created using `createElementNS` with the SVG namespace. The mod
 ### Related Modules
 - [state.ts](src/core/state.ts) - Provides reactive State objects that integrate with template
 - [types.ts](src/core/types.ts) - Provides the `Tail` utility type used in trait parameter inference
-
-
-## Types
-
-### Overview
-The types module provides common TypeScript type definitions used throughout the OEM framework. These types establish shared contracts for reactive conditions, testing, and utility type transformations.
-
-### Purpose
-Types serves as a central location for common type definitions, ensuring type consistency across the OEM codebase. It provides:
-- Type definitions for conditional expressions
-- Test function signatures for unit testing
-- Utility types for type-level programming
-
-Use this module when you need to import common type definitions or understand the type contracts used across OEM.
-
-### Key Exports
-
-#### `Condition`
-- **Type**: Type alias
-- **Signature**: `type Condition = (() => boolean) | boolean | 1 | 0`
-- **Description**: Represents a conditional expression that can be evaluated to determine truthiness
-- **Supported Forms**:
-  - `() => boolean`: A function that returns a boolean
-  - `boolean`: A static true/false value
-  - `1`: Truthy numeric value
-  - `0`: Falsy numeric value
-- **Usage Example**:
-```typescript
-const condition1: Condition = true;
-const condition2: Condition = () => count.val() > 0;
-const condition3: Condition = 1;
-
-// Used in OEM conditional rendering
-const element = h.div(
-  condition1 && h.span('Visible when true')
-);
-```
-- **Use Cases**:
-  - Conditional rendering in templates
-  - Control flow in reactive systems
-  - Feature flags and toggles
-
-#### `Test`
-- **Type**: Type alias
-- **Signature**: `type Test = (sandbox?: HTMLElement) => Promise<{ pass: boolean; message?: string }>`
-- **Description**: Defines the signature for test functions in OEM's testing system
-- **Parameters**:
-  - `sandbox`: Optional HTMLElement that serves as a testing container for DOM operations
-- **Returns**: A Promise resolving to a test result object
-  - `pass`: Boolean indicating if the test passed
-  - `message`: Optional message providing test details or failure information
-- **Usage Example**:
-```typescript
-const myTest: Test = async (sandbox) => {
-  const element = h.div('Test content');
-  sandbox?.appendChild(element);
-
-  const hasContent = element.textContent === 'Test content';
-
-  return {
-    pass: hasContent,
-    message: hasContent ? 'Content matches' : 'Content mismatch'
-  };
-};
-```
-- **Use Cases**:
-  - Unit testing DOM components
-  - Integration testing with isolated DOM sandboxes
-  - Automated test suites
-
-#### `Tail<T>`
-- **Type**: Utility type
-- **Signature**: `type Tail<T extends any[]> = T extends [any, ...infer R] ? R : never`
-- **Description**: Extracts all elements from a tuple type except the first element
-- **Type Parameters**:
-  - `T`: A tuple type (array with fixed length and types)
-- **Returns**: A tuple type containing all elements except the first
-- **Usage Example**:
-```typescript
-type Original = [string, number, boolean];
-type Rest = Tail<Original>; // [number, boolean]
-
-type SingleElement = [string];
-type Empty = Tail<SingleElement>; // []
-
-// Used internally in Template trait parameter inference
-type TraitParams = Tail<Parameters<TraitFunction>>;
-```
-- **Use Cases**:
-  - Removing the first parameter from function signatures (e.g., removing the `element` parameter from trait functions)
-  - Type-level tuple manipulation
-  - Generic type transformations
-
-### Implementation Details
-
-#### Condition Design
-The `Condition` type is designed to be flexible and accommodate various patterns:
-- **Function form**: Enables dynamic conditions that can re-evaluate
-- **Boolean form**: For static conditions known at creation time
-- **Numeric form**: Allows using 1/0 as truthy/falsy, common in certain programming paradigms
-
-#### Test Design
-The `Test` type follows the async test pattern common in modern testing frameworks:
-- **Async by nature**: Returns a Promise to support async operations in tests
-- **Sandbox parameter**: Provides isolation for DOM tests
-- **Structured result**: Object with `pass` boolean and optional `message` for clear test output
-
-#### Tail Type Mechanics
-The `Tail` type uses TypeScript's conditional types and `infer` keyword:
-- Matches tuple types with at least one element `[any, ...infer R]`
-- Infers the rest of the tuple as `R`
-- Returns `never` for non-matching types (type safety)
-
-### Related Modules
-- [state.ts](src/core/state.ts) - Uses `Condition` type indirectly through util functions
-- [util.ts](src/core/util.ts) - Provides runtime utilities for working with Condition types
-- [template.ts](src/core/template.ts) - Uses `Tail` for trait parameter type inference
-
-
-## Util
-
-### Overview
-The util module provides utility functions for working with State objects and Conditions in the OEM framework. It offers runtime helpers for filtering, testing, and extracting reactive objects from mixed arrays.
-
-### Purpose
-Util solves the problem of identifying and working with OEM's special object types (State, Condition) at runtime. Key features include:
-- Creating conditional closures for reactive testing
-- Extracting State objects from mixed parameter arrays
-- Extracting Condition objects from mixed parameter arrays
-
-Use this module when you need to programmatically work with State or Condition objects, particularly when processing variable argument lists that may contain a mix of different types.
-
-### Key Exports
-
-#### `$test()`
-- **Type**: Function
-- **Signature**: `function $test(val: (() => any) | any, expected: any = true): Condition`
-- **Description**: Creates a conditional closure that tests a value against an expected result
-- **Parameters**:
-  - `val`: Either a function that returns a value, or a static value
-  - `expected`: The expected value to compare against (default: `true`)
-- **Returns**: A `Condition` function with a `type` property set to `'$test'`
-- **Usage Example**:
-```typescript
-// Test a static value
-const isTrue = $test(true); // () => true === true
-
-// Test a function result
-const count = State(5);
-const isPositive = $test(() => count.val() > 0, true);
-
-// Use in conditional rendering
-const element = h.div(
-  isPositive && h.span('Count is positive')
-);
-
-// Custom expected value
-const isFive = $test(count.val, 5);
-```
-- **Behavior**:
-  - If `val` is a function, it's called on each evaluation
-  - If `val` is a static value, it's compared directly
-  - Returns true if `val === expected`, false otherwise
-  - The returned closure includes a `type` property for runtime identification
-
-#### `extractStates()`
-- **Type**: Function
-- **Signature**: `function extractStates(...rest: any): StateType<any>[]`
-- **Description**: Filters an array of mixed values to extract only State objects
-- **Parameters**:
-  - `...rest`: Variable number of arguments of any type
-- **Returns**: An array containing only the State objects from the input
-- **Usage Example**:
-```typescript
-const count = State(0);
-const name = State('Alice');
-const regularValue = 42;
-const regularFunc = () => 'hello';
-
-const states = extractStates(count, regularValue, name, regularFunc);
-// states = [count, name]
-
-// Use case: Subscribing to all states in a component
-states.forEach(state => {
-  state.sub(value => {
-    console.log('State changed:', value);
-  });
-});
-```
-- **Detection Logic**: Checks if objects have a `sub` property (characteristic of State objects)
-- **Use Cases**:
-  - Component lifecycle management
-  - Batch subscription to multiple states
-  - Analyzing dependencies
-
-#### `extractConditions()`
-- **Type**: Function
-- **Signature**: `function extractConditions(...rest: any[]): Condition[]`
-- **Description**: Filters an array of mixed values to extract only Condition objects
-- **Parameters**:
-  - `...rest`: Variable number of arguments of any type
-- **Returns**: An array containing only the Condition objects from the input
-- **Usage Example**:
-```typescript
-const isVisible = $test(true);
-const isEnabled = $test(() => count.val() > 0);
-const regularValue = 42;
-const regularFunc = () => 'hello';
-
-const conditions = extractConditions(isVisible, regularValue, isEnabled, regularFunc);
-// conditions = [isVisible, isEnabled]
-
-// Use case: Evaluating all conditions
-const allTrue = conditions.every(condition =>
-  typeof condition === 'function' ? condition() : condition
-);
-```
-- **Detection Logic**: Checks if objects have a `type` property equal to `'$test'`
-- **Use Cases**:
-  - Conditional rendering logic
-  - Form validation
-  - Feature flag evaluation
-  - Access control checks
-
-### Implementation Details
-
-#### Object Type Detection
-Both `extractStates` and `extractConditions` use runtime property checking to identify objects:
-- **State detection**: Uses `Object.hasOwn(i, 'sub')` to check for the subscription method
-- **Condition detection**: Uses `i.type === '$test'` to check for the type marker
-
-This approach relies on duck typing rather than instanceof checks, making it flexible but requiring consistent object shapes.
-
-#### $test Closure Structure
-The `$test` function returns a closure with:
-- **Function body**: Performs the comparison logic
-- **Type property**: Marker for runtime identification (`type: '$test'`)
-- This structure allows Conditions to be both executable and identifiable
-
-#### Type Safety Considerations
-- `extractStates` returns `StateType<any>[]`, losing specific type information
-- `extractConditions` returns `Condition[]`
-- Both functions use `any` types internally for flexibility with mixed arrays
-- Type information should be managed at the call site when possible
-
-### Related Modules
-- [state.ts](src/core/state.ts) - Defines the StateType interface that extractStates detects
-- [types.ts](src/core/types.ts) - Defines the Condition type used throughout this module
-- [template.ts](src/core/template.ts) - May use these utilities for processing mixed trait arrays
-
-
-## 🌐 Browser Support
-
-Requires ES6+ support:
-
-- Chrome 49+
-- Firefox 18+
-- Safari 10+
-- Edge 12+
-
-## 📄 License
-
-<img src="docs/assets/oem.png" width="150" style="border-radius:5px; margin:20px 0;" alt="OEM Logo" />
-
-MIT License
-
-©Copyright 2026. All rights reserved. Made in the USA 🇺🇸 by [Lint Trap Media](http://linttrap.media).
+- [Focus](./references/Focus.md) - Focuses an HTML element based on conditions
+- [InputEvent](./references/InputEvent.md) - Handles input-related events on form elements
+- [TextContent](./references/TextContent.md) - Sets the text content of an HTML element
+- [Attribute](./references/Attribute.md) - Adds an attribute to an HTML element
+- [Style](./references/Style.md) - Applies CSS styles to an HTML element
+- [InputValue](./references/InputValue.md) - Binds a value to an input or textarea element
+- [Event](./references/Event.md) - Attaches event listeners to an HTML element
+- [InnerHTML](./references/InnerHTML.md) - Sets the innerHTML of an element with reactive children
+- [ClassName](./references/ClassName.md) - Sets the class name of an HTML element
+- [StyleOnEvent](./references/StyleOnEvent.md) - Applies CSS styles to an element on a specific event

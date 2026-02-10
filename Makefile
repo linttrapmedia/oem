@@ -1,6 +1,6 @@
 #!/usr/bin/env
 
-.PHONY: help build clean cdn dev dist docs deploy examples install publish test
+.PHONY: help build clean cdn dev dist www deploy examples install publish skills test
 
 STATUS:="\x1b[96;01m\xE2\x80\xA2\x1b[0m"
 ECHO = @echo "\033[0;34m$(1)\033[0m$(2)"
@@ -23,12 +23,12 @@ help:
 
 clean: ## Clean the project
 	@echo $(STATUS) Cleaning...
-	@rm -rf ./docs/bundle.min.js ./docs/bundle.min.js.map ./node_modules ./package-lock.json ./dist
+	@rm -rf ./www/bundle.min.js ./www/bundle.min.js.map ./node_modules ./package-lock.json ./dist
 
 dev: ## Run the project in development mode
 	@echo $(STATUS) Running in development mode...
 	@open http://localhost:3000
-	@bun ./docs/index.dev.html --watch
+	@bun ./www/index.dev.html --watch
 
 deploy: ## Deploy the project to GitHub Pages/oem.js.org
 	@echo $(STATUS) Deploying...
@@ -38,14 +38,14 @@ deploy: ## Deploy the project to GitHub Pages/oem.js.org
 	@git push -f origin gh-pages
 	@git checkout main
 
-build: ## Build docs
-	@echo $(STATUS) Building docs...
-	@bun build ./docs/app.ts \
+build: ## Build www
+	@echo $(STATUS) Building www...
+	@bun build ./www/app.ts \
 		--sourcemap \
 		--minify \
 		--bundle \
 		--format=iife \
-		--outfile=./docs/app.js \
+		--outfile=./www/app.js \
 		--target=browser \
 
 examples: ## Dev todo example
@@ -60,9 +60,10 @@ publish: ## Publish the project to npm
 	@echo $(STATUS) Publish package...
 	@npm publish --access public
 
-docs: ## Generate README.md
-	@echo $(STATUS) Generating README.md, SKILL.md...
-	@bun ./scripts/gen-docs.ts
+skills: ## Generate Skill files
+	@echo $(STATUS) Generating SKILL.md, etc...
+	@bun ./scripts/gen-skills.ts
+	@cp ./skills/SKILL.md ./README.md
 
 test: ## Run tests
 	@echo $(STATUS) Testing...
