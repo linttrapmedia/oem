@@ -13,13 +13,13 @@ const skillDir = resolve(projectRoot, 'skills');
 await Bun.write(`${skillDir}/SKILL.md`, '');
 
 const headerFile = resolve(projectRoot, 'src/docs/header.md');
-await appendFile(`${skillDir}/SKILL.md`, await Bun.file(headerFile).text());
+await appendFile(`${skillDir}/SKILL.md`, (await Bun.file(headerFile).text()) + '\n');
 
 const tocFile = resolve(projectRoot, 'src/docs/toc.md');
-await appendFile(`${skillDir}/SKILL.md`, await Bun.file(tocFile).text());
+await appendFile(`${skillDir}/SKILL.md`, (await Bun.file(tocFile).text()) + '\n');
 
 const quickStartFile = resolve(projectRoot, 'src/docs/quick-start.md');
-await appendFile(`${skillDir}/SKILL.md`, await Bun.file(quickStartFile).text());
+await appendFile(`${skillDir}/SKILL.md`, (await Bun.file(quickStartFile).text()) + '\n');
 
 const stateFile = resolve(projectRoot, 'src/core/state.md');
 await appendFile(`${skillDir}/SKILL.md`, await Bun.file(stateFile).text());
