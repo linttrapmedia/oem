@@ -6,10 +6,10 @@ import {
   CanTestStateValue,
   CanUnSubscribeToState,
   CanUpdateState,
-  CanUseDeferredCustomMethods,
-  CanUseDeferredCustomMethodsWithParameters,
   CanUseCustomMethods,
   CanUseCustomMethodsWithParameters,
+  CanUseDeferredCustomMethods,
+  CanUseDeferredCustomMethodsWithParameters,
 } from '@/core/state.test';
 import {
   CanApplyMultipleTraitsToHtml,
@@ -22,6 +22,7 @@ import {
 } from '@/core/template.test';
 import { Test } from '@/registry';
 import { CanKeepTrackOfMediaQueryState } from '@/states/MediaQueryState.test';
+import { CanMatchUrlWithVariables } from '@/states/UrlState.test';
 import { CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg } from '@/traits/Attribute.test';
 import { CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg } from '@/traits/ClassName.test';
 import {
@@ -110,6 +111,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       CanApplyTextContentTraitToHtml,
       CanApplyTextContentTraitToSvg,
       CanKeepTrackOfMediaQueryState,
+      CanMatchUrlWithVariables,
     ],
   ];
 

@@ -57,7 +57,6 @@ export const CanApplyAttributeTraitToHtml: Test = async () => {
 
   // removes attribute when value is undefined
   el = tmpl.div(trait.attr('id', undefined));
-  console.log('asdf', el.outerHTML);
   tests.push(el.outerHTML === '<div></div>');
 
   // reacts to state changes again
@@ -70,7 +69,6 @@ export const CanApplyAttributeTraitToHtml: Test = async () => {
   el = tmpl.div(trait.attr('data-test', other.$val));
   other.set('updatedValue');
   tests.push(el.outerHTML === '<div data-test="updatedValue"></div>');
-  console.log(el.outerHTML);
 
   // tunnels state through $test
   const testState = State(1);

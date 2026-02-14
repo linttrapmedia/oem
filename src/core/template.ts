@@ -1,6 +1,9 @@
 import type { Tail } from './types';
 
+// Map of traits to clean up
 const traitCleanupMap = new WeakMap<HTMLElement | SVGElement, (() => void)[]>();
+
+// On DOM mutations, find and call all trait cleanup functions for all nodes removed
 const observer = new MutationObserver((mutations) => {
   for (const mutation of mutations) {
     if (mutation.type === 'childList') {
@@ -15,18 +18,24 @@ const observer = new MutationObserver((mutations) => {
   }
 });
 
+// Watch the entire document
 observer.observe(document.documentElement, { childList: true, subtree: true });
 
-type TemplateTraitFunc<Args extends any[] = any[], Return = any> = (...args: Args) => Return;
+// Any function where an element is the first argument
 type TemplateTraitApplier = (el: HTMLElement | SVGElement) => void;
+
+// The "Trait" configuration object to be used by the Template function
+type TemplateTraitFunc<Args extends any[] = any[], Return = any> = (...args: Args) => Return;
+
+// The Template instance return type
 type TemplateReturnType<P extends Record<string, TemplateTraitFunc>> = [
   {
     [K in keyof HTMLElementTagNameMap]: (
-      ...traits: (string | number | TemplateTraitApplier | HTMLElement | SVGElement)[]
+      ...traits: TemplateTraitApplier[]
     ) => HTMLElementTagNameMap[K];
   } & {
     [K in keyof SVGElementTagNameMap]: (
-      ...traits: (string | number | TemplateTraitApplier | HTMLElement | SVGElement)[]
+      ...traits: TemplateTraitApplier[]
     ) => SVGElementTagNameMap[K];
   },
   {
@@ -34,61 +43,34 @@ type TemplateReturnType<P extends Record<string, TemplateTraitFunc>> = [
   },
 ];
 
+// The main Template function. Creates an instance of a user defined "template engine" through the use of "traits"
 export function Template<P extends Record<string, TemplateTraitFunc>>(
   config?: P,
 ): TemplateReturnType<P> {
-  // HTML proxy: creates elements and applies traits
+  // HTML proxy: creates a method for every html tag.
+  // Example: tag.div(...TemplateTraitApplier functions...)
   const tagProxy = new Proxy(
     {},
     {
       get: (_, prop: string) => {
         const tagFunc = (...traits: TemplateTraitApplier[]) => {
-          const svgTags = new Set([
-            'svg',
-            'g',
-            'rect',
-            'circle',
-            'ellipse',
-            'line',
-            'polyline',
-            'polygon',
-            'path',
-            'text',
-            'defs',
-            'use',
-            'mask',
-            'clipPath',
-          ]);
+          // we need a list of svg tags so we can reliably autoset the namespace
+          const svgTags = new Set(
+            'svg,g,rect,circle,ellipse,line,polyline,polygon,path,text,defs,use,mask,clipPath'.split(
+              ',',
+            ),
+          );
 
+          // Create the element based on the "prop" which will be an html tag
+          // Example: for tag.div(...), prop will be "div"
           const el = svgTags.has(prop)
             ? document.createElementNS('http://www.w3.org/2000/svg', prop)
             : document.createElement(prop);
-
-          traits.forEach((trait: any) => {
-            // apply
-            if (trait.type === 'trait') {
-              trait(el);
-              // is some type of function
-            } else if (typeof trait === 'function') {
-              // if a state object
-              if (trait.hasOwnProperty('sub')) {
-                const text = document.createTextNode('');
-                el.appendChild(text);
-                const apply = () => (text.data = trait(el) as any);
-                apply();
-                const unsub = (trait as any).sub(apply);
-                traitCleanupMap.set(el, [...(traitCleanupMap.get(el) || []), unsub]);
-                // is just a function
-              } else {
-                el.append(trait(el) as any);
-              }
-              // static value
-            } else {
-              el.append(trait);
-            }
-          });
+          traits.forEach((trait: any) => trait(el));
           return el;
         };
+
+        // this helps for reliable ad-hoc reflection in the OEM internals
         tagFunc.type = 'tag';
         return tagFunc;
       },
@@ -109,11 +91,15 @@ export function Template<P extends Record<string, TemplateTraitFunc>>(
             list.push(unsub);
             traitCleanupMap.set(el, list);
           };
+
+          // this helps for reliable ad-hoc reflection in the OEM internals
           trait.type = 'trait';
           return trait;
         },
     },
   ) as TemplateReturnType<P>[1];
 
+  // returning destructured objects makes the api clean and straightforward
+  // Example: tagProxy.div(traitProxy.traitOne(arg1, arg2), traitProxy.traitTwo(arg1, arg2)).
   return [tagProxy, traitProxy];
 }

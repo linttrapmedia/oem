@@ -6,7 +6,6 @@ export const CanApplyStyleOnEventWithStaticValue: Test = async () => {
   const [tmpl, trait] = Template({ event: useEventTrait, styleOnEvent: useStyleOnEventTrait });
   const el = tmpl.div(trait.styleOnEvent('click', 'color', 'red'));
   const t1 = el.outerHTML === '<div></div>';
-  console.log(el.outerHTML);
   el.click();
   const t2 = el.outerHTML === '<div style="color: red;"></div>';
   return { pass: t1 && t2 };

@@ -1,4 +1,11 @@
-import { State, Template, Test, useAttributeTrait, useEventTrait } from '@/registry';
+import {
+  State,
+  Template,
+  Test,
+  useAttributeTrait,
+  useEventTrait,
+  useTextContentTrait,
+} from '@/registry';
 
 export const CanApplyEventListenerTraitToHtml: Test = async () => {
   const [tmpl, trait] = Template({
@@ -76,9 +83,10 @@ export const CanRemoveEventListenerFromStateObjectWhenElementIsRemoved: Test = a
   const stateObj = State(false);
   const [tmpl, trait] = Template({
     event: useEventTrait,
+    text: useTextContentTrait,
   });
   const handleClick: any = () => stateObj.set(!stateObj.val());
-  const e1 = tmpl.div(trait.event('click', handleClick, true, stateObj), 'Click me');
+  const e1 = tmpl.div(trait.event('click', handleClick, true, stateObj), trait.text('Click me'));
   sandbox?.append(e1);
   e1.click();
   tests.push(stateObj.val() === true);
