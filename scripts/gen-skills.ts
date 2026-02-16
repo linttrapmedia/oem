@@ -103,7 +103,7 @@ OEM is an agent-first UI framework engineered for seamless human-AI collaboratio
 OEM is comprised of three core components that work together to create a powerful and flexible UI framework:
 
 - [Templates](./references/template.md) - These are the user defined templating engines that are used to render dom elements
-- [Traits](./references/traits.md) - This is OEM's "plugin architecture". It's how a user defines the capabilities of a templating engine. OEM comes with a library of predefined traits but users can (and should) define their own traits to maintain as much of a declarative syntax as possible.
+- [Traits](./references/template.md) - This is OEM's "plugin architecture". It's how a user defines the capabilities of a templating engine. OEM comes with a library of predefined traits but users can (and should) define their own traits to maintain as much of a declarative syntax as possible.
 - [State](./references/state.md) - OEM's state management system. It's a simple event bus with helper functions to create and manage state. It's usage within the OEM ecosystem is dependent on calling code, including traits and their implementations.
 - [Types](./references/types.md) - Type definitions for OEM. This includes types for traits, templates, and state.
 
@@ -130,7 +130,7 @@ ${stateFiles
   )
   .join('\n')}
 
-## Elements
+## Element Library
 
 Elements are reusable style definitions can be used by components to maintain consistent styling across the app. They can be thought of as a more powerful version of CSS classes that can also include semantic tokens.
 
@@ -141,7 +141,7 @@ ${elementFiles
   )
   .join('\n')}
 
-## Components
+## Component Library
 
 OEM also provides a set of pre-built components that can be used to quickly build common UI patterns with state. These components are designed to be flexible and customizable, allowing you to easily adapt them to your specific needs.
 
@@ -152,7 +152,7 @@ ${componentFiles
   )
   .join('\n')}
 
-## Features
+## Feature Library
 
 Features are compositions of components, traits, and states that provide pre-built application features such as contact forms, todo lists, and more. These features are designed to be easily integrated into your applications, providing a quick and easy way to add common functionality.
 
@@ -163,7 +163,7 @@ ${featureFiles
   )
   .join('\n')}
 
-## Patterns
+## Pattern Library
 
 ### Architectural Patterns
 
