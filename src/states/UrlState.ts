@@ -12,23 +12,47 @@ type RouteHandler<Path extends string> = ExtractRouteParams<Path> extends never
   ? () => string
   : (params: { [K in ExtractRouteParams<Path>]: string }) => string;
 
-// The Routes type - a record of path strings to handler functions
 type Routes = Record<string, (params?: any) => string>;
 
-type UrlStateProps<R extends Routes> = {
-  currentRoute: string;
-  location: Location;
-  searchParams: {
-    [k: string]: string;
-  };
-  variables: {
-    [k: string]: string | null;
-  };
+type UrlState<R extends Routes> = {
+  matchedRoute: string;
+  params: Record<string, string>;
+  query: Record<string, string>;
   hash: string;
+  location: Location;
   routes: R;
 };
 
-// Example Routes object:
+// Convert route pattern like '/user/:id' to regex
+const routeToRegex = (route: string): RegExp => {
+  const pattern = route
+    .replace(/:[^\s/]+/g, '([\\w-]+)') // Replace :param with capture group
+    .replace(/\//g, '\\/'); // Escape slashes
+  return new RegExp(`^${pattern}$`);
+};
+
+// Extract params from URL based on matched route
+const extractParams = (route: string, pathname: string): Record<string, string> => {
+  const params: Record<string, string> = {};
+  const routeParts = route.split('/').filter(Boolean);
+  const pathParts = pathname.split('/').filter(Boolean);
+
+  routeParts.forEach((part, index) => {
+    if (part.startsWith(':')) {
+      const paramName = part.slice(1);
+      params[paramName] = pathParts[index] || '';
+    }
+  });
+
+  return params;
+};
+
+// Find which route matches current pathname
+const findMatchingRoute = (routes: Routes, pathname: string): string => {
+  return Object.keys(routes).find((route) => routeToRegex(route).test(pathname)) || '';
+};
+
+// Example usage:
 // const routes = {
 //   '/': () => 'home',
 //   '/about': () => 'about',
@@ -38,64 +62,33 @@ type UrlStateProps<R extends Routes> = {
 export const useUrlState = <T extends Record<string, any>>(
   routes: { [K in keyof T]: K extends string ? RouteHandler<K> : never },
 ) => {
-  const parseUrlandLocationData = () => {
-    const currentRoute =
-      Object.entries(routes).find(([key]) => {
-        // find the first route that matches a route key
-        const regex = new RegExp(
-          '^' +
-            key
-              .replace(/:[^\s/]+/g, '([\\w-]+)') // Replace :variable with a regex group
-              .replace(/\//g, '\\/') + // Escape slashes
-            '$',
-        );
-        // return the key if the pathname matches the regex
-        return regex.test(document.location.pathname);
-      })?.[0] || '';
+  const parseLocationData = (): UrlState<typeof routes> => {
+    const { pathname, search, hash, location } = {
+      pathname: document.location.pathname,
+      search: document.location.search,
+      hash: document.location.hash,
+      location: document.location,
+    };
 
-    // get variables from the URL based on the currentRoute
-    const variables: { [k: string]: string | null } = {};
-    if (currentRoute) {
-      const routeParts = currentRoute.split('/').filter(Boolean);
-      const pathParts = document.location.pathname.split('/').filter(Boolean);
-
-      routeParts.forEach((part, index) => {
-        if (part.startsWith(':')) {
-          const varName = part.slice(1);
-          variables[varName] = pathParts[index] || null;
-        }
-      });
-    }
-
-    const location: Location = document.location;
-
-    const searchParams = Object.fromEntries(
-      new URLSearchParams(document.location.search).entries(),
-    );
-
-    const hash = document.location.hash.replace('#', '');
+    const matchedRoute = findMatchingRoute(routes, pathname);
+    const params = matchedRoute ? extractParams(matchedRoute, pathname) : {};
+    const query = Object.fromEntries(new URLSearchParams(search));
 
     return {
-      currentRoute,
+      matchedRoute,
+      params,
+      query,
+      hash: hash.replace('#', ''),
       location,
-      searchParams,
-      variables,
-      hash,
       routes,
     };
   };
 
-  const state = State<UrlStateProps<typeof routes>>(parseUrlandLocationData());
+  const state = State<UrlState<typeof routes>>(parseLocationData());
+  const updateState = () => state.set(parseLocationData());
 
-  // on popstate, update the state with the new URL data
-  window.addEventListener('popstate', () => {
-    state.set(parseUrlandLocationData());
-  });
-
-  // on hashchange, update the state with the new URL data
-  window.addEventListener('hashchange', () => {
-    state.set(parseUrlandLocationData());
-  });
+  window.addEventListener('popstate', updateState);
+  window.addEventListener('hashchange', updateState);
 
   return state;
 };

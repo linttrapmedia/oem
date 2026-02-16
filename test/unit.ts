@@ -22,6 +22,20 @@ import {
 } from '@/core/template.test';
 import { Test } from '@/registry';
 import { CanKeepTrackOfMediaQueryState } from '@/states/MediaQueryState.test';
+import {
+  CanAddNewTheme,
+  CanCheckCurrentTheme,
+  CanCreateThemeState,
+  CanGetAllTokens,
+  CanGetCurrentTheme,
+  CanGetThemeNames,
+  CanRemoveTheme,
+  CanSelectToken,
+  CanSelectTokenAfterThemeSwitch,
+  CanSelectTokenWithFallback,
+  CanSubscribeToThemeChanges,
+  CanSwitchTheme,
+} from '@/states/ThemeState.test';
 import { CanMatchUrlWithVariables } from '@/states/UrlState.test';
 import { CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg } from '@/traits/Attribute.test';
 import { CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg } from '@/traits/ClassName.test';
@@ -58,22 +72,11 @@ import { runner } from './runner';
 window.addEventListener('DOMContentLoaded', async () => {
   const tests: [string, ...Test[]][] = [
     [
-      'HTML',
-      CanApplyMultipleTraitsToHtml,
-      CanCreateBasicHtmlTagWithText,
-      HasValidHtmlNamespace,
-      CanCreateBasicTrait,
-      WillCleanupTraitOnElementRemoval,
-      CanRemoveEventListenerFromStateObjectWhenElementIsRemoved,
-    ],
-    ['SVG', CanApplyMultipleTraitsToSvg, CanCreateBasicSvgTagWithText],
-    [
-      'State',
+      '@/core/state',
       CanCreateState,
       CanUpdateState,
       CanSubscribeToState,
       CanUnSubscribeToState,
-      CanRemoveEventListenerFromStateObjectWhenElementIsRemoved,
       CanSetStateAndPublish,
       CanTestStateValue,
       CanUseCustomMethods,
@@ -82,22 +85,35 @@ window.addEventListener('DOMContentLoaded', async () => {
       CanUseDeferredCustomMethodsWithParameters,
       CanAccessStateMethodsInCustomMethods,
     ],
-
     [
-      'Trait',
-      CanApplyAttributeTraitToHtml,
-      CanApplyAttributeTraitToSvg,
-      CanApplyClassNameTraitToHtml,
-      CanApplyClassNameTraitToSvg,
+      '@/core/template',
+      CanCreateBasicHtmlTagWithText,
+      CanCreateBasicSvgTagWithText,
+      HasValidHtmlNamespace,
+      CanCreateBasicTrait,
+      CanApplyMultipleTraitsToHtml,
+      CanApplyMultipleTraitsToSvg,
+      WillCleanupTraitOnElementRemoval,
+    ],
+    ['@/traits/Attribute', CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg],
+    ['@/traits/ClassName', CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg],
+    [
+      '@/traits/Event',
       CanApplyEventListenerTraitToHtml,
-      CanConditionallyApplyEventListenerTraitToHtml,
       CanApplyEventListenerTraitToSvg,
+      CanConditionallyApplyEventListenerTraitToHtml,
       CanConditionallyApplyEventListenerTraitToSvg,
       CanRemoveEventListenerFromStateObjectWhenElementIsRemoved,
-      CanApplyInnerHTMLTraitToHtml,
-      CanApplyInnerHTMLTraitToSvg,
+    ],
+    ['@/traits/InnerHTML', CanApplyInnerHTMLTraitToHtml, CanApplyInnerHTMLTraitToSvg],
+    [
+      '@/traits/Style',
       CanApplyStyleTraitToHtml,
       CanApplyStyleTraitToSvg,
+      CanApplyCssVarWithStyleTraitToHtml,
+    ],
+    [
+      '@/traits/StyleOnEvent',
       CanApplyStyleOnEventWithStaticValue,
       CanApplyStyleOnEventWithFunctionValue,
       CanApplyStyleOnEventWithState,
@@ -107,12 +123,25 @@ window.addEventListener('DOMContentLoaded', async () => {
       CanApplyCssVarOnEvent,
       CanApplyNumericStyleOnEvent,
       CanApplyMultipleStylesOnEvent,
-      CanApplyCssVarWithStyleTraitToHtml,
-      CanApplyTextContentTraitToHtml,
-      CanApplyTextContentTraitToSvg,
-      CanKeepTrackOfMediaQueryState,
-      CanMatchUrlWithVariables,
     ],
+    ['@/traits/TextContent', CanApplyTextContentTraitToHtml, CanApplyTextContentTraitToSvg],
+    ['@/states/MediaQueryState', CanKeepTrackOfMediaQueryState],
+    [
+      '@/states/ThemeState',
+      CanCreateThemeState,
+      CanCheckCurrentTheme,
+      CanSwitchTheme,
+      CanSelectToken,
+      CanSelectTokenAfterThemeSwitch,
+      CanSelectTokenWithFallback,
+      CanGetCurrentTheme,
+      CanGetAllTokens,
+      CanGetThemeNames,
+      CanAddNewTheme,
+      CanRemoveTheme,
+      CanSubscribeToThemeChanges,
+    ],
+    ['@/states/UrlState', CanMatchUrlWithVariables],
   ];
 
   await runner(tests);

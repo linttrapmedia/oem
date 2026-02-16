@@ -1,5 +1,5 @@
 ---
-name: Attribute
+name: useAttributeTrait
 description: Adds an attribute to an HTML element
 license: MIT
 metadata:
