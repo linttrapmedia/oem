@@ -1,14 +1,5 @@
 import { State } from '@/registry';
-
-// Design token definition
-export type DesignTokens = {
-  colors: Record<string, string>;
-  spacing: Record<string, string>;
-  typography: Record<string, string>;
-  borders: Record<string, string>;
-  shadows: Record<string, string>;
-  [key: string]: Record<string, string>; // Allow custom token categories
-};
+import type { DesignTokens } from '@/themes/_base';
 
 // Theme definition with tokens
 export type Theme = {
@@ -22,7 +13,7 @@ type ThemeStateValue = {
   currentTheme: string;
 };
 
-export const useThemeState = (themes: Theme[], initialTheme?: string) => {
+export const ThemeState = (themes: Theme[], initialTheme?: string) => {
   if (themes.length === 0) {
     throw new Error('At least one theme must be provided');
   }
@@ -67,11 +58,7 @@ export const useThemeState = (themes: Theme[], initialTheme?: string) => {
   };
 
   // Custom method: Select a token with fallback
-  const selectTokenOr = (
-    category: string,
-    tokenName: string,
-    fallback: string,
-  ): string => {
+  const selectTokenOr = (category: string, tokenName: string, fallback: string): string => {
     return selectToken(category, tokenName) ?? fallback;
   };
 

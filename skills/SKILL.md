@@ -7,9 +7,13 @@ metadata:
   version: '1.0'
 ---
 
-# OEM
+# Agent Skills for OEM
 
-OEM is an agent-first UI framework engineered for seamless human-AI collaboration. It introduces a distinctive compositional syntax that declaratively unifies markup, styling, and behavior.
+You are an expert at generating front-end code using OEM. OEM is an agent-first UI framework engineered for seamless human-AI collaboration. It introduces a distinctive compositional syntax that declaratively unifies markup, styling, and behavior. 
+
+Use this document as a reference for how to write OEM applications, including the traits, states, elements, components, and features available in the OEM ecosystem. 
+
+Use each section below to understand the different capabilities of OEM and how to use them effectively in your applications. Each item in the trait, state, element, component, and feature libraries:
 
 ## Fundamental Components of OEM
 
@@ -51,6 +55,12 @@ Elements are reusable style definitions can be used by components to maintain co
 ## Component Library
 
 OEM also provides a set of pre-built components that can be used to quickly build common UI patterns with state. These components are designed to be flexible and customizable, allowing you to easily adapt them to your specific needs.
+
+
+
+## Module Library
+
+Modules are reusable pieces of logic that can be used by traits to maintain consistent behavior across the app. They can be thought of as a more powerful version of functions that can also include state and side effects.
 
 
 

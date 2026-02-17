@@ -82,6 +82,18 @@ for await (const file of new Glob('src/features/*.md').scan('.')) {
   featureFiles.push([`./references/${fileName}`, frontMatter]);
 }
 
+const moduleFiles = [];
+for await (const file of new Glob('src/modules/*.md').scan('.')) {
+  const filePath = resolve(projectRoot, file);
+  const content = await Bun.file(file).text();
+  const fileName = file.split('/').pop()!;
+  const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
+  // copy to references
+  const referencePath = `${skillDir}/references/${fileName}`;
+  await Bun.write(referencePath, content);
+  moduleFiles.push([`./references/${fileName}`, frontMatter]);
+}
+
 // Create an empty SKILL.md (overwrite if exists)
 await Bun.write(
   `${skillDir}/SKILL.md`,
@@ -150,6 +162,17 @@ ${elementFiles
 OEM also provides a set of pre-built components that can be used to quickly build common UI patterns with state. These components are designed to be flexible and customizable, allowing you to easily adapt them to your specific needs.
 
 ${componentFiles
+  .map(
+    ([filePath, frontMatter]: any) =>
+      `- [${frontMatter.name}](${filePath}) - ${frontMatter.description}`,
+  )
+  .join('\n')}
+
+## Module Library
+
+Modules are reusable pieces of logic that can be used by traits to maintain consistent behavior across the app. They can be thought of as a more powerful version of functions that can also include state and side effects.
+
+${moduleFiles
   .map(
     ([filePath, frontMatter]: any) =>
       `- [${frontMatter.name}](${filePath}) - ${frontMatter.description}`,
