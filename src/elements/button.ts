@@ -1,6 +1,7 @@
+import { $test } from '@/core/util';
 import { tag, trait } from '@/elements/_base';
 import { theme } from '@/modules/theme';
-import { $test } from '@/core/util';
+import type { DesignTokens } from '@/themes/_base';
 
 type ButtonVariant = 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info' | 'ghost';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -15,15 +16,20 @@ type ButtonProps = {
   children?: HTMLElement[];
 };
 
+// Extract token name types from DesignTokens
+type ColorToken = keyof DesignTokens['colors'];
+type SpacingToken = keyof DesignTokens['spacing'];
+type TypographyToken = keyof DesignTokens['typography'];
+
 const variantConfig: Record<
   ButtonVariant,
   {
-    bg: string;
-    bgHover: string;
-    bgActive: string;
-    bgDisabled: string;
-    text: string;
-    border?: string;
+    bg: ColorToken | 'transparent';
+    bgHover: ColorToken;
+    bgActive: ColorToken;
+    bgDisabled: ColorToken;
+    text: ColorToken;
+    border?: ColorToken;
   }
 > = {
   primary: {
@@ -81,9 +87,9 @@ const variantConfig: Record<
 const sizeConfig: Record<
   ButtonSize,
   {
-    padding: string;
-    fontSize: string;
-    height: string;
+    padding: SpacingToken;
+    fontSize: TypographyToken;
+    height: SpacingToken;
   }
 > = {
   sm: {
@@ -182,7 +188,7 @@ export const button = (props: ButtonProps) => {
     trait.style('boxShadow', 'none', $test(disabled)),
     trait.style('boxShadow', theme.$token('shadows', 'shadowButton'), $test(!disabled)),
 
-    // Hover state
+    // Hover state - enter
     trait.style_on_event(
       'mouseenter',
       'backgroundColor',
@@ -197,7 +203,28 @@ export const button = (props: ButtonProps) => {
     ),
     trait.style_on_event('mouseenter', 'transform', 'translateY(-1px)', $test(!disabled)),
 
-    // Active state
+    // Hover state - leave (revert)
+    trait.style_on_event(
+      'mouseleave',
+      'backgroundColor',
+      theme.$token('colors', config.bg),
+      $test(!disabled && config.bg !== 'transparent'),
+    ),
+    trait.style_on_event(
+      'mouseleave',
+      'backgroundColor',
+      'transparent',
+      $test(!disabled && config.bg === 'transparent'),
+    ),
+    trait.style_on_event(
+      'mouseleave',
+      'boxShadow',
+      theme.$token('shadows', 'shadowButton'),
+      $test(!disabled),
+    ),
+    trait.style_on_event('mouseleave', 'transform', 'translateY(0)', $test(!disabled)),
+
+    // Active state - press
     trait.style_on_event(
       'mousedown',
       'backgroundColor',
@@ -206,6 +233,21 @@ export const button = (props: ButtonProps) => {
     ),
     trait.style_on_event('mousedown', 'transform', 'translateY(0)', $test(!disabled)),
     trait.style_on_event('mousedown', 'boxShadow', 'none', $test(!disabled)),
+
+    // Active state - release (revert to hover if still hovering)
+    trait.style_on_event(
+      'mouseup',
+      'backgroundColor',
+      theme.$token('colors', config.bgHover),
+      $test(!disabled),
+    ),
+    trait.style_on_event('mouseup', 'transform', 'translateY(-1px)', $test(!disabled)),
+    trait.style_on_event(
+      'mouseup',
+      'boxShadow',
+      theme.$token('shadows', 'shadowButtonHover'),
+      $test(!disabled),
+    ),
 
     // Focus state
     trait.style_on_event('focus', 'boxShadow', theme.$token('shadows', 'shadowFocus')),
