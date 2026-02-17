@@ -192,6 +192,10 @@ ${featureFiles
 
 ## Pattern Library
 
+### Conditions
+
+### Git Commits
+
 ### Architectural Patterns
 
 OEM is designed to be flexible and adaptable to a wide range of architectural patterns. However, there are a few patterns that are particularly well-suited to the OEM ecosystem:

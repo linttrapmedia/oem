@@ -25,18 +25,12 @@ export const ThemeState = (themes: Theme[], initialTheme?: string) => {
 
   const state = State<ThemeStateValue>(initial);
 
-  // Custom method: Check if a theme is currently active
-  const isCurrentTheme = (themeName: string): boolean => {
-    return state.val().currentTheme === themeName;
+  // Get the current theme name
+  const getTheme = (): string => {
+    return state.val().currentTheme;
   };
 
-  // Custom method: Get the current theme object
-  const getCurrentTheme = (): Theme | undefined => {
-    const { themes, currentTheme } = state.val();
-    return themes.find((theme) => theme.name === currentTheme);
-  };
-
-  // Custom method: Set the current theme
+  // Set the current theme
   const setTheme = (themeName: string): void => {
     const { themes } = state.val();
     const themeExists = themes.some((theme) => theme.name === themeName);
@@ -51,63 +45,26 @@ export const ThemeState = (themes: Theme[], initialTheme?: string) => {
     }));
   };
 
-  // Custom method: Select a token from the current theme
-  const selectToken = (category: string, tokenName: string): string | undefined => {
-    const currentTheme = getCurrentTheme();
-    return currentTheme?.tokens[category]?.[tokenName];
-  };
-
-  // Custom method: Select a token with fallback
-  const selectTokenOr = (category: string, tokenName: string, fallback: string): string => {
-    return selectToken(category, tokenName) ?? fallback;
-  };
-
-  // Custom method: Get all tokens for the current theme
-  const getAllTokens = (): DesignTokens | undefined => {
-    return getCurrentTheme()?.tokens;
-  };
-
-  // Custom method: Get all available theme names
-  const getThemeNames = (): string[] => {
-    return state.val().themes.map((theme) => theme.name);
-  };
-
-  // Custom method: Add a new theme
-  const addTheme = (theme: Theme): void => {
-    state.reduce((prev) => ({
-      ...prev,
-      themes: [...prev.themes, theme],
-    }));
-  };
-
-  // Custom method: Remove a theme
-  const removeTheme = (themeName: string): void => {
+  // Get a token from the current theme
+  const token = (category: string, tokenName: string): string | undefined => {
     const { themes, currentTheme } = state.val();
+    const theme = themes.find((t) => t.name === currentTheme);
+    return theme?.tokens[category]?.[tokenName];
+  };
 
-    if (themes.length === 1) {
-      throw new Error('Cannot remove the last theme');
-    }
-
-    if (currentTheme === themeName) {
-      throw new Error('Cannot remove the currently active theme');
-    }
-
-    state.reduce((prev) => ({
-      ...prev,
-      themes: prev.themes.filter((theme) => theme.name !== themeName),
-    }));
+  // Reactive token getter
+  const $token = (category: string, tokenName: string) => {
+    const closure = () => token(category, tokenName);
+    closure.sub = state.sub;
+    closure.type = '$token';
+    return closure;
   };
 
   return {
     ...state,
-    isCurrentTheme,
-    getCurrentTheme,
+    getTheme,
     setTheme,
-    selectToken,
-    selectTokenOr,
-    getAllTokens,
-    getThemeNames,
-    addTheme,
-    removeTheme,
+    token,
+    $token,
   };
 };
