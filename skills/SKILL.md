@@ -50,7 +50,30 @@ OEM's state management system is simple yet powerful, providing a flexible way t
 
 Elements are reusable style definitions can be used by components to maintain consistent styling across the app. They can be thought of as a more powerful version of CSS classes that can also include semantic tokens.
 
-
+- [text](./references/text.md) - A flexible text component with multiple variants, sizes, weights, colors, and text styling options. The fundamental component for displaying text content.
+- [label](./references/label.md) - A form label component with size variants, colors, and required indicator. Associates with form inputs for accessibility.
+- [input](./references/input.md) - A versatile text input component with multiple types, variants, sizes, and states. Supports validation states, event handlers, and full theming.
+- [stack](./references/stack.md) - A vertical flexbox layout component for stacking elements in a column. Control spacing, alignment, wrapping, and width with design tokens.
+- [radio](./references/radio.md) - A radio button input component for mutually exclusive selections. Supports multiple sizes, disabled state, labels, and change handlers.
+- [heading](./references/heading.md) - A semantic heading component for hierarchical page structure. Supports six levels with automatic sizing, custom colors, and text alignment.
+- [button](./references/button.md) - A reactive button component with multiple variants, sizes, and states. Supports theming, hover/active/focus states, and full-width layouts.
+- [image](./references/image.md) - A reactive image component with lazy loading, object-fit control, and event handlers. Supports border radius and responsive sizing.
+- [checkbox](./references/checkbox.md) - A reactive checkbox input component with label support. Supports multiple sizes, disabled state, and change handlers.
+- [progress](./references/progress.md) - A visual progress indicator component with customizable colors, sizes, variants, and optional label. Supports striped and animated styles.
+- [select](./references/select.md) - A styled dropdown select component with multiple variants, sizes, and states. Supports options, placeholders, and validation states.
+- [spinner](./references/spinner.md) - An animated loading spinner component for indicating loading states. Supports multiple sizes, colors, speeds, and accessibility labels.
+- [row](./references/row.md) - A horizontal flexbox layout component for arranging children in a row. Control spacing, alignment, wrapping, and width with design tokens.
+- [toggle](./references/toggle.md) - A switch/toggle input component for binary on/off states. Supports multiple sizes, colors, disabled state, and labels.
+- [link](./references/link.md) - A styled anchor link component with multiple variants, hover effects, and external link support. Supports disabled state and custom colors.
+- [box](./references/box.md) - A versatile container component with full control over spacing, colors, dimensions, positioning, and layout. The fundamental building block for layouts.
+- [textarea](./references/textarea.md) - A multi-line text input component with multiple variants, sizes, and states. Supports resize control, validation states, and event handlers.
+- [grid](./references/grid.md) - A CSS Grid layout component for creating responsive two-dimensional layouts. Control columns, rows, gaps, and alignment with design tokens.
+- [avatar](./references/avatar.md) - A circular avatar component with image or initials display. Supports multiple sizes, custom colors, borders, and click handlers.
+- [badge](./references/badge.md) - A compact badge component for status indicators, labels, and tags. Supports multiple variants, colors, sizes, and pill shape.
+- [spacer](./references/spacer.md) - A spacing utility component for adding vertical, horizontal, or bidirectional space between elements using design tokens.
+- [skeleton](./references/skeleton.md) - A loading placeholder component that displays a pulsing skeleton while content loads. Supports text, circle, and rectangle variants with animation.
+- [icon-button](./references/icon-button.md) - A button component optimized for icons with minimal padding. Supports multiple variants, sizes, and interactive states with optional circular shape.
+- [divider](./references/divider.md) - A visual separator component for dividing content. Supports horizontal and vertical orientations with multiple styles and customizable colors.
 
 ## Component Library
 
@@ -71,6 +94,10 @@ Features are compositions of components, traits, and states that provide pre-bui
 
 
 ## Pattern Library
+
+### Conditions
+
+### Git Commits
 
 ### Architectural Patterns
 

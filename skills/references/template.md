@@ -123,3 +123,85 @@ export function useStyleTrait(
   return () => unsubs.forEach((unsub) => unsub());
 }
 ```
+
+### Conditional Patterns
+
+**IMPORTANT**: OEM prescribes using explicit conditions rather than ternary expressions when applying traits.
+
+#### Using Conditions (Preferred)
+
+All traits accept `...rest: (StateType<any> | Condition)[]` parameters. Use `$test()` from `@/core/util` to create conditions:
+
+```typescript
+import { $test } from '@/core/util';
+
+// ✅ CORRECT: Use separate trait calls with conditions
+trait.style('opacity', '0.6', $test(disabled)),
+trait.style('opacity', '1', $test(!disabled)),
+
+// ✅ CORRECT: Multiple conditions
+trait.style('backgroundColor', 'red', $test(isError && !disabled)),
+
+// ✅ CORRECT: Conditional event handlers
+trait.event('click', handleClick, $test(!disabled)),
+
+// ✅ CORRECT: Conditional attributes
+trait.attr('disabled', 'true', $test(disabled)),
+```
+
+#### Avoiding Ternary Expressions (Anti-pattern)
+
+```typescript
+// ❌ INCORRECT: Do not use ternary expressions
+trait.style('opacity', disabled ? '0.6' : '1'),
+
+// ❌ INCORRECT: Do not use conditional spreads
+...(!disabled ? [trait.event('click', handleClick)] : []),
+
+// ❌ INCORRECT: Do not use inline conditionals
+trait.style('color', isError ? 'red' : 'blue'),
+```
+
+#### How Conditions Work
+
+Traits extract conditions using `extractConditions()` (see `@/core/util`) and only apply when all conditions evaluate to `true`:
+
+1. **Condition Creation**: `$test(value, expected = true)` creates a condition that checks if `value === expected`
+2. **Condition Extraction**: Traits filter rest parameters for objects with `type === '$test'`
+3. **Condition Evaluation**: All conditions must pass for the trait to apply
+4. **Reactive Updates**: When states change, conditions are re-evaluated
+
+```typescript
+// Example from Attribute.ts trait
+export const useAttributeTrait = (
+  el: HTMLElement,
+  prop: string,
+  val: (() => string | number | boolean | undefined) | (string | number | boolean | undefined),
+  ...rest: (StateType<any> | Condition)[]
+) => {
+  const states = extractStates(val, ...rest);
+  const conditions = extractConditions(...rest);
+  const apply = () => {
+    const _val = typeof val === 'function' ? val() : val;
+    const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));
+    if (applies) {
+      if (_val === undefined) {
+        el.removeAttribute(prop);
+      } else {
+        el.setAttribute(prop, String(_val));
+      }
+    } else {
+      el.removeAttribute(prop);
+    }
+  };
+  apply();
+  const unsubs = states.map((state) => state.sub(apply));
+  return () => unsubs.forEach((unsub) => unsub());
+};
+```
+
+This pattern ensures:
+- **Clarity**: Each condition is explicit and separate
+- **Reactivity**: Conditions can re-evaluate when states change
+- **Composability**: Multiple conditions can be combined
+- **Type Safety**: TypeScript can properly type-check each branch
