@@ -8,7 +8,7 @@ new MutationObserver((mutations) => {
   for (const { type, removedNodes } of mutations) {
     if (type !== 'childList') continue;
     removedNodes.forEach((node) => {
-      if (!(node instanceof HTMLElement)) return;
+      if (!(node instanceof HTMLElement || node instanceof SVGElement)) return;
       cleanups.get(node)?.forEach((fn) => fn());
       cleanups.delete(node);
     });
