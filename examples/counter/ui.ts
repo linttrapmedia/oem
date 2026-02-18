@@ -1,9 +1,36 @@
 // --- UI Rendering ---
 
+import { createEventProp, createProp, defineElement } from '@/core/element';
 import { StateType } from '@/registry';
 import { tag, trait } from './templates';
 import { theme } from './theme';
 import { Action, AppState, Filter, Todo } from './types';
+
+const button = defineElement({
+  markup: () => {
+    const el = document.createElement('button');
+    el.className = 'btn';
+    return el;
+  },
+  props: {
+    enabled: createProp<boolean>((el, val, applies) => {
+      if (applies) {
+        el.toggleAttribute('disabled', !val);
+      } else {
+        el.setAttribute('disabled', '');
+      }
+    }),
+    label: createProp<string>((el, text, applies) => {
+      if (applies) {
+        el.textContent = text;
+      }
+    }),
+    click: createEventProp<MouseEvent>((el, fn) => {
+      el.addEventListener('click', fn as EventListener);
+      return () => el.removeEventListener('click', fn as EventListener);
+    }),
+  },
+});
 
 // --- Helpers ---
 
@@ -163,6 +190,13 @@ export function renderApp(appState: StateType<AppState>, dispatch: (a: Action) =
         renderFilterButton('All', 'all', appState, dispatch),
         renderFilterButton('Active', 'active', appState, dispatch),
         renderFilterButton('Done', 'completed', appState, dispatch),
+      ),
+
+      button.tag(
+        button.label('Clear completed'),
+        button.click(() => dispatch({ type: 'CLEAR_COMPLETED' })),
+        button.enabled(false),
+        trait.style('background', 'green'),
       ),
 
       // Clear completed
