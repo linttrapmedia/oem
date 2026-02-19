@@ -1,153 +1,131 @@
-import { $test } from '@/core/util';
 import { tag, trait } from '@/elements/_base';
 import { theme } from '@/modules/theme';
-import type { DesignTokens } from '@/themes/_base';
+import { DesignTokens } from '@/themes';
 
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
 type SpacingToken = keyof DesignTokens['spacing'];
 type ColorToken = keyof DesignTokens['colors'];
 type BorderRadiusToken = keyof DesignTokens['borders'];
+type Display = 'block' | 'inline-block' | 'flex' | 'inline-flex' | 'grid' | 'inline-grid' | 'none';
+type Position = 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
+type Overflow = 'visible' | 'hidden' | 'scroll' | 'auto';
+type ShadowToken = keyof DesignTokens['shadows'];
 
-type BoxProps = {
-  padding?: SpacingToken;
-  paddingX?: SpacingToken;
-  paddingY?: SpacingToken;
-  margin?: SpacingToken;
-  marginX?: SpacingToken;
-  marginY?: SpacingToken;
-  bg?: ColorToken;
-  border?: ColorToken;
-  borderRadius?: BorderRadiusToken;
-  width?: string;
-  height?: string;
-  maxWidth?: string;
-  maxHeight?: string;
-  minWidth?: string;
-  minHeight?: string;
-  display?: 'block' | 'inline-block' | 'flex' | 'inline-flex' | 'grid' | 'inline-grid' | 'none';
-  position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
-  overflow?: 'visible' | 'hidden' | 'scroll' | 'auto';
-  shadow?: keyof DesignTokens['shadows'];
-  onClick?: () => void;
-  children?: HTMLElement[];
-};
+export const box = {
+  create: (...children: Child[]) => {
+    const el = document.createElement('div');
 
-export const box = (props: BoxProps) => {
-  const {
-    padding,
-    paddingX,
-    paddingY,
-    margin,
-    marginX,
-    marginY,
-    bg,
-    border,
-    borderRadius,
-    width,
-    height,
-    maxWidth,
-    maxHeight,
-    minWidth,
-    minHeight,
-    display = 'block',
-    position = 'static',
-    overflow = 'visible',
-    shadow,
-    onClick,
-    children = [],
-  } = props;
+    tag.$(el)(trait.style('display', 'block'), trait.style('position', 'static'));
 
-  const element = tag.div(
-    // Display
-    trait.style('display', display),
+    children.forEach((c) => {
+      if (c instanceof HTMLElement || c instanceof SVGElement) {
+        el.appendChild(c);
+      } else {
+        c(el);
+      }
+    });
 
-    // Position
-    trait.style('position', position),
+    return el;
+  },
 
-    // Padding
-    trait.style('padding', theme.$token('spacing', padding!), $test(padding !== undefined)),
-    trait.style(
-      'paddingLeft',
-      theme.$token('spacing', paddingX!),
-      $test(paddingX !== undefined && padding === undefined),
-    ),
-    trait.style(
-      'paddingRight',
-      theme.$token('spacing', paddingX!),
-      $test(paddingX !== undefined && padding === undefined),
-    ),
-    trait.style(
-      'paddingTop',
-      theme.$token('spacing', paddingY!),
-      $test(paddingY !== undefined && padding === undefined),
-    ),
-    trait.style(
-      'paddingBottom',
-      theme.$token('spacing', paddingY!),
-      $test(paddingY !== undefined && padding === undefined),
-    ),
+  padding: (padding: SpacingToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('padding', theme.$token('spacing', padding)));
+  },
 
-    // Margin
-    trait.style('margin', theme.$token('spacing', margin!), $test(margin !== undefined)),
-    trait.style(
-      'marginLeft',
-      theme.$token('spacing', marginX!),
-      $test(marginX !== undefined && margin === undefined),
-    ),
-    trait.style(
-      'marginRight',
-      theme.$token('spacing', marginX!),
-      $test(marginX !== undefined && margin === undefined),
-    ),
-    trait.style(
-      'marginTop',
-      theme.$token('spacing', marginY!),
-      $test(marginY !== undefined && margin === undefined),
-    ),
-    trait.style(
-      'marginBottom',
-      theme.$token('spacing', marginY!),
-      $test(marginY !== undefined && margin === undefined),
-    ),
+  paddingX: (paddingX: SpacingToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('paddingLeft', theme.$token('spacing', paddingX)),
+      trait.style('paddingRight', theme.$token('spacing', paddingX)),
+    );
+  },
 
-    // Background
-    trait.style('backgroundColor', theme.$token('colors', bg!), $test(bg !== undefined)),
+  paddingY: (paddingY: SpacingToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('paddingTop', theme.$token('spacing', paddingY)),
+      trait.style('paddingBottom', theme.$token('spacing', paddingY)),
+    );
+  },
 
-    // Border
-    trait.style(
-      'border',
-      () =>
-        `${theme.token('borders', 'borderWidthThin')} ${theme.token(
+  margin: (margin: SpacingToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('margin', theme.$token('spacing', margin)));
+  },
+
+  marginX: (marginX: SpacingToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('marginLeft', theme.$token('spacing', marginX)),
+      trait.style('marginRight', theme.$token('spacing', marginX)),
+    );
+  },
+
+  marginY: (marginY: SpacingToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('marginTop', theme.$token('spacing', marginY)),
+      trait.style('marginBottom', theme.$token('spacing', marginY)),
+    );
+  },
+
+  bg: (bg: ColorToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('backgroundColor', theme.$token('colors', bg)));
+  },
+
+  border: (border: ColorToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style(
+        'border',
+        `${theme.$token('borders', 'borderWidthThin')} ${theme.$token(
           'borders',
           'borderStyleSolid',
-        )} ${theme.token('colors', border!)}`,
-      $test(border !== undefined),
-      theme,
-    ),
+        )} ${theme.$token('colors', border)}`,
+      ),
+    );
+  },
 
-    // Border radius
-    trait.style('borderRadius', theme.$token('borders', borderRadius!), $test(borderRadius !== undefined)),
+  borderRadius: (borderRadius: BorderRadiusToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('borderRadius', theme.$token('borders', borderRadius)));
+  },
 
-    // Dimensions
-    trait.style('width', width!, $test(width !== undefined)),
-    trait.style('height', height!, $test(height !== undefined)),
-    trait.style('maxWidth', maxWidth!, $test(maxWidth !== undefined)),
-    trait.style('maxHeight', maxHeight!, $test(maxHeight !== undefined)),
-    trait.style('minWidth', minWidth!, $test(minWidth !== undefined)),
-    trait.style('minHeight', minHeight!, $test(minHeight !== undefined)),
+  width: (width: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('width', width));
+  },
 
-    // Overflow
-    trait.style('overflow', overflow),
+  height: (height: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('height', height));
+  },
 
-    // Shadow
-    trait.style('boxShadow', theme.$token('shadows', shadow!), $test(shadow !== undefined)),
+  maxWidth: (maxWidth: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('maxWidth', maxWidth));
+  },
 
-    // Click handler
-    trait.style('cursor', 'pointer', $test(onClick !== undefined)),
-    trait.event('click', onClick || (() => {}), $test(onClick !== undefined)),
+  maxHeight: (maxHeight: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('maxHeight', maxHeight));
+  },
 
-    // Children
-    ...children,
-  );
+  minWidth: (minWidth: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('minWidth', minWidth));
+  },
 
-  return element;
+  minHeight: (minHeight: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('minHeight', minHeight));
+  },
+
+  display: (display: Display) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('display', display));
+  },
+
+  position: (position: Position) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('position', position));
+  },
+
+  overflow: (overflow: Overflow) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('overflow', overflow));
+  },
+
+  shadow: (shadow: ShadowToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('boxShadow', theme.$token('shadows', shadow)));
+  },
+
+  onClick: (handler: (e: any) => void) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('cursor', 'pointer'), trait.event('click', handler));
+  },
 };

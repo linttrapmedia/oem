@@ -25,6 +25,8 @@ type TagMap = {
   [K in keyof HTMLElementTagNameMap]: (...children: Child[]) => HTMLElementTagNameMap[K];
 } & {
   [K in keyof SVGElementTagNameMap]: (...children: Child[]) => SVGElementTagNameMap[K];
+} & {
+  $: (el: HTMLElement | SVGElement) => (...children: Child[]) => HTMLElement | SVGElement;
 };
 
 type TraitMap<P extends Record<string, TraitFn>> = {
@@ -40,10 +42,23 @@ const SVG_TAGS = new Set(
 // --- Template ---
 
 export function Template<P extends Record<string, TraitFn>>(config?: P): [TagMap, TraitMap<P>] {
-  // Tag proxy: tmpl.div(...), tmpl.svg(...), etc.
+  // Tag proxy: tmpl.div(...), tmpl.svg(...), or tmpl.$(...) for adopting existing elements
   const tags = new Proxy({} as TagMap, {
     get: (_, tag: string) => {
-      const create = (...children: Child[]) => {
+      // Special case: tmpl.$() adopts an existing element and applies children/traits to it
+      if (tag === '$') {
+        return (el: HTMLElement | SVGElement) =>
+          (...children: Child[]) => {
+            children.forEach((c: any) => {
+              if (c instanceof HTMLElement || c instanceof SVGElement) el.appendChild(c);
+              else c(el);
+            });
+            return el;
+          };
+      }
+
+      // Standard case: create a new element
+      return (...children: Child[]) => {
         const el = SVG_TAGS.has(tag)
           ? document.createElementNS('http://www.w3.org/2000/svg', tag)
           : document.createElement(tag);
@@ -53,8 +68,6 @@ export function Template<P extends Record<string, TraitFn>>(config?: P): [TagMap
         });
         return el;
       };
-      (create as any).type = 'tag';
-      return create;
     },
   });
 
@@ -62,15 +75,14 @@ export function Template<P extends Record<string, TraitFn>>(config?: P): [TagMap
   const traits = new Proxy({} as TraitMap<P>, {
     get:
       (_, name: string) =>
-      (...args: any[]) => {
-        const apply = (el: HTMLElement | SVGElement) => {
-          const unsub = (config as any)[name](el, ...args);
+      (...args: any[]) =>
+      (el: HTMLElement | SVGElement) => {
+        const unsub = (config as any)[name](el, ...args);
+        if (unsub) {
           const list = cleanups.get(el) || [];
           list.push(unsub);
           cleanups.set(el, list);
-        };
-        (apply as any).type = 'trait';
-        return apply;
+        }
       },
   });
 

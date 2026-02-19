@@ -1,251 +1,293 @@
 ---
 name: heading
-description: A semantic heading component for hierarchical page structure. Supports six levels with automatic sizing, custom colors, and text alignment.
+description: A composable heading element using the trait-based pattern. Supports all heading levels (h1-h6), text alignment, and color customization with full theming integration.
 license: MIT
 metadata:
   author: Kevin Lint
-  version: '1.0'
+  version: '3.0'
 ---
 
-## Heading Component
+# Heading Element
 
-The `heading` function creates semantic HTML heading elements (h1-h6) with automatic typography scaling, theming support, and flexible styling options.
+The `heading` element provides a composable, trait-based approach to creating semantic heading elements with built-in theming support, multiple levels, and customizable styling.
 
-## Props
+## API
+
+The heading element exports an object with the following methods:
 
 ```typescript
-type HeadingProps = {
-  content?: string;                // Heading text
-  level?: 1 | 2 | 3 | 4 | 5 | 6;   // Heading level (h1-h6)
-  color?: ColorToken;              // Text color
-  align?: 'left' | 'center' | 'right';  // Text alignment
-  children?: HTMLElement[];        // Child elements
+export const heading = {
+  create: (level: HeadingLevel, ...children: Child[]) => HTMLHeadingElement;
+  h1: (...children: Child[]) => HTMLHeadingElement;
+  h2: (...children: Child[]) => HTMLHeadingElement;
+  h3: (...children: Child[]) => HTMLHeadingElement;
+  h4: (...children: Child[]) => HTMLHeadingElement;
+  h5: (...children: Child[]) => HTMLHeadingElement;
+  h6: (...children: Child[]) => HTMLHeadingElement;
+  color: (color: ColorToken) => Applier;
+  align: (align: TextAlign) => Applier;
+  content: (content: string) => Applier;
 };
 ```
 
-## Example Usage
+### Types
+
+```typescript
+type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+type TextAlign = 'left' | 'center' | 'right';
+type ColorToken = string;
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
+```
+
+## Usage
 
 ### Basic Heading
 
 ```typescript
 import { heading } from '@/elements/heading';
 
-// Simple h1 heading
-const title = heading({
-  content: 'Page Title',
-  level: 1
-});
+// Create a heading using level
+heading.create(1, heading.content('Page Title'));
+
+// Create a heading using helper method
+heading.h1(heading.content('Page Title'));
 ```
 
-### Heading Levels
+### Complete Heading
 
 ```typescript
-// H1 (largest - 4xl font, bold)
-const h1 = heading({
-  content: 'Main Title',
-  level: 1
-});
-
-// H2 (3xl font, bold)
-const h2 = heading({
-  content: 'Section Title',
-  level: 2
-});
-
-// H3 (2xl font, semibold)
-const h3 = heading({
-  content: 'Subsection Title',
-  level: 3
-});
-
-// H4 (xl font, semibold)
-const h4 = heading({
-  content: 'Minor Heading',
-  level: 4
-});
-
-// H5 (lg font, medium)
-const h5 = heading({
-  content: 'Small Heading',
-  level: 5
-});
-
-// H6 (base font, medium)
-const h6 = heading({
-  content: 'Smallest Heading',
-  level: 6
-});
+// Create a fully configured heading
+heading.create(
+  2,
+  heading.color('primary.700'),
+  heading.align('center'),
+  heading.content('Section Title'),
+);
 ```
 
-### Colors
+## Heading Levels
+
+The `heading.create()` method takes a level parameter (1-6) to create h1-h6 elements:
 
 ```typescript
-// Primary text color (default)
-const defaultHeading = heading({
-  content: 'Default Color',
-  level: 2
-});
-
-// Secondary text color
-const secondaryHeading = heading({
-  content: 'Secondary Color',
-  level: 2,
-  color: 'textSecondary'
-});
-
-// Custom color
-const customHeading = heading({
-  content: 'Custom Color',
-  level: 2,
-  color: 'primary'
-});
-
-// Error color
-const errorHeading = heading({
-  content: 'Error State',
-  level: 3,
-  color: 'error'
-});
+// Create different heading levels
+heading.create(1, heading.content('Heading 1')); // <h1>
+heading.create(2, heading.content('Heading 2')); // <h2>
+heading.create(3, heading.content('Heading 3')); // <h3>
+heading.create(4, heading.content('Heading 4')); // <h4>
+heading.create(5, heading.content('Heading 5')); // <h5>
+heading.create(6, heading.content('Heading 6')); // <h6>
 ```
 
-### Text Alignment
+### Helper Methods
+
+Convenience methods for each heading level:
 
 ```typescript
-// Left aligned (default)
-const leftHeading = heading({
-  content: 'Left Aligned',
-  level: 2,
-  align: 'left'
-});
+// h1 - Main page title
+heading.h1(heading.content('Main Title'));
 
-// Center aligned
-const centerHeading = heading({
-  content: 'Center Aligned',
-  level: 2,
-  align: 'center'
-});
+// h2 - Major sections
+heading.h2(heading.content('Section Title'));
 
-// Right aligned
-const rightHeading = heading({
-  content: 'Right Aligned',
-  level: 2,
-  align: 'right'
-});
+// h3 - Subsections
+heading.h3(heading.content('Subsection Title'));
+
+// h4 - Minor headings
+heading.h4(heading.content('Minor Heading'));
+
+// h5 - Sub-headings
+heading.h5(heading.content('Sub-heading'));
+
+// h6 - Smallest heading
+heading.h6(heading.content('Small Heading'));
 ```
 
-### With Children
+### Helper Method Features
+
+Each helper method:
+
+- Creates the correct semantic HTML element
+- Inherits all styling capabilities
+- Supports all appliers (color, align, content)
+- Maintains proper heading hierarchy
+
+## Color
+
+The `heading.color()` applier sets the heading text color using theme tokens:
 
 ```typescript
-import { tag } from '@/elements/_base';
+// Primary color heading
+heading.h1(heading.color('primary.700'), heading.content('Primary Heading'));
 
-// Heading with icon
-const iconHeading = heading({
-  level: 2,
-  children: [
-    tag.span({ textContent: '🎉 ' }),
-    tag.span({ textContent: 'Celebration Title' })
-  ]
-});
+// Gray heading
+heading.h2(heading.color('gray.600'), heading.content('Gray Heading'));
 
-// Heading with mixed content
-const mixedHeading = heading({
-  content: 'Title with ',
-  level: 3,
-  children: [
-    tag.span({
-      textContent: 'emphasis',
-      style: { fontStyle: 'italic' }
-    })
-  ]
-});
+// Accent color heading
+heading.h3(heading.color('accent.500'), heading.content('Accent Heading'));
+
+// Error color heading
+heading.h4(heading.color('error.600'), heading.content('Error Heading'));
 ```
 
-### Complete Example
+## Alignment
+
+The `heading.align()` applier controls text alignment:
+
+```typescript
+// Left-aligned (default)
+heading.h1(heading.align('left'), heading.content('Left Aligned'));
+
+// Center-aligned
+heading.h1(heading.align('center'), heading.content('Centered'));
+
+// Right-aligned
+heading.h1(heading.align('right'), heading.content('Right Aligned'));
+```
+
+## Content
+
+The `heading.content()` applier sets the heading text:
+
+```typescript
+// Simple text content
+heading.h1(heading.content('Welcome to My Site'));
+
+// Dynamic content
+const title = 'Dynamic Title';
+heading.h2(heading.content(title));
+```
+
+## Advanced Examples
+
+### Page Header
 
 ```typescript
 import { heading } from '@/elements/heading';
-import { stack } from '@/elements/stack';
-import { text } from '@/elements/text';
-import { divider } from '@/elements/divider';
+import { tag } from '@/elements/_base';
 
-// Document structure with proper heading hierarchy
-const article = stack({
-  spacing: 'lg',
-  children: [
-    heading({
-      content: 'Article Title',
-      level: 1,
-      align: 'center'
-    }),
+tag.header(
+  heading.h1(
+    heading.content('My Website'),
+    heading.color('primary.800'),
+    heading.align('center'),
+  ),
+  heading.h2(
+    heading.content('Welcome to our platform'),
+    heading.color('gray.600'),
+    heading.align('center'),
+  ),
+);
+```
 
-    text({
-      content: 'Introduction paragraph...',
-      align: 'center'
-    }),
+### Article Structure
 
-    divider({ spacing: 'xl' }),
+```typescript
+// Semantic article with proper heading hierarchy
+tag.article(
+  heading.h1(heading.content('Article Title')),
+  tag.p('Introduction paragraph...'),
 
-    heading({
-      content: 'First Section',
-      level: 2,
-      color: 'primary'
-    }),
+  heading.h2(heading.content('First Section')),
+  tag.p('Section content...'),
 
-    text({
-      content: 'Section content...'
-    }),
+  heading.h3(heading.content('Subsection')),
+  tag.p('Subsection content...'),
 
-    heading({
-      content: 'Subsection',
-      level: 3
-    }),
+  heading.h2(heading.content('Second Section')),
+  tag.p('More content...'),
+);
+```
 
-    text({
-      content: 'Subsection content...'
-    }),
+### Styled Section Headers
 
-    heading({
-      content: 'Second Section',
-      level: 2,
-      color: 'primary'
-    }),
+```typescript
+// Section with colored, centered heading
+tag.section(
+  heading.h2(
+    heading.content('Features'),
+    heading.color('primary.600'),
+    heading.align('center'),
+  ),
+  tag.p('Feature description...'),
+);
+```
 
-    text({
-      content: 'More content...'
-    })
-  ]
-});
+### Dashboard Headers
 
-// Hero section
-const hero = stack({
-  spacing: 'md',
-  align: 'center',
-  children: [
-    heading({
-      content: 'Welcome to Our Platform',
-      level: 1,
-      align: 'center',
-      color: 'primary'
-    }),
-    heading({
-      content: 'Build amazing things with ease',
-      level: 3,
-      align: 'center',
-      color: 'textSecondary'
-    })
-  ]
-});
+```typescript
+import { heading } from '@/elements/heading';
+
+// Dashboard sections with consistent styling
+tag.div(
+  heading.h3(
+    heading.content('Recent Activity'),
+    heading.color('gray.700'),
+  ),
+  // Activity content...
+
+  heading.h3(
+    heading.content('Statistics'),
+    heading.color('gray.700'),
+  ),
+  // Statistics content...
+);
+```
+
+### Reactive Heading
+
+```typescript
+import { heading } from '@/elements/heading';
+import { $state } from '@/core/state';
+
+const userName = $state('Guest');
+
+heading.h1(
+  heading.content(`Welcome, ${userName.get()}`),
+  heading.color('primary.700'),
+);
+
+// Update heading when state changes
+userName.set('John Doe');
+```
+
+## Trait-Based Pattern
+
+The heading element uses the `tag.$()` adopter pattern internally, which means:
+
+1. **Composability**: Each applier (`color`, `align`, `content`) is a function that applies traits to an element
+2. **Declarative**: All styling uses the trait system with conditional logic via `$test()`
+3. **Theme-aware**: All tokens are reactive and update when the theme changes
+4. **No ternaries**: All conditional logic uses trait conditions instead of ternary expressions
+
+### Internal Structure
+
+```typescript
+// Example of how heading.create() works internally
+create: (level: HeadingLevel, ...children: Child[]) => {
+  const element = document.createElement(`h${level}`);
+  tag.$(element)(...children);
+  return element as HTMLHeadingElement;
+};
+
+// Example of how heading.color() works internally
+color: (color: ColorToken) => (el: HTMLElement | SVGElement) => {
+  tag.$(el)(
+    trait.style('color', theme.$token('colors', color)),
+  );
+};
 ```
 
 ## Features
 
-- **Semantic HTML**: Uses proper h1-h6 elements for accessibility
-- **Automatic Sizing**: Font size scales appropriately per level
-- **Weight Hierarchy**: Bold for h1-h2, semibold for h3-h4, medium for h5-h6
-- **Theme Integration**: Uses design token typography and colors
-- **Text Alignment**: Left, center, or right alignment
-- **Color Control**: Any design token color
-- **Tight Line Height**: Optimized for headings
-- **Zero Margin**: No default margins for layout flexibility
-- **Children Support**: Add icons, emphasis, or mixed content
-- **Responsive Typography**: Font sizes work across screen sizes
+- ✅ **Trait-based composition**: Use appliers to build up heading styling
+- ✅ **Theme integration**: Fully reactive to theme changes
+- ✅ **6 heading levels**: Semantic h1 through h6 elements
+- ✅ **Helper methods**: Convenient h1() through h6() shortcuts
+- ✅ **Color customization**: Use any theme color token
+- ✅ **Text alignment**: Left, center, and right alignment
+- ✅ **Content management**: Dynamic text content via applier
+- ✅ **Semantic HTML**: Proper heading hierarchy support
+- ✅ **Conditional traits**: Uses `$test()` for conditional styling
+- ✅ **Automatic cleanup**: Subscriptions are cleaned up when elements are removed from DOM

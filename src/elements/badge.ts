@@ -1,8 +1,10 @@
 import { $test } from '@/core/util';
 import { tag, trait } from '@/elements/_base';
 import { theme } from '@/modules/theme';
-import type { DesignTokens } from '@/themes/_base';
+import { DesignTokens } from '@/themes';
 
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
 type BadgeVariant = 'solid' | 'subtle' | 'outline';
 type BadgeColor = 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info' | 'neutral';
 type BadgeSize = 'sm' | 'md' | 'lg';
@@ -10,15 +12,6 @@ type BadgeSize = 'sm' | 'md' | 'lg';
 type ColorToken = keyof DesignTokens['colors'];
 type SpacingToken = keyof DesignTokens['spacing'];
 type TypographyToken = keyof DesignTokens['typography'];
-
-type BadgeProps = {
-  content: string;
-  variant?: BadgeVariant;
-  color?: BadgeColor;
-  size?: BadgeSize;
-  pill?: boolean;
-  children?: HTMLElement[];
-};
 
 const colorConfig: Record<
   BadgeColor,
@@ -90,71 +83,87 @@ const sizeConfig: Record<
   },
 };
 
-export const badge = (props: BadgeProps) => {
-  const {
-    content,
-    variant = 'solid',
-    color = 'primary',
-    size = 'md',
-    pill = false,
-    children = [],
-  } = props;
+export const badge = {
+  create: (...children: Child[]) => {
+    const el = document.createElement('span');
 
-  const colors = colorConfig[color][variant];
-  const sizeSettings = sizeConfig[size];
+    tag.$(el)(
+      trait.style('display', 'inline-flex'),
+      trait.style('alignItems', 'center'),
+      trait.style('justifyContent', 'center'),
+      trait.style('fontFamily', theme.$token('typography', 'fontFamilyBase')),
+      trait.style('fontWeight', theme.$token('typography', 'fontWeightMedium')),
+      trait.style('lineHeight', theme.$token('typography', 'lineHeightTight')),
+      trait.style('whiteSpace', 'nowrap'),
+      trait.style('userSelect', 'none'),
+    );
 
-  const element = tag.span(
-    // Base styles
-    trait.style('display', 'inline-flex'),
-    trait.style('alignItems', 'center'),
-    trait.style('justifyContent', 'center'),
-    trait.style('fontFamily', theme.$token('typography', 'fontFamilyBase')),
-    trait.style('fontSize', theme.$token('typography', sizeSettings.fontSize)),
-    trait.style('fontWeight', theme.$token('typography', 'fontWeightMedium')),
-    trait.style('lineHeight', theme.$token('typography', 'lineHeightTight')),
-    trait.style('whiteSpace', 'nowrap'),
-    trait.style('userSelect', 'none'),
+    children.forEach((c) => {
+      if (c instanceof HTMLElement || c instanceof SVGElement) {
+        el.appendChild(c);
+      } else {
+        c(el);
+      }
+    });
 
-    // Padding
-    trait.style('paddingLeft', theme.$token('spacing', sizeSettings.paddingX)),
-    trait.style('paddingRight', theme.$token('spacing', sizeSettings.paddingX)),
-    trait.style('paddingTop', theme.$token('spacing', sizeSettings.paddingY)),
-    trait.style('paddingBottom', theme.$token('spacing', sizeSettings.paddingY)),
+    return el;
+  },
 
-    // Border radius
-    trait.style('borderRadius', theme.$token('borders', 'borderRadiusBadge'), $test(!pill)),
-    trait.style('borderRadius', '9999px', $test(pill)),
+  variant: (variant: BadgeVariant, color: BadgeColor) => (el: HTMLElement | SVGElement) => {
+    const config = colorConfig[color];
 
-    // Variant: solid
-    trait.style('backgroundColor', theme.$token('colors', colors.bg!), $test(variant === 'solid')),
-    trait.style('color', theme.$token('colors', colors.text), $test(variant === 'solid')),
-    trait.style('border', 'none', $test(variant === 'solid')),
+    tag.$(el)(
+      // Variant: solid
+      trait.style(
+        'backgroundColor',
+        theme.$token('colors', config.solid.bg),
+        $test(variant === 'solid'),
+      ),
+      trait.style('color', theme.$token('colors', config.solid.text), $test(variant === 'solid')),
+      trait.style('border', 'none', $test(variant === 'solid')),
 
-    // Variant: subtle
-    trait.style('backgroundColor', theme.$token('colors', colors.bg!), $test(variant === 'subtle')),
-    trait.style('color', theme.$token('colors', colors.text), $test(variant === 'subtle')),
-    trait.style('border', 'none', $test(variant === 'subtle')),
+      // Variant: subtle
+      trait.style(
+        'backgroundColor',
+        theme.$token('colors', config.subtle.bg),
+        $test(variant === 'subtle'),
+      ),
+      trait.style('color', theme.$token('colors', config.subtle.text), $test(variant === 'subtle')),
+      trait.style('border', 'none', $test(variant === 'subtle')),
 
-    // Variant: outline
-    trait.style('backgroundColor', 'transparent', $test(variant === 'outline')),
-    trait.style('color', theme.$token('colors', colors.text), $test(variant === 'outline')),
-    trait.style(
-      'border',
-      () =>
-        `${theme.token('borders', 'borderWidthThin')} ${theme.token(
-          'borders',
-          'borderStyleSolid',
-        )} ${theme.token('colors', colors.border!)}`,
-      $test(variant === 'outline'),
-      theme,
-    ),
+      // Variant: outline
+      trait.style('backgroundColor', 'transparent', $test(variant === 'outline')),
+      trait.style(
+        'color',
+        theme.$token('colors', config.outline.text),
+        $test(variant === 'outline'),
+      ),
+      trait.style(
+        'border',
+        `1px solid ${theme.$token('colors', config.outline.border)}`,
+        $test(variant === 'outline'),
+      ),
+    );
+  },
 
-    // Content
-    trait.text(content),
+  size: (size: BadgeSize) => (el: HTMLElement | SVGElement) => {
+    const config = sizeConfig[size];
 
-    // Children
-    ...children,
-  );
+    tag.$(el)(
+      trait.style('paddingLeft', theme.$token('spacing', config.paddingX)),
+      trait.style('paddingRight', theme.$token('spacing', config.paddingX)),
+      trait.style('paddingTop', theme.$token('spacing', config.paddingY)),
+      trait.style('paddingBottom', theme.$token('spacing', config.paddingY)),
+      trait.style('fontSize', theme.$token('typography', config.fontSize)),
+      trait.style('borderRadius', theme.$token('borders', 'borderRadiusBadge')),
+    );
+  },
 
-  return element;
+  pill: (isPill: boolean) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('borderRadius', '9999px', $test(isPill)));
+  },
+
+  text: (text: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.text(text));
+  },
 };

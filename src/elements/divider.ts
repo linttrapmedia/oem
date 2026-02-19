@@ -1,71 +1,92 @@
 import { $test } from '@/core/util';
 import { tag, trait } from '@/elements/_base';
 import { theme } from '@/modules/theme';
-import type { DesignTokens } from '@/themes/_base';
+import { DesignTokens } from '@/themes';
 
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
 type DividerOrientation = 'horizontal' | 'vertical';
 type DividerVariant = 'solid' | 'dashed' | 'dotted';
 type ColorToken = keyof DesignTokens['colors'];
 type SpacingToken = keyof DesignTokens['spacing'];
 
-type DividerProps = {
-  orientation?: DividerOrientation;
-  variant?: DividerVariant;
-  color?: ColorToken;
-  thickness?: string;
-  spacing?: SpacingToken;
-};
+export const divider = {
+  create: (...children: Child[]) => {
+    const el = document.createElement('hr');
 
-export const divider = (props: DividerProps) => {
-  const {
-    orientation = 'horizontal',
-    variant = 'solid',
-    color = 'borderPrimary',
-    thickness = '1px',
-    spacing = 'md',
-  } = props;
+    tag.$(el)(
+      trait.style('border', 'none'),
+      trait.style('margin', '0'),
+      trait.style('padding', '0'),
+      trait.style('backgroundColor', theme.$token('colors', 'borderPrimary')),
+      trait.style('width', '100%'),
+      trait.style('height', '1px'),
+      trait.style('marginTop', theme.$token('spacing', 'md')),
+      trait.style('marginBottom', theme.$token('spacing', 'md')),
+    );
 
-  const element = tag.hr(
-    // Base styles
-    trait.style('border', 'none'),
-    trait.style('margin', '0'),
-    trait.style('padding', '0'),
-    trait.style('backgroundColor', theme.$token('colors', color)),
+    children.forEach((c) => {
+      if (c instanceof HTMLElement || c instanceof SVGElement) {
+        el.appendChild(c);
+      } else {
+        c(el);
+      }
+    });
 
-    // Horizontal orientation
-    trait.style('width', '100%', $test(orientation === 'horizontal')),
-    trait.style('height', thickness, $test(orientation === 'horizontal')),
-    trait.style('marginTop', theme.$token('spacing', spacing), $test(orientation === 'horizontal')),
-    trait.style('marginBottom', theme.$token('spacing', spacing), $test(orientation === 'horizontal')),
+    return el;
+  },
 
-    // Vertical orientation
-    trait.style('width', thickness, $test(orientation === 'vertical')),
-    trait.style('height', '100%', $test(orientation === 'vertical')),
-    trait.style('marginLeft', theme.$token('spacing', spacing), $test(orientation === 'vertical')),
-    trait.style('marginRight', theme.$token('spacing', spacing), $test(orientation === 'vertical')),
-    trait.style('display', 'inline-block', $test(orientation === 'vertical')),
+  orientation: (orientation: DividerOrientation) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      // Horizontal
+      trait.style('width', '100%', $test(orientation === 'horizontal')),
+      trait.style('height', '1px', $test(orientation === 'horizontal')),
 
-    // Variant styles using background patterns
-    trait.style(
-      'backgroundImage',
-      () => {
-        const colorValue = theme.token('colors', color);
-        if (variant === 'dashed') {
-          return orientation === 'horizontal'
-            ? `repeating-linear-gradient(to right, ${colorValue} 0, ${colorValue} 8px, transparent 8px, transparent 16px)`
-            : `repeating-linear-gradient(to bottom, ${colorValue} 0, ${colorValue} 8px, transparent 8px, transparent 16px)`;
-        } else if (variant === 'dotted') {
-          return orientation === 'horizontal'
-            ? `repeating-linear-gradient(to right, ${colorValue} 0, ${colorValue} 2px, transparent 2px, transparent 6px)`
-            : `repeating-linear-gradient(to bottom, ${colorValue} 0, ${colorValue} 2px, transparent 2px, transparent 6px)`;
-        }
-        return 'none';
-      },
-      $test(variant !== 'solid'),
-      theme,
-    ),
-    trait.style('backgroundColor', 'transparent', $test(variant !== 'solid')),
-  );
+      // Vertical
+      trait.style('width', '1px', $test(orientation === 'vertical')),
+      trait.style('height', '100%', $test(orientation === 'vertical')),
+      trait.style('display', 'inline-block', $test(orientation === 'vertical')),
+    );
+  },
 
-  return element;
+  variant: (variant: DividerVariant) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('backgroundColor', 'transparent', $test(variant !== 'solid')),
+      trait.style(
+        'backgroundImage',
+        'repeating-linear-gradient(to right, currentColor 0, currentColor 8px, transparent 8px, transparent 16px)',
+        $test(variant === 'dashed'),
+      ),
+      trait.style(
+        'backgroundImage',
+        'repeating-linear-gradient(to right, currentColor 0, currentColor 2px, transparent 2px, transparent 6px)',
+        $test(variant === 'dotted'),
+      ),
+    );
+  },
+
+  color: (color: ColorToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('backgroundColor', theme.$token('colors', color)),
+      trait.style('color', theme.$token('colors', color)),
+    );
+  },
+
+  thickness: (thickness: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('height', thickness));
+  },
+
+  spacing: (spacing: SpacingToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('marginTop', theme.$token('spacing', spacing)),
+      trait.style('marginBottom', theme.$token('spacing', spacing)),
+    );
+  },
+
+  spacingVertical: (spacing: SpacingToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('marginLeft', theme.$token('spacing', spacing)),
+      trait.style('marginRight', theme.$token('spacing', spacing)),
+    );
+  },
 };

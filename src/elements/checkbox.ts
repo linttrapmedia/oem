@@ -2,70 +2,91 @@ import { $test } from '@/core/util';
 import { tag, trait } from '@/elements/_base';
 import { theme } from '@/modules/theme';
 
-type CheckboxSize = 'sm' | 'md' | 'lg';
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
+type Size = 'sm' | 'md' | 'lg';
 
-type CheckboxProps = {
-  checked?: boolean;
-  size?: CheckboxSize;
-  disabled?: boolean;
-  label?: string;
-  onChange?: (checked: boolean) => void;
-};
-
-const sizeConfig: Record<CheckboxSize, { size: string; fontSize: string }> = {
+const sizeConfig: Record<Size, { size: string; fontSize: string }> = {
   sm: { size: '16px', fontSize: '12px' },
   md: { size: '20px', fontSize: '14px' },
   lg: { size: '24px', fontSize: '16px' },
 };
 
-export const checkbox = (props: CheckboxProps) => {
-  const { checked = false, size = 'md', disabled = false, label, onChange } = props;
+export const checkbox = {
+  create: (...children: Child[]) => {
+    const el = document.createElement('input');
 
-  const config = sizeConfig[size];
+    // Apply default checkbox styles
+    tag.$(el)(
+      trait.attr('type', 'checkbox'),
+      trait.style('margin', '0'),
+      trait.style('cursor', 'pointer'),
+      trait.style('accentColor', theme.$token('colors', 'primary')),
+    );
 
-  // Checkbox input element
-  const inputElement = tag.input(
-    trait.attr('type', 'checkbox'),
-    trait.attr('checked', 'true', $test(checked)),
-    trait.attr('disabled', 'true', $test(disabled)),
+    // Apply children (appliers)
+    children.forEach((c) => {
+      if (c instanceof HTMLElement || c instanceof SVGElement) {
+        el.appendChild(c);
+      } else {
+        c(el);
+      }
+    });
 
-    trait.style('width', config.size),
-    trait.style('height', config.size),
-    trait.style('margin', '0'),
-    trait.style('cursor', 'pointer', $test(!disabled)),
-    trait.style('cursor', 'not-allowed', $test(disabled)),
-    trait.style('accentColor', theme.$token('colors', 'primary')),
+    return el;
+  },
 
-    // Change event
-    trait.event(
-      'change',
-      (e: Event) => {
+  size: (size: Size) => (el: HTMLElement | SVGElement) => {
+    const config = sizeConfig[size];
+
+    tag.$(el)(trait.style('width', config.size), trait.style('height', config.size));
+  },
+
+  disabled: (disabled: boolean) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('cursor', 'not-allowed', $test(disabled)),
+      trait.style('cursor', 'pointer', $test(!disabled)),
+      trait.attr('disabled', 'true', $test(disabled)),
+    );
+  },
+
+  checked: (checked: boolean) => (el: HTMLElement | SVGElement) => {
+    (el as HTMLInputElement).checked = checked;
+  },
+
+  onChange: (handler: (checked: boolean) => void) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.event('change', (e?: Event) => {
+        if (!e) return;
         const target = e.target as HTMLInputElement;
-        onChange?.(target.checked);
-      },
-      $test(onChange !== undefined && !disabled),
-    ),
-  );
+        handler(target.checked);
+      }),
+    );
+  },
 
-  // If no label, return just the input
-  if (!label) {
-    return inputElement;
-  }
+  label:
+    (label: string, size: Size = 'md') =>
+    (el: HTMLElement | SVGElement) => {
+      const config = sizeConfig[size];
+      const wrapper = document.createElement('label');
 
-  // Wrapper with label
-  return tag.label(
-    trait.style('display', 'inline-flex'),
-    trait.style('alignItems', 'center'),
-    trait.style('gap', theme.$token('spacing', 'sm')),
-    trait.style('cursor', 'pointer', $test(!disabled)),
-    trait.style('cursor', 'not-allowed', $test(disabled)),
-    trait.style('fontFamily', theme.$token('typography', 'fontFamilyBase')),
-    trait.style('fontSize', config.fontSize),
-    trait.style('color', theme.$token('colors', 'textPrimary'), $test(!disabled)),
-    trait.style('color', theme.$token('colors', 'textDisabled'), $test(disabled)),
-    trait.style('opacity', '0.6', $test(disabled)),
+      tag.$(wrapper)(
+        trait.style('display', 'inline-flex'),
+        trait.style('alignItems', 'center'),
+        trait.style('gap', theme.$token('spacing', 'sm')),
+        trait.style('cursor', 'pointer'),
+        trait.style('fontFamily', theme.$token('typography', 'fontFamilyBase')),
+        trait.style('fontSize', config.fontSize),
+        trait.style('color', theme.$token('colors', 'textPrimary')),
+      );
 
-    inputElement,
-    tag.span(trait.text(label)),
-  );
+      const labelText = document.createElement('span');
+      tag.$(labelText)(trait.text(label));
+
+      if (el.parentNode) {
+        el.parentNode.insertBefore(wrapper, el);
+        wrapper.appendChild(el);
+        wrapper.appendChild(labelText);
+      }
+    },
 };

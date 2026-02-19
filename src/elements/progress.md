@@ -1,268 +1,376 @@
 ---
 name: progress
-description: A visual progress indicator component with customizable colors, sizes, variants, and optional label. Supports striped and animated styles.
+description: A composable progress bar element using the trait-based pattern. Supports multiple variants, sizes, animated states, and optional percentage labels with full theming integration.
 license: MIT
 metadata:
   author: Kevin Lint
-  version: '1.0'
+  version: '3.0'
 ---
 
-## Progress Component
+# Progress Element
 
-The `progress` function creates a progress bar element for visualizing completion percentage with multiple visual styles and optional animation.
+The `progress` element provides a composable, trait-based approach to creating progress bar elements with built-in theming support, multiple variants, and customizable visual states.
 
-## Props
+## API
+
+The progress element exports an object with the following methods:
 
 ```typescript
-type ProgressProps = {
-  value: number;                   // Current value (required)
-  max?: number;                    // Maximum value (default: 100)
-  size?: 'sm' | 'md' | 'lg';
-  variant?: 'default' | 'striped';
-  color?: ColorToken;              // Progress bar color
-  bg?: ColorToken;                 // Track background color
-  showLabel?: boolean;             // Show percentage label
-  animated?: boolean;              // Animate striped variant
+export const progress = {
+  create: (...children: Child[]) => HTMLDivElement;
+  value: (value: number, max?: number) => Applier;
+  size: (size: Size) => Applier;
+  variant: (variant: Variant) => Applier;
+  color: (color: ColorToken) => Applier;
+  bg: (bg: ColorToken) => Applier;
+  animated: (animated: boolean) => Applier;
+  showLabel: (show: boolean, value?: number, max?: number) => Applier;
 };
 ```
 
-## Example Usage
+### Types
+
+```typescript
+type Variant = 'default' | 'striped';
+type Size = 'sm' | 'md' | 'lg';
+type ColorToken = string; // Theme color token
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
+```
+
+## Usage
 
 ### Basic Progress
 
 ```typescript
 import { progress } from '@/elements/progress';
 
-// Simple progress bar
-const progressBar = progress({
-  value: 60
-});
+// Create a simple progress bar at 60%
+const progressBar = progress.create(
+  progress.value(60),
+);
 ```
 
-### Value and Max
+### Complete Progress
 
 ```typescript
-// Percentage (default max is 100)
-const percentage = progress({
-  value: 75,
-  max: 100
-});
+// Create a fully configured progress bar
+const progressBar = progress.create(
+  progress.value(75, 100),
+  progress.size('md'),
+  progress.variant('striped'),
+  progress.color('primary'),
+  progress.animated(true),
+  progress.showLabel(true, 75, 100),
+);
 
-// Custom max value
-const customMax = progress({
-  value: 30,
-  max: 50
-});
-// Shows 60% (30/50)
+document.body.appendChild(progressBar);
 ```
 
-### Sizes
+## Value and Max
+
+The `progress.value()` applier sets the progress percentage:
 
 ```typescript
-// Small (4px height)
-const smallProgress = progress({
-  value: 50,
-  size: 'sm'
-});
+// Simple percentage (defaults to max of 100)
+const simpleProgress = progress.create(progress.value(60));
 
-// Medium (8px height - default)
-const mediumProgress = progress({
-  value: 50,
-  size: 'md'
-});
+// Custom max value (shows 60% calculated as 30/50)
+const customProgress = progress.create(progress.value(30, 50));
 
-// Large (12px height)
-const largeProgress = progress({
-  value: 50,
-  size: 'lg'
-});
+// Full completion
+const completedProgress = progress.create(
+  progress.value(100),
+  progress.color('success'),
+);
 ```
 
-### Variants
+## Variants
+
+The `progress.variant()` applier applies visual styles:
 
 ```typescript
-// Default - solid bar
-const defaultProgress = progress({
-  value: 60,
-  variant: 'default'
-});
+// Default variant - solid bar (default)
+const defaultProgress = progress.create(
+  progress.variant('default'),
+  progress.value(60),
+);
 
-// Striped - diagonal stripes
-const stripedProgress = progress({
-  value: 60,
-  variant: 'striped'
-});
+// Striped variant - diagonal stripes
+const stripedProgress = progress.create(
+  progress.variant('striped'),
+  progress.value(60),
+);
 ```
 
-### Colors
+### Variant Features
+
+Each variant includes:
+
+- Base styling appropriate to the variant type
+- Smooth width transitions
+- Automatic theme reactivity (updates when theme changes)
+- Optional animation support (striped variant)
+
+## Sizes
+
+The `progress.size()` applier controls bar height:
+
+```typescript
+// Small progress bar (4px height)
+const smallProgress = progress.create(
+  progress.size('sm'),
+  progress.value(50),
+);
+
+// Medium progress bar (8px height - default)
+const mediumProgress = progress.create(
+  progress.size('md'),
+  progress.value(50),
+);
+
+// Large progress bar (12px height)
+const largeProgress = progress.create(
+  progress.size('lg'),
+  progress.value(50),
+);
+```
+
+## Colors
+
+### Bar Color
+
+The `progress.color()` applier sets the progress bar color:
 
 ```typescript
 // Primary color (default)
-const primaryProgress = progress({
-  value: 70,
-  color: 'primary'
-});
+const primaryProgress = progress.create(
+  progress.value(70),
+  progress.color('primary'),
+);
 
-// Success color
-const successProgress = progress({
-  value: 100,
-  color: 'success'
-});
+// Success color for completed state
+const successProgress = progress.create(
+  progress.value(100),
+  progress.color('success'),
+);
 
-// Warning color
-const warningProgress = progress({
-  value: 45,
-  color: 'warning'
-});
+// Warning color for medium progress
+const warningProgress = progress.create(
+  progress.value(45),
+  progress.color('warning'),
+);
 
-// Error color
-const errorProgress = progress({
-  value: 20,
-  color: 'error'
-});
-
-// Custom background
-const customBgProgress = progress({
-  value: 60,
-  color: 'primary',
-  bg: 'bgTertiary'
-});
+// Error color for low progress
+const errorProgress = progress.create(
+  progress.value(20),
+  progress.color('error'),
+);
 ```
 
-### With Label
+### Track Background Color
+
+The `progress.bg()` applier sets the track background color:
 
 ```typescript
-// Show percentage label
-const labeledProgress = progress({
-  value: 75,
-  showLabel: true
-});
-
-// Without label (default)
-const noLabelProgress = progress({
-  value: 75,
-  showLabel: false
-});
+// Custom track background
+const customBgProgress = progress.create(
+  progress.value(60),
+  progress.color('primary'),
+  progress.bg('bgTertiary'),
+);
 ```
 
-### Animated
+## Animation
+
+The `progress.animated()` applier enables animation for striped variant:
 
 ```typescript
 // Animated striped progress
-const animatedProgress = progress({
-  value: 60,
-  variant: 'striped',
-  animated: true
-});
+const animatedProgress = progress.create(
+  progress.variant('striped'),
+  progress.value(60),
+  progress.animated(true),
+);
 
 // Static striped progress
-const staticProgress = progress({
-  value: 60,
-  variant: 'striped',
-  animated: false
-});
+const staticProgress = progress.create(
+  progress.variant('striped'),
+  progress.value(60),
+  progress.animated(false),
+);
 ```
 
-### Complete Example
+## Label Display
+
+The `progress.showLabel()` applier displays percentage label:
+
+```typescript
+// Show percentage label
+const labeledProgress = progress.create(
+  progress.value(75),
+  progress.showLabel(true, 75, 100),
+);
+
+// Without label (default)
+const unlabeledProgress = progress.create(
+  progress.value(75),
+  progress.showLabel(false),
+);
+```
+
+## Advanced Examples
+
+### Reactive Progress with State
 
 ```typescript
 import { progress } from '@/elements/progress';
-import { stack } from '@/elements/stack';
-import { text } from '@/elements/text';
-import { row } from '@/elements/row';
-import { $signal } from '@/core/signal';
+import { $state } from '@/core/state';
 
-// Upload progress indicator
-const uploadProgress = $signal(0);
+const uploadProgress = $state(0);
 
 // Simulate upload
 setInterval(() => {
-  uploadProgress.update(p => Math.min(p + 10, 100));
+  uploadProgress.set(Math.min(uploadProgress.get() + 10, 100));
 }, 500);
 
-const uploadIndicator = stack({
-  spacing: 'sm',
-  children: [
-    row({
-      justify: 'space-between',
-      children: [
-        text({ content: 'Uploading file...' }),
-        text({ content: () => `${uploadProgress.value}%` })
-      ]
-    }),
-    progress({
-      value: () => uploadProgress.value,
-      max: 100,
-      size: 'md',
-      variant: 'striped',
-      animated: true,
-      color: 'primary'
-    })
-  ]
-});
+const uploadBar = progress.create(
+  progress.value(uploadProgress.get()),
+  progress.variant('striped'),
+  progress.animated(true),
+  progress.color('primary'),
+  progress.showLabel(true, uploadProgress.get(), 100),
+);
+```
 
-// Multi-step progress
-const currentStep = $signal(2);
+### Multi-Step Progress
+
+```typescript
+const currentStep = $state(2);
 const totalSteps = 4;
 
-const stepProgress = stack({
-  spacing: 'md',
-  children: [
-    text({
-      content: () => `Step ${currentStep.value} of ${totalSteps}`
-    }),
-    progress({
-      value: () => currentStep.value,
-      max: totalSteps,
-      size: 'lg',
-      showLabel: true,
-      color: 'success'
-    })
-  ]
-});
+const stepProgress = progress.create(
+  progress.value(currentStep.get(), totalSteps),
+  progress.size('lg'),
+  progress.color('success'),
+  progress.showLabel(true, currentStep.get(), totalSteps),
+);
+```
 
-// Status indicators
-const taskStatuses = $signal([
+### Conditional Styling
+
+```typescript
+import { tag } from '@/elements/_base';
+
+const taskProgress = $state(60);
+
+// Change color based on progress value
+const getProgressColor = (value: number) => {
+  if (value < 30) return 'error';
+  if (value < 70) return 'warning';
+  return 'success';
+};
+
+const conditionalProgress = progress.create(
+  progress.value(taskProgress.get()),
+  progress.color(getProgressColor(taskProgress.get())),
+  progress.variant('striped'),
+  progress.animated(taskProgress.get() < 100),
+);
+```
+
+### Progress Dashboard
+
+```typescript
+import { tag } from '@/elements/_base';
+
+const tasks = [
   { name: 'Design', progress: 100, color: 'success' },
   { name: 'Development', progress: 60, color: 'primary' },
   { name: 'Testing', progress: 30, color: 'warning' },
-  { name: 'Deployment', progress: 0, color: 'error' }
-]);
+  { name: 'Deployment', progress: 0, color: 'error' },
+];
 
-const statusDashboard = stack({
-  spacing: 'lg',
-  children: taskStatuses.value.map(task =>
-    stack({
-      spacing: 'xs',
-      children: [
-        row({
-          justify: 'space-between',
-          children: [
-            text({ content: task.name }),
-            text({ content: `${task.progress}%` })
-          ]
-        }),
-        progress({
-          value: task.progress,
-          size: 'sm',
-          color: task.color as any
-        })
-      ]
-    })
-  )
-});
+const dashboard = tag.div(
+  ...tasks.map(task =>
+    tag.div(
+      tag.div(
+        tag.span(`${task.name}: ${task.progress}%`),
+      ),
+      progress.create(
+        progress.value(task.progress),
+        progress.size('sm'),
+        progress.color(task.color as ColorToken),
+      ),
+    ),
+  ),
+);
+```
+
+## Trait-Based Pattern
+
+The progress element uses the `tag.$()` adopter pattern internally, which means:
+
+1. **Composability**: Each applier (`value`, `size`, etc.) is a function that applies traits to an element
+2. **Declarative**: All styling uses the trait system with conditional logic via `$test()`
+3. **Theme-aware**: All tokens are reactive and update when the theme changes
+4. **No ternaries**: All conditional logic uses trait conditions instead of ternary expressions
+
+### Internal Structure
+
+```typescript
+// Example of how progress.value() works internally
+value: (value: number, max: number = 100) => (el: HTMLElement | SVGElement) => {
+  const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
+  const bar = el.querySelector('.progress-bar') as HTMLElement;
+
+  tag.$(bar)(
+    trait.style('width', `${percentage}%`),
+    trait.style('transition', 'width 0.3s ease'),
+  );
+};
 ```
 
 ## Features
 
-- **Percentage Display**: Automatic percentage calculation from value/max
-- **Three Sizes**: Small (4px), medium (8px), large (12px)
-- **Two Variants**: Solid and striped styles
-- **Theme Colors**: Full design token color support
-- **Optional Label**: Centered percentage overlay
-- **Animation**: Animated striped bars for loading states
-- **Custom Max**: Use any maximum value, not just 100
-- **Smooth Transitions**: Width animates smoothly
-- **Fully Rounded**: Pill-shaped track and bar
-- **Responsive**: Full width by default
-- **Accessible**: Proper markup for progress indication
+- ✅ **Trait-based composition**: Use appliers to build up progress bar styling
+- ✅ **Theme integration**: Fully reactive to theme changes
+- ✅ **2 variants**: Default and striped styles
+- ✅ **3 sizes**: Small, medium, large
+- ✅ **Custom colors**: Bar and track color customization
+- ✅ **Animated stripes**: Optional animation for striped variant
+- ✅ **Percentage label**: Optional centered label display
+- ✅ **Smooth transitions**: Width changes animate smoothly
+- ✅ **Conditional traits**: Uses `$test()` for conditional styling
+- ✅ **Automatic cleanup**: Event listeners and subscriptions are cleaned up when elements are removed from DOM
+
+## Migration from v2.0
+
+If you're migrating from the props-based API:
+
+**Old (v2.0):**
+
+```typescript
+progress({
+  value: 60,
+  max: 100,
+  size: 'md',
+  variant: 'striped',
+  color: 'primary',
+  animated: true,
+  showLabel: true,
+});
+```
+
+**New (v3.0):**
+
+```typescript
+progress.create(
+  progress.value(60, 100),
+  progress.size('md'),
+  progress.variant('striped'),
+  progress.color('primary'),
+  progress.animated(true),
+  progress.showLabel(true, 60, 100),
+);
+```

@@ -46,10 +46,10 @@ export const ThemeState = (themes: Theme[], initialTheme?: string) => {
   };
 
   // Get a token from the current theme
-  const token = (category: string, tokenName: string): string | undefined => {
+  const token = (category: string, tokenName: string): string => {
     const { themes, currentTheme } = state.val();
     const theme = themes.find((t) => t.name === currentTheme);
-    return theme?.tokens[category]?.[tokenName];
+    return theme?.tokens[category]?.[tokenName] || '';
   };
 
   // Reactive token getter

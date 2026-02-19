@@ -1,301 +1,417 @@
 ---
 name: radio
-description: A radio button input component for mutually exclusive selections. Supports multiple sizes, disabled state, labels, and change handlers.
+description: A composable radio button element using the trait-based pattern. Supports multiple sizes, checked and disabled states, labels, and change handlers with full theming integration.
 license: MIT
 metadata:
   author: Kevin Lint
-  version: '1.0'
+  version: '3.0'
 ---
 
-## Radio Component
+# Radio Element
 
-The `radio` function creates a styled radio input element for single-choice selections with optional label, theming support, and reactive state handling.
+The `radio` element provides a composable, trait-based approach to creating radio button elements with built-in theming support, multiple sizes, and interactive states for mutually exclusive selections.
 
-## Props
+## API
+
+The radio element exports an object with the following methods:
 
 ```typescript
-type RadioProps = {
-  name: string;                    // Radio group name (required)
-  value: string;                   // Radio value (required)
-  checked?: boolean;               // Checked state
-  size?: 'sm' | 'md' | 'lg';
-  disabled?: boolean;              // Disabled state
-  label?: string;                  // Optional label text
-  onChange?: (value: string) => void;  // Change handler
+export const radio = {
+  create: (...children: Child[]) => HTMLInputElement;
+  size: (size: Size) => Applier;
+  disabled: (disabled: boolean) => Applier;
+  checked: (checked: boolean) => Applier;
+  name: (name: string) => Applier;
+  value: (value: string) => Applier;
+  onChange: (handler: (value: string) => void) => Applier;
+  label: (label: string, size?: Size) => Applier;
 };
 ```
 
-## Example Usage
+### Types
+
+```typescript
+type Size = 'sm' | 'md' | 'lg';
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
+```
+
+## Usage
 
 ### Basic Radio
 
 ```typescript
 import { radio } from '@/elements/radio';
 
-// Simple radio button
-const option1 = radio({
-  name: 'choice',
-  value: 'option1'
-});
+// Create a simple radio button
+const radioBtn = radio.create(
+  radio.name('choice'),
+  radio.value('option1'),
+);
 ```
 
-### Radio Group
+### Complete Radio
 
 ```typescript
-import { stack } from '@/elements/stack';
+// Create a fully configured radio button
+const radioBtn = radio.create(
+  radio.name('plan'),
+  radio.value('pro'),
+  radio.size('md'),
+  radio.checked(false),
+  radio.label('Pro Plan'),
+  radio.onChange((value) => console.log('Selected:', value)),
+);
 
-// Group of radio buttons (same name)
-const radioGroup = stack({
-  spacing: 'sm',
-  children: [
-    radio({
-      name: 'plan',
-      value: 'free',
-      label: 'Free Plan',
-      checked: true
-    }),
-    radio({
-      name: 'plan',
-      value: 'pro',
-      label: 'Pro Plan'
-    }),
-    radio({
-      name: 'plan',
-      value: 'enterprise',
-      label: 'Enterprise Plan'
-    })
-  ]
-});
+document.body.appendChild(radioBtn);
 ```
 
-### Sizes
+## Radio Groups
+
+Radio buttons with the same name form a mutually exclusive group:
 
 ```typescript
-// Small (16px)
-const smallRadio = radio({
-  name: 'size',
-  value: 'small',
-  size: 'sm',
-  label: 'Small'
-});
+import { tag } from '@/elements/_base';
 
-// Medium (20px - default)
-const mediumRadio = radio({
-  name: 'size',
-  value: 'medium',
-  size: 'md',
-  label: 'Medium'
-});
-
-// Large (24px)
-const largeRadio = radio({
-  name: 'size',
-  value: 'large',
-  size: 'lg',
-  label: 'Large'
-});
+// Create a radio group
+const radioGroup = tag.div(
+  radio.create(
+    radio.name('plan'),
+    radio.value('free'),
+    radio.checked(true),
+    radio.label('Free Plan'),
+  ),
+  radio.create(
+    radio.name('plan'),
+    radio.value('pro'),
+    radio.label('Pro Plan'),
+  ),
+  radio.create(
+    radio.name('plan'),
+    radio.value('enterprise'),
+    radio.label('Enterprise Plan'),
+  ),
+);
 ```
 
-### With Labels
+### Name and Value
+
+The `radio.name()` and `radio.value()` appliers set the radio button's group name and value:
 
 ```typescript
-// Radio with label
-const labeledRadio = radio({
-  name: 'option',
-  value: 'yes',
-  label: 'Yes, I agree'
-});
+// Radio buttons with same name are mutually exclusive
+const radio1 = radio.create(
+  radio.name('option'),
+  radio.value('yes'),
+  radio.label('Yes'),
+);
 
-// Radio without label
-const unlabeledRadio = radio({
-  name: 'option',
-  value: 'no'
-});
+const radio2 = radio.create(
+  radio.name('option'),
+  radio.value('no'),
+  radio.label('No'),
+);
 ```
+
+## Sizes
+
+The `radio.size()` applier controls button dimensions:
+
+```typescript
+// Small radio button (16px)
+const smallRadio = radio.create(
+  radio.size('sm'),
+  radio.name('size'),
+  radio.value('small'),
+  radio.label('Small'),
+);
+
+// Medium radio button (20px - default)
+const mediumRadio = radio.create(
+  radio.size('md'),
+  radio.name('size'),
+  radio.value('medium'),
+  radio.label('Medium'),
+);
+
+// Large radio button (24px)
+const largeRadio = radio.create(
+  radio.size('lg'),
+  radio.name('size'),
+  radio.value('large'),
+  radio.label('Large'),
+);
+```
+
+## States
 
 ### Checked State
 
 ```typescript
-// Initially checked
-const checkedRadio = radio({
-  name: 'default',
-  value: 'option1',
-  checked: true,
-  label: 'Default Option'
-});
+// Initially checked radio
+const checkedRadio = radio.create(
+  radio.name('default'),
+  radio.value('option1'),
+  radio.checked(true),
+  radio.label('Default Option'),
+);
 
-// Initially unchecked
-const uncheckedRadio = radio({
-  name: 'default',
-  value: 'option2',
-  checked: false,
-  label: 'Other Option'
-});
+// Initially unchecked radio
+const uncheckedRadio = radio.create(
+  radio.name('default'),
+  radio.value('option2'),
+  radio.checked(false),
+  radio.label('Other Option'),
+);
 ```
 
 ### Disabled State
 
 ```typescript
-// Disabled unchecked
-const disabledUnchecked = radio({
-  name: 'disabled',
-  value: 'option1',
-  disabled: true,
-  label: 'Disabled Option'
-});
+// Disabled radio button
+const disabledRadio = radio.create(
+  radio.name('disabled'),
+  radio.value('option1'),
+  radio.disabled(true),
+  radio.label('Disabled Option'),
+);
 
-// Disabled checked
-const disabledChecked = radio({
-  name: 'disabled',
-  value: 'option2',
-  checked: true,
-  disabled: true,
-  label: 'Cannot Change'
-});
+// Disabled and checked
+const disabledCheckedRadio = radio.create(
+  radio.name('disabled'),
+  radio.value('option2'),
+  radio.checked(true),
+  radio.disabled(true),
+  radio.label('Cannot Change'),
+);
+
+// Conditionally disabled
+const isProcessing = false;
+const conditionalRadio = radio.create(
+  radio.name('conditional'),
+  radio.value('option'),
+  radio.disabled(isProcessing),
+  radio.label('Option'),
+);
 ```
 
-### With Change Handler
+The `radio.disabled()` applier:
+
+- Reduces opacity to 0.6
+- Changes cursor to `not-allowed`
+- Disables pointer events
+- Sets the `disabled` attribute on the element
+
+## Labels
+
+The `radio.label()` applier wraps the radio with a label:
 
 ```typescript
-import { $signal } from '@/core/signal';
+// Radio with label
+const labeledRadio = radio.create(
+  radio.name('option'),
+  radio.value('yes'),
+  radio.label('Yes, I agree'),
+);
 
-// Reactive radio group
-const selectedPlan = $signal('free');
+// Radio with label and size
+const sizedLabelRadio = radio.create(
+  radio.name('option'),
+  radio.value('no'),
+  radio.label('No, I disagree', 'lg'),
+  radio.size('lg'),
+);
 
-const planSelector = stack({
-  spacing: 'md',
-  children: ['free', 'pro', 'enterprise'].map(plan =>
-    radio({
-      name: 'plan',
-      value: plan,
-      checked: selectedPlan.value === plan,
-      label: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
-      onChange: (value) => {
-        selectedPlan.set(value);
-        console.log('Selected:', value);
-      }
-    })
-  )
-});
+// Radio without label
+const unlabeledRadio = radio.create(
+  radio.name('option'),
+  radio.value('maybe'),
+);
 ```
 
-### Complete Example
+## Event Handlers
+
+### Change Handler
+
+```typescript
+const radioBtn = radio.create(
+  radio.name('choice'),
+  radio.value('option1'),
+  radio.label('Option 1'),
+  radio.onChange((value) => {
+    console.log('Selected value:', value);
+  }),
+);
+```
+
+## Advanced Examples
+
+### Reactive Radio Group with State
 
 ```typescript
 import { radio } from '@/elements/radio';
-import { stack } from '@/elements/stack';
-import { heading } from '@/elements/heading';
-import { text } from '@/elements/text';
-import { button } from '@/elements/button';
-import { $signal } from '@/core/signal';
+import { $state } from '@/core/state';
+import { tag } from '@/elements/_base';
 
-// Payment method selector
-const paymentMethod = $signal('credit');
+const selectedPlan = $state('free');
 
-const paymentForm = stack({
-  spacing: 'lg',
-  children: [
-    heading({
-      content: 'Payment Method',
-      level: 3
-    }),
+const plans = ['free', 'pro', 'enterprise'];
 
-    stack({
-      spacing: 'md',
-      children: [
-        radio({
-          name: 'payment',
-          value: 'credit',
-          checked: paymentMethod.value === 'credit',
-          label: 'Credit Card',
-          size: 'md',
-          onChange: (value) => paymentMethod.set(value)
-        }),
-        radio({
-          name: 'payment',
-          value: 'debit',
-          checked: paymentMethod.value === 'debit',
-          label: 'Debit Card',
-          size: 'md',
-          onChange: (value) => paymentMethod.set(value)
-        }),
-        radio({
-          name: 'payment',
-          value: 'paypal',
-          checked: paymentMethod.value === 'paypal',
-          label: 'PayPal',
-          size: 'md',
-          onChange: (value) => paymentMethod.set(value)
-        }),
-        radio({
-          name: 'payment',
-          value: 'crypto',
-          checked: paymentMethod.value === 'crypto',
-          label: 'Cryptocurrency',
-          size: 'md',
-          disabled: true
-        })
-      ]
-    }),
+const radioGroup = tag.div(
+  ...plans.map(plan =>
+    radio.create(
+      radio.name('plan'),
+      radio.value(plan),
+      radio.checked(selectedPlan.get() === plan),
+      radio.label(`${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`),
+      radio.onChange((value) => selectedPlan.set(value)),
+    ),
+  ),
+);
+```
 
-    text({
-      content: () => `Selected: ${paymentMethod.value}`,
-      color: 'textSecondary',
-      size: 'sm'
-    }),
+### Conditional Styling
 
-    button({
-      label: 'Continue',
-      variant: 'primary',
-      onClick: () => {
-        console.log('Processing payment with:', paymentMethod.value);
-      }
-    })
-  ]
-});
+```typescript
+const selectedMethod = $state('credit');
 
-// Survey question
-const satisfaction = $signal<string | null>(null);
+const paymentRadio = radio.create(
+  radio.name('payment'),
+  radio.value('credit'),
+  radio.checked(selectedMethod.get() === 'credit'),
+  radio.label('Credit Card'),
+  radio.size('md'),
+  radio.onChange((value) => {
+    selectedMethod.set(value);
+    console.log('Payment method:', value);
+  }),
+);
+```
 
-const surveyQuestion = stack({
-  spacing: 'md',
-  children: [
-    heading({
-      content: 'How satisfied are you with our service?',
-      level: 4
-    }),
-    stack({
-      spacing: 'sm',
-      children: [
-        { value: 'very-satisfied', label: 'Very Satisfied' },
-        { value: 'satisfied', label: 'Satisfied' },
-        { value: 'neutral', label: 'Neutral' },
-        { value: 'dissatisfied', label: 'Dissatisfied' },
-        { value: 'very-dissatisfied', label: 'Very Dissatisfied' }
-      ].map(option =>
-        radio({
-          name: 'satisfaction',
-          value: option.value,
-          checked: satisfaction.value === option.value,
-          label: option.label,
-          onChange: (value) => satisfaction.set(value)
-        })
-      )
-    })
-  ]
-});
+### Survey Form
+
+```typescript
+import { tag } from '@/elements/_base';
+
+const satisfaction = $state<string | null>(null);
+
+const options = [
+  { value: 'very-satisfied', label: 'Very Satisfied' },
+  { value: 'satisfied', label: 'Satisfied' },
+  { value: 'neutral', label: 'Neutral' },
+  { value: 'dissatisfied', label: 'Dissatisfied' },
+  { value: 'very-dissatisfied', label: 'Very Dissatisfied' },
+];
+
+const surveyGroup = tag.div(
+  tag.h4('How satisfied are you with our service?'),
+  ...options.map(option =>
+    radio.create(
+      radio.name('satisfaction'),
+      radio.value(option.value),
+      radio.checked(satisfaction.get() === option.value),
+      radio.label(option.label),
+      radio.onChange((value) => satisfaction.set(value)),
+    ),
+  ),
+);
+```
+
+### Radio Group with Descriptions
+
+```typescript
+import { tag } from '@/elements/_base';
+
+const selectedFeature = $state('basic');
+
+const features = [
+  { value: 'basic', label: 'Basic', description: 'Essential features only' },
+  { value: 'standard', label: 'Standard', description: 'Most popular choice' },
+  { value: 'premium', label: 'Premium', description: 'All features included' },
+];
+
+const featureSelector = tag.div(
+  ...features.map(feature =>
+    tag.div(
+      radio.create(
+        radio.name('feature'),
+        radio.value(feature.value),
+        radio.checked(selectedFeature.get() === feature.value),
+        radio.label(feature.label),
+        radio.onChange((value) => selectedFeature.set(value)),
+      ),
+      tag.span(feature.description),
+    ),
+  ),
+);
+```
+
+## Trait-Based Pattern
+
+The radio element uses the `tag.$()` adopter pattern internally, which means:
+
+1. **Composability**: Each applier (`size`, `checked`, etc.) is a function that applies traits to an element
+2. **Declarative**: All styling uses the trait system with conditional logic via `$test()`
+3. **Theme-aware**: All tokens are reactive and update when the theme changes
+4. **No ternaries**: All conditional logic uses trait conditions instead of ternary expressions
+
+### Internal Structure
+
+```typescript
+// Example of how radio.size() works internally
+size: (size: Size) => (el: HTMLElement | SVGElement) => {
+  const sizeConfig = {
+    sm: { width: '16px', height: '16px' },
+    md: { width: '20px', height: '20px' },
+    lg: { width: '24px', height: '24px' },
+  };
+
+  tag.$(el)(
+    trait.style('width', sizeConfig[size].width),
+    trait.style('height', sizeConfig[size].height),
+  );
+};
 ```
 
 ## Features
 
-- **Grouped Selection**: Use same name for mutually exclusive options
-- **Label Support**: Optional text label with proper spacing
-- **Three Sizes**: Small, medium, and large variants
-- **Checked State**: Control initial and reactive checked state
-- **Disabled State**: Proper visual feedback and interaction blocking
-- **Change Handler**: Callback receives selected value
-- **Theme Colors**: Uses primary color from theme system
-- **Accessibility**: Native radio input for screen readers
-- **Cursor States**: Pointer cursor when enabled, not-allowed when disabled
-- **Label Positioning**: Label appears after radio with proper alignment
-- **Standalone Mode**: Can be used without label for compact layouts
+- ✅ **Trait-based composition**: Use appliers to build up radio button styling
+- ✅ **Theme integration**: Fully reactive to theme changes
+- ✅ **3 sizes**: Small, medium, large
+- ✅ **Mutually exclusive**: Radio buttons with same name form groups
+- ✅ **Interactive states**: Checked, unchecked, and disabled states
+- ✅ **Label support**: Optional label wrapping with customizable size
+- ✅ **Event handling**: Change handlers via `radio.onChange()`
+- ✅ **Value management**: Name and value attributes for form integration
+- ✅ **Conditional traits**: Uses `$test()` for conditional styling
+- ✅ **Automatic cleanup**: Event listeners and subscriptions are cleaned up when elements are removed from DOM
+
+## Migration from v2.0
+
+If you're migrating from the props-based API:
+
+**Old (v2.0):**
+
+```typescript
+radio({
+  name: 'plan',
+  value: 'pro',
+  checked: false,
+  size: 'md',
+  label: 'Pro Plan',
+  onChange: (value) => {},
+});
+```
+
+**New (v3.0):**
+
+```typescript
+radio.create(
+  radio.name('plan'),
+  radio.value('pro'),
+  radio.checked(false),
+  radio.size('md'),
+  radio.label('Pro Plan'),
+  radio.onChange((value) => {}),
+);
+```

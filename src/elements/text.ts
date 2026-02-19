@@ -1,30 +1,21 @@
 import { $test } from '@/core/util';
 import { tag, trait } from '@/elements/_base';
 import { theme } from '@/modules/theme';
-import type { DesignTokens } from '@/themes/_base';
+import { DesignTokens } from '@/themes';
 
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
 type TextVariant = 'body' | 'caption' | 'overline' | 'subtitle';
 type TextSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 type TextWeight = 'normal' | 'medium' | 'semibold' | 'bold';
 type TextAlign = 'left' | 'center' | 'right' | 'justify';
 type TextColor = keyof DesignTokens['colors'];
-
-type TextProps = {
-  content?: string;
-  variant?: TextVariant;
-  size?: TextSize;
-  weight?: TextWeight;
-  align?: TextAlign;
-  color?: TextColor;
-  italic?: boolean;
-  underline?: boolean;
-  truncate?: boolean;
-  children?: HTMLElement[];
-};
-
 type TypographyToken = keyof DesignTokens['typography'];
 
-const variantConfig: Record<TextVariant, { fontSize: TypographyToken; lineHeight: TypographyToken }> = {
+const variantConfig: Record<
+  TextVariant,
+  { fontSize: TypographyToken; lineHeight: TypographyToken }
+> = {
   body: {
     fontSize: 'fontSizeBase',
     lineHeight: 'lineHeightNormal',
@@ -58,59 +49,74 @@ const weightConfig: Record<TextWeight, TypographyToken> = {
   bold: 'fontWeightBold',
 };
 
-export const text = (props: TextProps) => {
-  const {
-    content,
-    variant = 'body',
-    size,
-    weight = 'normal',
-    align = 'left',
-    color = 'textPrimary',
-    italic = false,
-    underline = false,
-    truncate = false,
-    children = [],
-  } = props;
+export const text = {
+  create: (...children: Child[]) => {
+    const el = document.createElement('span');
 
-  const config = variantConfig[variant];
+    tag.$(el)(
+      trait.style('fontFamily', theme.$token('typography', 'fontFamilyBase')),
+      trait.style('color', theme.$token('colors', 'textPrimary')),
+    );
 
-  const element = tag.span(
-    // Base styles
-    trait.style('fontFamily', theme.$token('typography', 'fontFamilyBase')),
-    trait.style('color', theme.$token('colors', color)),
+    children.forEach((c) => {
+      if (c instanceof HTMLElement || c instanceof SVGElement) {
+        el.appendChild(c);
+      } else {
+        c(el);
+      }
+    });
 
-    // Font size (size prop overrides variant)
-    trait.style('fontSize', theme.$token('typography', sizeConfig[size!]), $test(size !== undefined)),
-    trait.style('fontSize', theme.$token('typography', config.fontSize), $test(size === undefined)),
+    return el;
+  },
 
-    // Line height
-    trait.style('lineHeight', theme.$token('typography', config.lineHeight)),
+  variant: (variant: TextVariant) => (el: HTMLElement | SVGElement) => {
+    const config = variantConfig[variant];
 
-    // Font weight
-    trait.style('fontWeight', theme.$token('typography', weightConfig[weight])),
+    tag.$(el)(
+      trait.style('fontSize', theme.$token('typography', config.fontSize)),
+      trait.style('lineHeight', theme.$token('typography', config.lineHeight)),
+    );
+  },
 
-    // Text align
-    trait.style('textAlign', align),
+  size: (size: TextSize) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('fontSize', theme.$token('typography', sizeConfig[size])));
+  },
 
-    // Italic
-    trait.style('fontStyle', 'italic', $test(italic)),
-    trait.style('fontStyle', 'normal', $test(!italic)),
+  weight: (weight: TextWeight) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('fontWeight', theme.$token('typography', weightConfig[weight])));
+  },
 
-    // Underline
-    trait.style('textDecoration', 'underline', $test(underline)),
-    trait.style('textDecoration', 'none', $test(!underline)),
+  align: (align: TextAlign) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('textAlign', align));
+  },
 
-    // Truncate
-    trait.style('overflow', 'hidden', $test(truncate)),
-    trait.style('textOverflow', 'ellipsis', $test(truncate)),
-    trait.style('whiteSpace', 'nowrap', $test(truncate)),
+  color: (color: TextColor) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('color', theme.$token('colors', color)));
+  },
 
-    // Content
-    trait.text(content || '', $test(content !== undefined)),
+  italic: (italic: boolean) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('fontStyle', 'italic', $test(italic)),
+      trait.style('fontStyle', 'normal', $test(!italic)),
+    );
+  },
 
-    // Children
-    ...children,
-  );
+  underline: (underline: boolean) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('textDecoration', 'underline', $test(underline)),
+      trait.style('textDecoration', 'none', $test(!underline)),
+    );
+  },
 
-  return element;
+  truncate: (truncate: boolean) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('overflow', 'hidden', $test(truncate)),
+      trait.style('textOverflow', 'ellipsis', $test(truncate)),
+      trait.style('whiteSpace', 'nowrap', $test(truncate)),
+    );
+  },
+
+  content: (content: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.text(content));
+  },
 };

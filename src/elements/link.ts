@@ -1,109 +1,103 @@
 import { $test } from '@/core/util';
 import { tag, trait } from '@/elements/_base';
 import { theme } from '@/modules/theme';
-import type { DesignTokens } from '@/themes/_base';
+import { DesignTokens } from '@/themes';
 
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
 type LinkVariant = 'default' | 'subtle' | 'unstyled';
-type LinkColor = keyof DesignTokens['colors'];
+type ColorToken = keyof DesignTokens['colors'];
 
-type LinkProps = {
-  href: string;
-  content?: string;
-  variant?: LinkVariant;
-  color?: LinkColor;
-  underline?: boolean;
-  external?: boolean;
-  disabled?: boolean;
-  onClick?: (e: Event) => void;
-  children?: HTMLElement[];
-};
+export const link = {
+  create: (...children: Child[]) => {
+    const el = document.createElement('a');
 
-export const link = (props: LinkProps) => {
-  const {
-    href,
-    content,
-    variant = 'default',
-    color,
-    underline = true,
-    external = false,
-    disabled = false,
-    onClick,
-    children = [],
-  } = props;
+    tag.$(el)(
+      trait.style('fontFamily', theme.$token('typography', 'fontFamilyBase')),
+      trait.style('fontSize', 'inherit'),
+      trait.style('lineHeight', 'inherit'),
+      trait.style('transition', 'all 0.2s ease-in-out'),
+      trait.style('cursor', 'pointer'),
+    );
 
-  // Determine color based on variant and color prop
-  const getLinkColor = (): LinkColor => {
-    if (color) return color;
-    if (variant === 'subtle') return 'textSecondary';
-    if (variant === 'unstyled') return 'textPrimary';
-    return 'primary';
-  };
+    children.forEach((c) => {
+      if (c instanceof HTMLElement || c instanceof SVGElement) {
+        el.appendChild(c);
+      } else {
+        c(el);
+      }
+    });
 
-  const linkColor = getLinkColor();
+    return el;
+  },
 
-  const element = tag.a(
-    // Base styles
-    trait.style('fontFamily', theme.$token('typography', 'fontFamilyBase')),
-    trait.style('fontSize', 'inherit'),
-    trait.style('lineHeight', 'inherit'),
-    trait.style('transition', 'all 0.2s ease-in-out'),
+  variant: (variant: LinkVariant) => (el: HTMLElement | SVGElement) => {
+    const colorMap: Record<LinkVariant, ColorToken> = {
+      default: 'primary',
+      subtle: 'textSecondary',
+      unstyled: 'textPrimary',
+    };
 
-    // Color
-    trait.style('color', theme.$token('colors', linkColor), $test(!disabled)),
-    trait.style('color', theme.$token('colors', 'textDisabled'), $test(disabled)),
+    const hoverColorMap: Record<LinkVariant, ColorToken> = {
+      default: 'primaryHover',
+      subtle: 'textPrimary',
+      unstyled: 'textPrimary',
+    };
 
-    // Underline
-    trait.style('textDecoration', 'underline', $test(underline && !disabled)),
-    trait.style('textDecoration', 'none', $test(!underline || disabled)),
+    const color = colorMap[variant];
+    const hoverColor = hoverColorMap[variant];
 
-    // Cursor
-    trait.style('cursor', 'pointer', $test(!disabled)),
-    trait.style('cursor', 'not-allowed', $test(disabled)),
+    tag.$(el)(
+      trait.style('color', theme.$token('colors', color)),
 
-    // Disabled state
-    trait.style('opacity', '0.6', $test(disabled)),
-    trait.style('pointerEvents', 'none', $test(disabled)),
+      trait.style_on_event('mouseenter', 'color', theme.$token('colors', hoverColor)),
+      trait.style_on_event(
+        'mouseenter',
+        'textDecoration',
+        'underline',
+        $test(variant !== 'unstyled'),
+      ),
 
-    // Hover state
-    trait.style_on_event(
-      'mouseenter',
-      'color',
-      theme.$token('colors', variant === 'default' ? 'primaryHover' : 'textPrimary'),
-      $test(!disabled),
-    ),
-    trait.style_on_event(
-      'mouseenter',
-      'textDecoration',
-      'underline',
-      $test(!disabled && variant !== 'unstyled'),
-    ),
+      trait.style_on_event('mouseleave', 'color', theme.$token('colors', color)),
+    );
+  },
 
-    // Mouse leave
-    trait.style_on_event('mouseleave', 'color', theme.$token('colors', linkColor), $test(!disabled)),
-    trait.style_on_event(
-      'mouseleave',
-      'textDecoration',
-      underline ? 'underline' : 'none',
-      $test(!disabled),
-    ),
+  color: (color: ColorToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('color', theme.$token('colors', color)));
+  },
 
-    // Focus state
-    trait.style_on_event('focus', 'outline', theme.$token('shadows', 'shadowFocus')),
+  underline: (underline: boolean) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('textDecoration', 'underline', $test(underline)),
+      trait.style('textDecoration', 'none', $test(!underline)),
+    );
+  },
 
-    // Attributes
-    trait.attr('href', href, $test(!disabled)),
-    trait.attr('target', '_blank', $test(external)),
-    trait.attr('rel', 'noopener noreferrer', $test(external)),
+  href: (href: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.attr('href', href));
+  },
 
-    // Click handler
-    trait.event('click', onClick || (() => {}), $test(onClick !== undefined && !disabled)),
+  external: (external: boolean) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.attr('target', '_blank', $test(external)),
+      trait.attr('rel', 'noopener noreferrer', $test(external)),
+    );
+  },
 
-    // Content
-    trait.text(content || '', $test(content !== undefined)),
+  disabled: (disabled: boolean) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('opacity', '0.6', $test(disabled)),
+      trait.style('cursor', 'not-allowed', $test(disabled)),
+      trait.style('pointerEvents', 'none', $test(disabled)),
+      trait.style('color', theme.$token('colors', 'textDisabled'), $test(disabled)),
+    );
+  },
 
-    // Children
-    ...children,
-  );
+  text: (text: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.text(text));
+  },
 
-  return element;
+  onClick: (handler: (e: any) => void) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.event('click', handler));
+  },
 };

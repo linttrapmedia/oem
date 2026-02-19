@@ -1,403 +1,529 @@
 ---
 name: textarea
-description: A multi-line text input component with multiple variants, sizes, and states. Supports resize control, validation states, and event handlers.
+description: A composable textarea element using the trait-based pattern. Supports multiple variants, sizes, and states with full theming integration and event handling.
 license: MIT
 metadata:
   author: Kevin Lint
-  version: '1.0'
+  version: '3.0'
 ---
 
-## Textarea Component
+# Textarea Element
 
-The `textarea` function creates a styled multi-line text input element with variants, sizes, resize options, and comprehensive state management.
+The `textarea` element provides a composable, trait-based approach to creating textarea elements with built-in theming support, multiple variants, sizes, and interactive states.
 
-## Props
+## API
+
+The textarea element exports an object with the following methods:
 
 ```typescript
-type TextareaProps = {
-  value?: string;                  // Textarea value
-  placeholder?: string;            // Placeholder text
-  size?: 'sm' | 'md' | 'lg';
-  variant?: 'outline' | 'filled' | 'flushed';
-  rows?: number;                   // Number of visible rows
-  disabled?: boolean;              // Disabled state
-  readOnly?: boolean;              // Read-only state
-  required?: boolean;              // Required field
-  fullWidth?: boolean;             // Stretch to full width
-  resize?: 'none' | 'vertical' | 'horizontal' | 'both';
-  error?: boolean;                 // Error state
-  onInput?: (value: string) => void;   // Input event handler
-  onChange?: (value: string) => void;  // Change event handler
-  onFocus?: () => void;            // Focus event handler
-  onBlur?: () => void;             // Blur event handler
+export const textarea = {
+  create: (...children: Child[]) => HTMLTextAreaElement;
+  variant: (variant: Variant) => Applier;
+  size: (size: Size) => Applier;
+  disabled: (disabled: boolean) => Applier;
+  readOnly: (readOnly: boolean) => Applier;
+  required: (required: boolean) => Applier;
+  fullWidth: (fullWidth: boolean) => Applier;
+  resize: (resize: Resize) => Applier;
+  rows: (rows: number) => Applier;
+  error: (error: boolean) => Applier;
+  value: (value: string) => Applier;
+  placeholder: (placeholder: string) => Applier;
+  onInput: (handler: (value: string) => void) => Applier;
+  onChange: (handler: (value: string) => void) => Applier;
+  onFocus: (handler: () => void) => Applier;
+  onBlur: (handler: () => void) => Applier;
 };
 ```
 
-## Example Usage
+### Types
+
+```typescript
+type Variant = 'outline' | 'filled' | 'flushed';
+type Size = 'sm' | 'md' | 'lg';
+type Resize = 'none' | 'vertical' | 'horizontal' | 'both';
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
+```
+
+## Usage
 
 ### Basic Textarea
 
 ```typescript
 import { textarea } from '@/elements/textarea';
 
-// Simple textarea
-const commentBox = textarea({
-  placeholder: 'Enter your comment'
-});
+// Create a simple textarea
+const txt = textarea.create(textarea.placeholder('Enter text...'));
 ```
 
-### Variants
+### Complete Textarea
 
 ```typescript
-// Outline (default) - with border
-const outlineTextarea = textarea({
-  variant: 'outline',
-  placeholder: 'Outline variant'
-});
+// Create a fully configured textarea
+const txt = textarea.create(
+  textarea.variant('outline'),
+  textarea.size('md'),
+  textarea.rows(4),
+  textarea.placeholder('Enter your message...'),
+  textarea.onInput((value) => console.log('Input:', value)),
+);
 
-// Filled - colored background
-const filledTextarea = textarea({
-  variant: 'filled',
-  placeholder: 'Filled variant'
-});
-
-// Flushed - bottom border only
-const flushedTextarea = textarea({
-  variant: 'flushed',
-  placeholder: 'Flushed variant'
-});
+document.body.appendChild(txt);
 ```
 
-### Sizes
+## Variants
+
+The `textarea.variant()` applier applies different visual styles:
 
 ```typescript
-// Small
-const smallTextarea = textarea({
-  size: 'sm',
-  placeholder: 'Small textarea'
-});
+// Outline textarea (default - border with background)
+const outlineTextarea = textarea.create(
+  textarea.variant('outline'),
+  textarea.placeholder('Outline'),
+);
 
-// Medium (default)
-const mediumTextarea = textarea({
-  size: 'md',
-  placeholder: 'Medium textarea'
-});
+// Filled textarea (background with no border)
+const filledTextarea = textarea.create(
+  textarea.variant('filled'),
+  textarea.placeholder('Filled'),
+);
 
-// Large
-const largeTextarea = textarea({
-  size: 'lg',
-  placeholder: 'Large textarea'
-});
+// Flushed textarea (bottom border only)
+const flushedTextarea = textarea.create(
+  textarea.variant('flushed'),
+  textarea.placeholder('Flushed'),
+);
 ```
 
-### Rows
+### Variant Features
+
+Each variant includes:
+
+- **Outline**: Border with primary background color
+- **Filled**: Secondary background color with no border
+- **Flushed**: Transparent background with bottom border only, no padding-left, no border-radius
+
+## Sizes
+
+The `textarea.size()` applier controls padding and font size:
 
 ```typescript
-// Default rows (4)
-const defaultRows = textarea({
-  placeholder: '4 rows (default)'
-});
+// Small textarea
+const smallTextarea = textarea.create(textarea.size('sm'), textarea.placeholder('Small'));
 
-// Custom rows
-const customRows = textarea({
-  rows: 8,
-  placeholder: '8 rows'
-});
+// Medium textarea (default)
+const mediumTextarea = textarea.create(textarea.size('md'), textarea.placeholder('Medium'));
 
-// Compact
-const compact = textarea({
-  rows: 2,
-  placeholder: '2 rows'
-});
+// Large textarea
+const largeTextarea = textarea.create(textarea.size('lg'), textarea.placeholder('Large'));
+```
+
+## States
+
+### Disabled State
+
+```typescript
+// Disabled textarea
+const disabledTextarea = textarea.create(
+  textarea.variant('outline'),
+  textarea.disabled(true),
+  textarea.placeholder('Disabled'),
+);
+
+// Conditionally disabled
+const isProcessing = false;
+const commentTextarea = textarea.create(
+  textarea.variant('outline'),
+  textarea.disabled(isProcessing),
+  textarea.placeholder('Enter comment...'),
+);
+```
+
+The `textarea.disabled()` applier:
+
+- Reduces opacity to 0.6
+- Changes cursor to `not-allowed`
+- Sets the `disabled` attribute on the element
+
+### Read-Only State
+
+```typescript
+// Read-only textarea
+const readOnlyTextarea = textarea.create(
+  textarea.variant('outline'),
+  textarea.readOnly(true),
+  textarea.value('This text cannot be edited'),
+);
+```
+
+The `textarea.readOnly()` applier:
+
+- Sets background to disabled color
+- Changes cursor to `default`
+- Sets the `readonly` attribute on the element
+
+### Required State
+
+```typescript
+// Required textarea
+const requiredTextarea = textarea.create(
+  textarea.variant('outline'),
+  textarea.required(true),
+  textarea.placeholder('Required field *'),
+);
+```
+
+The `textarea.required()` applier:
+
+- Sets the `required` attribute on the element
+- Works with HTML5 form validation
+
+### Error State
+
+```typescript
+// Textarea with error
+const errorTextarea = textarea.create(
+  textarea.variant('outline'),
+  textarea.error(true),
+  textarea.placeholder('Invalid input'),
+);
+```
+
+The `textarea.error()` applier:
+
+- Changes border color to error color
+- Changes border color to error hover color on mouse enter
+
+## Layout
+
+### Full Width
+
+```typescript
+// Full width textarea
+const fullWidthTextarea = textarea.create(
+  textarea.variant('outline'),
+  textarea.fullWidth(true),
+  textarea.placeholder('Full width'),
+);
+
+// Auto width textarea (default)
+const autoWidthTextarea = textarea.create(
+  textarea.variant('outline'),
+  textarea.fullWidth(false),
+  textarea.placeholder('Auto width'),
+);
 ```
 
 ### Resize Control
 
 ```typescript
-// Vertical resize (default)
-const verticalResize = textarea({
-  resize: 'vertical',
-  placeholder: 'Resize vertically only'
-});
+// No resize (fixed size)
+const noResizeTextarea = textarea.create(
+  textarea.resize('none'),
+  textarea.placeholder('No resize'),
+);
 
-// No resize
-const noResize = textarea({
-  resize: 'none',
-  placeholder: 'Cannot be resized'
-});
+// Vertical resize only (default)
+const verticalTextarea = textarea.create(
+  textarea.resize('vertical'),
+  textarea.placeholder('Vertical resize'),
+);
 
-// Horizontal resize
-const horizontalResize = textarea({
-  resize: 'horizontal',
-  placeholder: 'Resize horizontally only'
-});
+// Horizontal resize only
+const horizontalTextarea = textarea.create(
+  textarea.resize('horizontal'),
+  textarea.placeholder('Horizontal resize'),
+);
 
-// Both directions
-const bothResize = textarea({
-  resize: 'both',
-  placeholder: 'Resize in any direction'
-});
+// Both directions resize
+const bothTextarea = textarea.create(
+  textarea.resize('both'),
+  textarea.placeholder('Resize both'),
+);
 ```
 
-### States
+### Rows
 
 ```typescript
-// Disabled
-const disabledTextarea = textarea({
-  disabled: true,
-  placeholder: 'Disabled textarea'
-});
-
-// Read-only
-const readOnlyTextarea = textarea({
-  value: 'This text cannot be edited',
-  readOnly: true
-});
-
-// Required
-const requiredTextarea = textarea({
-  required: true,
-  placeholder: 'Required field'
-});
-
-// Error state
-const errorTextarea = textarea({
-  error: true,
-  placeholder: 'Invalid input',
-  value: 'This content has errors'
-});
-
-// Full width
-const fullWidthTextarea = textarea({
-  fullWidth: true,
-  placeholder: 'Full width textarea'
-});
+// Set number of visible rows
+const multilineTextarea = textarea.create(
+  textarea.rows(5),
+  textarea.placeholder('5 rows tall'),
+);
 ```
 
-### With Event Handlers
+## Content
+
+### Value
 
 ```typescript
-import { $signal } from '@/core/signal';
-
-// Reactive textarea
-const comment = $signal('');
-const charCount = $signal(0);
-
-const commentBox = textarea({
-  value: comment.value,
-  placeholder: 'Write your comment...',
-  rows: 6,
-  fullWidth: true,
-  onInput: (value) => {
-    comment.set(value);
-    charCount.set(value.length);
-  }
-});
+// Set textarea value
+const valueTextarea = textarea.create(
+  textarea.variant('outline'),
+  textarea.value('Pre-filled text content'),
+);
 ```
 
-### Complete Example
+### Placeholder
+
+```typescript
+// Set placeholder text
+const placeholderTextarea = textarea.create(
+  textarea.variant('outline'),
+  textarea.placeholder('Enter your text here...'),
+);
+```
+
+## Event Handlers
+
+### Input Handler
+
+Fires on every keystroke:
+
+```typescript
+const txt = textarea.create(
+  textarea.placeholder('Type something...'),
+  textarea.onInput((value) => {
+    console.log('Current value:', value);
+  }),
+);
+```
+
+### Change Handler
+
+Fires when the value changes and the textarea loses focus:
+
+```typescript
+const txt = textarea.create(
+  textarea.placeholder('Enter text...'),
+  textarea.onChange((value) => {
+    console.log('Final value:', value);
+  }),
+);
+```
+
+### Focus Handler
+
+Fires when the textarea receives focus:
+
+```typescript
+const txt = textarea.create(
+  textarea.placeholder('Focus me...'),
+  textarea.onFocus(() => {
+    console.log('Textarea focused');
+  }),
+);
+```
+
+The `textarea.onFocus()` applier also:
+
+- Changes border color to primary color on focus
+- Adds focus shadow on focus
+
+### Blur Handler
+
+Fires when the textarea loses focus:
+
+```typescript
+const txt = textarea.create(
+  textarea.placeholder('Focus and blur...'),
+  textarea.onBlur(() => {
+    console.log('Textarea blurred');
+  }),
+);
+```
+
+## Advanced Examples
+
+### Form Textarea
 
 ```typescript
 import { textarea } from '@/elements/textarea';
-import { label } from '@/elements/label';
+
+const commentTextarea = textarea.create(
+  textarea.variant('outline'),
+  textarea.size('md'),
+  textarea.rows(6),
+  textarea.fullWidth(true),
+  textarea.required(true),
+  textarea.placeholder('Enter your comment...'),
+  textarea.onInput((value) => console.log('Typing:', value)),
+  textarea.onChange((value) => console.log('Submitted:', value)),
+);
+```
+
+### Reactive Textarea with State
+
+```typescript
+import { textarea } from '@/elements/textarea';
+import { $state } from '@/core/state';
+
+const message = $state('');
+const isValid = $state(true);
+
+const messageTextarea = textarea.create(
+  textarea.variant('outline'),
+  textarea.size('md'),
+  textarea.rows(4),
+  textarea.placeholder('Enter message...'),
+  textarea.error(!isValid.get()),
+  textarea.onInput((value) => {
+    message.set(value);
+    isValid.set(value.length >= 10);
+  }),
+);
+```
+
+### Character Counter
+
+```typescript
+import { textarea } from '@/elements/textarea';
 import { text } from '@/elements/text';
-import { stack } from '@/elements/stack';
-import { row } from '@/elements/row';
-import { button } from '@/elements/button';
-import { $signal } from '@/core/signal';
+import { tag } from '@/elements/_base';
+import { $state } from '@/core/state';
 
-// Feedback form
-const feedback = $signal('');
-const charLimit = 500;
-const errorMsg = $signal('');
+const charCount = $state(0);
+const maxChars = 200;
 
-const feedbackForm = stack({
-  spacing: 'md',
-  children: [
-    label({
-      content: 'Your Feedback',
-      required: true
-    }),
+const countedTextarea = textarea.create(
+  textarea.variant('outline'),
+  textarea.rows(4),
+  textarea.onInput((value) => {
+    charCount.set(value.length);
+  }),
+);
 
-    textarea({
-      value: feedback.value,
-      placeholder: 'Tell us what you think...',
-      rows: 6,
-      fullWidth: true,
-      error: errorMsg.value.length > 0,
-      onInput: (value) => {
-        feedback.set(value);
-        if (value.length > charLimit) {
-          errorMsg.set(`Maximum ${charLimit} characters allowed`);
-        } else {
-          errorMsg.set('');
-        }
-      }
-    }),
+const counter = text.create(
+  text.variant('caption'),
+  text.color('textSecondary'),
+  text.content(`${charCount.get()}/${maxChars}`),
+);
 
-    row({
-      justify: 'space-between',
-      children: [
-        text({
-          content: () => `${feedback.value.length}/${charLimit}`,
-          size: 'sm',
-          color: () => feedback.value.length > charLimit ? 'error' : 'textSecondary'
-        }),
-        errorMsg.value
-          ? text({
-              content: errorMsg.value,
-              size: 'sm',
-              color: 'error'
-            })
-          : null
-      ].filter(Boolean)
-    }),
+const textareaGroup = tag.div(countedTextarea, counter);
+```
 
-    button({
-      label: 'Submit Feedback',
-      variant: 'primary',
-      disabled: () => !feedback.value || feedback.value.length > charLimit,
-      onClick: () => {
-        console.log('Feedback submitted:', feedback.value);
-        feedback.set('');
-      }
-    })
-  ]
-});
+### Conditional Styling
 
-// Message composer
-const message = $signal('');
+```typescript
+const hasError = $state(false);
+const isSubmitting = $state(false);
 
-const composer = stack({
-  spacing: 'sm',
-  children: [
-    textarea({
-      value: message.value,
-      placeholder: 'Type your message...',
-      rows: 4,
-      fullWidth: true,
-      resize: 'none',
-      onInput: (value) => message.set(value)
-    }),
+const feedbackTextarea = textarea.create(
+  textarea.variant('outline'),
+  textarea.size('md'),
+  textarea.rows(5),
+  textarea.disabled(isSubmitting.get()),
+  textarea.error(hasError.get()),
+  textarea.placeholder(isSubmitting.get() ? 'Submitting...' : 'Enter feedback...'),
+  textarea.onInput((value) => {
+    hasError.set(value.length === 0);
+  }),
+);
+```
 
-    row({
-      justify: 'flex-end',
-      spacing: 'sm',
-      children: [
-        button({
-          label: 'Cancel',
-          variant: 'ghost',
-          onClick: () => message.set('')
-        }),
-        button({
-          label: 'Send',
-          variant: 'primary',
-          disabled: () => !message.value.trim(),
-          onClick: () => {
-            console.log('Sending:', message.value);
-            message.set('');
-          }
-        })
-      ]
-    })
-  ]
-});
+### Auto-Growing Textarea
 
-// Note editor
-const note = $signal('');
-const lastSaved = $signal<Date | null>(null);
+```typescript
+const autoGrowTextarea = textarea.create(
+  textarea.variant('outline'),
+  textarea.resize('none'),
+  textarea.rows(3),
+  textarea.onInput((value) => {
+    // Auto-grow logic
+    const lines = value.split('\n').length;
+    autoGrowTextarea.rows = Math.max(3, lines);
+  }),
+);
+```
 
-const noteEditor = stack({
-  spacing: 'md',
-  children: [
-    row({
-      justify: 'space-between',
-      align: 'center',
-      children: [
-        label({ content: 'Notes' }),
-        lastSaved.value
-          ? text({
-              content: `Saved at ${lastSaved.value.toLocaleTimeString()}`,
-              size: 'sm',
-              color: 'textSecondary'
-            })
-          : null
-      ].filter(Boolean)
-    }),
+### Textarea with Label
 
-    textarea({
-      value: note.value,
-      placeholder: 'Write your notes here...',
-      rows: 12,
-      fullWidth: true,
-      variant: 'filled',
-      onInput: (value) => note.set(value),
-      onBlur: () => {
-        // Auto-save on blur
-        lastSaved.set(new Date());
-        console.log('Auto-saved:', note.value);
-      }
-    })
-  ]
-});
+```typescript
+import { tag } from '@/elements/_base';
+import { text } from '@/elements/text';
 
-// Review form
-const review = $signal('');
-const minLength = 50;
+const textareaGroup = tag.div(
+  text.create(text.variant('body'), text.weight('medium'), text.content('Description')),
+  textarea.create(
+    textarea.variant('outline'),
+    textarea.size('md'),
+    textarea.rows(4),
+    textarea.required(true),
+    textarea.placeholder('Enter description...'),
+  ),
+);
+```
 
-const reviewForm = stack({
-  spacing: 'md',
-  children: [
-    label({
-      content: 'Write Your Review',
-      required: true
-    }),
+## Trait-Based Pattern
 
-    textarea({
-      value: review.value,
-      placeholder: `Please write at least ${minLength} characters...`,
-      rows: 8,
-      fullWidth: true,
-      error: review.value.length > 0 && review.value.length < minLength,
-      onInput: (value) => review.set(value)
-    }),
+The textarea element uses the `tag.$()` adopter pattern internally, which means:
 
-    text({
-      content: () => {
-        const remaining = minLength - review.value.length;
-        if (remaining > 0) {
-          return `${remaining} more characters required`;
-        }
-        return 'Looks good!';
-      },
-      size: 'sm',
-      color: () => review.value.length >= minLength ? 'success' : 'textSecondary'
-    }),
+1. **Composability**: Each applier (`variant`, `size`, etc.) is a function that applies traits to an element
+2. **Declarative**: All styling uses the trait system with conditional logic via `$test()`
+3. **Theme-aware**: All tokens are reactive and update when the theme changes
+4. **No ternaries**: All conditional logic uses trait conditions instead of ternary expressions
 
-    button({
-      label: 'Submit Review',
-      variant: 'primary',
-      fullWidth: true,
-      disabled: () => review.value.length < minLength,
-      onClick: () => {
-        console.log('Review submitted:', review.value);
-      }
-    })
-  ]
-});
+### Internal Structure
+
+```typescript
+// Example of how textarea.variant() works internally
+variant: (variant: Variant) => (el: HTMLElement | SVGElement) => {
+  tag.$(el)(
+    // Outline variant
+    trait.style(
+      'border',
+      () => `${theme.token('borders', 'borderWidthThin')} ${theme.token('borders', 'borderStyleSolid')} ${theme.token('colors', 'borderPrimary')}`,
+      $test(variant === 'outline'),
+      theme,
+    ),
+    trait.style('backgroundColor', theme.$token('colors', 'bgPrimary'), $test(variant === 'outline')),
+    // ... other variants
+  );
+};
 ```
 
 ## Features
 
-- **Three Variants**: Outline, filled, and flushed styles
-- **Three Sizes**: Small, medium, and large options
-- **Row Control**: Set number of visible rows
-- **Resize Options**: None, vertical, horizontal, or both
-- **State Management**: Disabled, read-only, required, and error states
-- **Full Width**: Optional full-width mode for layouts
-- **Event Handlers**: onInput, onChange, onFocus, and onBlur
-- **Error State**: Visual feedback for validation errors
-- **Interactive States**: Hover, focus with smooth transitions
-- **Theme Integration**: Full design token support
-- **Accessibility**: Proper textarea attributes and states
-- **Multi-line**: Native multi-line text input
+- ✅ **Trait-based composition**: Use appliers to build up textarea styling
+- ✅ **Theme integration**: Fully reactive to theme changes
+- ✅ **3 variants**: Outline, filled, flushed
+- ✅ **3 sizes**: Small, medium, large
+- ✅ **Multiple states**: Disabled, read-only, required, error
+- ✅ **Layout control**: Full width, resize control, rows
+- ✅ **Event handling**: Input, change, focus, blur handlers
+- ✅ **Conditional traits**: Uses `$test()` for conditional styling
+- ✅ **Form integration**: Works with HTML5 form validation
+- ✅ **Automatic cleanup**: Event listeners and subscriptions are cleaned up when elements are removed from DOM
+
+## Migration from v2.0
+
+If you're migrating from the props-based API:
+
+**Old (v2.0):**
+
+```typescript
+textarea({
+  variant: 'outline',
+  size: 'md',
+  rows: 4,
+  placeholder: 'Enter text...',
+  disabled: false,
+  fullWidth: true,
+  onInput: (value) => {},
+});
+```
+
+**New (v3.0):**
+
+```typescript
+textarea.create(
+  textarea.variant('outline'),
+  textarea.size('md'),
+  textarea.rows(4),
+  textarea.placeholder('Enter text...'),
+  textarea.disabled(false),
+  textarea.fullWidth(true),
+  textarea.onInput((value) => {}),
+);
+```

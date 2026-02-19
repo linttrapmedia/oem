@@ -1,71 +1,65 @@
 import { $test } from '@/core/util';
 import { tag, trait } from '@/elements/_base';
 import { theme } from '@/modules/theme';
-import type { DesignTokens } from '@/themes/_base';
+import { DesignTokens } from '@/themes';
 
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
 type SpacingToken = keyof DesignTokens['spacing'];
 type AlignItems = 'start' | 'center' | 'end' | 'stretch';
 type JustifyItems = 'start' | 'center' | 'end' | 'stretch';
 
-type GridProps = {
-  columns?: number | string;
-  rows?: number | string;
-  gap?: SpacingToken;
-  columnGap?: SpacingToken;
-  rowGap?: SpacingToken;
-  alignItems?: AlignItems;
-  justifyItems?: JustifyItems;
-  fullWidth?: boolean;
-  children?: HTMLElement[];
-};
+export const grid = {
+  create: (...children: Child[]) => {
+    const el = document.createElement('div');
 
-export const grid = (props: GridProps) => {
-  const {
-    columns,
-    rows,
-    gap,
-    columnGap,
-    rowGap,
-    alignItems = 'stretch',
-    justifyItems = 'stretch',
-    fullWidth = false,
-    children = [],
-  } = props;
+    tag.$(el)(trait.style('display', 'grid'));
 
-  const element = tag.div(
-    // Base styles
-    trait.style('display', 'grid'),
+    children.forEach((c) => {
+      if (c instanceof HTMLElement || c instanceof SVGElement) {
+        el.appendChild(c);
+      } else {
+        c(el);
+      }
+    });
 
-    // Columns
-    trait.style(
-      'gridTemplateColumns',
-      typeof columns === 'number' ? `repeat(${columns}, 1fr)` : columns!,
-      $test(columns !== undefined),
-    ),
+    return el;
+  },
 
-    // Rows
-    trait.style(
-      'gridTemplateRows',
-      typeof rows === 'number' ? `repeat(${rows}, 1fr)` : rows!,
-      $test(rows !== undefined),
-    ),
+  columns: (columns: number | string) => (el: HTMLElement | SVGElement) => {
+    const value = typeof columns === 'number' ? `repeat(${columns}, 1fr)` : columns;
+    tag.$(el)(trait.style('gridTemplateColumns', value));
+  },
 
-    // Gap
-    trait.style('gap', theme.$token('spacing', gap!), $test(gap !== undefined)),
-    trait.style('columnGap', theme.$token('spacing', columnGap!), $test(columnGap !== undefined && gap === undefined)),
-    trait.style('rowGap', theme.$token('spacing', rowGap!), $test(rowGap !== undefined && gap === undefined)),
+  rows: (rows: number | string) => (el: HTMLElement | SVGElement) => {
+    const value = typeof rows === 'number' ? `repeat(${rows}, 1fr)` : rows;
+    tag.$(el)(trait.style('gridTemplateRows', value));
+  },
 
-    // Alignment
-    trait.style('alignItems', alignItems),
-    trait.style('justifyItems', justifyItems),
+  gap: (gap: SpacingToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('gap', theme.$token('spacing', gap)));
+  },
 
-    // Width
-    trait.style('width', '100%', $test(fullWidth)),
-    trait.style('width', 'auto', $test(!fullWidth)),
+  columnGap: (gap: SpacingToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('columnGap', theme.$token('spacing', gap)));
+  },
 
-    // Children
-    ...children,
-  );
+  rowGap: (gap: SpacingToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('rowGap', theme.$token('spacing', gap)));
+  },
 
-  return element;
+  alignItems: (align: AlignItems) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('alignItems', align));
+  },
+
+  justifyItems: (justify: JustifyItems) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('justifyItems', justify));
+  },
+
+  fullWidth: (fullWidth: boolean) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('width', '100%', $test(fullWidth)),
+      trait.style('width', 'auto', $test(!fullWidth)),
+    );
+  },
 };

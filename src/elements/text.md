@@ -1,365 +1,397 @@
 ---
 name: text
-description: A flexible text component with multiple variants, sizes, weights, colors, and text styling options. The fundamental component for displaying text content.
+description: A composable text element using the trait-based pattern. Supports multiple variants, sizes, weights, alignment, and styling options with full theming integration.
 license: MIT
 metadata:
   author: Kevin Lint
-  version: '1.0'
+  version: '3.0'
 ---
 
-## Text Component
+# Text Element
 
-The `text` function creates a versatile text element with complete control over typography, styling, and appearance using design tokens.
+The `text` element provides a composable, trait-based approach to creating text elements with built-in theming support, multiple variants, sizes, weights, and styling options.
 
-## Props
+## API
+
+The text element exports an object with the following methods:
 
 ```typescript
-type TextProps = {
-  content?: string;                // Text content
-  variant?: 'body' | 'caption' | 'overline' | 'subtitle';
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  weight?: 'normal' | 'medium' | 'semibold' | 'bold';
-  align?: 'left' | 'center' | 'right' | 'justify';
-  color?: ColorToken;              // Text color
-  italic?: boolean;                // Italic style
-  underline?: boolean;             // Underline decoration
-  truncate?: boolean;              // Truncate with ellipsis
-  children?: HTMLElement[];        // Child elements
+export const text = {
+  create: (...children: Child[]) => HTMLSpanElement;
+  variant: (variant: Variant) => Applier;
+  size: (size: Size) => Applier;
+  weight: (weight: Weight) => Applier;
+  align: (align: Align) => Applier;
+  color: (color: ColorToken) => Applier;
+  italic: (italic: boolean) => Applier;
+  underline: (underline: boolean) => Applier;
+  truncate: (truncate: boolean) => Applier;
+  content: (content: string) => Applier;
 };
 ```
 
-## Example Usage
+### Types
+
+```typescript
+type Variant = 'body' | 'caption' | 'overline' | 'subtitle';
+type Size = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+type Weight = 'normal' | 'medium' | 'semibold' | 'bold';
+type Align = 'left' | 'center' | 'right' | 'justify';
+type ColorToken = keyof DesignTokens['colors'];
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
+```
+
+## Usage
 
 ### Basic Text
 
 ```typescript
 import { text } from '@/elements/text';
 
-// Simple text
-const paragraph = text({
-  content: 'This is a paragraph of text.'
-});
+// Create a simple text element
+const txt = text.create(text.content('Hello, world!'));
 ```
 
-### Variants
+### Complete Text
 
 ```typescript
-// Body (default) - normal text
-const body = text({
-  variant: 'body',
-  content: 'Body text for paragraphs and content.'
-});
+// Create a fully configured text element
+const txt = text.create(
+  text.variant('body'),
+  text.size('md'),
+  text.weight('medium'),
+  text.color('textPrimary'),
+  text.content('Welcome to the application'),
+);
 
-// Caption - smaller text for captions
-const caption = text({
-  variant: 'caption',
-  content: 'Caption or helper text'
-});
-
-// Overline - small uppercase text
-const overline = text({
-  variant: 'overline',
-  content: 'OVERLINE TEXT'
-});
-
-// Subtitle - larger text for subtitles
-const subtitle = text({
-  variant: 'subtitle',
-  content: 'Subtitle text'
-});
+document.body.appendChild(txt);
 ```
 
-### Sizes
+## Variants
+
+The `text.variant()` applier applies typography styles based on semantic meaning:
 
 ```typescript
-// Extra small
-const xsText = text({
-  size: 'xs',
-  content: 'Extra small text'
-});
+// Body text (default - base font size)
+const bodyText = text.create(text.variant('body'), text.content('Body text'));
 
-// Small
-const smText = text({
-  size: 'sm',
-  content: 'Small text'
-});
+// Caption text (smaller, for supplementary information)
+const captionText = text.create(text.variant('caption'), text.content('Caption text'));
 
-// Medium (default)
-const mdText = text({
-  size: 'md',
-  content: 'Medium text'
-});
+// Overline text (smallest, for labels)
+const overlineText = text.create(text.variant('overline'), text.content('OVERLINE'));
 
-// Large
-const lgText = text({
-  size: 'lg',
-  content: 'Large text'
-});
-
-// Extra large
-const xlText = text({
-  size: 'xl',
-  content: 'Extra large text'
-});
+// Subtitle text (larger, for secondary headings)
+const subtitleText = text.create(text.variant('subtitle'), text.content('Subtitle text'));
 ```
 
-### Weight
+### Variant Features
+
+Each variant includes:
+
+- Font size from theme typography tokens
+- Line height optimized for readability
+- Automatic theme reactivity (updates when theme changes)
+
+## Sizes
+
+The `text.size()` applier controls font size independently of variant:
 
 ```typescript
-// Normal (default)
-const normalWeight = text({
-  weight: 'normal',
-  content: 'Normal weight text'
-});
+// Extra small text
+const xsText = text.create(text.size('xs'), text.content('Extra small'));
 
-// Medium
-const mediumWeight = text({
-  weight: 'medium',
-  content: 'Medium weight text'
-});
+// Small text
+const smText = text.create(text.size('sm'), text.content('Small'));
 
-// Semibold
-const semiboldWeight = text({
-  weight: 'semibold',
-  content: 'Semibold text'
-});
+// Medium text (default)
+const mdText = text.create(text.size('md'), text.content('Medium'));
 
-// Bold
-const boldWeight = text({
-  weight: 'bold',
-  content: 'Bold text'
-});
+// Large text
+const lgText = text.create(text.size('lg'), text.content('Large'));
+
+// Extra large text
+const xlText = text.create(text.size('xl'), text.content('Extra large'));
 ```
 
-### Alignment
+## Weight
+
+The `text.weight()` applier controls font weight:
+
+```typescript
+// Normal weight
+const normalText = text.create(text.weight('normal'), text.content('Normal'));
+
+// Medium weight
+const mediumText = text.create(text.weight('medium'), text.content('Medium'));
+
+// Semibold weight
+const semiboldText = text.create(text.weight('semibold'), text.content('Semibold'));
+
+// Bold weight
+const boldText = text.create(text.weight('bold'), text.content('Bold'));
+```
+
+## Alignment
+
+The `text.align()` applier controls text alignment:
 
 ```typescript
 // Left aligned (default)
-const leftAligned = text({
-  align: 'left',
-  content: 'Left aligned text'
-});
+const leftText = text.create(text.align('left'), text.content('Left aligned'));
 
 // Center aligned
-const centerAligned = text({
-  align: 'center',
-  content: 'Center aligned text'
-});
+const centerText = text.create(text.align('center'), text.content('Center aligned'));
 
 // Right aligned
-const rightAligned = text({
-  align: 'right',
-  content: 'Right aligned text'
-});
+const rightText = text.create(text.align('right'), text.content('Right aligned'));
 
 // Justified
-const justified = text({
-  align: 'justify',
-  content: 'Justified text that will be aligned to both left and right edges.'
-});
+const justifiedText = text.create(text.align('justify'), text.content('Justified text'));
 ```
 
-### Colors
+## Color
+
+The `text.color()` applier sets text color using theme color tokens:
 
 ```typescript
 // Primary text color (default)
-const primaryText = text({
-  content: 'Primary text color'
-});
+const primaryText = text.create(text.color('textPrimary'), text.content('Primary'));
 
 // Secondary text color
-const secondaryText = text({
-  content: 'Secondary text color',
-  color: 'textSecondary'
-});
-
-// Custom color
-const customText = text({
-  content: 'Custom colored text',
-  color: 'primary'
-});
+const secondaryText = text.create(text.color('textSecondary'), text.content('Secondary'));
 
 // Error color
-const errorText = text({
-  content: 'Error message',
-  color: 'error'
-});
+const errorText = text.create(text.color('error'), text.content('Error message'));
 
 // Success color
-const successText = text({
-  content: 'Success message',
-  color: 'success'
-});
+const successText = text.create(text.color('success'), text.content('Success message'));
 ```
 
-### Text Styling
+## Text Styling
+
+### Italic
 
 ```typescript
-// Italic
-const italicText = text({
-  content: 'Italic text',
-  italic: true
-});
+// Italic text
+const italicText = text.create(text.italic(true), text.content('Italic text'));
 
-// Underline
-const underlineText = text({
-  content: 'Underlined text',
-  underline: true
-});
-
-// Combined styling
-const styledText = text({
-  content: 'Bold, italic, underlined',
-  weight: 'bold',
-  italic: true,
-  underline: true
-});
+// Normal (non-italic) text
+const normalText = text.create(text.italic(false), text.content('Normal text'));
 ```
 
-### Truncation
+### Underline
 
 ```typescript
-// Truncate long text with ellipsis
-const truncatedText = text({
-  content: 'This is a very long piece of text that will be truncated with an ellipsis when it exceeds the container width',
-  truncate: true
-});
+// Underlined text
+const underlinedText = text.create(text.underline(true), text.content('Underlined'));
+
+// Non-underlined text
+const plainText = text.create(text.underline(false), text.content('Plain text'));
 ```
 
-### With Children
+### Truncate
+
+The `text.truncate()` applier adds ellipsis overflow for long text:
+
+```typescript
+// Truncated text (adds ellipsis when text overflows)
+const truncatedText = text.create(
+  text.truncate(true),
+  text.content('This is a very long text that will be truncated with ellipsis'),
+);
+
+// Full text (no truncation)
+const fullText = text.create(
+  text.truncate(false),
+  text.content('This text will wrap normally'),
+);
+```
+
+The `text.truncate()` applier:
+
+- Sets `overflow: hidden`
+- Sets `text-overflow: ellipsis`
+- Sets `white-space: nowrap`
+- Prevents text wrapping and adds "..." for overflow
+
+## Composing with Child Elements
+
+You can add child elements (like icons) directly:
 
 ```typescript
 import { tag } from '@/elements/_base';
 
-// Mixed content
-const mixedText = text({
-  children: [
-    text({ content: 'Regular text ' }),
-    text({ content: 'bold text ', weight: 'bold' }),
-    text({ content: 'and ', color: 'textSecondary' }),
-    text({ content: 'colored text', color: 'primary' })
-  ]
-});
+// Text with icon
+const iconText = text.create(
+  tag.span('🔔'),
+  text.content(' Notification'),
+);
 ```
 
-### Complete Example
+## Advanced Examples
+
+### Styled Paragraph
 
 ```typescript
 import { text } from '@/elements/text';
-import { stack } from '@/elements/stack';
-import { heading } from '@/elements/heading';
-import { divider } from '@/elements/divider';
 
-// Article content
-const article = stack({
-  spacing: 'lg',
-  children: [
-    heading({
-      content: 'Article Title',
-      level: 1
-    }),
+const paragraph = text.create(
+  text.variant('body'),
+  text.size('md'),
+  text.weight('normal'),
+  text.align('left'),
+  text.color('textPrimary'),
+  text.content('This is a paragraph of text with proper styling applied.'),
+);
+```
 
-    text({
-      content: 'By John Doe • January 1, 2024',
-      variant: 'caption',
-      color: 'textSecondary'
-    }),
+### Label Text
 
-    divider({ spacing: 'xl' }),
+```typescript
+const label = text.create(
+  text.variant('overline'),
+  text.weight('semibold'),
+  text.color('textSecondary'),
+  text.content('FORM LABEL'),
+);
+```
 
-    text({
-      content: 'First paragraph of the article with regular body text. This demonstrates the default text styling and spacing.',
-      variant: 'body'
-    }),
+### Error Message
 
-    text({
-      content: 'Second paragraph with more content. Notice the consistent spacing and typography throughout the article.',
-      variant: 'body'
-    }),
+```typescript
+const errorMessage = text.create(
+  text.variant('caption'),
+  text.color('error'),
+  text.italic(true),
+  text.content('This field is required'),
+);
+```
 
-    text({
-      content: 'Important note: Pay attention to this highlighted information.',
-      weight: 'semibold',
-      color: 'warning'
-    }),
+### Truncated Title
 
-    text({
-      content: 'Final paragraph wrapping up the article content.',
-      variant: 'body'
-    })
-  ]
+```typescript
+const title = text.create(
+  text.variant('subtitle'),
+  text.weight('semibold'),
+  text.truncate(true),
+  text.content('Very Long Title That Will Be Truncated With Ellipsis When It Overflows'),
+);
+```
+
+### Reactive Text with State
+
+```typescript
+import { text } from '@/elements/text';
+import { $state } from '@/core/state';
+
+const count = $state(0);
+
+const counter = text.create(
+  text.variant('body'),
+  text.weight('bold'),
+  text.size('lg'),
+  text.content(`Count: ${count.get()}`),
+);
+
+// Update text when state changes
+count.subscribe((value) => {
+  counter.textContent = `Count: ${value}`;
 });
+```
 
-// Status message
-const statusMessage = stack({
-  spacing: 'xs',
-  children: [
-    text({
-      content: 'Success!',
-      weight: 'bold',
-      color: 'success',
-      size: 'lg'
-    }),
-    text({
-      content: 'Your changes have been saved successfully.',
-      color: 'textSecondary'
-    })
-  ]
-});
+### Conditional Styling
 
-// Card metadata
-const cardMeta = stack({
-  spacing: 'xs',
-  children: [
-    text({
-      content: 'CATEGORY',
-      variant: 'overline',
-      color: 'textSecondary'
-    }),
-    text({
-      content: 'Technology',
-      weight: 'medium',
-      size: 'lg'
-    }),
-    text({
-      content: 'Updated 2 hours ago',
-      variant: 'caption',
-      color: 'textSecondary'
-    })
-  ]
-});
+```typescript
+const hasError = $state(false);
 
-// Truncated list items
-const listItem = text({
-  content: 'This is a very long list item name that will be truncated when the container is too narrow to display the full text',
-  truncate: true,
-  color: 'textPrimary'
-});
+const message = text.create(
+  text.variant('body'),
+  text.color(hasError.get() ? 'error' : 'textPrimary'),
+  text.italic(hasError.get()),
+  text.content(hasError.get() ? 'Error occurred' : 'All good'),
+);
+```
 
-// Formatted text with emphasis
-const formattedText = text({
-  children: [
-    text({ content: 'You have ' }),
-    text({
-      content: '3 unread messages',
-      weight: 'bold',
-      color: 'primary'
-    }),
-    text({ content: ' in your inbox.' })
-  ]
-});
+### Text Combinations
+
+```typescript
+import { tag } from '@/elements/_base';
+
+const textGroup = tag.div(
+  text.create(text.variant('overline'), text.content('SECTION TITLE')),
+  text.create(text.variant('subtitle'), text.weight('bold'), text.content('Main Heading')),
+  text.create(text.variant('body'), text.color('textSecondary'), text.content('Description text')),
+  text.create(text.variant('caption'), text.italic(true), text.content('Additional info')),
+);
+```
+
+## Trait-Based Pattern
+
+The text element uses the `tag.$()` adopter pattern internally, which means:
+
+1. **Composability**: Each applier (`variant`, `size`, etc.) is a function that applies traits to an element
+2. **Declarative**: All styling uses the trait system with conditional logic via `$test()`
+3. **Theme-aware**: All tokens are reactive and update when the theme changes
+4. **No ternaries**: All conditional logic uses trait conditions instead of ternary expressions
+
+### Internal Structure
+
+```typescript
+// Example of how text.variant() works internally
+variant: (variant: Variant) => (el: HTMLElement | SVGElement) => {
+  const config = variantConfig[variant];
+
+  tag.$(el)(
+    trait.style('fontSize', theme.$token('typography', config.fontSize)),
+    trait.style('lineHeight', theme.$token('typography', config.lineHeight)),
+  );
+};
 ```
 
 ## Features
 
-- **Four Variants**: Body, caption, overline, and subtitle styles
-- **Five Sizes**: Extra small to extra large
-- **Four Weights**: Normal, medium, semibold, and bold
-- **Four Alignments**: Left, center, right, and justify
-- **Theme Colors**: Any design token color
-- **Text Styling**: Italic and underline support
-- **Truncation**: Ellipsis for overflowing text
-- **Children Support**: Compose multiple text elements
-- **Size Override**: Size prop overrides variant font size
-- **Responsive**: Font sizes work across screen sizes
-- **Span Element**: Inline element for flexible composition
+- ✅ **Trait-based composition**: Use appliers to build up text styling
+- ✅ **Theme integration**: Fully reactive to theme changes
+- ✅ **4 variants**: Body, caption, overline, subtitle
+- ✅ **5 sizes**: XS, SM, MD, LG, XL
+- ✅ **4 weights**: Normal, medium, semibold, bold
+- ✅ **4 alignments**: Left, center, right, justify
+- ✅ **Color tokens**: Use any theme color token
+- ✅ **Text styling**: Italic, underline, truncate
+- ✅ **Child elements**: Add icons or other elements as children
+- ✅ **Conditional traits**: Uses `$test()` for conditional styling
+- ✅ **Automatic cleanup**: Subscriptions are cleaned up when elements are removed from DOM
+
+## Migration from v2.0
+
+If you're migrating from the props-based API:
+
+**Old (v2.0):**
+
+```typescript
+text({
+  content: 'Hello',
+  variant: 'body',
+  size: 'md',
+  weight: 'medium',
+  color: 'textPrimary',
+  italic: false,
+  underline: false,
+});
+```
+
+**New (v3.0):**
+
+```typescript
+text.create(
+  text.variant('body'),
+  text.size('md'),
+  text.weight('medium'),
+  text.color('textPrimary'),
+  text.italic(false),
+  text.underline(false),
+  text.content('Hello'),
+);
+```

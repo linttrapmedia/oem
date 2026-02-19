@@ -1,67 +1,70 @@
-import { $test } from '@/core/util';
 import { tag, trait } from '@/elements/_base';
 import { theme } from '@/modules/theme';
-import type { DesignTokens } from '@/themes/_base';
+import { DesignTokens } from '@/themes';
 
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
 type ImageFit = 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
 type BorderRadiusToken = keyof DesignTokens['borders'];
 
-type ImageProps = {
-  src: string;
-  alt: string;
-  width?: string;
-  height?: string;
-  objectFit?: ImageFit;
-  borderRadius?: BorderRadiusToken;
-  loading?: 'eager' | 'lazy';
-  onLoad?: () => void;
-  onError?: () => void;
-  onClick?: () => void;
-};
+export const image = {
+  create: (...children: Child[]) => {
+    const el = document.createElement('img');
 
-export const image = (props: ImageProps) => {
-  const {
-    src,
-    alt,
-    width,
-    height,
-    objectFit = 'cover',
-    borderRadius,
-    loading = 'lazy',
-    onLoad,
-    onError,
-    onClick,
-  } = props;
+    tag.$(el)(
+      trait.style('display', 'block'),
+      trait.style('maxWidth', '100%'),
+      trait.style('height', 'auto'),
+    );
 
-  const element = tag.img(
-    // Base styles
-    trait.style('display', 'block'),
-    trait.style('maxWidth', '100%'),
-    trait.style('height', 'auto'),
+    children.forEach((c) => {
+      if (c instanceof HTMLElement || c instanceof SVGElement) {
+        el.appendChild(c);
+      } else {
+        c(el);
+      }
+    });
 
-    // Dimensions
-    trait.style('width', width!, $test(width !== undefined)),
-    trait.style('height', height!, $test(height !== undefined)),
+    return el;
+  },
 
-    // Object fit
-    trait.style('objectFit', objectFit),
+  src: (src: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.attr('src', src));
+  },
 
-    // Border radius
-    trait.style('borderRadius', theme.$token('borders', borderRadius!), $test(borderRadius !== undefined)),
+  alt: (alt: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.attr('alt', alt));
+  },
 
-    // Click cursor
-    trait.style('cursor', 'pointer', $test(onClick !== undefined)),
+  width: (width: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('width', width));
+  },
 
-    // Attributes
-    trait.attr('src', src),
-    trait.attr('alt', alt),
-    trait.attr('loading', loading),
+  height: (height: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('height', height));
+  },
 
-    // Event handlers
-    trait.event('load', onLoad || (() => {}), $test(onLoad !== undefined)),
-    trait.event('error', onError || (() => {}), $test(onError !== undefined)),
-    trait.event('click', onClick || (() => {}), $test(onClick !== undefined)),
-  );
+  objectFit: (fit: ImageFit) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('objectFit', fit));
+  },
 
-  return element;
+  borderRadius: (radius: BorderRadiusToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('borderRadius', theme.$token('borders', radius)));
+  },
+
+  loading: (loading: 'eager' | 'lazy') => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.attr('loading', loading));
+  },
+
+  onLoad: (handler: () => void) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.event('load', handler));
+  },
+
+  onError: (handler: () => void) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.event('error', handler));
+  },
+
+  onClick: (handler: () => void) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('cursor', 'pointer'), trait.event('click', handler));
+  },
 };

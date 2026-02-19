@@ -1,324 +1,447 @@
 ---
 name: row
-description: A horizontal flexbox layout component for arranging children in a row. Control spacing, alignment, wrapping, and width with design tokens.
+description: A composable horizontal layout element using the trait-based pattern. Provides flexbox-based row layout with spacing, alignment, justification, and wrapping control with full theming integration.
 license: MIT
 metadata:
   author: Kevin Lint
-  version: '1.0'
+  version: '3.0'
 ---
 
-## Row Component
+# Row Element
 
-The `row` function creates a horizontal flexbox container for laying out elements side-by-side with control over spacing, alignment, and wrapping.
+The `row` element provides a composable, trait-based approach to creating horizontal flexbox layouts with built-in theming support and comprehensive alignment control.
 
-## Props
+## API
+
+The row element exports an object with the following methods:
 
 ```typescript
-type RowProps = {
-  spacing?: SpacingToken;          // Gap between children
-  align?: 'flex-start' | 'center' | 'flex-end' | 'stretch' | 'baseline';
-  justify?: 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around' | 'space-evenly';
-  wrap?: boolean;                  // Allow wrapping to multiple rows
-  fullWidth?: boolean;             // Stretch to full width
-  children?: HTMLElement[];
+export const row = {
+  create: (...children: Child[]) => HTMLDivElement;
+  spacing: (spacing: SpacingToken) => Applier;
+  align: (align: Align) => Applier;
+  justify: (justify: Justify) => Applier;
+  wrap: (wrap: boolean) => Applier;
+  fullWidth: (fullWidth: boolean) => Applier;
 };
 ```
 
-## Example Usage
+### Types
+
+```typescript
+type Align = 'flex-start' | 'center' | 'flex-end' | 'stretch' | 'baseline';
+type Justify = 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around' | 'space-evenly';
+type SpacingToken = string; // Theme spacing token
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
+```
+
+## Usage
 
 ### Basic Row
 
 ```typescript
 import { row } from '@/elements/row';
+import { tag } from '@/elements/_base';
 
-// Simple horizontal layout
-const buttons = row({
-  spacing: 'md',
-  children: [/* child elements */]
-});
+// Create a simple horizontal layout
+const basicRow = row.create(
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+  tag.div('Item 3'),
+);
 ```
 
-### Spacing
+### Complete Row
 
 ```typescript
-// Small spacing
-const smallSpacing = row({
-  spacing: 'sm',
-  children: [/* children */]
-});
+// Create a fully configured row layout
+const layout = row.create(
+  row.spacing('md'),
+  row.align('center'),
+  row.justify('space-between'),
+  row.wrap(false),
+  row.fullWidth(true),
+  tag.div('Left'),
+  tag.div('Center'),
+  tag.div('Right'),
+);
 
-// Medium spacing (default)
-const mediumSpacing = row({
-  spacing: 'md',
-  children: [/* children */]
-});
+document.body.appendChild(layout);
+```
+
+## Spacing
+
+The `row.spacing()` applier sets the gap between child elements:
+
+```typescript
+// Extra small spacing
+const xsRow = row.create(
+  row.spacing('xs'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+);
+
+// Small spacing
+const smRow = row.create(
+  row.spacing('sm'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+);
+
+// Medium spacing (typical default)
+const mdRow = row.create(
+  row.spacing('md'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+);
 
 // Large spacing
-const largeSpacing = row({
-  spacing: 'lg',
-  children: [/* children */]
-});
+const lgRow = row.create(
+  row.spacing('lg'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+);
 
 // Extra large spacing
-const xlSpacing = row({
-  spacing: 'xl',
-  children: [/* children */]
-});
+const xlRow = row.create(
+  row.spacing('xl'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+);
 ```
 
-### Vertical Alignment
+### Spacing Features
+
+- Uses theme spacing tokens
+- Consistent spacing across the design system
+- Automatic theme reactivity
+
+## Alignment
+
+The `row.align()` applier controls vertical (cross-axis) alignment:
 
 ```typescript
+// Start aligned (top)
+const startRow = row.create(
+  row.align('flex-start'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+);
+
 // Center aligned (default)
-const centerAligned = row({
-  align: 'center',
-  children: [/* children of different heights */]
-});
+const centerRow = row.create(
+  row.align('center'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+);
 
-// Top aligned
-const topAligned = row({
-  align: 'flex-start',
-  children: [/* children */]
-});
-
-// Bottom aligned
-const bottomAligned = row({
-  align: 'flex-end',
-  children: [/* children */]
-});
+// End aligned (bottom)
+const endRow = row.create(
+  row.align('flex-end'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+);
 
 // Stretch to same height
-const stretched = row({
-  align: 'stretch',
-  children: [/* children */]
-});
+const stretchRow = row.create(
+  row.align('stretch'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+);
 
 // Baseline aligned (text alignment)
-const baseline = row({
-  align: 'baseline',
-  children: [/* text elements */]
-});
+const baselineRow = row.create(
+  row.align('baseline'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+);
 ```
 
-### Horizontal Justification
+### Alignment Options
+
+- `flex-start`: Align items to the top
+- `center`: Center items vertically
+- `flex-end`: Align items to the bottom
+- `stretch`: Stretch items to fill container height
+- `baseline`: Align items by their text baseline
+
+## Justification
+
+The `row.justify()` applier controls horizontal (main-axis) justification:
 
 ```typescript
-// Start (default)
-const startJustified = row({
-  justify: 'flex-start',
-  children: [/* children */]
-});
+// Start justified (left)
+const startJustified = row.create(
+  row.justify('flex-start'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+);
 
-// Center
-const centerJustified = row({
-  justify: 'center',
-  children: [/* children */]
-});
+// Center justified
+const centerJustified = row.create(
+  row.justify('center'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+);
 
-// End
-const endJustified = row({
-  justify: 'flex-end',
-  children: [/* children */]
-});
+// End justified (right)
+const endJustified = row.create(
+  row.justify('flex-end'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+);
 
-// Space between
-const spaceBetween = row({
-  justify: 'space-between',
-  children: [/* children */]
-});
+// Space between - items spread with space between them
+const spaceBetween = row.create(
+  row.justify('space-between'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+  tag.div('Item 3'),
+);
 
-// Space around
-const spaceAround = row({
-  justify: 'space-around',
-  children: [/* children */]
-});
+// Space around - equal space around each item
+const spaceAround = row.create(
+  row.justify('space-around'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+  tag.div('Item 3'),
+);
 
-// Space evenly
-const spaceEvenly = row({
-  justify: 'space-evenly',
-  children: [/* children */]
-});
+// Space evenly - equal space between and around items
+const spaceEvenly = row.create(
+  row.justify('space-evenly'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+  tag.div('Item 3'),
+);
 ```
 
-### Wrapping
+### Justification Options
+
+- `flex-start`: Pack items to the start
+- `center`: Center items horizontally
+- `flex-end`: Pack items to the end
+- `space-between`: Distribute items with space between
+- `space-around`: Distribute items with space around
+- `space-evenly`: Distribute items with even spacing
+
+## Wrapping
+
+The `row.wrap()` applier controls whether items wrap to multiple rows:
 
 ```typescript
 // No wrap (default) - single row
-const noWrap = row({
-  wrap: false,
-  spacing: 'sm',
-  children: [/* many children */]
-});
+const noWrapRow = row.create(
+  row.wrap(false),
+  row.spacing('sm'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+  tag.div('Item 3'),
+  tag.div('Item 4'),
+);
 
 // Allow wrapping to multiple rows
-const wrapped = row({
-  wrap: true,
-  spacing: 'sm',
-  children: [/* many children that will wrap */]
-});
+const wrapRow = row.create(
+  row.wrap(true),
+  row.spacing('sm'),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+  tag.div('Item 3'),
+  tag.div('Item 4'),
+);
 ```
 
-### Full Width
+## Full Width
+
+The `row.fullWidth()` applier controls container width:
 
 ```typescript
-// Full width
-const fullWidth = row({
-  fullWidth: true,
-  justify: 'space-between',
-  children: [/* children */]
-});
+// Full width - stretches to container width
+const fullWidthRow = row.create(
+  row.fullWidth(true),
+  row.justify('space-between'),
+  tag.div('Left'),
+  tag.div('Right'),
+);
 
-// Auto width (default)
-const autoWidth = row({
-  fullWidth: false,
-  children: [/* children */]
-});
+// Auto width (default) - fits content
+const autoWidthRow = row.create(
+  row.fullWidth(false),
+  tag.div('Item 1'),
+  tag.div('Item 2'),
+);
 ```
 
-### Complete Example
+## Advanced Examples
+
+### Action Bar
 
 ```typescript
 import { row } from '@/elements/row';
-import { button } from '@/elements/button';
-import { iconButton } from '@/elements/icon-button';
-import { badge } from '@/elements/badge';
-import { text } from '@/elements/text';
-import { box } from '@/elements/box';
 import { tag } from '@/elements/_base';
 
-// Action bar with buttons
-const actionBar = row({
-  spacing: 'sm',
-  align: 'center',
-  justify: 'space-between',
-  fullWidth: true,
-  children: [
-    row({
-      spacing: 'sm',
-      children: [
-        button({
-          label: 'Save',
-          variant: 'primary'
-        }),
-        button({
-          label: 'Cancel',
-          variant: 'secondary'
-        })
-      ]
-    }),
-    row({
-      spacing: 'xs',
-      children: [
-        iconButton({
-          icon: tag.span({ textContent: '⚙️' }),
-          'aria-label': 'Settings',
-          variant: 'ghost'
-        }),
-        iconButton({
-          icon: tag.span({ textContent: '?' }),
-          'aria-label': 'Help',
-          variant: 'ghost'
-        })
-      ]
-    })
-  ]
-});
+const actionBar = row.create(
+  row.spacing('sm'),
+  row.align('center'),
+  row.justify('space-between'),
+  row.fullWidth(true),
+  // Left actions
+  row.create(
+    row.spacing('sm'),
+    tag.button('Save'),
+    tag.button('Cancel'),
+  ),
+  // Right actions
+  row.create(
+    row.spacing('xs'),
+    tag.button('Settings'),
+    tag.button('Help'),
+  ),
+);
+```
 
-// Tag list with wrapping
-const tags = row({
-  spacing: 'xs',
-  wrap: true,
-  children: ['JavaScript', 'React', 'TypeScript', 'Node.js', 'CSS', 'HTML'].map(tag =>
-    badge({
-      content: tag,
-      variant: 'subtle',
-      size: 'sm',
-      pill: true
-    })
-  )
-});
+### Tag List with Wrapping
 
-// Header with logo and navigation
-const header = row({
-  spacing: 'lg',
-  align: 'center',
-  justify: 'space-between',
-  fullWidth: true,
-  children: [
-    text({
-      content: 'Logo',
-      size: 'xl',
-      weight: 'bold'
-    }),
-    row({
-      spacing: 'md',
-      children: [
-        text({ content: 'Home' }),
-        text({ content: 'About' }),
-        text({ content: 'Services' }),
-        text({ content: 'Contact' })
-      ]
-    }),
-    button({
-      label: 'Sign In',
-      variant: 'primary'
-    })
-  ]
-});
+```typescript
+const tags = ['JavaScript', 'React', 'TypeScript', 'Node.js', 'CSS', 'HTML'];
 
-// Card footer with actions
-const cardFooter = row({
-  spacing: 'sm',
-  justify: 'flex-end',
-  children: [
-    button({
-      label: 'Dismiss',
-      variant: 'ghost'
-    }),
-    button({
-      label: 'Confirm',
-      variant: 'primary'
-    })
-  ]
-});
+const tagList = row.create(
+  row.spacing('xs'),
+  row.wrap(true),
+  ...tags.map(tag => tag.span(tag)),
+);
+```
 
-// Stats display
-const stats = row({
-  spacing: 'xl',
-  justify: 'space-evenly',
-  fullWidth: true,
-  children: [
-    box({
-      children: [
-        text({ content: '1,234', size: 'xl', weight: 'bold' }),
-        text({ content: 'Users', color: 'textSecondary' })
-      ]
-    }),
-    box({
-      children: [
-        text({ content: '567', size: 'xl', weight: 'bold' }),
-        text({ content: 'Projects', color: 'textSecondary' })
-      ]
-    }),
-    box({
-      children: [
-        text({ content: '89', size: 'xl', weight: 'bold' }),
-        text({ content: 'Teams', color: 'textSecondary' })
-      ]
-    })
-  ]
-});
+### Header Layout
+
+```typescript
+const header = row.create(
+  row.spacing('lg'),
+  row.align('center'),
+  row.justify('space-between'),
+  row.fullWidth(true),
+  // Logo
+  tag.div('Logo'),
+  // Navigation
+  row.create(
+    row.spacing('md'),
+    tag.a('Home'),
+    tag.a('About'),
+    tag.a('Services'),
+    tag.a('Contact'),
+  ),
+  // Actions
+  tag.button('Sign In'),
+);
+```
+
+### Card Footer
+
+```typescript
+const cardFooter = row.create(
+  row.spacing('sm'),
+  row.justify('flex-end'),
+  tag.button('Dismiss'),
+  tag.button('Confirm'),
+);
+```
+
+### Stats Display
+
+```typescript
+const stats = [
+  { value: '1,234', label: 'Users' },
+  { value: '567', label: 'Projects' },
+  { value: '89', label: 'Teams' },
+];
+
+const statsDisplay = row.create(
+  row.spacing('xl'),
+  row.justify('space-evenly'),
+  row.fullWidth(true),
+  ...stats.map(stat =>
+    tag.div(
+      tag.div(stat.value),
+      tag.div(stat.label),
+    ),
+  ),
+);
+```
+
+### Responsive Button Group
+
+```typescript
+const buttonGroup = row.create(
+  row.spacing('sm'),
+  row.wrap(true),
+  row.justify('center'),
+  tag.button('Option 1'),
+  tag.button('Option 2'),
+  tag.button('Option 3'),
+  tag.button('Option 4'),
+);
+```
+
+## Trait-Based Pattern
+
+The row element uses the `tag.$()` adopter pattern internally, which means:
+
+1. **Composability**: Each applier (`spacing`, `align`, etc.) is a function that applies traits to an element
+2. **Declarative**: All styling uses the trait system with conditional logic via `$test()`
+3. **Theme-aware**: All tokens are reactive and update when the theme changes
+4. **No ternaries**: All conditional logic uses trait conditions instead of ternary expressions
+
+### Internal Structure
+
+```typescript
+// Example of how row.spacing() works internally
+spacing: (spacing: SpacingToken) => (el: HTMLElement | SVGElement) => {
+  tag.$(el)(
+    trait.style('gap', theme.$token('spacing', spacing)),
+  );
+};
 ```
 
 ## Features
 
-- **Flexbox Layout**: Modern horizontal layout system
-- **Spacing Control**: Gap between children using design tokens
-- **Vertical Alignment**: Five alignment options for cross-axis
-- **Horizontal Justification**: Six justification options for main axis
-- **Wrapping**: Optional multi-row wrapping
-- **Full Width**: Optional container width control
-- **Theme Spacing**: All gaps use design token spacing
-- **Center Default**: Sensible defaults for common use cases
-- **Responsive**: Works with any child element types
-- **No Wrap Default**: Maintains single row unless specified
+- ✅ **Trait-based composition**: Use appliers to build up row layout
+- ✅ **Theme integration**: Fully reactive to theme changes
+- ✅ **Flexbox layout**: Modern horizontal layout system
+- ✅ **5 alignment options**: Vertical cross-axis alignment control
+- ✅ **6 justification options**: Horizontal main-axis distribution
+- ✅ **Spacing control**: Gap between children using design tokens
+- ✅ **Wrapping support**: Optional multi-row wrapping
+- ✅ **Width control**: Full width or auto width modes
+- ✅ **Conditional traits**: Uses `$test()` for conditional styling
+- ✅ **Automatic cleanup**: Event listeners and subscriptions are cleaned up when elements are removed from DOM
+
+## Migration from v2.0
+
+If you're migrating from the props-based API:
+
+**Old (v2.0):**
+
+```typescript
+row({
+  spacing: 'md',
+  align: 'center',
+  justify: 'space-between',
+  wrap: false,
+  fullWidth: true,
+  children: [/* elements */],
+});
+```
+
+**New (v3.0):**
+
+```typescript
+row.create(
+  row.spacing('md'),
+  row.align('center'),
+  row.justify('space-between'),
+  row.wrap(false),
+  row.fullWidth(true),
+  /* elements */
+);
+```

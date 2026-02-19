@@ -1,233 +1,264 @@
 ---
 name: divider
-description: A visual separator component for dividing content. Supports horizontal and vertical orientations with multiple styles and customizable colors.
+description: A composable divider element using the trait-based pattern. Supports horizontal and vertical orientations, multiple line styles, and custom spacing with full theming integration.
 license: MIT
 metadata:
   author: Kevin Lint
-  version: '1.0'
+  version: '3.0'
 ---
 
-## Divider Component
+# Divider Element
 
-The `divider` function creates a customizable separator line element for visually dividing content sections with support for different orientations and styles.
+The `divider` element provides a composable, trait-based approach to creating visual separator elements with built-in theming support, multiple orientations, and customizable styling.
 
-## Props
+## API
+
+The divider element exports an object with the following methods:
 
 ```typescript
-type DividerProps = {
-  orientation?: 'horizontal' | 'vertical';
-  variant?: 'solid' | 'dashed' | 'dotted';
-  color?: ColorToken;              // Divider color
-  thickness?: string;              // Line thickness
-  spacing?: SpacingToken;          // Margin spacing
+export const divider = {
+  create: (...children: Child[]) => HTMLHRElement;
+  orientation: (orientation: Orientation) => Applier;
+  variant: (variant: Variant) => Applier;
+  color: (color: ColorToken) => Applier;
+  thickness: (thickness: string) => Applier;
+  spacing: (spacing: SpacingToken) => Applier;
+  spacingVertical: (spacing: SpacingToken) => Applier;
 };
 ```
 
-## Example Usage
+### Types
+
+```typescript
+type Orientation = 'horizontal' | 'vertical';
+type Variant = 'solid' | 'dashed' | 'dotted';
+type ColorToken = string;
+type SpacingToken = string;
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
+```
+
+## Usage
 
 ### Basic Divider
 
 ```typescript
 import { divider } from '@/elements/divider';
 
-// Simple horizontal divider
-const separator = divider({});
+// Create a simple horizontal divider
+divider.create();
 ```
 
-### Orientation
+### Complete Divider
 
 ```typescript
-// Horizontal (default)
-const horizontalDiv = divider({
-  orientation: 'horizontal'
-});
-
-// Vertical (for side-by-side content)
-const verticalDiv = divider({
-  orientation: 'vertical'
-});
+// Create a fully configured divider
+divider.create(
+  divider.orientation('horizontal'),
+  divider.variant('solid'),
+  divider.color('gray.300'),
+  divider.thickness('2px'),
+  divider.spacing('md'),
+);
 ```
 
-### Variants
+## Orientation
+
+The `divider.orientation()` applier controls whether the divider is horizontal or vertical:
+
+```typescript
+// Horizontal divider (default)
+divider.create(divider.orientation('horizontal'));
+
+// Vertical divider
+divider.create(divider.orientation('vertical'));
+```
+
+### Orientation Features
+
+- **Horizontal**: Spans full width with vertical spacing
+- **Vertical**: Spans height with horizontal spacing
+- Automatic display and dimension adjustments
+- Theme-aware spacing
+
+## Variants
+
+The `divider.variant()` applier applies different line styles:
 
 ```typescript
 // Solid line (default)
-const solidDiv = divider({
-  variant: 'solid'
-});
+divider.create(divider.variant('solid'));
 
 // Dashed line
-const dashedDiv = divider({
-  variant: 'dashed'
-});
+divider.create(divider.variant('dashed'));
 
 // Dotted line
-const dottedDiv = divider({
-  variant: 'dotted'
-});
+divider.create(divider.variant('dotted'));
 ```
 
-### Colors
+### Variant Features
+
+Each variant includes:
+
+- Border style configuration
+- Consistent appearance across orientations
+- Theme integration for colors
+- Automatic responsiveness
+
+## Color
+
+The `divider.color()` applier sets the divider color using theme tokens:
 
 ```typescript
-// Primary border color (default)
-const defaultDiv = divider({
-  color: 'borderPrimary'
-});
+// Gray divider
+divider.create(divider.color('gray.300'));
 
-// Secondary border color
-const secondaryDiv = divider({
-  color: 'borderSecondary'
-});
+// Accent color divider
+divider.create(divider.color('primary.500'));
 
-// Custom color
-const customDiv = divider({
-  color: 'primary'
-});
+// Custom color from theme
+divider.create(divider.color('error.400'));
 ```
 
-### Thickness
+## Thickness
+
+The `divider.thickness()` applier controls the line thickness:
 
 ```typescript
-// Thin (1px - default)
-const thinDiv = divider({
-  thickness: '1px'
-});
+// Thin divider
+divider.create(divider.thickness('1px'));
 
-// Medium
-const mediumDiv = divider({
-  thickness: '2px'
-});
+// Medium divider
+divider.create(divider.thickness('2px'));
 
-// Thick
-const thickDiv = divider({
-  thickness: '4px'
-});
+// Thick divider
+divider.create(divider.thickness('4px'));
 ```
 
-### Spacing
+## Spacing
+
+### Horizontal Divider Spacing
+
+The `divider.spacing()` applier sets vertical spacing for horizontal dividers:
 
 ```typescript
 // Small spacing
-const smallSpacing = divider({
-  spacing: 'sm'
-});
+divider.create(divider.orientation('horizontal'), divider.spacing('sm'));
 
-// Medium spacing (default)
-const mediumSpacing = divider({
-  spacing: 'md'
-});
+// Medium spacing
+divider.create(divider.orientation('horizontal'), divider.spacing('md'));
 
 // Large spacing
-const largeSpacing = divider({
-  spacing: 'lg'
-});
-
-// Extra large spacing
-const xlSpacing = divider({
-  spacing: 'xl'
-});
+divider.create(divider.orientation('horizontal'), divider.spacing('lg'));
 ```
 
-### Complete Example
+### Vertical Divider Spacing
+
+The `divider.spacingVertical()` applier sets horizontal spacing for vertical dividers:
+
+```typescript
+// Small spacing
+divider.create(divider.orientation('vertical'), divider.spacingVertical('sm'));
+
+// Medium spacing
+divider.create(divider.orientation('vertical'), divider.spacingVertical('md'));
+
+// Large spacing
+divider.create(divider.orientation('vertical'), divider.spacingVertical('lg'));
+```
+
+## Advanced Examples
+
+### Section Divider
 
 ```typescript
 import { divider } from '@/elements/divider';
-import { stack } from '@/elements/stack';
-import { row } from '@/elements/row';
-import { heading } from '@/elements/heading';
-import { text } from '@/elements/text';
+import { tag } from '@/elements/_base';
 
-// Content sections with dividers
-const page = stack({
-  spacing: '0',
-  children: [
-    heading({
-      content: 'Section 1',
-      level: 2
-    }),
-    text({
-      content: 'Content for the first section.'
-    }),
+tag.div(
+  tag.h2('Section 1'),
+  tag.p('Content for section 1...'),
+  divider.create(divider.spacing('lg'), divider.color('gray.300')),
+  tag.h2('Section 2'),
+  tag.p('Content for section 2...'),
+);
+```
 
-    divider({
-      spacing: 'xl',
-      variant: 'solid'
-    }),
+### Sidebar Divider
 
-    heading({
-      content: 'Section 2',
-      level: 2
-    }),
-    text({
-      content: 'Content for the second section.'
-    }),
+```typescript
+import { divider } from '@/elements/divider';
 
-    divider({
-      spacing: 'xl',
-      variant: 'dashed',
-      color: 'borderSecondary'
-    }),
+// Vertical divider between sidebar and content
+tag.div(
+  tag.aside('Sidebar content'),
+  divider.create(
+    divider.orientation('vertical'),
+    divider.spacingVertical('md'),
+    divider.color('gray.200'),
+  ),
+  tag.main('Main content'),
+);
+```
 
-    heading({
-      content: 'Section 3',
-      level: 2
-    })
-  ]
-});
+### Styled Divider
 
-// Vertical divider between columns
-const columns = row({
-  spacing: '0',
-  children: [
-    stack({
-      padding: 'lg',
-      children: [
-        heading({ content: 'Column 1', level: 3 })
-      ]
-    }),
+```typescript
+// Decorative divider with custom styling
+divider.create(
+  divider.variant('dashed'),
+  divider.color('primary.300'),
+  divider.thickness('2px'),
+  divider.spacing('xl'),
+);
+```
 
-    divider({
-      orientation: 'vertical',
-      spacing: 'md'
-    }),
+### List Item Separators
 
-    stack({
-      padding: 'lg',
-      children: [
-        heading({ content: 'Column 2', level: 3 })
-      ]
-    })
-  ]
-});
+```typescript
+import { divider } from '@/elements/divider';
 
-// Decorative dividers
-const fancySection = stack({
-  spacing: 'lg',
-  children: [
-    text({ content: 'Content above' }),
+tag.ul(
+  tag.li('Item 1'),
+  divider.create(divider.variant('solid'), divider.color('gray.200'), divider.spacing('xs')),
+  tag.li('Item 2'),
+  divider.create(divider.variant('solid'), divider.color('gray.200'), divider.spacing('xs')),
+  tag.li('Item 3'),
+);
+```
 
-    divider({
-      variant: 'dashed',
-      color: 'primary',
-      thickness: '2px',
-      spacing: 'lg'
-    }),
+## Trait-Based Pattern
 
-    text({ content: 'Content below' })
-  ]
-});
+The divider element uses the `tag.$()` adopter pattern internally, which means:
+
+1. **Composability**: Each applier (`orientation`, `variant`, etc.) is a function that applies traits to an element
+2. **Declarative**: All styling uses the trait system with conditional logic via `$test()`
+3. **Theme-aware**: All tokens are reactive and update when the theme changes
+4. **No ternaries**: All conditional logic uses trait conditions instead of ternary expressions
+
+### Internal Structure
+
+```typescript
+// Example of how divider.orientation() works internally
+orientation: (orientation: Orientation) => (el: HTMLElement | SVGElement) => {
+  tag.$(el)(
+    trait.style('width', '100%', $test(orientation === 'horizontal')),
+    trait.style('height', '1px', $test(orientation === 'horizontal')),
+    trait.style('width', '1px', $test(orientation === 'vertical')),
+    trait.style('height', '100%', $test(orientation === 'vertical')),
+    trait.style('display', 'block'),
+  );
+};
 ```
 
 ## Features
 
-- **Dual Orientation**: Horizontal for stacking, vertical for side-by-side
-- **Three Variants**: Solid, dashed, and dotted line styles
-- **Theme Colors**: Uses design token colors
-- **Customizable Thickness**: Any CSS thickness value
-- **Spacing Control**: Margin spacing using design tokens
-- **Full Width**: Horizontal dividers stretch to container width
-- **Full Height**: Vertical dividers stretch to container height
-- **Inline Display**: Vertical dividers work inline
-- **Pattern Support**: Dashed and dotted use CSS gradient patterns
-- **Semantic HTML**: Uses `<hr>` element for accessibility
+- ✅ **Trait-based composition**: Use appliers to build up divider styling
+- ✅ **Theme integration**: Fully reactive to theme changes
+- ✅ **2 orientations**: Horizontal and vertical
+- ✅ **3 variants**: Solid, dashed, and dotted line styles
+- ✅ **Custom colors**: Use any theme color token
+- ✅ **Adjustable thickness**: Control line weight
+- ✅ **Flexible spacing**: Separate controls for horizontal and vertical spacing
+- ✅ **Conditional traits**: Uses `$test()` for conditional styling
+- ✅ **Automatic cleanup**: Subscriptions are cleaned up when elements are removed from DOM

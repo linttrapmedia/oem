@@ -1,28 +1,18 @@
 import { $test } from '@/core/util';
 import { tag, trait } from '@/elements/_base';
 import { theme } from '@/modules/theme';
-import type { DesignTokens } from '@/themes/_base';
+import { DesignTokens } from '@/themes';
 
-type ButtonVariant = 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info' | 'ghost';
-type ButtonSize = 'sm' | 'md' | 'lg';
-
-type ButtonProps = {
-  label?: string;
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  disabled?: boolean;
-  fullWidth?: boolean;
-  onClick?: () => void;
-  children?: HTMLElement[];
-};
-
-// Extract token name types from DesignTokens
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
+type Variant = 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info' | 'ghost';
+type Size = 'sm' | 'md' | 'lg';
 type ColorToken = keyof DesignTokens['colors'];
 type SpacingToken = keyof DesignTokens['spacing'];
 type TypographyToken = keyof DesignTokens['typography'];
 
 const variantConfig: Record<
-  ButtonVariant,
+  Variant,
   {
     bg: ColorToken | 'transparent';
     bgHover: ColorToken;
@@ -85,7 +75,7 @@ const variantConfig: Record<
 };
 
 const sizeConfig: Record<
-  ButtonSize,
+  Size,
   {
     padding: SpacingToken;
     fontSize: TypographyToken;
@@ -109,161 +99,106 @@ const sizeConfig: Record<
   },
 };
 
-export const button = (props: ButtonProps) => {
-  const {
-    label,
-    variant = 'primary',
-    size = 'md',
-    disabled = false,
-    fullWidth = false,
-    onClick,
-    children = [],
-  } = props;
+// Example usage:
+// button.el(
+//   button.size('md'),
+//   button.disabled(false),
+//   button.variant('primary'),
+//   button.text('Click Me'),
+// );
+export const button = {
+  create: (...children: Child[]) => {
+    const el = document.createElement('button');
 
-  const config = variantConfig[variant];
-  const sizeSettings = sizeConfig[size];
+    // Apply default button styles
+    tag.$(el)(
+      trait.style('display', 'inline-flex'),
+      trait.style('alignItems', 'center'),
+      trait.style('justifyContent', 'center'),
+      trait.style('fontFamily', theme.$token('typography', 'fontFamilyBase')),
+      trait.style('fontWeight', theme.$token('typography', 'fontWeightMedium')),
+      trait.style('lineHeight', theme.$token('typography', 'lineHeightNormal')),
+      trait.style('transition', 'all 0.2s ease-in-out'),
+      trait.style('border', 'none'),
+      trait.style('outline', 'none'),
+      trait.style('userSelect', 'none'),
+      trait.style('cursor', 'pointer'),
+    );
 
-  const btnElement = tag.button(
-    // Base styles
-    trait.style('display', 'inline-flex'),
-    trait.style('alignItems', 'center'),
-    trait.style('justifyContent', 'center'),
-    trait.style('fontFamily', theme.$token('typography', 'fontFamilyBase')),
-    trait.style('fontWeight', theme.$token('typography', 'fontWeightMedium')),
-    trait.style('lineHeight', theme.$token('typography', 'lineHeightNormal')),
-    trait.style('transition', 'all 0.2s ease-in-out'),
-    trait.style('border', 'none'),
-    trait.style('outline', 'none'),
-    trait.style('userSelect', 'none'),
+    // Apply children (appliers or elements)
+    children.forEach((c) => {
+      if (c instanceof HTMLElement || c instanceof SVGElement) {
+        el.appendChild(c);
+      } else {
+        c(el);
+      }
+    });
 
-    // Cursor
-    trait.style('cursor', 'not-allowed', $test(disabled)),
-    trait.style('cursor', 'pointer', $test(!disabled)),
+    return el;
+  },
 
-    // Size-based styles
-    trait.style('padding', theme.$token('spacing', sizeSettings.padding)),
-    trait.style('fontSize', theme.$token('typography', sizeSettings.fontSize)),
-    trait.style('height', theme.$token('spacing', sizeSettings.height)),
-    trait.style('borderRadius', theme.$token('borders', 'borderRadiusButton')),
+  variant: (variant: Variant) => (el: HTMLElement | SVGElement) => {
+    const config = variantConfig[variant];
 
-    // Width
-    trait.style('width', '100%', $test(fullWidth)),
-    trait.style('width', 'auto', $test(!fullWidth)),
+    tag.$(el)(
+      // Base styles
+      trait.style('backgroundColor', theme.$token('colors', config.bg)),
+      trait.style('color', theme.$token('colors', config.text)),
+      trait.style(
+        'border',
+        `1px solid ${theme.$token('colors', config.border!)}`,
+        $test(config.border),
+      ),
+      trait.style('border', 'none', $test(!config.border)),
 
-    // Background color
-    trait.style(
-      'backgroundColor',
-      theme.$token('colors', config.bg),
-      $test(!disabled && config.bg !== 'transparent'),
-    ),
-    trait.style('backgroundColor', 'transparent', $test(!disabled && config.bg === 'transparent')),
-    trait.style(
-      'backgroundColor',
-      theme.$token('colors', config.bgDisabled),
-      $test(disabled && config.bg !== 'transparent'),
-    ),
-    trait.style('backgroundColor', 'transparent', $test(disabled && config.bg === 'transparent')),
+      // Hover state
+      trait.style_on_event('mouseenter', 'backgroundColor', theme.$token('colors', config.bgHover)),
 
-    // Text color
-    trait.style('color', theme.$token('colors', 'textDisabled'), $test(disabled)),
-    trait.style('color', theme.$token('colors', config.text), $test(!disabled)),
+      // Mouse leave - restore background
+      trait.style_on_event(
+        'mouseleave',
+        'backgroundColor',
+        'transparent',
+        $test(config.bg === 'transparent'),
+      ),
+      trait.style_on_event(
+        'mouseleave',
+        'backgroundColor',
+        theme.$token('colors', config.bg),
+        $test(config.bg !== 'transparent'),
+      ),
 
-    // Border for ghost variant
-    trait.style(
-      'border',
-      () =>
-        `${theme.token('borders', 'borderWidthThin')} ${theme.token(
-          'borders',
-          'borderStyleSolid',
-        )} ${theme.token('colors', config.border || 'borderPrimary')}`,
-      $test(config.border !== undefined),
-      theme,
-    ),
+      // Active state
+      trait.style_on_event('mousedown', 'backgroundColor', theme.$token('colors', config.bgActive)),
+      trait.style_on_event('mouseup', 'backgroundColor', theme.$token('colors', config.bgHover)),
+    );
+  },
 
-    // Opacity
-    trait.style('opacity', '0.6', $test(disabled)),
-    trait.style('opacity', '1', $test(!disabled)),
+  size: (size: Size) => (el: HTMLElement | SVGElement) => {
+    const config = sizeConfig[size];
 
-    // Shadow
-    trait.style('boxShadow', 'none', $test(disabled)),
-    trait.style('boxShadow', theme.$token('shadows', 'shadowButton'), $test(!disabled)),
+    tag.$(el)(
+      trait.style('padding', theme.$token('spacing', config.padding)),
+      trait.style('fontSize', theme.$token('typography', config.fontSize)),
+      trait.style('height', theme.$token('spacing', config.height)),
+      trait.style('borderRadius', theme.$token('borders', 'borderRadiusButton')),
+    );
+  },
 
-    // Hover state - enter
-    trait.style_on_event(
-      'mouseenter',
-      'backgroundColor',
-      theme.$token('colors', config.bgHover),
-      $test(!disabled),
-    ),
-    trait.style_on_event(
-      'mouseenter',
-      'boxShadow',
-      theme.$token('shadows', 'shadowButtonHover'),
-      $test(!disabled),
-    ),
-    trait.style_on_event('mouseenter', 'transform', 'translateY(-1px)', $test(!disabled)),
+  disabled: (disabled: boolean) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('opacity', '0.6', $test(disabled)),
+      trait.style('cursor', 'not-allowed', $test(disabled)),
+      trait.style('pointerEvents', 'none', $test(disabled)),
+      trait.attr('disabled', 'true', $test(disabled)),
+    );
+  },
 
-    // Hover state - leave (revert)
-    trait.style_on_event(
-      'mouseleave',
-      'backgroundColor',
-      theme.$token('colors', config.bg),
-      $test(!disabled && config.bg !== 'transparent'),
-    ),
-    trait.style_on_event(
-      'mouseleave',
-      'backgroundColor',
-      'transparent',
-      $test(!disabled && config.bg === 'transparent'),
-    ),
-    trait.style_on_event(
-      'mouseleave',
-      'boxShadow',
-      theme.$token('shadows', 'shadowButton'),
-      $test(!disabled),
-    ),
-    trait.style_on_event('mouseleave', 'transform', 'translateY(0)', $test(!disabled)),
+  text: (text: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.text(text));
+  },
 
-    // Active state - press
-    trait.style_on_event(
-      'mousedown',
-      'backgroundColor',
-      theme.$token('colors', config.bgActive),
-      $test(!disabled),
-    ),
-    trait.style_on_event('mousedown', 'transform', 'translateY(0)', $test(!disabled)),
-    trait.style_on_event('mousedown', 'boxShadow', 'none', $test(!disabled)),
-
-    // Active state - release (revert to hover if still hovering)
-    trait.style_on_event(
-      'mouseup',
-      'backgroundColor',
-      theme.$token('colors', config.bgHover),
-      $test(!disabled),
-    ),
-    trait.style_on_event('mouseup', 'transform', 'translateY(-1px)', $test(!disabled)),
-    trait.style_on_event(
-      'mouseup',
-      'boxShadow',
-      theme.$token('shadows', 'shadowButtonHover'),
-      $test(!disabled),
-    ),
-
-    // Focus state
-    trait.style_on_event('focus', 'boxShadow', theme.$token('shadows', 'shadowFocus')),
-
-    // Click handler
-    trait.event('click', onClick || (() => {}), $test(onClick !== undefined && !disabled)),
-
-    // Disabled attribute
-    trait.attr('disabled', 'true', $test(disabled)),
-
-    // Label text
-    trait.text(label || '', $test(label !== undefined)),
-
-    // Children elements
-    ...children,
-  );
-
-  return btnElement;
+  onClick: (handler: (e: any) => void) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.event('click', handler));
+  },
 };

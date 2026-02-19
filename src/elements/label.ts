@@ -1,81 +1,88 @@
 import { $test } from '@/core/util';
 import { tag, trait } from '@/elements/_base';
 import { theme } from '@/modules/theme';
-import type { DesignTokens } from '@/themes/_base';
+import { DesignTokens } from '@/themes';
 
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
 type LabelSize = 'sm' | 'md' | 'lg';
-type LabelColor = keyof DesignTokens['colors'];
-
-type LabelProps = {
-  content: string;
-  htmlFor?: string;
-  size?: LabelSize;
-  color?: LabelColor;
-  required?: boolean;
-  disabled?: boolean;
-  children?: HTMLElement[];
-};
-
+type ColorToken = keyof DesignTokens['colors'];
 type TypographyToken = keyof DesignTokens['typography'];
+type SpacingToken = keyof DesignTokens['spacing'];
 
-const sizeConfig: Record<LabelSize, { fontSize: TypographyToken; fontWeight: TypographyToken }> = {
-  sm: { fontSize: 'fontSizeSm', fontWeight: 'fontWeightNormal' },
-  md: { fontSize: 'fontSizeBase', fontWeight: 'fontWeightMedium' },
-  lg: { fontSize: 'fontSizeLg', fontWeight: 'fontWeightMedium' },
+const sizeConfig: Record<
+  LabelSize,
+  {
+    fontSize: TypographyToken;
+    fontWeight: TypographyToken;
+  }
+> = {
+  sm: {
+    fontSize: 'fontSizeSm',
+    fontWeight: 'fontWeightNormal',
+  },
+  md: {
+    fontSize: 'fontSizeBase',
+    fontWeight: 'fontWeightMedium',
+  },
+  lg: {
+    fontSize: 'fontSizeLg',
+    fontWeight: 'fontWeightMedium',
+  },
 };
 
-export const label = (props: LabelProps) => {
-  const {
-    content,
-    htmlFor,
-    size = 'md',
-    color = 'textPrimary',
-    required = false,
-    disabled = false,
-    children = [],
-  } = props;
+export const label = {
+  create: (...children: Child[]) => {
+    const el = document.createElement('label');
 
-  const config = sizeConfig[size];
+    tag.$(el)(
+      trait.style('fontFamily', theme.$token('typography', 'fontFamilyBase')),
+      trait.style('lineHeight', theme.$token('typography', 'lineHeightNormal')),
+      trait.style('display', 'inline-block'),
+      trait.style('marginBottom', theme.$token('spacing', 'xs')),
+    );
 
-  const element = tag.label(
-    // Base styles
-    trait.style('fontFamily', theme.$token('typography', 'fontFamilyBase')),
-    trait.style('fontSize', theme.$token('typography', config.fontSize)),
-    trait.style('fontWeight', theme.$token('typography', config.fontWeight)),
-    trait.style('lineHeight', theme.$token('typography', 'lineHeightNormal')),
-    trait.style('display', 'inline-block'),
-    trait.style('marginBottom', theme.$token('spacing', 'xs')),
+    children.forEach((c) => {
+      if (c instanceof HTMLElement || c instanceof SVGElement) {
+        el.appendChild(c);
+      } else {
+        c(el);
+      }
+    });
 
-    // Color
-    trait.style('color', theme.$token('colors', color), $test(!disabled)),
-    trait.style('color', theme.$token('colors', 'textDisabled'), $test(disabled)),
+    return el;
+  },
 
-    // Cursor
-    trait.style('cursor', 'pointer', $test(!disabled && htmlFor !== undefined)),
-    trait.style('cursor', 'not-allowed', $test(disabled)),
-    trait.style('cursor', 'default', $test(!disabled && htmlFor === undefined)),
+  size: (size: LabelSize) => (el: HTMLElement | SVGElement) => {
+    const config = sizeConfig[size];
 
-    // Disabled state
-    trait.style('opacity', '0.6', $test(disabled)),
+    tag.$(el)(
+      trait.style('fontSize', theme.$token('typography', config.fontSize)),
+      trait.style('fontWeight', theme.$token('typography', config.fontWeight)),
+    );
+  },
 
-    // Attributes
-    trait.attr('for', htmlFor!, $test(htmlFor !== undefined)),
+  color: (color: ColorToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('color', theme.$token('colors', color)));
+  },
 
-    // Content
-    trait.text(content),
+  htmlFor: (htmlFor: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.attr('for', htmlFor), trait.style('cursor', 'pointer'));
+  },
 
-    // Required indicator
-    required
-      ? tag.span(
-          trait.style('color', theme.$token('colors', 'error')),
-          trait.style('marginLeft', theme.$token('spacing', 'xs')),
-          trait.text('*'),
-        )
-      : null,
+  required: (required: boolean) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('color', theme.$token('colors', 'error'), $test(required)));
+  },
 
-    // Children
-    ...children.filter(Boolean),
-  );
+  disabled: (disabled: boolean) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('opacity', '0.6', $test(disabled)),
+      trait.style('cursor', 'not-allowed', $test(disabled)),
+      trait.style('color', theme.$token('colors', 'textDisabled'), $test(disabled)),
+    );
+  },
 
-  return element;
+  text: (text: string) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.text(text));
+  },
 };

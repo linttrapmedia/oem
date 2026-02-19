@@ -1,8 +1,10 @@
 import { $test } from '@/core/util';
 import { tag, trait } from '@/elements/_base';
 import { theme } from '@/modules/theme';
-import type { DesignTokens } from '@/themes/_base';
+import { DesignTokens } from '@/themes';
 
+type Applier = (el: HTMLElement | SVGElement) => void;
+type Child = Applier | HTMLElement | SVGElement;
 type SpacingToken = keyof DesignTokens['spacing'];
 type AlignItems = 'flex-start' | 'center' | 'flex-end' | 'stretch' | 'baseline';
 type JustifyContent =
@@ -13,46 +15,52 @@ type JustifyContent =
   | 'space-around'
   | 'space-evenly';
 
-type RowProps = {
-  spacing?: SpacingToken;
-  align?: AlignItems;
-  justify?: JustifyContent;
-  wrap?: boolean;
-  fullWidth?: boolean;
-  children?: HTMLElement[];
-};
+export const row = {
+  create: (...children: Child[]) => {
+    const el = document.createElement('div');
 
-export const row = (props: RowProps) => {
-  const {
-    spacing = 'md',
-    align = 'center',
-    justify = 'flex-start',
-    wrap = false,
-    fullWidth = false,
-    children = [],
-  } = props;
+    tag.$(el)(
+      trait.style('display', 'flex'),
+      trait.style('flexDirection', 'row'),
+      trait.style('alignItems', 'center'),
+      trait.style('justifyContent', 'flex-start'),
+      trait.style('gap', theme.$token('spacing', 'md')),
+    );
 
-  const element = tag.div(
-    // Flexbox
-    trait.style('display', 'flex'),
-    trait.style('flexDirection', 'row'),
-    trait.style('alignItems', align),
-    trait.style('justifyContent', justify),
+    children.forEach((c) => {
+      if (c instanceof HTMLElement || c instanceof SVGElement) {
+        el.appendChild(c);
+      } else {
+        c(el);
+      }
+    });
 
-    // Wrap
-    trait.style('flexWrap', 'wrap', $test(wrap)),
-    trait.style('flexWrap', 'nowrap', $test(!wrap)),
+    return el;
+  },
 
-    // Width
-    trait.style('width', '100%', $test(fullWidth)),
-    trait.style('width', 'auto', $test(!fullWidth)),
+  spacing: (spacing: SpacingToken) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('gap', theme.$token('spacing', spacing)));
+  },
 
-    // Gap for spacing between children
-    trait.style('gap', theme.$token('spacing', spacing)),
+  align: (align: AlignItems) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('alignItems', align));
+  },
 
-    // Children
-    ...children,
-  );
+  justify: (justify: JustifyContent) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(trait.style('justifyContent', justify));
+  },
 
-  return element;
+  wrap: (wrap: boolean) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('flexWrap', 'wrap', $test(wrap)),
+      trait.style('flexWrap', 'nowrap', $test(!wrap)),
+    );
+  },
+
+  fullWidth: (fullWidth: boolean) => (el: HTMLElement | SVGElement) => {
+    tag.$(el)(
+      trait.style('width', '100%', $test(fullWidth)),
+      trait.style('width', 'auto', $test(!fullWidth)),
+    );
+  },
 };
