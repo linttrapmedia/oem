@@ -1,12 +1,12 @@
 // Core Types
-export type { Condition, Test, Tail } from './core/types';
+export type { Condition, Tail, Test } from './core/types';
 
 // Core Util functions
-export { $test, extractStates, extractConditions } from './core/util';
+export { $test, extractConditions, extractStates } from './core/util';
 
 // Core State
-export type { MethodKeys, Boxed, StateType } from './core/state';
 export { State } from './core/state';
+export type { StateType } from './core/state';
 
 // Core Template
 export { Template } from './core/template';

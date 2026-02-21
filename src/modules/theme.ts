@@ -1,5 +1,5 @@
 import { ThemeState, type Theme } from '@/states/ThemeState';
-import { lightTheme, darkTheme } from '@/themes';
+import { darkTheme, lightTheme } from '@/themes';
 
 // Register all available themes
 const availableThemes: Theme[] = [

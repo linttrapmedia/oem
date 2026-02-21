@@ -7,20 +7,13 @@ import { extractFrontMatter } from 'scripts/helpers';
 const projectRoot = resolve(import.meta.dir, '..');
 const skillDir = resolve(projectRoot, 'skills');
 
-// copy template.md to skills/references
-const templateSource = resolve(projectRoot, 'src/core/template.md');
-const templateDest = resolve(skillDir, './references/template.md');
-await Bun.write(templateDest, await Bun.file(templateSource).text());
-
-// copy state.md to skills/references
-const stateSource = resolve(projectRoot, 'src/core/state.md');
-const stateDest = resolve(skillDir, './references/state.md');
-await Bun.write(stateDest, await Bun.file(stateSource).text());
-
-// copy types.md to skills/references
-const typesSource = resolve(projectRoot, 'src/core/types.md');
-const typesDest = resolve(skillDir, './references/types.md');
-await Bun.write(typesDest, await Bun.file(typesSource).text());
+// copy core files to skills/references/core
+const coreFiles = ['template.md', 'state.md', 'types.md'];
+for (const fileName of coreFiles) {
+  const source = resolve(projectRoot, `src/core/${fileName}`);
+  const dest = resolve(skillDir, `./references/core/${fileName}`);
+  await Bun.write(dest, await Bun.file(source).text());
+}
 
 const traitFiles = [];
 for await (const file of new Glob('src/traits/*.md').scan('.')) {
@@ -28,10 +21,10 @@ for await (const file of new Glob('src/traits/*.md').scan('.')) {
   const content = await Bun.file(file).text();
   const fileName = file.split('/').pop()!;
   const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
-  // copy to references
-  const referencePath = `${skillDir}/references/${fileName}`;
+  // copy to references/traits
+  const referencePath = `${skillDir}/references/traits/${fileName}`;
   await Bun.write(referencePath, content);
-  traitFiles.push([`./references/${fileName}`, frontMatter]);
+  traitFiles.push([`./references/traits/${fileName}`, frontMatter]);
 }
 
 const stateFiles = [];
@@ -40,46 +33,22 @@ for await (const file of new Glob('src/states/*.md').scan('.')) {
   const content = await Bun.file(file).text();
   const fileName = file.split('/').pop()!;
   const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
-  // copy to references
-  const referencePath = `${skillDir}/references/${fileName}`;
+  // copy to references/states
+  const referencePath = `${skillDir}/references/states/${fileName}`;
   await Bun.write(referencePath, content);
-  stateFiles.push([`./references/${fileName}`, frontMatter]);
+  stateFiles.push([`./references/states/${fileName}`, frontMatter]);
 }
 
-const elementFiles = [];
-for await (const file of new Glob('src/elements/*.md').scan('.')) {
+const themeFiles = [];
+for await (const file of new Glob('src/themes/tokens/*.md').scan('.')) {
   const filePath = resolve(projectRoot, file);
   const content = await Bun.file(file).text();
   const fileName = file.split('/').pop()!;
   const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
-  // copy to references
-  const referencePath = `${skillDir}/references/${fileName}`;
+  // copy to references/tokens
+  const referencePath = `${skillDir}/references/tokens/${fileName}`;
   await Bun.write(referencePath, content);
-  elementFiles.push([`./references/${fileName}`, frontMatter]);
-}
-
-const componentFiles = [];
-for await (const file of new Glob('src/components/*.md').scan('.')) {
-  const filePath = resolve(projectRoot, file);
-  const content = await Bun.file(file).text();
-  const fileName = file.split('/').pop()!;
-  const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
-  // copy to references
-  const referencePath = `${skillDir}/references/${fileName}`;
-  await Bun.write(referencePath, content);
-  componentFiles.push([`./references/${fileName}`, frontMatter]);
-}
-
-const featureFiles = [];
-for await (const file of new Glob('src/features/*.md').scan('.')) {
-  const filePath = resolve(projectRoot, file);
-  const content = await Bun.file(file).text();
-  const fileName = file.split('/').pop()!;
-  const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
-  // copy to references
-  const referencePath = `${skillDir}/references/${fileName}`;
-  await Bun.write(referencePath, content);
-  featureFiles.push([`./references/${fileName}`, frontMatter]);
+  themeFiles.push([`./references/tokens/${fileName}`, frontMatter]);
 }
 
 const moduleFiles = [];
@@ -88,10 +57,10 @@ for await (const file of new Glob('src/modules/*.md').scan('.')) {
   const content = await Bun.file(file).text();
   const fileName = file.split('/').pop()!;
   const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
-  // copy to references
-  const referencePath = `${skillDir}/references/${fileName}`;
+  // copy to references/modules
+  const referencePath = `${skillDir}/references/modules/${fileName}`;
   await Bun.write(referencePath, content);
-  moduleFiles.push([`./references/${fileName}`, frontMatter]);
+  moduleFiles.push([`./references/modules/${fileName}`, frontMatter]);
 }
 
 // Create an empty SKILL.md (overwrite if exists)
@@ -118,10 +87,10 @@ Use each section below to understand the different capabilities of OEM and how t
 
 OEM is comprised of three core components that work together to create a powerful and flexible UI framework:
 
-- [Templates](./references/template.md) - These are the user defined templating engines that are used to render dom elements
-- [Traits](./references/template.md) - This is OEM's "plugin architecture". It's how a user defines the capabilities of a templating engine. OEM comes with a library of predefined traits but users can (and should) define their own traits to maintain as much of a declarative syntax as possible.
-- [State](./references/state.md) - OEM's state management system. It's a simple event bus with helper functions to create and manage state. It's usage within the OEM ecosystem is dependent on calling code, including traits and their implementations.
-- [Types](./references/types.md) - Type definitions for OEM. This includes types for traits, templates, and state.
+- [Templates](./references/core/template.md) - These are the user defined templating engines that are used to render dom elements
+- [Traits](./references/core/template.md) - This is OEM's "plugin architecture". It's how a user defines the capabilities of a templating engine. OEM comes with a library of predefined traits but users can (and should) define their own traits to maintain as much of a declarative syntax as possible.
+- [State](./references/core/state.md) - OEM's state management system. It's a simple event bus with helper functions to create and manage state. It's usage within the OEM ecosystem is dependent on calling code, including traits and their implementations.
+- [Types](./references/core/types.md) - Type definitions for OEM. This includes types for traits, templates, and state.
 
 ## Trait Library
 
@@ -146,44 +115,31 @@ ${stateFiles
   )
   .join('\n')}
 
-## Element Library
+## Theme Library
 
-Elements are reusable style definitions can be used by components to maintain consistent styling across the app. They can be thought of as a more powerful version of CSS classes that can also include semantic tokens.
+OEM design tokens are the entire definition for how LLMs should interpret and generate UI in their entirety. The DesignToken type is a compositional set of tokens with the following conventions: 
 
-${elementFiles
+### Naming:
+Primitives > Semantics > Expressions
+
+### Composition:
+Elements > Components > Features
+
+### Tokens:
+${themeFiles
   .map(
     ([filePath, frontMatter]: any) =>
       `- [${frontMatter.name}](${filePath}) - ${frontMatter.description}`,
   )
   .join('\n')}
 
-## Component Library
-
-OEM also provides a set of pre-built components that can be used to quickly build common UI patterns with state. These components are designed to be flexible and customizable, allowing you to easily adapt them to your specific needs.
-
-${componentFiles
-  .map(
-    ([filePath, frontMatter]: any) =>
-      `- [${frontMatter.name}](${filePath}) - ${frontMatter.description}`,
-  )
-  .join('\n')}
+Note: See the Module Library for the "theme" module which is an instance of the ThemeState object which implements a state object for manage themes.
 
 ## Module Library
 
 Modules are reusable pieces of logic that can be used by traits to maintain consistent behavior across the app. They can be thought of as a more powerful version of functions that can also include state and side effects.
 
 ${moduleFiles
-  .map(
-    ([filePath, frontMatter]: any) =>
-      `- [${frontMatter.name}](${filePath}) - ${frontMatter.description}`,
-  )
-  .join('\n')}
-
-## Feature Library
-
-Features are compositions of components, traits, and states that provide pre-built application features such as contact forms, todo lists, and more. These features are designed to be easily integrated into your applications, providing a quick and easy way to add common functionality.
-
-${featureFiles
   .map(
     ([filePath, frontMatter]: any) =>
       `- [${frontMatter.name}](${filePath}) - ${frontMatter.description}`,
