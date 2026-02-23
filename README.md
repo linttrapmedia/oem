@@ -23,4 +23,4 @@ npx skills add https://github.com/linttrapmedia/oem/skills
 ## Documentation
 
 - **Human Docs**: [https://oem.js.org/](https://oem.js.org/)
-- **AI Docs**: [./skills/SKILL.md](./skills/SKILL.md)
+- **AI Docs**: [./skills/Skill.md](./skills/Skill.md)

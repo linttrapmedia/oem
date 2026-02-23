@@ -1,44 +1,37 @@
 import {
   Template,
-  useEventTrait,
-  useStyleTrait,
-  useTextContentTrait,
-  useInnerHTMLTrait,
   useAttributeTrait,
   useClassNameTrait,
+  useEventTrait,
+  useInnerHTMLTrait,
+  useStyleTrait,
+  useTextContentTrait,
 } from '../src/registry';
-import { $test } from '../src/registry';
 
 import {
   currentPage,
-  isDarkMode,
-  sidebarOpen,
-  searchQuery,
-  searchOpen,
-  tocActive,
   expandedSections,
+  isDarkMode,
+  searchOpen,
+  searchQuery,
+  sidebarOpen,
+  tocActive,
 } from './state';
 
-import {
-  navItems,
-  flatPages,
-  renderPage,
-  searchPages,
-  type NavItem,
-} from './content';
+import { flatPages, navItems, renderPage, searchPages } from './content';
 
-import { renderPromptWizard } from './wizard';
 import { renderBDDManager } from './bdd';
+import { renderPromptWizard } from './wizard';
 
 // ─── Template ────────────────────────────────────────────────────────────────
 
 const [tag, trait] = Template({
   event: useEventTrait,
   style: useStyleTrait,
-  text:  useTextContentTrait,
-  html:  useInnerHTMLTrait,
-  attr:  useAttributeTrait,
-  cls:   useClassNameTrait,
+  text: useTextContentTrait,
+  html: useInnerHTMLTrait,
+  attr: useAttributeTrait,
+  cls: useClassNameTrait,
 });
 
 // ─── Navigation helpers ───────────────────────────────────────────────────────
@@ -59,8 +52,8 @@ function getSectionId(pageId: string): string {
 
 function getBreadcrumbs(pageId: string): { label: string; id: string }[] {
   const sectionId = getSectionId(pageId);
-  const section = navItems.find(s => s.id === sectionId);
-  const page = section?.children?.find(p => p.id === pageId);
+  const section = navItems.find((s) => s.id === sectionId);
+  const page = section?.children?.find((p) => p.id === pageId);
   if (!section || !page) return [];
   return [
     { label: 'Home', id: 'introduction/what-is-oem' },
@@ -73,7 +66,7 @@ function getPrevNext(pageId: string): {
   prev: { id: string; title: string } | null;
   next: { id: string; title: string } | null;
 } {
-  const idx = flatPages.findIndex(p => p.id === pageId);
+  const idx = flatPages.findIndex((p) => p.id === pageId);
   return {
     prev: idx > 0 ? flatPages[idx - 1] ?? null : null,
     next: idx < flatPages.length - 1 ? flatPages[idx + 1] ?? null : null,
@@ -84,7 +77,7 @@ function getPrevNext(pageId: string): {
 
 function extractTOC(el: HTMLElement): { id: string; text: string; level: number }[] {
   const headings = el.querySelectorAll<HTMLElement>('h2[id], h3[id]');
-  return Array.from(headings).map(h => ({
+  return Array.from(headings).map((h) => ({
     id: h.id,
     text: h.textContent ?? '',
     level: h.tagName === 'H3' ? 3 : 2,
@@ -94,14 +87,12 @@ function extractTOC(el: HTMLElement): { id: string; text: string; level: number 
 // ─── Header ───────────────────────────────────────────────────────────────────
 
 function buildHeader(): HTMLElement {
-  const header = tag.header(
-    trait.cls('oem-header'),
-  );
+  const header = tag.header(trait.cls('oem-header'));
 
   // Mobile menu button
   const menuBtn = tag.button(
     trait.cls('oem-header__menu-btn'),
-    trait.event('click', () => sidebarOpen.reduce(v => !v)),
+    trait.event('click', () => sidebarOpen.reduce((v) => !v)),
     trait.text('☰'),
   );
   header.appendChild(menuBtn);
@@ -115,10 +106,12 @@ function buildHeader(): HTMLElement {
       navigate('introduction/what-is-oem');
     }),
   );
-  const img = tag.img(
-    trait.attr('src', 'assets/favicon.svg'),
-    trait.attr('alt', 'OEM'),
-  );
+  const img = document.createElement('img');
+  img.src = 'data:image/png;base64,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';
+  img.alt = 'OEM';
+  img.width = 28;
+  img.height = 28;
+  img.style.cssText = 'width:28px;height:28px;object-fit:contain;flex-shrink:0';
   logo.appendChild(img);
   logo.appendChild(document.createTextNode(' OEM'));
   header.appendChild(logo);
@@ -153,7 +146,10 @@ function buildHeader(): HTMLElement {
   function renderSearchResults() {
     resultsEl.innerHTML = '';
     const q = searchQuery.val();
-    if (!q.trim()) { resultsEl.style.display = 'none'; return; }
+    if (!q.trim()) {
+      resultsEl.style.display = 'none';
+      return;
+    }
     resultsEl.style.display = 'block';
 
     const results = searchPages(q);
@@ -181,7 +177,7 @@ function buildHeader(): HTMLElement {
     }
   }
 
-  searchOpen.sub(open => {
+  searchOpen.sub((open) => {
     resultsEl.style.display = open ? 'block' : 'none';
   });
 
@@ -197,10 +193,10 @@ function buildHeader(): HTMLElement {
   // Theme toggle
   const themeBtn = tag.button(
     trait.cls('oem-header__btn'),
-    trait.text(() => isDarkMode.val() ? '☀' : '🌙', isDarkMode),
+    trait.text(() => (isDarkMode.val() ? '☀' : '🌙'), isDarkMode),
     trait.attr('title', 'Toggle theme'),
     trait.event('click', () => {
-      isDarkMode.reduce(v => !v);
+      isDarkMode.reduce((v) => !v);
       document.body.classList.toggle('dark', isDarkMode.val());
     }),
   );
@@ -247,7 +243,7 @@ function buildSidebar(): HTMLElement {
   const sidebar = tag.nav();
   sidebar.className = 'oem-sidebar';
 
-  sidebarOpen.sub(open => {
+  sidebarOpen.sub((open) => {
     sidebar.classList.toggle('open', open);
   });
 
@@ -269,7 +265,7 @@ function buildSidebar(): HTMLElement {
       sectionBtn.appendChild(arrow);
 
       sectionBtn.addEventListener('click', () => {
-        expandedSections.reduce(set => {
+        expandedSections.reduce((set) => {
           const next = new Set(set);
           if (next.has(section.id)) next.delete(section.id);
           else next.add(section.id);
@@ -301,7 +297,7 @@ function buildSidebar(): HTMLElement {
   currentPage.sub(() => {
     // Auto-expand current section
     const sectionId = getSectionId(currentPage.val());
-    expandedSections.reduce(set => {
+    expandedSections.reduce((set) => {
       const next = new Set(set);
       next.add(sectionId);
       return next;
@@ -349,8 +345,11 @@ function buildTOC(): HTMLElement {
   });
 
   tocActive.sub(() => {
-    toc.querySelectorAll('.oem-toc__link').forEach(el => {
-      el.classList.toggle('active', el.textContent === document.getElementById(tocActive.val())?.textContent);
+    toc.querySelectorAll('.oem-toc__link').forEach((el) => {
+      el.classList.toggle(
+        'active',
+        el.textContent === document.getElementById(tocActive.val())?.textContent,
+      );
     });
   });
 
@@ -430,14 +429,16 @@ function buildContent(): HTMLElement {
           title.className = 'oem-toc__title';
           title.textContent = 'On this page';
           tocEl.appendChild(title);
-          headings.forEach(h => {
+          headings.forEach((h) => {
             const link = document.createElement('div');
             link.className = 'oem-toc__link' + (h.level === 3 ? ' oem-toc__link--h3' : '');
             link.textContent = h.text;
             link.addEventListener('click', () => {
               document.getElementById(h.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               tocActive.set(h.id);
-              tocEl.querySelectorAll('.oem-toc__link').forEach(el => el.classList.remove('active'));
+              tocEl
+                .querySelectorAll('.oem-toc__link')
+                .forEach((el) => el.classList.remove('active'));
               link.classList.add('active');
             });
             tocEl.appendChild(link);
@@ -488,7 +489,7 @@ function setupScrollSpy(contentEl: HTMLElement) {
     }
     if (active !== tocActive.val()) {
       tocActive.set(active);
-      document.querySelectorAll('.oem-toc__link').forEach(el => {
+      document.querySelectorAll('.oem-toc__link').forEach((el) => {
         const id = (el as HTMLElement).dataset['id'];
         el.classList.toggle('active', id === active);
       });
@@ -503,7 +504,7 @@ function setupScrollSpy(contentEl: HTMLElement) {
 function buildBackdrop(): HTMLElement {
   const backdrop = tag.div(trait.cls('oem-backdrop'));
   backdrop.addEventListener('click', () => sidebarOpen.set(false));
-  sidebarOpen.sub(open => backdrop.classList.toggle('open', open));
+  sidebarOpen.sub((open) => backdrop.classList.toggle('open', open));
   return backdrop;
 }
 
@@ -521,10 +522,14 @@ function buildApp(): void {
 
   // Init route from URL hash
   const hash = window.location.hash.slice(1);
-  if (hash && flatPages.some(p => p.id === hash)) {
+  if (hash && flatPages.some((p) => p.id === hash)) {
     currentPage.set(hash);
     const sectionId = getSectionId(hash);
-    expandedSections.reduce(set => { const n = new Set(set); n.add(sectionId); return n; });
+    expandedSections.reduce((set) => {
+      const n = new Set(set);
+      n.add(sectionId);
+      return n;
+    });
   }
 
   // Browser back/forward

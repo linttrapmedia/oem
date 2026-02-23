@@ -5,13 +5,18 @@ import { resolve } from 'node:path';
 import { extractFrontMatter } from 'scripts/helpers';
 
 const projectRoot = resolve(import.meta.dir, '..');
-const skillDir = resolve(projectRoot, 'skills');
+const specDir = resolve(projectRoot, 'specs');
 
-// copy core files to skills/references/core
+// delete the specs directory if it exists, then recreate it with the necessary subdirectories
+if (await Bun.file(specDir).exists()) {
+  await Bun.file(specDir).unlink();
+}
+
+// copy core files to specs/references/core
 const coreFiles = ['template.md', 'state.md', 'types.md'];
 for (const fileName of coreFiles) {
   const source = resolve(projectRoot, `src/core/${fileName}`);
-  const dest = resolve(skillDir, `./references/core/${fileName}`);
+  const dest = resolve(specDir, `./references/core/${fileName}`);
   await Bun.write(dest, await Bun.file(source).text());
 }
 
@@ -22,7 +27,7 @@ for await (const file of new Glob('src/traits/*.md').scan('.')) {
   const fileName = file.split('/').pop()!;
   const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
   // copy to references/traits
-  const referencePath = `${skillDir}/references/traits/${fileName}`;
+  const referencePath = `${specDir}/references/traits/${fileName}`;
   await Bun.write(referencePath, content);
   traitFiles.push([`./references/traits/${fileName}`, frontMatter]);
 }
@@ -34,7 +39,7 @@ for await (const file of new Glob('src/states/*.md').scan('.')) {
   const fileName = file.split('/').pop()!;
   const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
   // copy to references/states
-  const referencePath = `${skillDir}/references/states/${fileName}`;
+  const referencePath = `${specDir}/references/states/${fileName}`;
   await Bun.write(referencePath, content);
   stateFiles.push([`./references/states/${fileName}`, frontMatter]);
 }
@@ -46,7 +51,7 @@ for await (const file of new Glob('src/themes/tokens/*.md').scan('.')) {
   const fileName = file.split('/').pop()!;
   const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
   // copy to references/tokens
-  const referencePath = `${skillDir}/references/tokens/${fileName}`;
+  const referencePath = `${specDir}/references/tokens/${fileName}`;
   await Bun.write(referencePath, content);
   themeFiles.push([`./references/tokens/${fileName}`, frontMatter]);
 }
@@ -58,43 +63,35 @@ for await (const file of new Glob('src/modules/*.md').scan('.')) {
   const fileName = file.split('/').pop()!;
   const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
   // copy to references/modules
-  const referencePath = `${skillDir}/references/modules/${fileName}`;
+  const referencePath = `${specDir}/references/modules/${fileName}`;
   await Bun.write(referencePath, content);
   moduleFiles.push([`./references/modules/${fileName}`, frontMatter]);
 }
 
-// Create an empty SKILL.md (overwrite if exists)
+// Create an empty Skill.md (overwrite if exists)
 await Bun.write(
-  `${skillDir}/SKILL.md`,
+  `${specDir}/agents/oem.md`,
   `---
-name: OEM
-description: The agent-first UI framework and toolkit
-license: MIT
-metadata:
-  author: Kevin Lint
-  version: '1.0'
+name: oem
+description: Manual for generating front-end applications using OEM, the agent-first UI framework and toolkit.
 ---
 
-# Agent Skills for OEM
+# This Guide
 
-You are an expert at generating front-end code using OEM. OEM is an agent-first UI framework engineered for seamless human-AI collaboration. It introduces a distinctive compositional syntax that declaratively unifies markup, styling, and behavior. 
+You are a front-end expert and an expert at writing idiomatic OEM. This document is a guide and canonical reference on how OEM applications are structured and how to use the framework effectively and write OEM's distinctive compositional syntax that declaratively unifies markup, styling, and behavior.
 
-Use this document as a reference for how to write OEM applications, including the traits, states, elements, components, and features available in the OEM ecosystem. 
+## Core Library & Fundamentals
 
-Use each section below to understand the different capabilities of OEM and how to use them effectively in your applications. Each item in the trait, state, element, component, and feature libraries:
+The core library provides the fundamental building blocks of the OEM ecosystem. It includes the Template function for creating a user-defined templating engine, the State function for creating a micro event-bus and state object, and the ThemeState function for managing design tokens in a centralized way. The core library also includes type definitions for OEM, which can be found in the references.
 
-## Fundamental Components of OEM
+${coreFiles
+  .map((fileName) => `- [${fileName.replace('.md', '')}](${`./references/core/${fileName}`})`)
+  .join('\n')}
 
-OEM is comprised of three core components that work together to create a powerful and flexible UI framework:
-
-- [Templates](./references/core/template.md) - These are the user defined templating engines that are used to render dom elements
-- [Traits](./references/core/template.md) - This is OEM's "plugin architecture". It's how a user defines the capabilities of a templating engine. OEM comes with a library of predefined traits but users can (and should) define their own traits to maintain as much of a declarative syntax as possible.
-- [State](./references/core/state.md) - OEM's state management system. It's a simple event bus with helper functions to create and manage state. It's usage within the OEM ecosystem is dependent on calling code, including traits and their implementations.
-- [Types](./references/core/types.md) - Type definitions for OEM. This includes types for traits, templates, and state.
 
 ## Trait Library
 
-OEM comes with a growing library of traits that provide a wide range of functionality out of the box. These traits are designed to be composable and extensible, allowing you to easily create complex behaviors by combining them in different ways.
+The following traits come with OEM. Traits are reusable pieces of logic that give the abilities and behaviors to your custom template engine. They can be thought of as plugins that can be applied to the output of the Template function to create a powerful and flexible system for generating UI.
 
 ${traitFiles
   .map(
@@ -117,7 +114,7 @@ ${stateFiles
 
 ## Theme Library
 
-OEM design tokens are the entire definition for how LLMs should interpret and generate UI in their entirety. The DesignToken type is a compositional set of tokens with the following conventions: 
+OEM doesn't have components or other predefined UI elements. Instead, all elements, component, features, etc. are generated by LLMs interpreting design tokens which follows a naming convention that prescribes both structure and usage. This allows for a much more flexible and adaptable system that can be used to generate any kind of UI. 
 
 ### Naming:
 Primitives > Semantics > Expressions
@@ -133,11 +130,11 @@ ${themeFiles
   )
   .join('\n')}
 
-Note: See the Module Library for the "theme" module which is an instance of the ThemeState object which implements a state object for manage themes.
+Note: The "theme" Module in the Module Library is a ready-to-go singleton instance of the ThemeState object which can be used off the shelf for managing design tokens in your application.
 
 ## Module Library
 
-Modules are reusable pieces of logic that can be used by traits to maintain consistent behavior across the app. They can be thought of as a more powerful version of functions that can also include state and side effects.
+Modules are globally available singleton instances of objects to be used off the shelf. Currently, the only module available in the OEM ecosystem is the "theme" module which is a singleton instance of the ThemeState object. This allows you to manage your design tokens in a centralized way and easily access them throughout your application.
 
 ${moduleFiles
   .map(
@@ -148,7 +145,9 @@ ${moduleFiles
 
 ## Pattern Library
 
-### Conditions
+### Idiomatic OEM
+
+- Don't use ternary operators. Instead, use traits to conditionally apply styles and behaviors. This keeps the declarative syntax consistent and allows for better LLM interpretation and management.
 
 ### Git Commits
 

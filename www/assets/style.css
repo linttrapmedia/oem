@@ -224,22 +224,25 @@ body.dark .oem-content ul, body.dark .oem-content ol { color: #a3a3a3; }
 }
 body.dark .oem-content code:not(pre code) { background: #262626; color: #f87171; }
 
+/* One Dark background — matches prism-one-dark.css exactly */
 .oem-content pre {
-  background: #1e1e1e; border-radius: 8px;
-  padding: 20px; margin: 0 0 20px; overflow-x: auto;
+  background: hsl(220, 13%, 18%); border-radius: 8px;
+  padding: 0; margin: 0 0 20px; overflow-x: auto;
   position: relative;
 }
-.oem-content pre code { background: none; color: inherit; padding: 0; font-size: 13px; }
+/* Prism sets its own padding on pre[class*="language-"]; for unlabeled pre keep it */
+.oem-content pre:not([class*="language-"]) { padding: 20px; }
+.oem-content pre code { background: none; color: hsl(220, 14%, 71%); padding: 0; font-size: 13px; }
 
 .oem-copy-btn {
   position: absolute; top: 10px; right: 10px;
-  background: #404040; color: #e5e5e5;
+  background: hsl(220, 13%, 26%); color: hsl(220, 9%, 55%);
   border: none; border-radius: 4px;
   padding: 3px 10px; font-size: 11px; cursor: pointer;
   opacity: 0; transition: opacity 100ms;
 }
 .oem-content pre:hover .oem-copy-btn { opacity: 1; }
-.oem-copy-btn:hover { background: #525252; }
+.oem-copy-btn:hover { background: hsl(220, 13%, 32%); color: hsl(220, 14%, 80%); }
 
 .oem-content blockquote {
   border-left: 3px solid #3b82f6; margin: 0 0 16px;

@@ -2456,7 +2456,12 @@ ${criteriaMd}
       e.preventDefault();
       navigate("introduction/what-is-oem");
     }));
-    const img = tag2.img(trait2.attr("src", "assets/favicon.svg"), trait2.attr("alt", "OEM"));
+    const img = document.createElement("img");
+    img.src = new URL("assets/oem-transparent.png", document.baseURI).href;
+    img.alt = "OEM";
+    img.width = 28;
+    img.height = 28;
+    img.style.cssText = "width:28px;height:28px;object-fit:contain;flex-shrink:0";
     logo.appendChild(img);
     logo.appendChild(document.createTextNode(" OEM"));
     header.appendChild(logo);

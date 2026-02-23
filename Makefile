@@ -1,6 +1,6 @@
 #!/usr/bin/env
 
-.PHONY: help build clean cdn dev dist www deploy examples install publish skills test
+.PHONY: help build clean cdn dev dist www deploy examples install publish specs skills test
 
 STATUS:="\x1b[96;01m\xE2\x80\xA2\x1b[0m"
 ECHO = @echo "\033[0;34m$(1)\033[0m$(2)"
@@ -60,10 +60,9 @@ publish: ## Publish the project to npm
 	@echo $(STATUS) Publish package...
 	@npm publish --access public
 
-skills: ## Generate Skill files
-	@echo $(STATUS) Generating SKILL.md, etc...
-	@bun ./scripts/gen-skills.ts
-	@mkdir -p .claude/skills/oem && cp -R ./skills/* .claude/skills/oem
+specs: ## Generate Skill files
+	@echo $(STATUS) Generating Skill.md, etc...
+	@bun ./scripts/gen-specs.ts
 
 test: ## Run tests
 	@echo $(STATUS) Testing...
