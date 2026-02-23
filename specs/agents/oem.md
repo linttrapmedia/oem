@@ -1,110 +1,74 @@
 ---
 name: oem
-description: Manual for generating front-end applications using OEM, the agent-first UI framework and toolkit.
+description: The agent-first UI framework and toolkit for building front-end applications with a compositional syntax that declaratively unifies markup, styling, and behavior
+skills:
+  - templates
+  - traits
+  - states
+  - theming
+  - patterns
+  - examples
 ---
 
-# This Guide
+# OEM
 
-You are a front-end expert and an expert at writing idiomatic OEM. This document is a guide and canonical reference on how OEM applications are structured and how to use the framework effectively and write OEM's distinctive compositional syntax that declaratively unifies markup, styling, and behavior.
+You are a front-end expert and an expert at writing idiomatic OEM — a compositional, agent-first
+UI framework that declaratively unifies markup, styling, and behavior. OEM is designed ground-up
+for LLM-driven development.
 
-## Core Library & Fundamentals
+## What is OEM?
 
-The core library provides the fundamental building blocks of the OEM ecosystem. It includes the Template function for creating a user-defined templating engine, the State function for creating a micro event-bus and state object, and the ThemeState function for managing design tokens in a centralized way. The core library also includes type definitions for OEM, which can be found in the references.
+Rather than providing pre-built components, OEM gives you primitives and lets you compose
+everything from scratch using a small set of powerful building blocks:
 
-- [template](./references/core/template.md)
-- [state](./references/core/state.md)
-- [types](./references/core/types.md)
+1. **Template** — A factory for your templating engine: returns a `[tag, trait]` tuple for
+   declarative element creation and reactive trait application
+2. **State** — A lightweight reactive container and event bus for managing application state
+3. **Traits** — Reusable behavioral plugins (style, event, text, class, attribute, etc.)
+   applied declaratively to elements via the trait proxy
+4. **Design Tokens** — A 6-layer token system (Primitives → Expression → Semantic → Element →
+   Component → Feature) for building fully-themeable UIs
 
+## Core Principles
 
-## Trait Library
+- **Agent-first**: All syntax and conventions are optimized for LLM interpretation and generation
+- **No predefined components**: UIs are composed from primitives + design tokens, interpreted contextually
+- **No ternaries**: Conditions are expressed via helper test functions (both the `$test()` function and the `.$test()` function of a state object) in traits — never inline ternaries
+- **State outside renders**: All state is module-level; never recreated inside render functions
+- **Flat, readable composition**: OEM code reads linearly, top-to-bottom, trait by trait
 
-The following traits come with OEM. Traits are reusable pieces of logic that give the abilities and behaviors to your custom template engine. They can be thought of as plugins that can be applied to the output of the Template function to create a powerful and flexible system for generating UI.
+## Quick Start
 
-- [Focus](./references/traits/Focus.md) - Focuses an HTML element based on conditions
-- [InputEvent](./references/traits/InputEvent.md) - Handles input-related events on form elements
-- [TextContent](./references/traits/TextContent.md) - Sets the text content of an HTML element
-- [useAttributeTrait](./references/traits/Attribute.md) - Adds an attribute to an HTML element
-- [Style](./references/traits/Style.md) - Applies CSS styles to an HTML element
-- [InputValue](./references/traits/InputValue.md) - Binds a value to an input or textarea element
-- [Event](./references/traits/Event.md) - Attaches event listeners to an HTML element
-- [InnerHTML](./references/traits/InnerHTML.md) - Sets the innerHTML of an element with reactive children
-- [ClassName](./references/traits/ClassName.md) - Sets the class name of an HTML element
-- [StyleOnEvent](./references/traits/StyleOnEvent.md) - Applies CSS styles to an element on a specific event
+```typescript
+import { Template, State } from '@linttrap/oem';
+import { useStyleTrait, useTextContentTrait, useEventTrait } from '@linttrap/oem';
 
+const [tag, trait] = Template({
+  style: useStyleTrait,
+  text: useTextContentTrait,
+  event: useEventTrait,
+});
 
-## State Library
+const count = State(0);
 
-OEM's state management system is simple yet powerful, providing a flexible way to manage state in your applications. The following states are available in the OEM ecosystem:
+const counter = tag.div(
+  tag.button(
+    trait.text('Increment'),
+    trait.event('click', () => count.reduce((n) => n + 1)),
+  ),
+  tag.p(
+    trait.text(count.$val),
+  ),
+);
 
-- [UrlState](./references/states/UrlState.md) - State Object to track the current URL in the application.
-- [MediaQueryState](./references/states/MediaQueryState.md) - Reactive state for tracking media query matches based on viewport width and media type
-- [ThemeState](./references/states/ThemeState.md) - Centralized theme management with reactive design token access
+document.body.append(counter);
+```
 
-## Theme Library
+## Skills
 
-OEM doesn't have components or other predefined UI elements. Instead, all elements, component, features, etc. are generated by LLMs interpreting design tokens which follows a naming convention that prescribes both structure and usage. This allows for a much more flexible and adaptable system that can be used to generate any kind of UI. 
-
-### Naming:
-Primitives > Semantics > Expressions
-
-### Composition:
-Elements > Components > Features
-
-### Tokens:
-- [Expression Tokens](./references/tokens/expression.md) - Global personality controls affecting system-wide design behavior
-- [Component Tokens](./references/tokens/component.md) - Complete component definitions with variants and interactive states
-- [Semantic Tokens](./references/tokens/semantic.md) - Purpose-based tokens that assign meaning to design values
-- [Design Token System](./references/tokens/index.md) - Overview of the 6-layer design token architecture
-- [Element Tokens](./references/tokens/element.md) - Atomic UI building blocks for reusable design system elements
-- [Feature Tokens](./references/tokens/feature.md) - Product-specific overrides for contextual customization
-- [Primitives Tokens](./references/tokens/primitives.md) - Foundation layer containing raw design values with no references
-
-Note: The "theme" Module in the Module Library is a ready-to-go singleton instance of the ThemeState object which can be used off the shelf for managing design tokens in your application.
-
-## Module Library
-
-Modules are globally available singleton instances of objects to be used off the shelf. Currently, the only module available in the OEM ecosystem is the "theme" module which is a singleton instance of the ThemeState object. This allows you to manage your design tokens in a centralized way and easily access them throughout your application.
-
-
-
-## Pattern Library
-
-### Idiomatic OEM
-
-- Don't use ternary operators. Instead, use traits to conditionally apply styles and behaviors. This keeps the declarative syntax consistent and allows for better LLM interpretation and management.
-
-### Git Commits
-
-### Architectural Patterns
-
-OEM is designed to be flexible and adaptable to a wide range of architectural patterns. However, there are a few patterns that are particularly well-suited to the OEM ecosystem:
-
-#### SPA
-
-SPAs have a prescribed structure in order to keep a clean separation of concerns
-
-File structure should be based on High Cohesion and Low Coupling and optimized for LLM interpretation and management. Based on complexity, the following items could exist either as single files or folders with files.
-
-- **actions**:
-A library of all the actions that can be dispatched in the app. Each action is a function that returns an object with a type and a payload.
-
-- **machines**:
-State machines that define the behavior of the app. Each machine has a state, a set of transitions, and a set of actions that can be dispatched. Implement them as simple switch statements, switching on the current state and the dispatched action.
-
-- **main**:
-The entry point of the app. It initializes the state machine and sets up the event listeners for the UI. It also renders the UI based on the current state of the machine.
-
-- **templates**:
-A library of templates (using Template and it's destructured [tag, trait]) that can be used to render the UI.
-
-- **traits**:
-Any custom traits that are needed for the app that aren't already provided by the core library or that could dramatically simplify the implementation. For example, a trait for handling form input or a trait for managing a list of items.
-
-- **types**:
-Type definitions for the app. This can include types for the state, actions, and any other relevant data structures.
-
-- **ui**:
-Functions for rendering the UI based on the current state of the machine. This can include functions for rendering different components of the UI, such as a list of todo items or a form for adding new items.
-
-- **theme**:
-A set of semantic tokens for styling the app. This can include colors, fonts, spacing, and any other design elements that are used throughout the app.
+- **templates**: Template API, tag/trait proxies, TypeScript types, core utilities
+- **traits**: Built-in trait library (Style, Event, ClassName, TextContent, Attribute, etc.)
+- **states**: Reactive state management (State, UrlState, MediaQueryState, ThemeState)
+- **theming**: 6-layer design token architecture and naming conventions
+- **patterns**: Idiomatic conventions, SPA architecture, git commits, file structure
+- **examples**: Reference application prompts and BDD scenarios
