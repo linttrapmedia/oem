@@ -63,7 +63,7 @@ publish: ## Publish the project to npm
 specs: ## Generate Skill files
 	@echo $(STATUS) Generating Skill.md, etc...
 	@bun ./scripts/gen-specs.ts
-	@cp -r ./specs .claude
+	@cp -r ./specs/ .claude/
 
 test: ## Run tests
 	@echo $(STATUS) Testing...

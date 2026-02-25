@@ -1,16 +1,13 @@
-// --- Entry Point ---
+// ─── Main ────────────────────────────────────────────────────────────────────
 
-import { todoMachine } from './machines';
-import { appState } from './state';
-import { Action } from './types';
-import { renderApp } from './ui';
+import { App } from './ui';
 
-// Dispatch: run action through state machine, update reactive state
-const dispatch = (action: Action) => {
-  appState.reduce((prev) => todoMachine(prev, action));
-};
-
-// Mount
+// Reset default browser styles
 document.body.style.margin = '0';
-document.body.style.background = '#f5f5f5';
-document.body.appendChild(renderApp(appState, dispatch));
+document.body.style.padding = '0';
+document.body.style.backgroundColor = '#1a1a2e';
+document.body.style.color = '#eee';
+document.body.style.minHeight = '100vh';
+
+// Mount the app
+document.body.appendChild(App());

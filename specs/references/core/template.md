@@ -1,3 +1,12 @@
+---
+name: Template
+description: Core template engine for declarative, reactive UI composition with traits
+license: MIT
+metadata:
+  author: Kevin Lint
+  version: '1.0'
+---
+
 ## Template & Traits
 
 ### Overview
@@ -201,6 +210,7 @@ export const useAttributeTrait = (
 ```
 
 This pattern ensures:
+
 - **Clarity**: Each condition is explicit and separate
 - **Reactivity**: Conditions can re-evaluate when states change
 - **Composability**: Multiple conditions can be combined

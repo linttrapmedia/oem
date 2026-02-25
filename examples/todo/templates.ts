@@ -1,22 +1,26 @@
-// --- Template Setup ---
+// ─── Templates ───────────────────────────────────────────────────────────────
 
 import {
   Template,
   useAttributeTrait,
+  useClassNameTrait,
   useEventTrait,
   useInnerHTMLTrait,
+  useInputEventTrait,
+  useInputValueTrait,
+  useStyleOnEventTrait,
   useStyleTrait,
   useTextContentTrait,
-} from '@/registry';
-import { useChildrenTrait, useEditOnDblClickTrait, useSubmitOnEnterTrait } from './traits';
+} from '../../src/registry';
 
 export const [tag, trait] = Template({
   attr: useAttributeTrait,
+  cls: useClassNameTrait,
   event: useEventTrait,
   html: useInnerHTMLTrait,
+  inputEvent: useInputEventTrait,
+  inputVal: useInputValueTrait,
   style: useStyleTrait,
+  styleOn: useStyleOnEventTrait,
   text: useTextContentTrait,
-  children: useChildrenTrait,
-  submitOnEnter: useSubmitOnEnterTrait,
-  editOnDblClick: useEditOnDblClickTrait,
 });

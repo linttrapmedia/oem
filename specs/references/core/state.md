@@ -1,3 +1,12 @@
+---
+name: State
+description: Reactive event bus with publish-subscribe state management
+license: MIT
+metadata:
+  author: Kevin Lint
+  version: '1.0'
+---
+
 ## State
 
 ### Overview

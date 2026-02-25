@@ -11,34 +11,35 @@ You are a front-end expert and an expert at writing idiomatic OEM. This document
 
 The core library provides the fundamental building blocks of the OEM ecosystem. It includes the Template function for creating a user-defined templating engine, the State function for creating a micro event-bus and state object, and the ThemeState function for managing design tokens in a centralized way. The core library also includes type definitions for OEM, which can be found in the references.
 
-- [template](./references/core/template.md)
-- [state](./references/core/state.md)
-- [types](./references/core/types.md)
+- [Template](../references/core/template.md) - Core template engine for declarative, reactive UI composition with traits
+- [State](../references/core/state.md) - Reactive event bus with publish-subscribe state management
+- [Types](../references/core/types.md) - Common TypeScript type definitions for reactive conditions, testing, and utilities
+- [Util](../references/core/util.md) - Runtime helpers for working with State objects and Conditions
 
 
 ## Trait Library
 
 The following traits come with OEM. Traits are reusable pieces of logic that give the abilities and behaviors to your custom template engine. They can be thought of as plugins that can be applied to the output of the Template function to create a powerful and flexible system for generating UI.
 
-- [Focus](./references/traits/Focus.md) - Focuses an HTML element based on conditions
-- [InputEvent](./references/traits/InputEvent.md) - Handles input-related events on form elements
-- [TextContent](./references/traits/TextContent.md) - Sets the text content of an HTML element
-- [useAttributeTrait](./references/traits/Attribute.md) - Adds an attribute to an HTML element
-- [Style](./references/traits/Style.md) - Applies CSS styles to an HTML element
-- [InputValue](./references/traits/InputValue.md) - Binds a value to an input or textarea element
-- [Event](./references/traits/Event.md) - Attaches event listeners to an HTML element
-- [InnerHTML](./references/traits/InnerHTML.md) - Sets the innerHTML of an element with reactive children
-- [ClassName](./references/traits/ClassName.md) - Sets the class name of an HTML element
-- [StyleOnEvent](./references/traits/StyleOnEvent.md) - Applies CSS styles to an element on a specific event
+- [Focus](../references/traits/Focus.md) - Focuses an HTML element based on conditions
+- [InputEvent](../references/traits/InputEvent.md) - Handles input-related events on form elements
+- [TextContent](../references/traits/TextContent.md) - Sets the text content of an HTML element
+- [useAttributeTrait](../references/traits/Attribute.md) - Adds an attribute to an HTML element
+- [Style](../references/traits/Style.md) - Applies CSS styles to an HTML element
+- [InputValue](../references/traits/InputValue.md) - Binds a value to an input or textarea element
+- [Event](../references/traits/Event.md) - Attaches event listeners to an HTML element
+- [InnerHTML](../references/traits/InnerHTML.md) - Sets the innerHTML of an element with reactive children
+- [ClassName](../references/traits/ClassName.md) - Sets the class name of an HTML element
+- [StyleOnEvent](../references/traits/StyleOnEvent.md) - Applies CSS styles to an element on a specific event
 
 
 ## State Library
 
 OEM's state management system is simple yet powerful, providing a flexible way to manage state in your applications. The following states are available in the OEM ecosystem:
 
-- [UrlState](./references/states/UrlState.md) - State Object to track the current URL in the application.
-- [MediaQueryState](./references/states/MediaQueryState.md) - Reactive state for tracking media query matches based on viewport width and media type
-- [ThemeState](./references/states/ThemeState.md) - Centralized theme management with reactive design token access
+- [UrlState](../references/states/UrlState.md) - State Object to track the current URL in the application.
+- [MediaQueryState](../references/states/MediaQueryState.md) - Reactive state for tracking media query matches based on viewport width and media type
+- [ThemeState](../references/states/ThemeState.md) - Centralized theme management with reactive design token access
 
 ## Theme Library
 
@@ -51,20 +52,51 @@ Primitives > Semantics > Expressions
 Elements > Components > Features
 
 ### Tokens:
-- [Expression Tokens](./references/tokens/expression.md) - Global personality controls affecting system-wide design behavior
-- [Component Tokens](./references/tokens/component.md) - Complete component definitions with variants and interactive states
-- [Semantic Tokens](./references/tokens/semantic.md) - Purpose-based tokens that assign meaning to design values
-- [Design Token System](./references/tokens/index.md) - Overview of the 6-layer design token architecture
-- [Element Tokens](./references/tokens/element.md) - Atomic UI building blocks for reusable design system elements
-- [Feature Tokens](./references/tokens/feature.md) - Product-specific overrides for contextual customization
-- [Primitives Tokens](./references/tokens/primitives.md) - Foundation layer containing raw design values with no references
+- [Expression Tokens](../references/tokens/expression.md) - Global personality controls affecting system-wide design behavior
+- [Component Tokens](../references/tokens/component.md) - Complete component definitions with variants and interactive states
+- [Semantic Tokens](../references/tokens/semantic.md) - Purpose-based tokens that assign meaning to design values
+- [Design Token System](../references/tokens/index.md) - Overview of the 6-layer design token architecture
+- [Element Tokens](../references/tokens/element.md) - Atomic UI building blocks for reusable design system elements
+- [Feature Tokens](../references/tokens/feature.md) - Product-specific overrides for contextual customization
+- [Primitives Tokens](../references/tokens/primitives.md) - Foundation layer containing raw design values with no references
 
-Note: The "theme" Module in the Module Library is a ready-to-go singleton instance of the ThemeState object which can be used off the shelf for managing design tokens in your application.
+### Creating a ThemeState Instance
 
-## Module Library
+For SPAs and any non-trivial app, create a dedicated ThemeState instance in a `theme.ts` file:
 
-Modules are globally available singleton instances of objects to be used off the shelf. Currently, the only module available in the OEM ecosystem is the "theme" module which is a singleton instance of the ThemeState object. This allows you to manage your design tokens in a centralized way and easily access them throughout your application.
+```ts
+import { ThemeState } from 'oem/registry';
+import { darkTheme } from 'oem/themes';
+import type { Theme } from 'oem/states/ThemeState';
 
+// Use the built-in dark theme, or define custom tokens
+const myDarkTheme: Theme = { name: 'dark', tokens: darkTheme };
+
+export const theme = ThemeState([myDarkTheme]);
+```
+
+### Using Tokens in the UI
+
+Once you have a ThemeState instance, access tokens via its proxy getters. Every token key on the ThemeState becomes a getter function:
+
+```ts
+import { theme } from './theme';
+import { tag, trait } from './templates';
+
+// Direct getter: theme.sem_color_bkg_pri() returns the resolved value
+trait.style('backgroundColor', theme.sem_color_bkg_pri())
+trait.style('color', theme.sem_color_txt_pri())
+trait.style('padding', theme.sem_spc_pad_md())
+
+// Deferred getter (prefixed with $): for reactive traits that need to re-evaluate on theme change
+trait.style('backgroundColor', theme.$sem_color_bkg_pri)
+```
+
+### Token Usage Rules
+
+- **Never** write a hex value, rgb value, or pixel literal directly in a `trait.style()` call
+- UI code should reference semantic (sem_), element (elm_), or component (cmp_) tokens — never primitives (pmt_) directly
+- If the design requires a value not covered by existing tokens, define a new token at the appropriate layer, then reference it
 
 
 ## Pattern Library
@@ -72,6 +104,8 @@ Modules are globally available singleton instances of objects to be used off the
 ### Idiomatic OEM
 
 - Don't use ternary operators. Instead, use traits to conditionally apply styles and behaviors. This keeps the declarative syntax consistent and allows for better LLM interpretation and management.
+- **Never hardcode color, spacing, typography, or other design values.** Always derive them from the ThemeState design token system. If tokens don't exist for something you need, define them in your app's theme first, then reference them. No hex codes, rgb values, or pixel literals should appear directly in `trait.style()` calls.
+- Every SPA should instantiate its own ThemeState with a token set appropriate to the app's design, then reference those tokens throughout the UI.
 
 ### Git Commits
 
@@ -81,9 +115,7 @@ OEM is designed to be flexible and adaptable to a wide range of architectural pa
 
 #### SPA
 
-SPAs have a prescribed structure in order to keep a clean separation of concerns
-
-File structure should be based on High Cohesion and Low Coupling and optimized for LLM interpretation and management. Based on complexity, the following items could exist either as single files or folders with files.
+SPAs have a prescribed structure in order to keep a clean separation of concerns. File structure should be based on High Cohesion and Low Coupling and optimized for LLM interpretation and management. Based on complexity, the following items could exist either as single files or folders with files.
 
 - **actions**:
 A library of all the actions that can be dispatched in the app. Each action is a function that returns an object with a type and a payload.
@@ -95,16 +127,16 @@ State machines that define the behavior of the app. Each machine has a state, a 
 The entry point of the app. It initializes the state machine and sets up the event listeners for the UI. It also renders the UI based on the current state of the machine.
 
 - **templates**:
-A library of templates (using Template and it's destructured [tag, trait]) that can be used to render the UI.
+A library of templates (using Template and it's destructured [tag, trait]) that can be used to render the UI. Multiple templates can be used in the app, but it's often best to keep them organized in a single file or folder.
+
+- **theme**:
+A ThemeState instance that defines the app's design tokens following the token naming convention (pmt_ > exp_ > sem_ > elm_ > cmp_ > ftr_). This is the single source of truth for all visual values (colors, spacing, typography, radii, shadows, etc.). Import and reference these tokens in templates and UI instead of hardcoding values. Create a ThemeState instance by importing `ThemeState` from the core library and populating it with at least one Theme (`{ name: string, tokens: DesignTokens }`). Use the built-in `darkTheme` and/or `lightTheme` token sets as a starting point, or define your own. Access tokens in the UI via the ThemeState proxy getters (e.g., `theme.sem_color_bkg_pri()` or the deferred form `theme.$sem_color_bkg_pri` for use in traits).
 
 - **traits**:
-Any custom traits that are needed for the app that aren't already provided by the core library or that could dramatically simplify the implementation. For example, a trait for handling form input or a trait for managing a list of items.
+The default traits provided by the core library are often sufficient for most use cases, but you may find that you need to create custom traits to handle specific behaviors or patterns in your app. This file or folder can be used to store any custom traits that you create for your app. These traits can then be imported and used in your templates to add functionality to your UI components.
 
 - **types**:
 Type definitions for the app. This can include types for the state, actions, and any other relevant data structures.
 
 - **ui**:
-Functions for rendering the UI based on the current state of the machine. This can include functions for rendering different components of the UI, such as a list of todo items or a form for adding new items.
-
-- **theme**:
-A set of semantic tokens for styling the app. This can include colors, fonts, spacing, and any other design elements that are used throughout the app.
+Using proper idiomatic OEM usually allows for their to be a single UI as one large template function that renders the entire app since state in OEM is made up of a number of reactive state objects that can be used anywhere and not tied to any single template or component. However, in more complex apps, you may want to break down the UI into smaller components for better organization and readability. This file or folder can be used to store these components, which can then be imported and used in the main UI template. Components are just regular functions no different then if they written inline in the main UI template, but breaking them out can help with organization and readability.

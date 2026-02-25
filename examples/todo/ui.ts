@@ -1,280 +1,373 @@
-// --- UI Rendering ---
+// ─── UI ──────────────────────────────────────────────────────────────────────
 
-import { StateType } from '@/registry';
+import {
+  addTodo,
+  cancelEdit,
+  clearCompleted,
+  removeTodo,
+  saveEdit,
+  setFilter,
+  startEdit,
+  toggleAll,
+  toggleTodo,
+} from './actions';
+import { editingId, editText, filter, inputText, todos } from './state';
 import { tag, trait } from './templates';
-import { theme } from './theme';
-import { Action, AppState, Filter, Todo } from './types';
+import type { Filter, Todo } from './types';
 
-// --- Helpers ---
+// ── Helpers ──────────────────────────────────────────────────────────────────
 
-const filteredTodos = (state: AppState): Todo[] => {
-  switch (state.filter) {
-    case 'active':
-      return state.todos.filter((t) => !t.done);
-    case 'completed':
-      return state.todos.filter((t) => t.done);
-    default:
-      return state.todos;
-  }
+function filteredTodos(): Todo[] {
+  const all = todos.val();
+  const f = filter.val();
+  if (f === 'active') return all.filter((t) => !t.completed);
+  if (f === 'completed') return all.filter((t) => t.completed);
+  return all;
+}
+
+function activeCount(): number {
+  return todos.val().filter((t) => !t.completed).length;
+}
+
+function completedCount(): number {
+  return todos.val().filter((t) => t.completed).length;
+}
+
+function allCompleted(): boolean {
+  const all = todos.val();
+  return all.length > 0 && all.every((t) => t.completed);
+}
+
+// ── Colors ───────────────────────────────────────────────────────────────────
+
+const c = {
+  bg: '#1a1a2e',
+  surface: '#16213e',
+  surfaceHover: '#1a2744',
+  primary: '#e94560',
+  primaryHover: '#ff6b81',
+  text: '#eee',
+  textMuted: '#8892b0',
+  textDone: '#5a6380',
+  border: '#2a3a5c',
+  inputBg: '#0f3460',
+  shadow: 'rgba(0,0,0,0.3)',
 };
 
-const activeCount = (state: AppState): number => state.todos.filter((t) => !t.done).length;
-const completedCount = (state: AppState): number => state.todos.filter((t) => t.done).length;
-const allDone = (state: AppState): boolean =>
-  state.todos.length > 0 && state.todos.every((t) => t.done);
+// ── Todo Item ────────────────────────────────────────────────────────────────
 
-// --- Components ---
+function todoItem(todo: Todo) {
+  const isEditing = () => editingId.val() === todo.id;
 
-function renderToggleAll(appState: StateType<AppState>, dispatch: (a: Action) => void) {
-  return tag.label(
-    trait.style('display', () => (appState.val().todos.length === 0 ? 'none' : 'flex'), appState),
-    trait.style('alignItems', 'center'),
+  // ── Edit mode input ────────────────────────────────────────────────────
+
+  const editInput = tag.input(
+    trait.attr('type', 'text'),
+    trait.inputVal(() => editText.val(), editText),
+    trait.inputEvent('input', (val: string) => editText.set(val)),
+    trait.event('keydown', (e: any) => {
+      if (e.key === 'Enter') saveEdit();
+      if (e.key === 'Escape') cancelEdit();
+    }),
+    trait.style('display', () => (isEditing() ? 'block' : 'none'), editingId),
+    trait.style('flex', '1'),
+    trait.style('padding', '8px 12px'),
+    trait.style('border', `1px solid ${c.primary}`),
+    trait.style('borderRadius', '4px'),
+    trait.style('backgroundColor', c.inputBg),
+    trait.style('color', c.text),
+    trait.style('fontSize', '16px'),
+    trait.style('outline', 'none'),
+    trait.style('fontFamily', 'inherit'),
+  );
+
+  // Auto-focus edit input when this item enters edit mode
+  editingId.sub(() => {
+    if (isEditing()) setTimeout(() => (editInput as HTMLInputElement).focus(), 0);
+  });
+
+  // ── Display mode ──────────────────────────────────────────────────────
+
+  const checkbox = tag.input(
+    trait.attr('type', 'checkbox'),
+    trait.attr('checked', () => (todo.completed ? 'true' : undefined), todos),
+    trait.event('change', () => toggleTodo(todo.id)),
+    trait.style('width', '20px'),
+    trait.style('height', '20px'),
     trait.style('cursor', 'pointer'),
-    trait.style('padding', '0 16px 0 0'),
-
-    tag.span(
-      trait.text('❯'),
-      trait.style('fontSize', '22px'),
-      trait.style('transform', 'rotate(90deg)'),
-      trait.style('display', 'inline-block'),
-      trait.style(
-        'color',
-        () => (allDone(appState.val()) ? theme.text : theme.textMuted),
-        appState,
-      ),
-      trait.style('transition', 'color 0.2s'),
-    ),
-
-    trait.event('click', () => dispatch({ type: 'TOGGLE_ALL' })),
+    trait.style('accentColor', c.primary),
+    trait.style('flexShrink', '0'),
   );
-}
 
-function renderTodoItem(todo: Todo, dispatch: (a: Action) => void) {
-  return tag.li(
-    trait.style('display', 'flex'),
+  const label = tag.span(
+    trait.text(todo.text),
+    trait.event('dblclick', () => startEdit(todo.id, todo.text)),
+    trait.style('flex', '1'),
+    trait.style('cursor', 'pointer'),
+    trait.style('fontSize', '16px'),
+    trait.style('lineHeight', '1.4'),
+    trait.style('textDecoration', () => (todo.completed ? 'line-through' : 'none'), todos),
+    trait.style('opacity', () => (todo.completed ? '0.5' : '1'), todos),
+    trait.style('color', () => (todo.completed ? c.textDone : c.text), todos),
+    trait.style('transition', 'opacity 0.2s, color 0.2s'),
+  );
+
+  const deleteBtn = tag.button(
+    trait.text('✕'),
+    trait.event('click', () => removeTodo(todo.id)),
+    trait.style('background', 'none'),
+    trait.style('border', 'none'),
+    trait.style('color', c.textMuted),
+    trait.style('fontSize', '16px'),
+    trait.style('cursor', 'pointer'),
+    trait.style('padding', '4px 8px'),
+    trait.style('borderRadius', '4px'),
+    trait.style('opacity', '0'),
+    trait.style('transition', 'opacity 0.15s, color 0.15s'),
+    trait.styleOn('mouseenter', 'color', c.primary),
+    trait.styleOn('mouseleave', 'color', c.textMuted),
+  );
+
+  const displayRow = tag.div(
+    checkbox,
+    label,
+    deleteBtn,
+    trait.style('display', () => (isEditing() ? 'none' : 'flex'), editingId),
     trait.style('alignItems', 'center'),
+    trait.style('gap', '12px'),
+  );
+
+  return tag.li(
+    displayRow,
+    editInput,
     trait.style('padding', '12px 16px'),
-    trait.style('borderBottom', `1px solid ${theme.borderLight}`),
-    trait.style('gap', theme.gap),
-    trait.style('background', theme.surface),
-    trait.style('transition', 'background 0.15s'),
-
-    // Checkbox
-    tag.span(
-      trait.style('width', '28px'),
-      trait.style('height', '28px'),
-      trait.style('borderRadius', '50%'),
-      trait.style('border', `2px solid ${todo.done ? theme.checkmark : theme.border}`),
-      trait.style('display', 'flex'),
-      trait.style('alignItems', 'center'),
-      trait.style('justifyContent', 'center'),
-      trait.style('cursor', 'pointer'),
-      trait.style('flexShrink', '0'),
-      trait.style('transition', 'border-color 0.2s'),
-      trait.style('background', todo.done ? theme.checkmark : 'transparent'),
-
-      tag.span(
-        trait.text(todo.done ? '✓' : ''),
-        trait.style('color', '#fff'),
-        trait.style('fontSize', '14px'),
-        trait.style('fontWeight', 'bold'),
-      ),
-
-      trait.event('click', () => dispatch({ type: 'TOGGLE_TODO', payload: todo.id })),
-    ),
-
-    // Text (double-click to edit)
-    tag.span(
-      trait.text(todo.text),
-      trait.style('flex', '1'),
-      trait.style('fontSize', theme.fontSizeBase),
-      trait.style('color', todo.done ? theme.textDone : theme.text),
-      trait.style('textDecoration', todo.done ? 'line-through' : 'none'),
-      trait.style('cursor', 'text'),
-      trait.style('lineHeight', '1.4'),
-      trait.style('wordBreak', 'break-word'),
-      trait.editOnDblClick(
-        () => todo.text,
-        (newText) => dispatch({ type: 'EDIT_TODO', payload: { id: todo.id, text: newText } }),
-      ),
-    ),
-
-    // Delete button
-    tag.button(
-      trait.text('×'),
-      trait.style('background', 'none'),
-      trait.style('border', 'none'),
-      trait.style('color', theme.textMuted),
-      trait.style('fontSize', '22px'),
-      trait.style('cursor', 'pointer'),
-      trait.style('padding', '0 4px'),
-      trait.style('lineHeight', '1'),
-      trait.style('opacity', '0'),
-      trait.style('transition', 'opacity 0.15s, color 0.15s'),
-      trait.event('click', () => dispatch({ type: 'REMOVE_TODO', payload: todo.id })),
-    ),
-
-    // Show delete button on hover via parent
-    trait.event('mouseenter', (e) => {
-      if (!e) return;
-      const btn = (e.currentTarget as HTMLElement).querySelector('button');
-      if (btn) btn.style.opacity = '1';
-    }),
-    trait.event('mouseleave', (e) => {
-      if (!e) return;
-      const btn = (e.currentTarget as HTMLElement).querySelector('button');
-      if (btn) btn.style.opacity = '0';
-    }),
+    trait.style('borderBottom', `1px solid ${c.border}`),
+    trait.style('transition', 'background-color 0.15s'),
+    trait.styleOn('mouseenter', 'backgroundColor', c.surfaceHover),
+    trait.styleOn('mouseleave', 'backgroundColor', 'transparent'),
+    // Show delete button on hover
+    trait.event('mouseenter', () => (deleteBtn.style.opacity = '1')),
+    trait.event('mouseleave', () => (deleteBtn.style.opacity = '0')),
   );
 }
 
-function renderFilterButton(
-  label: string,
-  filter: Filter,
-  appState: StateType<AppState>,
-  dispatch: (a: Action) => void,
-) {
+// ── Filter Button ────────────────────────────────────────────────────────────
+
+function filterBtn(label: string, value: Filter) {
   return tag.button(
     trait.text(label),
-    trait.style('background', 'none'),
+    trait.event('click', () => setFilter(value)),
+    trait.style('padding', '6px 16px'),
+    trait.style('border', 'none'),
+    trait.style('borderRadius', '20px'),
     trait.style('cursor', 'pointer'),
-    trait.style('fontSize', theme.fontSizeSmall),
-    trait.style('padding', '3px 8px'),
-    trait.style('borderRadius', theme.radius),
+    trait.style('fontSize', '13px'),
+    trait.style('fontWeight', '600'),
+    trait.style('fontFamily', 'inherit'),
+    trait.style('transition', 'background-color 0.2s, color 0.2s'),
     trait.style(
-      'border',
-      () =>
-        appState.val().filter === filter ? `1px solid ${theme.border}` : '1px solid transparent',
-      appState,
+      'backgroundColor',
+      () => (filter.val() === value ? c.primary : 'transparent'),
+      filter,
     ),
-    trait.style(
-      'color',
-      () => (appState.val().filter === filter ? theme.text : theme.textMuted),
-      appState,
-    ),
-    trait.event('click', () => dispatch({ type: 'SET_FILTER', payload: filter })),
+    trait.style('color', () => (filter.val() === value ? '#fff' : c.textMuted), filter),
+    trait.styleOn('mouseenter', 'opacity', '0.85'),
+    trait.styleOn('mouseleave', 'opacity', '1'),
   );
 }
 
-// --- Main App UI ---
+// ── App Shell ────────────────────────────────────────────────────────────────
 
-export function renderApp(appState: StateType<AppState>, dispatch: (a: Action) => void) {
+export function App() {
+  // ── Header input ─────────────────────────────────────────────────────
+
+  const input = tag.input(
+    trait.attr('type', 'text'),
+    trait.attr('placeholder', 'What needs to be done?'),
+    trait.inputVal(() => inputText.val(), inputText),
+    trait.inputEvent('input', (val: string) => inputText.set(val)),
+    trait.event('keydown', (e: any) => {
+      if (e.key === 'Enter') addTodo();
+    }),
+    trait.style('flex', '1'),
+    trait.style('padding', '14px 16px'),
+    trait.style('border', `1px solid ${c.border}`),
+    trait.style('borderRadius', '8px'),
+    trait.style('backgroundColor', c.inputBg),
+    trait.style('color', c.text),
+    trait.style('fontSize', '16px'),
+    trait.style('outline', 'none'),
+    trait.style('fontFamily', 'inherit'),
+  );
+
+  const addBtn = tag.button(
+    trait.text('Add'),
+    trait.event('click', () => addTodo()),
+    trait.style('padding', '14px 24px'),
+    trait.style('border', 'none'),
+    trait.style('borderRadius', '8px'),
+    trait.style('backgroundColor', c.primary),
+    trait.style('color', '#fff'),
+    trait.style('fontSize', '15px'),
+    trait.style('fontWeight', '700'),
+    trait.style('cursor', 'pointer'),
+    trait.style('fontFamily', 'inherit'),
+    trait.style('transition', 'background-color 0.2s'),
+    trait.styleOn('mouseenter', 'backgroundColor', c.primaryHover),
+    trait.styleOn('mouseleave', 'backgroundColor', c.primary),
+  );
+
+  const inputRow = tag.div(
+    input,
+    addBtn,
+    trait.style('display', 'flex'),
+    trait.style('gap', '10px'),
+    trait.style('padding', '20px'),
+    trait.style('borderBottom', `1px solid ${c.border}`),
+  );
+
+  // ── Toggle All + Filters ─────────────────────────────────────────────
+
+  const toggleAllBtn = tag.button(
+    trait.text(() => (allCompleted() ? '☑' : '☐'), todos),
+    trait.event('click', () => toggleAll()),
+    trait.style('background', 'none'),
+    trait.style('border', 'none'),
+    trait.style('fontSize', '20px'),
+    trait.style('cursor', 'pointer'),
+    trait.style('color', () => (allCompleted() ? c.primary : c.textMuted), todos),
+    trait.style('padding', '4px'),
+    trait.style('transition', 'color 0.2s'),
+    trait.attr('title', 'Toggle all'),
+  );
+
+  const toolbar = tag.div(
+    toggleAllBtn,
+    filterBtn('All', 'all'),
+    filterBtn('Active', 'active'),
+    filterBtn('Completed', 'completed'),
+    trait.style('display', () => (todos.val().length > 0 ? 'flex' : 'none'), todos),
+    trait.style('alignItems', 'center'),
+    trait.style('gap', '8px'),
+    trait.style('padding', '12px 20px'),
+    trait.style('borderBottom', `1px solid ${c.border}`),
+  );
+
+  // ── Todo List ────────────────────────────────────────────────────────
+
+  const emptyState = tag.div(
+    trait.html(
+      () => {
+        const f = filter.val();
+        const total = todos.val().length;
+        if (total === 0) return tag.span(trait.text('No todos yet. Add one above!'));
+        if (f === 'active') return tag.span(trait.text('No active todos.'));
+        if (f === 'completed') return tag.span(trait.text('No completed todos.'));
+        return tag.span(trait.text(''));
+      },
+      todos,
+      filter,
+    ),
+    trait.style('display', () => (filteredTodos().length === 0 ? 'flex' : 'none'), todos, filter),
+    trait.style('justifyContent', 'center'),
+    trait.style('padding', '40px 20px'),
+    trait.style('color', c.textMuted),
+    trait.style('fontSize', '15px'),
+    trait.style('fontStyle', 'italic'),
+  );
+
+  const list = tag.ul(
+    trait.html(
+      () => filteredTodos().map((todo) => todoItem(todo)),
+      todos,
+      filter,
+      editingId,
+      editText,
+    ),
+    trait.style('listStyle', 'none'),
+    trait.style('margin', '0'),
+    trait.style('padding', '0'),
+  );
+
+  // ── Footer ───────────────────────────────────────────────────────────
+
+  const countText = tag.span(
+    trait.text(() => {
+      const n = activeCount();
+      return `${n} item${n === 1 ? '' : 's'} left`;
+    }, todos),
+    trait.style('color', c.textMuted),
+    trait.style('fontSize', '13px'),
+  );
+
+  const clearBtn = tag.button(
+    trait.text('Clear completed'),
+    trait.event('click', () => clearCompleted()),
+    trait.style('display', () => (completedCount() > 0 ? 'inline-block' : 'none'), todos),
+    trait.style('padding', '6px 14px'),
+    trait.style('border', 'none'),
+    trait.style('borderRadius', '4px'),
+    trait.style('backgroundColor', 'transparent'),
+    trait.style('color', c.textMuted),
+    trait.style('fontSize', '13px'),
+    trait.style('cursor', 'pointer'),
+    trait.style('fontFamily', 'inherit'),
+    trait.style('transition', 'color 0.2s'),
+    trait.styleOn('mouseenter', 'color', c.primary),
+    trait.styleOn('mouseleave', 'color', c.textMuted),
+  );
+
+  const footer = tag.div(
+    countText,
+    clearBtn,
+    trait.style('display', () => (todos.val().length > 0 ? 'flex' : 'none'), todos),
+    trait.style('justifyContent', 'space-between'),
+    trait.style('alignItems', 'center'),
+    trait.style('padding', '12px 20px'),
+    trait.style('borderTop', `1px solid ${c.border}`),
+  );
+
+  // ── App Container ────────────────────────────────────────────────────
+
+  const title = tag.h1(
+    trait.text('todos'),
+    trait.style('textAlign', 'center'),
+    trait.style('fontSize', '64px'),
+    trait.style('fontWeight', '200'),
+    trait.style('color', c.primary),
+    trait.style('margin', '0 0 24px'),
+    trait.style('letterSpacing', '-2px'),
+    trait.style('opacity', '0.6'),
+  );
+
+  const card = tag.div(
+    inputRow,
+    toolbar,
+    emptyState,
+    list,
+    footer,
+    trait.style('backgroundColor', c.surface),
+    trait.style('borderRadius', '12px'),
+    trait.style('boxShadow', `0 8px 32px ${c.shadow}`),
+    trait.style('overflow', 'hidden'),
+  );
+
+  const hint = tag.p(
+    trait.text('Double-click a todo to edit'),
+    trait.style('textAlign', 'center'),
+    trait.style('color', c.textMuted),
+    trait.style('fontSize', '12px'),
+    trait.style('marginTop', '16px'),
+    trait.style('opacity', '0.6'),
+  );
+
   return tag.div(
-    trait.style('maxWidth', '550px'),
-    trait.style('margin', '0 auto'),
-    trait.style('fontFamily', theme.fontFamily),
-
-    // Title
-    tag.h1(
-      trait.text('todos'),
-      trait.style('textAlign', 'center'),
-      trait.style('fontSize', theme.fontSizeXL),
-      trait.style('fontWeight', '200'),
-      trait.style('color', 'rgba(175, 47, 47, 0.25)'),
-      trait.style('margin', '30px 0 20px'),
-    ),
-
-    // Main card
-    tag.div(
-      trait.style('background', theme.surface),
-      trait.style('borderRadius', theme.radiusLarge),
-      trait.style('boxShadow', `0 2px 6px ${theme.shadow}, 0 25px 50px rgba(0,0,0,0.06)`),
-      trait.style('overflow', 'hidden'),
-
-      // Input row
-      tag.div(
-        trait.style('display', 'flex'),
-        trait.style('alignItems', 'center'),
-        trait.style('borderBottom', `1px solid ${theme.borderLight}`),
-        trait.style('padding', '0 0 0 12px'),
-
-        renderToggleAll(appState, dispatch),
-
-        tag.input(
-          trait.attr('type', 'text'),
-          trait.attr('placeholder', 'What needs to be done?'),
-          trait.style('flex', '1'),
-          trait.style('padding', '16px 16px 16px 4px'),
-          trait.style('fontSize', '20px'),
-          trait.style('border', 'none'),
-          trait.style('outline', 'none'),
-          trait.style('background', 'transparent'),
-          trait.style('color', theme.text),
-          trait.style('fontFamily', 'inherit'),
-          trait.submitOnEnter((text) => dispatch({ type: 'ADD_TODO', payload: text })),
-        ),
-      ),
-
-      // Todo list
-      tag.ul(
-        trait.style('listStyle', 'none'),
-        trait.style('margin', '0'),
-        trait.style('padding', '0'),
-        trait.children(
-          () => filteredTodos(appState.val()).map((todo) => renderTodoItem(todo, dispatch)),
-          appState,
-        ),
-      ),
-
-      // Footer (hidden when no todos)
-      tag.div(
-        trait.style(
-          'display',
-          () => (appState.val().todos.length === 0 ? 'none' : 'flex'),
-          appState,
-        ),
-        trait.style('justifyContent', 'space-between'),
-        trait.style('alignItems', 'center'),
-        trait.style('padding', '10px 16px'),
-        trait.style('borderTop', `1px solid ${theme.borderLight}`),
-        trait.style('fontSize', theme.fontSizeSmall),
-        trait.style('color', theme.textMuted),
-
-        // Count
-        tag.span(
-          trait.text(() => {
-            const n = activeCount(appState.val());
-            return `${n} item${n !== 1 ? 's' : ''} left`;
-          }, appState),
-        ),
-
-        // Filter buttons
-        tag.div(
-          trait.style('display', 'flex'),
-          trait.style('gap', '4px'),
-          renderFilterButton('All', 'all', appState, dispatch),
-          renderFilterButton('Active', 'active', appState, dispatch),
-          renderFilterButton('Completed', 'completed', appState, dispatch),
-        ),
-
-        // Clear completed
-        tag.button(
-          trait.text('Clear completed'),
-          trait.style('background', 'none'),
-          trait.style('border', 'none'),
-          trait.style('color', theme.textMuted),
-          trait.style('cursor', 'pointer'),
-          trait.style('fontSize', theme.fontSizeSmall),
-          trait.style('padding', '0'),
-          trait.style(
-            'display',
-            () => (completedCount(appState.val()) > 0 ? 'block' : 'none'),
-            appState,
-          ),
-          trait.event('click', () => dispatch({ type: 'CLEAR_COMPLETED' })),
-        ),
-      ),
-    ),
-
-    // Info footer
-    tag.footer(
-      trait.style('textAlign', 'center'),
-      trait.style('marginTop', '24px'),
-      trait.style('fontSize', '11px'),
-      trait.style('color', theme.textMuted),
-      trait.style('lineHeight', '1.6'),
-      tag.p(trait.text('Double-click to edit a todo')),
-      tag.p(trait.text('Built with OEM')),
-    ),
+    title,
+    card,
+    hint,
+    trait.style('maxWidth', '560px'),
+    trait.style('margin', '48px auto'),
+    trait.style('padding', '0 16px'),
+    trait.style('fontFamily', "'Inter', system-ui, -apple-system, sans-serif"),
   );
 }
