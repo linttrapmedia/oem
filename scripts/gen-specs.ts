@@ -396,7 +396,7 @@ const skills = [
   { name: 'examples', description: 'Reference application prompts and BDD scenarios' },
 ];
 
-const skillFrontmatter = skills.map((s) => `  - OEM ${s.name}`).join('\n');
+const skillFrontmatter = skills.map((s) => `  - ${s.name}`).join('\n');
 const skillsReference = skills.map((s) => `- **${s.name}**: ${s.description}`).join('\n');
 
 const quickStartExample = fence(

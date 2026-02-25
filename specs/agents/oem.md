@@ -2,12 +2,12 @@
 name: oem
 description: The agent-first UI framework and toolkit for building front-end applications with a compositional syntax that declaratively unifies markup, styling, and behavior
 skills:
-  - OEM templates
-  - OEM traits
-  - OEM states
-  - OEM theming
-  - OEM patterns
-  - OEM examples
+  - templates
+  - traits
+  - states
+  - theming
+  - patterns
+  - examples
 ---
 
 # OEM

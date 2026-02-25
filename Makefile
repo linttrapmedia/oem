@@ -63,10 +63,6 @@ publish: ## Publish the project to npm
 specs: ## Generate Skill files
 	@echo $(STATUS) Generating Skill.md, etc...
 	@bun ./scripts/gen-specs.ts
-	@mkdir -p .claude/agents
-	@mkdir -p .claude/skills
-	@cp ./specs/agents/oem.md .claude/agents/oem.md
-	@rsync -a ./specs/skills/ .claude/skills/
 
 test: ## Run tests
 	@echo $(STATUS) Testing...
