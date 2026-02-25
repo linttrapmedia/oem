@@ -1,5 +1,5 @@
 ---
-name: ThemeState
+name: useThemeState
 description: Centralized theme management with reactive design token access
 license: MIT
 metadata:
@@ -7,7 +7,7 @@ metadata:
   version: '1.0'
 ---
 
-# ThemeState
+# useThemeState
 
 A sophisticated state management system for handling multiple themes with reactive design token access. Supports dynamic theme switching and provides both immediate and deferred token getters.
 
@@ -25,11 +25,11 @@ A sophisticated state management system for handling multiple themes with reacti
 ### Basic Setup
 
 ```typescript
-import { ThemeState } from '@/states/ThemeState';
+import { useThemeState } from '@/states/ThemeState';
 import { lightTheme, darkTheme } from '@/themes';
 
 // Initialize with themes
-const theme = ThemeState([lightTheme, darkTheme], 'light');
+const theme = useThemeState([lightTheme, darkTheme], 'light');
 
 // Get current theme name
 const currentTheme = theme.getTheme(); // 'light'
@@ -94,14 +94,16 @@ type ThemeStateValue = {
 ### Constructor
 
 ```typescript
-ThemeState(themes: Theme[], initialTheme?: string)
+useThemeState(themes: Theme[], initialTheme?: string)
 ```
 
 **Parameters:**
+
 - `themes`: Array of theme definitions (must have at least one)
 - `initialTheme`: Optional initial theme name (defaults to first theme)
 
 **Throws:**
+
 - Error if themes array is empty
 
 ### Methods
@@ -123,6 +125,7 @@ theme.setTheme('dark');
 ```
 
 **Throws:**
+
 - Error if theme name doesn't exist
 
 ### Token Getters
@@ -157,7 +160,7 @@ const spacing = getSpacing(); // Always gets current theme value
 
 ### Proxy-Based Token Access
 
-ThemeState uses a JavaScript Proxy to dynamically generate token getters:
+useThemeState uses a JavaScript Proxy to dynamically generate token getters:
 
 - Properties in `baseState` are accessed normally
 - Properties starting with `$` return deferred getters
@@ -174,7 +177,7 @@ ThemeState uses a JavaScript Proxy to dynamically generate token getters:
 ### Theme Switcher Component
 
 ```typescript
-const theme = ThemeState([lightTheme, darkTheme]);
+const theme = useThemeState([lightTheme, darkTheme]);
 
 const toggleTheme = () => {
   const current = theme.getTheme();
@@ -185,7 +188,7 @@ const toggleTheme = () => {
 ### Responsive Token Usage
 
 ```typescript
-const theme = ThemeState([lightTheme, darkTheme]);
+const theme = useThemeState([lightTheme, darkTheme]);
 
 // Use deferred getter for reactive styling
 const buttonBackground = theme.$cmp_btn_pri_bkg;
@@ -197,11 +200,7 @@ element.style.background = buttonBackground();
 ### Multi-Brand Support
 
 ```typescript
-const theme = ThemeState([
-  brandATheme,
-  brandBTheme,
-  brandCTheme
-], 'brandA');
+const theme = useThemeState([brandATheme, brandBTheme, brandCTheme], 'brandA');
 
 // Switch brands dynamically
 theme.setTheme('brandB');
@@ -219,7 +218,7 @@ theme.setTheme('nonexistent');
 ### Empty Themes Array
 
 ```typescript
-ThemeState([]);
+useThemeState([]);
 // Throws: At least one theme must be provided
 ```
 
@@ -232,7 +231,7 @@ ThemeState([]);
 
 ## Integration with Design Token System
 
-ThemeState works seamlessly with the 6-layer design token architecture:
+useThemeState works seamlessly with the 6-layer design token architecture:
 
 ```typescript
 // Access any layer's tokens

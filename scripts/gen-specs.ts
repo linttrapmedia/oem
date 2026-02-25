@@ -74,7 +74,7 @@ You are a front-end expert and an expert at writing idiomatic OEM. This document
 
 ## Core Library & Fundamentals
 
-The core library provides the fundamental building blocks of the OEM ecosystem. It includes the Template function for creating a user-defined templating engine, the State function for creating a micro event-bus and state object, and the ThemeState function for managing design tokens in a centralized way. The core library also includes type definitions for OEM, which can be found in the references.
+The core library provides the fundamental building blocks of the OEM ecosystem. It includes the Template function for creating a user-defined templating engine, the State function for creating a micro event-bus and state object, and the useThemeState function for managing design tokens in a centralized way. The core library also includes type definitions for OEM, which can be found in the references.
 
 ${coreFiles
   .map(
@@ -125,33 +125,28 @@ ${themeFiles
   )
   .join('\n')}
 
-### Creating a ThemeState Instance
+### Creating a useThemeState Instance
 
-For SPAs and any non-trivial app, create a dedicated ThemeState instance in a \`theme.ts\` file:
+For SPAs and any non-trivial app, create a dedicated useThemeState instance in a \`theme.ts\` file:
 
 \`\`\`ts
-import { ThemeState } from 'oem/registry';
+import { useThemeState } from 'oem/states/ThemeState';
 import { darkTheme } from 'oem/themes';
 import type { Theme } from 'oem/states/ThemeState';
 
 // Use the built-in dark theme, or define custom tokens
 const myDarkTheme: Theme = { name: 'dark', tokens: darkTheme };
 
-export const theme = ThemeState([myDarkTheme]);
+export const theme = useThemeState([myDarkTheme]);
 \`\`\`
 
 ### Using Tokens in the UI
 
-Once you have a ThemeState instance, access tokens via its proxy getters. Every token key on the ThemeState becomes a getter function:
+Once you have a useThemeState instance, access tokens via its proxy getters. Every token key on the useThemeState becomes a getter function:
 
 \`\`\`ts
 import { theme } from './theme';
 import { tag, trait } from './templates';
-
-// Direct getter: theme.sem_color_bkg_pri() returns the resolved value
-trait.style('backgroundColor', theme.sem_color_bkg_pri())
-trait.style('color', theme.sem_color_txt_pri())
-trait.style('padding', theme.sem_spc_pad_md())
 
 // Deferred getter (prefixed with $): for reactive traits that need to re-evaluate on theme change
 trait.style('backgroundColor', theme.$sem_color_bkg_pri)
@@ -161,7 +156,7 @@ trait.style('backgroundColor', theme.$sem_color_bkg_pri)
 
 - **Never** write a hex value, rgb value, or pixel literal directly in a \`trait.style()\` call
 - UI code should reference semantic (sem_), element (elm_), or component (cmp_) tokens — never primitives (pmt_) directly
-- If the design requires a value not covered by existing tokens, define a new token at the appropriate layer, then reference it
+- If the design requires a value not covered by existing tokens, use an inline style and test against the current theme name being used.
 
 
 ## Pattern Library
@@ -169,8 +164,8 @@ trait.style('backgroundColor', theme.$sem_color_bkg_pri)
 ### Idiomatic OEM
 
 - Don't use ternary operators. Instead, use traits to conditionally apply styles and behaviors. This keeps the declarative syntax consistent and allows for better LLM interpretation and management.
-- **Never hardcode color, spacing, typography, or other design values.** Always derive them from the ThemeState design token system. If tokens don't exist for something you need, define them in your app's theme first, then reference them. No hex codes, rgb values, or pixel literals should appear directly in \`trait.style()\` calls.
-- Every SPA should instantiate its own ThemeState with a token set appropriate to the app's design, then reference those tokens throughout the UI.
+- **Never hardcode color, spacing, typography, or other design values.** Always derive them from the useThemeState design token system. If tokens don't exist for something you need, define them in your app's theme first, then reference them. No hex codes, rgb values, or pixel literals should appear directly in \`trait.style()\` calls.
+- Every SPA should instantiate its own useThemeState with a token set appropriate to the app's design, then reference those tokens throughout the UI.
 
 ### Git Commits
 
@@ -195,7 +190,7 @@ The entry point of the app. It initializes the state machine and sets up the eve
 A library of templates (using Template and it's destructured [tag, trait]) that can be used to render the UI. Multiple templates can be used in the app, but it's often best to keep them organized in a single file or folder.
 
 - **theme**:
-A ThemeState instance that defines the app's design tokens following the token naming convention (pmt_ > exp_ > sem_ > elm_ > cmp_ > ftr_). This is the single source of truth for all visual values (colors, spacing, typography, radii, shadows, etc.). Import and reference these tokens in templates and UI instead of hardcoding values. Create a ThemeState instance by importing \`ThemeState\` from the core library and populating it with at least one Theme (\`{ name: string, tokens: DesignTokens }\`). Use the built-in \`darkTheme\` and/or \`lightTheme\` token sets as a starting point, or define your own. Access tokens in the UI via the ThemeState proxy getters (e.g., \`theme.sem_color_bkg_pri()\` or the deferred form \`theme.$sem_color_bkg_pri\` for use in traits).
+A useThemeState instance that defines the app's design tokens following the token naming convention (pmt_ > exp_ > sem_ > elm_ > cmp_ > ftr_). This is the single source of truth for all visual values (colors, spacing, typography, radii, shadows, etc.). Import and reference these tokens in templates and UI instead of hardcoding values. Create a useThemeState instance by importing \`useThemeState\` from the core library and populating it with at least one Theme (\`{ name: string, tokens: DesignTokens }\`). Use the built-in \`darkTheme\` and/or \`lightTheme\` token sets as a starting point, or define your own. Access tokens in the UI via the useThemeState proxy getters (e.g., \`theme.sem_color_bkg_pri()\` or the deferred form \`theme.$sem_color_bkg_pri\` for use in traits).
 
 - **traits**:
 The default traits provided by the core library are often sufficient for most use cases, but you may find that you need to create custom traits to handle specific behaviors or patterns in your app. This file or folder can be used to store any custom traits that you create for your app. These traits can then be imported and used in your templates to add functionality to your UI components.

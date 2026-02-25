@@ -23,7 +23,7 @@ type ThemeStateValue = {
   currentTheme: string;
 };
 
-export const ThemeState = (themes: Theme[], initialTheme?: string) => {
+export const useThemeState = (themes: Theme[], initialTheme?: string) => {
   if (themes.length === 0) {
     throw new Error('At least one theme must be provided');
   }
