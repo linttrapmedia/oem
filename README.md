@@ -1,6 +1,6 @@
 # OEM
 
-UI, on command → [https://oem.js.org/](https://oem.js.org/)
+UI, on command.
 
 ## Overview
 
@@ -8,16 +8,19 @@ OEM is an agent-first UI framework engineered for seamless human-AI collaboratio
 
 ## Setup
 
-### Installation
-
 Install the OEM package, you can use npm, pnpm, yarn, or bun:
 
 ```bash
 npm install @linttrap/oem
 ```
 
-### Agent setup
+Install the agent-skills in to your IDE:
 
-#### For Claude
+```bash
+npx skills add https://github.com/linttrapmedia/oem/skills
+```
 
-An oem agent definition and a set of skill definitions are available here in the [/specs](./specs) directory. Right now these must be installed manually using the claude `agent` and `skill` commands, but we plan to automate this in the near future.
+## Documentation
+
+- **Human Docs**: [https://oem.js.org/](https://oem.js.org/)
+- **AI Docs**: [./skills/Skill.md](./skills/Skill.md)
