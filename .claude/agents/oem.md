@@ -11,7 +11,7 @@ You are a front-end expert and an expert at writing idiomatic OEM. This document
 
 The core library provides the fundamental building blocks of the OEM ecosystem. It includes the Template function for creating a user-defined templating engine, the State function for creating a micro event-bus and state object, and the useThemeState function for managing design tokens in a centralized way. The core library also includes type definitions for OEM, which can be found in the references.
 
-- [Template](../references/core/template.md) - Core template engine for declarative, reactive UI composition with traits
+- [Template](../references/core/template.md) - Core template engine for creating declarative and reactive UI applications
 - [State](../references/core/state.md) - Reactive event bus with publish-subscribe state management
 - [Types](../references/core/types.md) - Common TypeScript type definitions for reactive conditions, testing, and utilities
 - [Util](../references/core/util.md) - Runtime helpers for working with State objects and Conditions
@@ -91,7 +91,7 @@ trait.style('backgroundColor', theme.$sem_color_bkg_pri)
 
 - **Never** write a hex value, rgb value, or pixel literal directly in a `trait.style()` call
 - UI code should reference semantic (sem_), element (elm_), or component (cmp_) tokens — never primitives (pmt_) directly
-- If the design requires a value not covered by existing tokens, define a new token at the appropriate layer, then reference it
+- If the design requires a value not covered by existing tokens, use an inline style and test against the current theme name being used.
 
 
 ## Pattern Library
@@ -101,6 +101,7 @@ trait.style('backgroundColor', theme.$sem_color_bkg_pri)
 - Don't use ternary operators. Instead, use traits to conditionally apply styles and behaviors. This keeps the declarative syntax consistent and allows for better LLM interpretation and management.
 - **Never hardcode color, spacing, typography, or other design values.** Always derive them from the useThemeState design token system. If tokens don't exist for something you need, define them in your app's theme first, then reference them. No hex codes, rgb values, or pixel literals should appear directly in `trait.style()` calls.
 - Every SPA should instantiate its own useThemeState with a token set appropriate to the app's design, then reference those tokens throughout the UI.
+- Theming is handled entirely through design tokens and the useThemeState system. Don't write conditional logic in your templates to handle different themes; instead, use traits that reference tokens which can change based on the active theme. This allows for dynamic theming without coupling your UI logic to specific theme conditions.
 
 ### Git Commits
 

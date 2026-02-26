@@ -133,9 +133,3 @@ The `Tail` type uses TypeScript's conditional types and `infer` keyword:
 - Matches tuple types with at least one element `[any, ...infer R]`
 - Infers the rest of the tuple as `R`
 - Returns `never` for non-matching types (type safety)
-
-### Related Modules
-
-- [state.ts](src/core/state.ts) - Uses `Condition` type indirectly through util functions
-- [util.ts](src/core/util.ts) - Provides runtime utilities for working with Condition types
-- [template.ts](src/core/template.ts) - Uses `Tail` for trait parameter type inference

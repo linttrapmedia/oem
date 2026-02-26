@@ -1,6 +1,6 @@
 ---
 name: Template
-description: Core template engine for declarative, reactive UI composition with traits
+description: Core template engine for creating declarative and reactive UI applications
 license: MIT
 metadata:
   author: Kevin Lint
@@ -27,18 +27,20 @@ The template module allows you to create your own template engine. It is the cor
 
 ```typescript
 // Import Template and some traits from OEM
-import { Template, useEventTrait, useTextContentTrait } from '@linttrap/oem';
+import { Template, useEventTrait, useTextContentTrait, useStyleTrait } from '@linttrap/oem';
 
 // Create template and add traits
 export const [tag, trait] = Template({
   event: useEventTrait,
   text: useTextContentTrait,
+  style: useStyleTrait,
 });
 
 // Now you can generate elements with the tag proxy and apply available traits
 const button = tag.button(
   trait.event('click', () => console.log('Clicked!')),
   trait.text('Click Me'),
+  trait.style('backgroundColor', 'blue'),
 );
 ```
 
@@ -107,7 +109,7 @@ SVG elements are created using `createElementNS` with the SVG namespace. The mod
 
 A trait is any function that takes an element as its first parameter, applies some behavior or configuration to it and returns a cleanup function. Traits can be defined in the config object passed to `Template()` and are accessed via the trait proxy.
 
-Here's an example of the Style Trait
+Here's an example of the implementation of the Style Trait
 
 ```typescript
 export function useStyleTrait(
@@ -158,6 +160,10 @@ trait.event('click', handleClick, $test(!disabled)),
 trait.attr('disabled', 'true', $test(disabled)),
 ```
 
+Note: State objects come with a built-in `$test` method that creates a condition based on the state value (e.g. `state.$test(true)` creates a condition that checks if the state value is `true`). See [State.md](state.md) for more details.
+
+````typescript
+
 #### Avoiding Ternary Expressions (Anti-pattern)
 
 ```typescript
@@ -169,7 +175,7 @@ trait.style('opacity', disabled ? '0.6' : '1'),
 
 // ❌ INCORRECT: Do not use inline conditionals
 trait.style('color', isError ? 'red' : 'blue'),
-```
+````
 
 #### How Conditions Work
 
@@ -179,35 +185,6 @@ Traits extract conditions using `extractConditions()` (see `@/core/util`) and on
 2. **Condition Extraction**: Traits filter rest parameters for objects with `type === '$test'`
 3. **Condition Evaluation**: All conditions must pass for the trait to apply
 4. **Reactive Updates**: When states change, conditions are re-evaluated
-
-```typescript
-// Example from Attribute.ts trait
-export const useAttributeTrait = (
-  el: HTMLElement,
-  prop: string,
-  val: (() => string | number | boolean | undefined) | (string | number | boolean | undefined),
-  ...rest: (StateType<any> | Condition)[]
-) => {
-  const states = extractStates(val, ...rest);
-  const conditions = extractConditions(...rest);
-  const apply = () => {
-    const _val = typeof val === 'function' ? val() : val;
-    const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));
-    if (applies) {
-      if (_val === undefined) {
-        el.removeAttribute(prop);
-      } else {
-        el.setAttribute(prop, String(_val));
-      }
-    } else {
-      el.removeAttribute(prop);
-    }
-  };
-  apply();
-  const unsubs = states.map((state) => state.sub(apply));
-  return () => unsubs.forEach((unsub) => unsub());
-};
-```
 
 This pattern ensures:
 

@@ -166,6 +166,7 @@ trait.style('backgroundColor', theme.$sem_color_bkg_pri)
 - Don't use ternary operators. Instead, use traits to conditionally apply styles and behaviors. This keeps the declarative syntax consistent and allows for better LLM interpretation and management.
 - **Never hardcode color, spacing, typography, or other design values.** Always derive them from the useThemeState design token system. If tokens don't exist for something you need, define them in your app's theme first, then reference them. No hex codes, rgb values, or pixel literals should appear directly in \`trait.style()\` calls.
 - Every SPA should instantiate its own useThemeState with a token set appropriate to the app's design, then reference those tokens throughout the UI.
+- Theming is handled entirely through design tokens and the useThemeState system. Don't write conditional logic in your templates to handle different themes; instead, use traits that reference tokens which can change based on the active theme. This allows for dynamic theming without coupling your UI logic to specific theme conditions.
 
 ### Git Commits
 

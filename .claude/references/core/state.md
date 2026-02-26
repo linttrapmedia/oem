@@ -61,6 +61,8 @@ counter.incrementBy(5); // Increments count by 5
 counter.$increment()(); // Deferred increment
 ```
 
+Note: the `$`-prefixed methods (e.g. `$increment`) are automatically generated for each custom method and return a closure that can be used for deferred execution, such as in event handlers.
+
 #### `StateType<T>`
 
 - **Type**: Interface/Type
@@ -109,15 +111,6 @@ const unsub = count.sub((value) => console.log(value));
 const isZero = count.test(0); // true if count is 0
 const isPositive = count.test((v) => v > 0);
 ```
-
-###### `call(method, ...params)`
-
-- **Description**: Calls a method on the boxed version of primitive types
-- **Parameters**:
-  - `method`: The method name to call
-  - `params`: Arguments to pass to the method
-- **Returns**: The result of the method call
-- **Usage**: `stringState.call('toUpperCase')`
 
 ##### Deferred Execution Methods ($ prefix)
 
@@ -179,25 +172,13 @@ const addFiveBtn = document.querySelector('#add-five');
 addFiveBtn.addEventListener('click', counter.$incrementBy(5));
 ```
 
-Custom methods have access to all state methods:
+Because custom methods take the state object as their first parameter, they have access to all state methods:
 
 - `state.val()` - Get current value
 - `state.set(newValue)` - Set new value
 - `state.reduce(cb)` - Update based on previous value
 - `state.sub(cb)` - Subscribe to changes
 - `state.test(predicate)` - Test current value
-
-#### Type Utilities
-
-##### `MethodKeys<T>`
-
-- **Type**: Type utility
-- **Description**: Extracts only the method keys from a type
-
-##### `Boxed<T>`
-
-- **Type**: Type utility
-- **Description**: Maps primitive types to their boxed equivalents (string → String, number → Number, boolean → Boolean)
 
 ### Implementation Details
 
@@ -208,7 +189,8 @@ The state module uses a closure-based approach to maintain private state:
 - When state changes via `set()` or `reduce()`, all subscribers are notified synchronously
 - The boxed type system allows calling methods like `toUpperCase()` on string states
 
-### Related Modules
+### Gotchas
 
-- [util.ts](src/core/util.ts) - Provides utility functions for extracting and working with State objects
-- [template.ts](src/core/template.ts) - Integrates with State for reactive DOM rendering
+- There is no `pub` method; state updates are published automatically when using `set()` or `reduce()`
+- Custom methods must use the provided state object parameter to manipulate state; they cannot directly access internal variables
+- Deferred execution methods (with `$` prefix) return closures that are syntactic sugar for traits. Traits use them to get the current state value and subscribe to changes. Each trait is responsible for implementing the logic to re-run when the state changes. This design allows for flexible reactive patterns without coupling state directly to UI components.

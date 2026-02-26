@@ -9,7 +9,7 @@ metadata:
 
 # useThemeState
 
-A sophisticated state management system for handling multiple themes with reactive design token access. Supports dynamic theme switching and provides both immediate and deferred token getters.
+A state management system for handling multiple themes with reactive design token access. Supports dynamic theme switching and provides both immediate and deferred token getters through a Proxy-based API.
 
 ## Features
 
@@ -20,69 +20,39 @@ A sophisticated state management system for handling multiple themes with reacti
 - **Deferred getters**: Support for computed token values with `$` prefix
 - **Validation**: Ensures themes exist before switching
 
-## Usage
-
-### Basic Setup
+## Setup
 
 ```typescript
-import { useThemeState } from '@/states/ThemeState';
-import { lightTheme, darkTheme } from '@/themes';
+import { Template } from 'oem/core/template';
+import { useThemeState } from 'oem/states/ThemeState';
+import { darkTheme, lightTheme } from 'oem/themes';
+import { useStyleTrait } from 'oem/traits/Style';
+import { useTextContentTrait } from 'oem/traits/TextContent';
+import { useEventTrait } from 'oem/traits/Event';
+import { useInnerHTMLTrait } from 'oem/traits/InnerHTML';
 
-// Initialize with themes
-const theme = useThemeState([lightTheme, darkTheme], 'light');
+import type { Theme } from 'oem/states/ThemeState';
 
-// Get current theme name
-const currentTheme = theme.getTheme(); // 'light'
+const myDark: Theme = { name: 'dark', tokens: darkTheme };
+const myLight: Theme = { name: 'light', tokens: lightTheme };
 
-// Switch themes
-theme.setTheme('dark');
-```
-
-### Token Access
-
-#### Immediate Token Getter
-
-```typescript
-// Access token directly (evaluated immediately)
-const primaryColor = theme.pmt_color_blue_500();
-// Returns the current value: '#3B82F6'
-```
-
-#### Deferred Token Getter
-
-```typescript
-// Deferred token (starts with $, re-evaluates when theme changes)
-const primaryColorDeferred = theme.$pmt_color_blue_500;
-// Returns a function that always gets the current theme's value
-```
-
-### Reactive Updates
-
-```typescript
-// Subscribe to theme changes
-theme.sub((value) => {
-  console.log('Current theme:', value.currentTheme);
-  console.log('Available themes:', value.themes);
+const theme = useThemeState([myDark, myLight], 'dark');
+const { tag, trait } = Template({
+  useStyleTrait,
+  useTextContentTrait,
+  useEventTrait,
+  useInnerHTMLTrait,
 });
-
-// Change theme (triggers subscribers)
-theme.setTheme('dark');
 ```
 
-## Type Definition
-
-### Theme Object
+## Type Definitions
 
 ```typescript
 type Theme = {
   name: string;
   tokens: DesignTokens;
 };
-```
 
-### State Value
-
-```typescript
 type ThemeStateValue = {
   themes: Theme[];
   currentTheme: string;
@@ -97,150 +67,153 @@ type ThemeStateValue = {
 useThemeState(themes: Theme[], initialTheme?: string)
 ```
 
-**Parameters:**
+- `themes` — Array of theme definitions (must have at least one)
+- `initialTheme` — Optional initial theme name (defaults to first theme's name)
 
-- `themes`: Array of theme definitions (must have at least one)
-- `initialTheme`: Optional initial theme name (defaults to first theme)
+Throws if `themes` is empty.
 
-**Throws:**
-
-- Error if themes array is empty
-
-### Methods
-
-#### `getTheme()`
+### `getTheme()`
 
 Returns the name of the currently active theme.
 
 ```typescript
-const currentTheme = theme.getTheme(); // 'light'
+theme.getTheme(); // 'dark'
 ```
 
-#### `setTheme(themeName: string)`
+### `setTheme(themeName: string)`
 
-Sets the active theme by name.
+Sets the active theme by name. Throws if `themeName` doesn't match any loaded theme.
 
 ```typescript
-theme.setTheme('dark');
+theme.setTheme('light');
 ```
 
-**Throws:**
+### Immediate Token Getter — `theme.{tokenKey}()`
 
-- Error if theme name doesn't exist
-
-### Token Getters
-
-#### Immediate Getter Pattern
+Returns the current value of the token by calling it as a function. Evaluates once at call time.
 
 ```typescript
-theme.{tokenKey}()
+theme.pmt_color_blue_500(); // '#3b82f6'
+theme.sem_spc_pad_md(); // '16px'
 ```
 
-Returns the current value of the token. Call immediately to get the value.
+### Deferred Token Getter — `theme.${tokenKey}`
+
+Returns a closure that retrieves the token value when called. Use in traits so the value re-evaluates on theme change.
 
 ```typescript
-const spacing = theme.sem_spc_inset_md(); // '1rem'
+theme.$pmt_color_blue_500; // () => '#3b82f6' (re-evaluates on theme switch)
 ```
 
-#### Deferred Getter Pattern
+## Token Access in OEM Templates
+
+### Static Token Values
+
+Use the immediate getter when the value doesn't need to react to theme changes after initial render:
 
 ```typescript
-theme.${tokenKey}
+tag.div(
+  trait.style('backgroundColor', theme.pmt_color_gray_950()),
+  trait.style('color', theme.pmt_color_gray_100()),
+  trait.style('padding', theme.sem_spc_pad_lg()),
+  trait.textContent('Hello, OEM'),
+);
 ```
 
-Returns a function that retrieves the token value when called. Use for reactive scenarios.
+### Reactive Token Values (Deferred Getters)
+
+Use the `$`-prefixed deferred getter so the trait re-evaluates when the theme changes:
 
 ```typescript
-const getSpacing = theme.$sem_spc_inset_md;
-// Later...
-const spacing = getSpacing(); // Always gets current theme value
+tag.div(
+  trait.style('backgroundColor', theme.$pmt_color_gray_950),
+  trait.style('color', theme.$pmt_color_gray_100),
+  trait.style('padding', theme.$sem_spc_pad_lg),
+  trait.textContent('This reacts to theme switches'),
+);
 ```
 
-## Implementation Details
-
-### Proxy-Based Token Access
-
-useThemeState uses a JavaScript Proxy to dynamically generate token getters:
-
-- Properties in `baseState` are accessed normally
-- Properties starting with `$` return deferred getters
-- All other properties return immediate token getter functions
-
-### Token Lookup
-
-1. Finds the current theme from state
-2. Looks up the token key in that theme's tokens
-3. Returns the value or empty string if not found
-
-## Common Patterns
-
-### Theme Switcher Component
+### Theme Switcher
 
 ```typescript
-const theme = useThemeState([lightTheme, darkTheme]);
-
-const toggleTheme = () => {
-  const current = theme.getTheme();
-  theme.setTheme(current === 'light' ? 'dark' : 'light');
-};
+tag.button(
+  trait.style('backgroundColor', theme.$pmt_color_blue_600),
+  trait.style('color', theme.$pmt_color_white),
+  trait.style('border', 'none'),
+  trait.style('padding', theme.$sem_spc_pad_md),
+  trait.style('borderRadius', theme.$exp_roundness_md),
+  trait.style('cursor', 'pointer'),
+  trait.textContent(() => `Theme: ${theme.getTheme()}`, theme),
+  trait.event('click', () => {
+    theme.setTheme(theme.getTheme() === 'dark' ? 'light' : 'dark');
+  }),
+);
 ```
 
-### Responsive Token Usage
+### Themed Card
 
 ```typescript
-const theme = useThemeState([lightTheme, darkTheme]);
-
-// Use deferred getter for reactive styling
-const buttonBackground = theme.$cmp_btn_pri_bkg;
-
-// Later in render
-element.style.background = buttonBackground();
+tag.div(
+  trait.style('backgroundColor', theme.$pmt_color_gray_900),
+  trait.style('border', () => `1px solid ${theme.pmt_color_gray_700()}`, theme),
+  trait.style('borderRadius', theme.$exp_roundness_md),
+  trait.style('padding', theme.$sem_spc_pad_lg),
+  trait.innerHTML([
+    tag.h2(
+      trait.style('color', theme.$pmt_color_gray_50),
+      trait.style('margin', '0 0 8px 0'),
+      trait.textContent('Card Title'),
+    ),
+    tag.p(
+      trait.style('color', theme.$pmt_color_gray_400),
+      trait.textContent('Card body text styled entirely with design tokens.'),
+    ),
+  ]),
+);
 ```
 
-### Multi-Brand Support
+### Subscribing to Theme Changes
+
+Since useThemeState extends State, you can subscribe to changes directly:
 
 ```typescript
-const theme = useThemeState([brandATheme, brandBTheme, brandCTheme], 'brandA');
+theme.sub((value) => {
+  console.log('Switched to:', value.currentTheme);
+});
+```
 
-// Switch brands dynamically
-theme.setTheme('brandB');
+## Design Token Layers
+
+useThemeState works with the 6-layer design token architecture. Access any layer through the same getter API:
+
+```typescript
+// Primitives — raw values
+trait.style('color', theme.$pmt_color_blue_500);
+
+// Expression — personality controls
+trait.style('borderRadius', theme.$exp_roundness_md);
+
+// Semantic — purpose-based
+trait.style('backgroundColor', theme.$sem_color_bkg_pri);
+
+// Element — atomic building blocks
+trait.style('height', theme.$elm_btn_hgt_md);
+
+// Component — complete component definitions
+trait.style('backgroundColor', theme.$cmp_btn_pri_bkg);
+
+// Feature — product-specific overrides
+trait.style('backgroundColor', theme.$ftr_checkout_cta_bkg);
 ```
 
 ## Error Handling
 
-### Theme Not Found
-
 ```typescript
-theme.setTheme('nonexistent');
-// Throws: Theme "nonexistent" not found
-```
-
-### Empty Themes Array
-
-```typescript
+// Empty themes array
 useThemeState([]);
-// Throws: At least one theme must be provided
+// Throws: "At least one theme must be provided"
+
+// Non-existent theme name
+theme.setTheme('nonexistent');
+// Throws: 'Theme "nonexistent" not found'
 ```
-
-## Performance Considerations
-
-- Token getters are created lazily via Proxy
-- No overhead for unused tokens
-- Theme switching updates state once, triggering all subscribers
-- Consider memoizing frequently accessed tokens in performance-critical paths
-
-## Integration with Design Token System
-
-useThemeState works seamlessly with the 6-layer design token architecture:
-
-```typescript
-// Access any layer's tokens
-const primitive = theme.pmt_color_blue_500();
-const expression = theme.exp_roundness_act();
-const semantic = theme.sem_color_interactive_pri();
-const element = theme.elm_btn_hgt_md();
-const component = theme.cmp_btn_pri_bkg();
-const feature = theme.ftr_checkout_cta_bkg();
-```
-
-All tokens are type-safe and validated at compile time.
