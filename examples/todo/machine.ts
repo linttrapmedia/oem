@@ -1,9 +1,15 @@
-import { State } from '@/core/state';
 import type { StateType } from '@/core/state';
+import { State } from '@/core/state';
 import type { AppAction, AppState, TodoItem } from './types';
 
 const initialState: AppState = {
-  todos: [],
+  todos: [
+    {
+      id: crypto.randomUUID(),
+      text: 'Learn OEM',
+      completed: false,
+    },
+  ],
   filter: 'all',
   inputText: '',
 };
@@ -23,9 +29,7 @@ function reducer(state: AppState, action: AppAction): AppState {
     case 'TOGGLE_TODO': {
       return {
         ...state,
-        todos: state.todos.map((t) =>
-          t.id === action.id ? { ...t, completed: !t.completed } : t,
-        ),
+        todos: state.todos.map((t) => (t.id === action.id ? { ...t, completed: !t.completed } : t)),
       };
     }
     case 'DELETE_TODO': {

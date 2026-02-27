@@ -204,6 +204,9 @@ A library of all the actions that can be dispatched in the app. Each action is a
 - **machines**:
 State machines that define the behavior of the app. Each machine has a state, a set of transitions, and a set of actions that can be dispatched. Implement them as simple switch statements, switching on the current state and the dispatched action.
 
+- **states**:
+State objects that can be used in the app. These can be simple reactive state objects created with the State function, they should be used to store any state that needs to be shared across multiple components or that needs to trigger re-renders when it changes.
+ 
 - **main**:
 The entry point of the app. It initializes the state machine and sets up the event listeners for the UI. It also renders the UI based on the current state of the machine.
 

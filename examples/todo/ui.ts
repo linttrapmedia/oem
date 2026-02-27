@@ -14,7 +14,7 @@ function TodoRow(todo: TodoItem) {
     trait.style('padding', theme.$sem_spc_inset_sm),
     trait.style('borderBottom', () => `${theme.cmp_div_wdt()} solid ${theme.cmp_div_color()}`),
     trait.styleOnEvent('mouseenter', 'backgroundColor', theme.$sem_color_bkg_ter),
-    trait.styleOnEvent('mouseleave', 'backgroundColor', 'transparent'),
+    trait.styleOnEvent('mouseleave', 'backgroundColor', theme.$sem_color_bkg_ter),
 
     // Checkbox
     tag.input(
