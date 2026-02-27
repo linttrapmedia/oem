@@ -1,3 +1,8 @@
+// strip front matter
+export function stripFrontMatter(content: string): string {
+  return content.replace(/^---\n[\s\S]*?\n---\n?/, '');
+}
+
 // extract front matter
 /*
  * ---

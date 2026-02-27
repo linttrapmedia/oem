@@ -7,24 +7,24 @@ metadata:
   version: '1.0'
 ---
 
-# Semantic Tokens (Layer 3)
+# Semantic Tokens (Layer 1)
 
 **Prefix:** `sem_`
 
 ## Overview
 
-Semantic tokens assign meaning to design values. They translate raw primitives and expression controls into purposeful, context-aware tokens that describe **what** a value is used for, not **how** it looks.
+Semantic tokens hold direct CSS values organized by purpose. They describe **what** a value is used for, not **how** it looks — enabling theme switching without touching any UI code.
 
 ## Purpose
 
-- Provide meaningful names that describe usage (e.g., `sem_color_txt_pri` vs `pmt_color_gray_900`)
-- Enable theme switching (light/dark) by mapping semantic meanings to different primitives
+- Provide meaningful names that describe usage (e.g., `sem_color_txt_pri` vs `'#171717'`)
+- Enable theme switching (light/dark) by mapping semantic meanings to different CSS values
 - Create consistency across components through shared semantic values
 - Decouple visual appearance from functional purpose
 
 ## Architecture Rules
 
-- **May reference**: Primitives (Layer 1) and Expression (Layer 2)
+- **Holds direct CSS values** - No references to other token layers
 - **Flat structure only** - No nested objects
 - **snake_case naming** - Consistent naming convention
 - **Semantic naming** - Names describe purpose, not appearance
@@ -140,7 +140,6 @@ Seven shadow depths:
 #### Duration
 
 - Four speeds: `instant`, `fast`, `normal`, `slow`
-- Respects expression layer motion energy settings
 
 #### Easing
 
@@ -162,32 +161,31 @@ Seven shadow depths:
 
 ### ✅ Do
 
-- Use semantic tokens in element, component, and feature layers
+- Use semantic tokens in component tokens via `{sem_token}` references
+- Use semantic tokens directly in UI when no component token fits
 - Name tokens by purpose (what they do) not appearance (what they look like)
-- Map semantic tokens to different primitives for theme variants
 - Group related tokens logically (all text colors together)
 
 ### ❌ Don't
 
-- Use primitives directly in components (use semantic tokens instead)
+- Hardcode hex values, rgb values, or pixel literals in `trait.style()` calls when a token exists
 - Name tokens by their visual appearance (`sem_color_dark_gray` ❌, use `sem_color_txt_sec` ✅)
-- Skip semantic layer and go straight from expression to element
-- Reference higher layers (component/feature)
+- Invent semantic token keys that don't exist in `SemanticTokens`
 
 ## Theme Switching Example
 
-Semantic tokens enable easy theme switching:
+Semantic tokens enable easy theme switching by holding different CSS values per theme:
 
 ```typescript
-// Light theme
-sem_color_bkg_pri: '{pmt_color_white}';
-sem_color_txt_pri: '{pmt_color_gray_900}';
-sem_color_bdr_default: '{pmt_color_gray_200}';
+// Light theme — sem_ tokens hold CSS values directly
+sem_color_bkg_pri: '#ffffff';
+sem_color_txt_pri: '#171717';
+sem_color_bdr_default: '#e5e5e5';
 
-// Dark theme - same semantic names, different primitives
-sem_color_bkg_pri: '{pmt_color_gray_900}';
-sem_color_txt_pri: '{pmt_color_gray_50}';
-sem_color_bdr_default: '{pmt_color_gray_700}';
+// Dark theme — same semantic names, different values
+sem_color_bkg_pri: '#0a0a0a';
+sem_color_txt_pri: '#fafafa';
+sem_color_bdr_default: '#404040';
 ```
 
 ## Semantic Naming Philosophy
@@ -204,19 +202,14 @@ sem_color_bdr_default: '{pmt_color_gray_700}';
 - `sem_spc_inset_md`
 - `sem_typo_heading_lg_siz`
 
-## Related Layers
-
-- **References**: Primitives (Layer 1), Expression (Layer 2)
-- **Referenced by**: Element (Layer 4), Component (Layer 5), Feature (Layer 6)
-
 ## Usage in Generated Code
 
-Semantic tokens are the **fallback layer** for generated UI code. Use them only when no `elm_` or `cmp_` token matches the UI need:
+Semantic tokens are the **fallback layer** for generated UI code. Use them when no `cmp_` token matches the UI need:
 
-- Styling a custom divider with no matching `elm_` token? Use `sem_color_bdr_default` and `sem_spc_*`.
+- Styling a custom divider with no matching `cmp_` token? Use `sem_color_bdr_default` and `sem_spc_*`.
 - Need a background for a bespoke layout? Use `sem_color_bkg_pri` or `sem_color_bkg_sec`.
 - Need typography for body text outside a component? Use `sem_typo_body_md_*`.
 
-**Token selection cascade:** `ftr_` → `cmp_` → `elm_` → **`sem_`** → inline style
+**Token selection cascade:** `cmp_` → **`sem_`** → inline style
 
-> Semantic tokens sit at position 4 in the cascade. Always check for a more specific `ftr_`, `cmp_`, or `elm_` token before reaching for `sem_` tokens.
+> Semantic tokens sit at position 2 in the cascade. Always check for a more specific `cmp_` token before reaching for `sem_` tokens.

@@ -93,8 +93,8 @@ theme.setTheme('light');
 Returns the current value of the token by calling it as a function. Evaluates once at call time.
 
 ```typescript
-theme.pmt_color_blue_500(); // '#3b82f6'
-theme.sem_spc_pad_md(); // '16px'
+theme.sem_color_bkg_pri(); // '#0a0a0a'
+theme.sem_spc_inset_md(); // '1rem'
 ```
 
 ### Deferred Token Getter — `theme.${tokenKey}`
@@ -102,7 +102,7 @@ theme.sem_spc_pad_md(); // '16px'
 Returns a closure that retrieves the token value when called. Use in traits so the value re-evaluates on theme change.
 
 ```typescript
-theme.$pmt_color_blue_500; // () => '#3b82f6' (re-evaluates on theme switch)
+theme.$sem_color_bkg_pri; // () => '#0a0a0a' (re-evaluates on theme switch)
 ```
 
 ## Token Access in OEM Templates
@@ -113,9 +113,9 @@ Use the immediate getter when the value doesn't need to react to theme changes a
 
 ```typescript
 tag.div(
-  trait.style('backgroundColor', theme.pmt_color_gray_950()),
-  trait.style('color', theme.pmt_color_gray_100()),
-  trait.style('padding', theme.sem_spc_pad_lg()),
+  trait.style('backgroundColor', theme.sem_color_bkg_pri()),
+  trait.style('color', theme.sem_color_txt_pri()),
+  trait.style('padding', theme.sem_spc_inset_lg()),
   trait.textContent('Hello, OEM'),
 );
 ```
@@ -126,9 +126,9 @@ Use the `$`-prefixed deferred getter so the trait re-evaluates when the theme ch
 
 ```typescript
 tag.div(
-  trait.style('backgroundColor', theme.$pmt_color_gray_950),
-  trait.style('color', theme.$pmt_color_gray_100),
-  trait.style('padding', theme.$sem_spc_pad_lg),
+  trait.style('backgroundColor', theme.$sem_color_bkg_pri),
+  trait.style('color', theme.$sem_color_txt_pri),
+  trait.style('padding', theme.$sem_spc_inset_lg),
   trait.textContent('This reacts to theme switches'),
 );
 ```
@@ -137,11 +137,11 @@ tag.div(
 
 ```typescript
 tag.button(
-  trait.style('backgroundColor', theme.$pmt_color_blue_600),
-  trait.style('color', theme.$pmt_color_white),
-  trait.style('border', 'none'),
-  trait.style('padding', theme.$sem_spc_pad_md),
-  trait.style('borderRadius', theme.$exp_roundness_md),
+  trait.style('backgroundColor', theme.$cmp_btn_pri_bkg),
+  trait.style('color', theme.$cmp_btn_pri_txt_color),
+  trait.style('height', theme.$cmp_btn_hgt_md),
+  trait.style('paddingInline', theme.$cmp_btn_pad_x_md),
+  trait.style('borderRadius', theme.$cmp_btn_bdr_rad),
   trait.style('cursor', 'pointer'),
   trait.textContent(() => `Theme: ${theme.getTheme()}`, theme),
   trait.event('click', () => {
@@ -154,18 +154,20 @@ tag.button(
 
 ```typescript
 tag.div(
-  trait.style('backgroundColor', theme.$pmt_color_gray_900),
-  trait.style('border', () => `1px solid ${theme.pmt_color_gray_700()}`, theme),
-  trait.style('borderRadius', theme.$exp_roundness_md),
-  trait.style('padding', theme.$sem_spc_pad_lg),
+  trait.style('backgroundColor', theme.$cmp_cdl_bkg),
+  trait.style('borderColor', theme.$cmp_cdl_bdr_color),
+  trait.style('borderWidth', theme.$cmp_cdl_bdr_wdt),
+  trait.style('borderRadius', theme.$cmp_cdl_bdr_rad),
+  trait.style('padding', theme.$cmp_cdl_pad),
+  trait.style('boxShadow', theme.$cmp_cdl_shd),
   trait.innerHTML([
     tag.h2(
-      trait.style('color', theme.$pmt_color_gray_50),
+      trait.style('color', theme.$sem_color_txt_pri),
       trait.style('margin', '0 0 8px 0'),
       trait.textContent('Card Title'),
     ),
     tag.p(
-      trait.style('color', theme.$pmt_color_gray_400),
+      trait.style('color', theme.$sem_color_txt_sec),
       trait.textContent('Card body text styled entirely with design tokens.'),
     ),
   ]),
@@ -184,27 +186,22 @@ theme.sub((value) => {
 
 ## Design Token Layers
 
-useThemeState works with the 6-layer design token architecture. Access any layer through the same getter API:
+useThemeState works with a 2-layer design token architecture. Access either layer through the same getter API:
 
 ```typescript
-// Primitives — raw values
-trait.style('color', theme.$pmt_color_blue_500);
-
-// Expression — personality controls
-trait.style('borderRadius', theme.$exp_roundness_md);
-
-// Semantic — purpose-based
+// Semantic — purpose-based values
 trait.style('backgroundColor', theme.$sem_color_bkg_pri);
+trait.style('color', theme.$sem_color_txt_pri);
 
-// Element — atomic building blocks
-trait.style('height', theme.$elm_btn_hgt_md);
-
-// Component — complete component definitions
+// Component — all UI parts (structural + visual)
+trait.style('height', theme.$cmp_btn_hgt_md);
 trait.style('backgroundColor', theme.$cmp_btn_pri_bkg);
-
-// Feature — product-specific overrides
-trait.style('backgroundColor', theme.$ftr_checkout_cta_bkg);
+trait.style('borderRadius', theme.$cmp_cdl_bdr_rad);
 ```
+
+**Token selection cascade:** `cmp_` → `sem_` → inline style
+
+Always search for a `cmp_` token first. Fall back to `sem_` when no component token fits the need. Use an inline style only as an absolute last resort.
 
 ## Error Handling
 

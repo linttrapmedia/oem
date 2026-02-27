@@ -1,6 +1,10 @@
 /**
- * LAYER 3: SEMANTIC (sem_)
- * UI meaning - may reference primitives or expression
+ * LAYER 1: SEMANTIC (sem_)
+ * Purpose-based design values — colors, spacing, typography, radius, shadows,
+ * motion, and effects. These hold the direct CSS values that give meaning to
+ * the design system.
+ *
+ * Token selection cascade: cmp_ → sem_ → inline style
  */
 
 export type SemanticTokens = {

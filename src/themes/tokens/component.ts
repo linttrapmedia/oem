@@ -1,16 +1,38 @@
 /**
- * LAYER 5: COMPONENT (cmp_)
- * Design system components — may reference element/semantic/primitives/expression.
+ * LAYER 2: COMPONENT (cmp_)
+ * All UI components — covers both structural properties (sizes, spacing, radii)
+ * and visual/state properties (colors, shadows, transitions).
  *
  * Component tokens are the PRIMARY layer for generated UI code. When an LLM
- * needs to style a button, card, modal, dropdown, etc., it should first
- * search for matching cmp_ tokens before falling back to elm_ or sem_.
+ * needs to style any UI part — from an atomic checkbox to a full modal — it
+ * should first search for matching cmp_ tokens before falling back to sem_.
  *
- * Token selection cascade: ftr_ → cmp_ → elm_ → sem_ → inline
+ * Token selection cascade: cmp_ → sem_ → inline style
  */
 
 export type ComponentTokens = {
-  // --- Button Component: Primary Variant ---
+  // --- Button Base ---
+  cmp_btn_hgt_sm: string | number;
+  cmp_btn_hgt_md: string | number;
+  cmp_btn_hgt_lg: string | number;
+
+  cmp_btn_pad_x_sm: string | number;
+  cmp_btn_pad_x_md: string | number;
+  cmp_btn_pad_x_lg: string | number;
+
+  cmp_btn_fnt_siz_sm: string | number;
+  cmp_btn_fnt_siz_md: string | number;
+  cmp_btn_fnt_siz_lg: string | number;
+
+  cmp_btn_fnt_wgt: string | number;
+  cmp_btn_bdr_wdt: string | number;
+  cmp_btn_bdr_rad: string | number;
+  cmp_btn_gap: string | number;
+
+  cmp_btn_trn_dur: string | number;
+  cmp_btn_trn_eas: string | number;
+
+  // --- Button: Primary Variant ---
   cmp_btn_pri_bkg: string | number;
   cmp_btn_pri_bkg_hov: string | number;
   cmp_btn_pri_bkg_act: string | number;
@@ -21,7 +43,7 @@ export type ComponentTokens = {
   cmp_btn_pri_shd: string | number;
   cmp_btn_pri_shd_hov: string | number;
 
-  // --- Button Component: Secondary Variant ---
+  // --- Button: Secondary Variant ---
   cmp_btn_sec_bkg: string | number;
   cmp_btn_sec_bkg_hov: string | number;
   cmp_btn_sec_bkg_act: string | number;
@@ -31,21 +53,147 @@ export type ComponentTokens = {
   cmp_btn_sec_bdr_color: string | number;
   cmp_btn_sec_bdr_color_hov: string | number;
 
-  // --- Button Component: Ghost Variant ---
+  // --- Button: Ghost Variant ---
   cmp_btn_gho_bkg: string | number;
   cmp_btn_gho_bkg_hov: string | number;
   cmp_btn_gho_bkg_act: string | number;
   cmp_btn_gho_txt_color: string | number;
   cmp_btn_gho_txt_color_hov: string | number;
 
-  // --- Button Component: Danger Variant ---
+  // --- Button: Danger Variant ---
   cmp_btn_dng_bkg: string | number;
   cmp_btn_dng_bkg_hov: string | number;
   cmp_btn_dng_bkg_act: string | number;
   cmp_btn_dng_txt_color: string | number;
   cmp_btn_dng_bdr_color: string | number;
 
-  // --- Card Component ---
+  // --- Input Base ---
+  cmp_inp_hgt_sm: string | number;
+  cmp_inp_hgt_md: string | number;
+  cmp_inp_hgt_lg: string | number;
+
+  cmp_inp_pad_x_sm: string | number;
+  cmp_inp_pad_x_md: string | number;
+  cmp_inp_pad_x_lg: string | number;
+
+  cmp_inp_fnt_siz_sm: string | number;
+  cmp_inp_fnt_siz_md: string | number;
+  cmp_inp_fnt_siz_lg: string | number;
+
+  cmp_inp_bdr_wdt: string | number;
+  cmp_inp_bdr_rad: string | number;
+  cmp_inp_bdr_color: string | number;
+  cmp_inp_bdr_color_hov: string | number;
+  cmp_inp_bdr_color_foc: string | number;
+  cmp_inp_bdr_color_err: string | number;
+
+  cmp_inp_bkg: string | number;
+  cmp_inp_bkg_dis: string | number;
+  cmp_inp_txt_color: string | number;
+  cmp_inp_txt_color_dis: string | number;
+  cmp_inp_placeholder_color: string | number;
+
+  cmp_inp_trn_dur: string | number;
+
+  // --- Checkbox/Radio ---
+  cmp_chk_siz_sm: string | number;
+  cmp_chk_siz_md: string | number;
+  cmp_chk_siz_lg: string | number;
+
+  cmp_chk_bdr_wdt: string | number;
+  cmp_chk_bdr_rad: string | number;
+  cmp_chk_bdr_color: string | number;
+  cmp_chk_bdr_color_chk: string | number;
+  cmp_chk_bkg: string | number;
+  cmp_chk_bkg_chk: string | number;
+  cmp_chk_checkmark_color: string | number;
+
+  cmp_rad_bdr_rad: string | number;
+
+  // --- Switch ---
+  cmp_swt_wdt_sm: string | number;
+  cmp_swt_wdt_md: string | number;
+  cmp_swt_wdt_lg: string | number;
+
+  cmp_swt_hgt_sm: string | number;
+  cmp_swt_hgt_md: string | number;
+  cmp_swt_hgt_lg: string | number;
+
+  cmp_swt_thumb_siz_sm: string | number;
+  cmp_swt_thumb_siz_md: string | number;
+  cmp_swt_thumb_siz_lg: string | number;
+
+  cmp_swt_bkg: string | number;
+  cmp_swt_bkg_chk: string | number;
+  cmp_swt_thumb_color: string | number;
+  cmp_swt_bdr_rad: string | number;
+  cmp_swt_trn_dur: string | number;
+
+  // --- Badge ---
+  cmp_bdg_pad_x_sm: string | number;
+  cmp_bdg_pad_x_md: string | number;
+  cmp_bdg_pad_y_sm: string | number;
+  cmp_bdg_pad_y_md: string | number;
+
+  cmp_bdg_fnt_siz_sm: string | number;
+  cmp_bdg_fnt_siz_md: string | number;
+  cmp_bdg_fnt_wgt: string | number;
+  cmp_bdg_bdr_rad: string | number;
+  cmp_bdg_bdr_wdt: string | number;
+
+  // --- Avatar ---
+  cmp_avt_siz_xs: string | number;
+  cmp_avt_siz_sm: string | number;
+  cmp_avt_siz_md: string | number;
+  cmp_avt_siz_lg: string | number;
+  cmp_avt_siz_xl: string | number;
+  cmp_avt_siz_2xl: string | number;
+
+  cmp_avt_bdr_rad: string | number;
+  cmp_avt_bdr_wdt: string | number;
+  cmp_avt_bdr_color: string | number;
+  cmp_avt_bkg: string | number;
+  cmp_avt_txt_color: string | number;
+
+  // --- Icon ---
+  cmp_ico_siz_xs: string | number;
+  cmp_ico_siz_sm: string | number;
+  cmp_ico_siz_md: string | number;
+  cmp_ico_siz_lg: string | number;
+  cmp_ico_siz_xl: string | number;
+  cmp_ico_siz_2xl: string | number;
+
+  cmp_ico_color_default: string | number;
+  cmp_ico_color_muted: string | number;
+  cmp_ico_color_pri: string | number;
+  cmp_ico_color_suc: string | number;
+  cmp_ico_color_wrn: string | number;
+  cmp_ico_color_err: string | number;
+
+  // --- Link ---
+  cmp_lnk_color: string | number;
+  cmp_lnk_color_hov: string | number;
+  cmp_lnk_color_vis: string | number;
+  cmp_lnk_txt_decoration: string | number;
+  cmp_lnk_txt_decoration_hov: string | number;
+  cmp_lnk_fnt_wgt: string | number;
+
+  // --- Divider ---
+  cmp_div_wdt: string | number;
+  cmp_div_color: string | number;
+  cmp_div_color_str: string | number;
+  cmp_div_spc: string | number;
+
+  // --- Spinner ---
+  cmp_spn_siz_sm: string | number;
+  cmp_spn_siz_md: string | number;
+  cmp_spn_siz_lg: string | number;
+  cmp_spn_color: string | number;
+  cmp_spn_track_color: string | number;
+  cmp_spn_bdr_wdt: string | number;
+  cmp_spn_dur: string | number;
+
+  // --- Card ---
   cmp_cdl_bkg: string | number;
   cmp_cdl_bdr_color: string | number;
   cmp_cdl_bdr_wdt: string | number;
@@ -58,7 +206,7 @@ export type ComponentTokens = {
   cmp_cdl_footer_pad: string | number;
   cmp_cdl_gap: string | number;
 
-  // --- Modal Component ---
+  // --- Modal ---
   cmp_mod_bkg: string | number;
   cmp_mod_bdr_rad: string | number;
   cmp_mod_shd: string | number;
@@ -85,7 +233,7 @@ export type ComponentTokens = {
   cmp_mod_enter_eas: string | number;
   cmp_mod_exit_eas: string | number;
 
-  // --- Dropdown Component ---
+  // --- Dropdown ---
   cmp_drp_bkg: string | number;
   cmp_drp_bdr_color: string | number;
   cmp_drp_bdr_wdt: string | number;
@@ -105,7 +253,7 @@ export type ComponentTokens = {
   cmp_drp_divider_color: string | number;
   cmp_drp_divider_mar: string | number;
 
-  // --- Tooltip Component ---
+  // --- Tooltip ---
   cmp_tip_bkg: string | number;
   cmp_tip_txt_color: string | number;
   cmp_tip_pad_x: string | number;
@@ -119,7 +267,7 @@ export type ComponentTokens = {
   cmp_tip_enter_dur: string | number;
   cmp_tip_exit_dur: string | number;
 
-  // --- Popover Component ---
+  // --- Popover ---
   cmp_pop_bkg: string | number;
   cmp_pop_bdr_color: string | number;
   cmp_pop_bdr_wdt: string | number;
@@ -130,7 +278,7 @@ export type ComponentTokens = {
   cmp_pop_arrow_siz: string | number;
   cmp_pop_off: string | number;
 
-  // --- Toast/Notification Component ---
+  // --- Toast/Notification ---
   cmp_tst_bkg: string | number;
   cmp_tst_bdr_rad: string | number;
   cmp_tst_shd: string | number;
@@ -157,7 +305,7 @@ export type ComponentTokens = {
   cmp_tst_enter_dur: string | number;
   cmp_tst_exit_dur: string | number;
 
-  // --- Navigation Component ---
+  // --- Navigation ---
   cmp_nav_bkg: string | number;
   cmp_nav_bdr_color: string | number;
   cmp_nav_bdr_wdt: string | number;
@@ -180,7 +328,7 @@ export type ComponentTokens = {
   cmp_nav_indicator_hgt: string | number;
   cmp_nav_indicator_color: string | number;
 
-  // --- Sidebar Component ---
+  // --- Sidebar ---
   cmp_sidebar_wdt: string | number;
   cmp_sidebar_wdt_collapsed: string | number;
   cmp_sidebar_bkg: string | number;
@@ -201,7 +349,7 @@ export type ComponentTokens = {
 
   cmp_sidebar_trn_dur: string | number;
 
-  // --- Table Component ---
+  // --- Table ---
   cmp_tbl_bkg: string | number;
   cmp_tbl_bdr_color: string | number;
   cmp_tbl_bdr_wdt: string | number;
@@ -222,7 +370,7 @@ export type ComponentTokens = {
   cmp_tbl_row_bkg_sel: string | number;
   cmp_tbl_row_bkg_striped: string | number;
 
-  // --- Tabs Component ---
+  // --- Tabs ---
   cmp_tab_bdr_color: string | number;
   cmp_tab_bdr_wdt: string | number;
   cmp_tab_gap: string | number;
@@ -244,7 +392,7 @@ export type ComponentTokens = {
 
   cmp_tab_panel_pad: string | number;
 
-  // --- Accordion Component ---
+  // --- Accordion ---
   cmp_acc_bdr_color: string | number;
   cmp_acc_bdr_wdt: string | number;
   cmp_acc_bdr_rad: string | number;
@@ -264,7 +412,7 @@ export type ComponentTokens = {
   cmp_acc_content_pad_y: string | number;
   cmp_acc_content_ani_dur: string | number;
 
-  // --- Breadcrumb Component ---
+  // --- Breadcrumb ---
   cmp_brd_gap: string | number;
   cmp_brd_fnt_siz: string | number;
   cmp_brd_txt_color: string | number;
@@ -274,7 +422,7 @@ export type ComponentTokens = {
   cmp_brd_separator_color: string | number;
   cmp_brd_separator_siz: string | number;
 
-  // --- Pagination Component ---
+  // --- Pagination ---
   cmp_pgn_gap: string | number;
   cmp_pgn_item_siz: string | number;
   cmp_pgn_item_bdr_rad: string | number;
@@ -286,7 +434,7 @@ export type ComponentTokens = {
   cmp_pgn_item_bdr_color: string | number;
   cmp_pgn_item_bdr_color_act: string | number;
 
-  // --- Progress Bar Component ---
+  // --- Progress Bar ---
   cmp_prg_hgt_sm: string | number;
   cmp_prg_hgt_md: string | number;
   cmp_prg_hgt_lg: string | number;
@@ -295,7 +443,7 @@ export type ComponentTokens = {
   cmp_prg_bdr_rad: string | number;
   cmp_prg_trn_dur: string | number;
 
-  // --- Slider Component ---
+  // --- Slider ---
   cmp_sldr_track_hgt: string | number;
   cmp_sldr_track_bkg: string | number;
   cmp_sldr_track_bkg_filled: string | number;
@@ -309,7 +457,7 @@ export type ComponentTokens = {
   cmp_sldr_thumb_shd_hov: string | number;
   cmp_sldr_thumb_shd_act: string | number;
 
-  // --- Alert Component ---
+  // --- Alert ---
   cmp_alt_pad: string | number;
   cmp_alt_bdr_rad: string | number;
   cmp_alt_bdr_wdt: string | number;
@@ -335,7 +483,7 @@ export type ComponentTokens = {
   cmp_alt_err_txt_color: string | number;
   cmp_alt_err_ico_color: string | number;
 
-  // --- Select Component ---
+  // --- Select ---
   cmp_sel_trigger_hgt_sm: string | number;
   cmp_sel_trigger_hgt_md: string | number;
   cmp_sel_trigger_hgt_lg: string | number;

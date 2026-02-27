@@ -7,32 +7,42 @@ metadata:
   version: '1.0'
 ---
 
-# Component Tokens (Layer 5)
+# Component Tokens (Layer 2)
 
 **Prefix:** `cmp_`
 
 ## Overview
 
-Component tokens define complete, production-ready design system components with all their variants and states. They combine element foundations with semantic meanings to create fully-styled, interactive UI patterns.
+Component tokens cover all UI parts — both structural properties (heights, padding, radii, border widths) and visual/state properties (colors, shadows, transitions). This is a unified layer: there is no separate "element" or "feature" layer. Everything that describes a specific UI part lives under `cmp_`.
 
 ## Purpose
 
-- Provide complete styling for design system components
-- Define component variants (primary, secondary, ghost, danger, etc.)
-- Specify component states (hover, active, disabled, focus)
+- Define structural properties for UI elements (sizes, radii, padding, border widths)
+- Provide complete styling for component variants (primary, secondary, ghost, danger)
+- Specify all interactive states (hover, active, disabled, focus)
 - Enable component-level theming and customization
-- Establish consistency across complex UI patterns
+- Establish consistency across the entire UI
 
 ## Architecture Rules
 
-- **May reference**: Element (Layer 4), Semantic (Layer 3), Primitives (Layer 1), Expression (Layer 2)
+- **May reference**: Semantic (Layer 1) via `{sem_token}` syntax
 - **Flat structure only** - No nested objects
 - **snake_case naming** - Consistent naming convention
-- **Component-focused naming** - Names describe the specific component and variant
+- **Component-focused naming** - Names describe the specific component part and variant
 
 ## Token Categories
 
-### Button Component Variants
+### Button (`cmp_btn_*`)
+
+#### Base Properties
+
+Shared across all button variants:
+
+- Heights: `cmp_btn_hgt_sm`, `cmp_btn_hgt_md`, `cmp_btn_hgt_lg`
+- Font: `cmp_btn_fnt_wgt`, `cmp_btn_fnt_siz_sm/md/lg`
+- Border: `cmp_btn_bdr_wdt`, `cmp_btn_bdr_rad`
+- Layout: `cmp_btn_gap`, `cmp_btn_pad_x_sm/md/lg`
+- Transition: `cmp_btn_trn_dur`, `cmp_btn_trn_eas`
 
 #### Primary Button (`cmp_btn_pri_*`)
 
@@ -66,7 +76,91 @@ Destructive action button:
 - Text color
 - Border color
 
-### Card Component (`cmp_cdl_*`)
+### Input (`cmp_inp_*`)
+
+Form text inputs:
+
+- Heights: `cmp_inp_hgt_sm`, `cmp_inp_hgt_md`, `cmp_inp_hgt_lg`
+- Font: `cmp_inp_fnt_siz_sm/md/lg`
+- Border: `cmp_inp_bdr_wdt`, `cmp_inp_bdr_rad`
+- Colors: `cmp_inp_bkg`, `cmp_inp_txt_color`, `cmp_inp_bdr_color`
+- States: focus border color, disabled background, disabled text color, placeholder color
+- Padding: `cmp_inp_pad_x`
+
+### Checkbox (`cmp_chk_*`)
+
+Checkbox input control:
+
+- Size: `cmp_chk_siz_sm`, `cmp_chk_siz_md`
+- Border: `cmp_chk_bdr_wdt`, `cmp_chk_bdr_rad`
+- Colors: border (default, checked, focus), background (default, checked), checkmark color
+
+### Radio (`cmp_rad_*`)
+
+Radio button control:
+
+- Size: `cmp_rad_siz_sm`, `cmp_rad_siz_md`
+- Border: `cmp_rad_bdr_wdt`
+- Colors: border (default, selected, focus), background (default, selected), dot color
+
+### Switch (`cmp_swt_*`)
+
+Toggle switch control:
+
+- Dimensions: width, height (sm/md)
+- Background states: off, on, disabled
+- Thumb: size, background, shadow
+- Transition: `cmp_swt_trn_dur`
+
+### Badge (`cmp_bdg_*`)
+
+Small status or count indicator:
+
+- Heights: `cmp_bdg_hgt_sm`, `cmp_bdg_hgt_md`
+- Padding: `cmp_bdg_pad_x_sm/md`
+- Font: `cmp_bdg_fnt_siz_sm/md`, `cmp_bdg_fnt_wgt`
+- Border: `cmp_bdg_bdr_rad`
+
+### Avatar (`cmp_avt_*`)
+
+User avatar / profile image:
+
+- Sizes: `cmp_avt_siz_sm/md/lg/xl`
+- Border: `cmp_avt_bdr_rad`, `cmp_avt_bdr_wdt`, `cmp_avt_bdr_color`
+- Font: `cmp_avt_fnt_siz_sm/md/lg/xl`, `cmp_avt_fnt_wgt`
+
+### Icon (`cmp_ico_*`)
+
+Icon size tokens:
+
+- Sizes: `cmp_ico_siz_xs/sm/md/lg/xl`
+- Colors by context: `cmp_ico_color_default/muted/action/err/suc/wrn`
+
+### Link (`cmp_lnk_*`)
+
+Anchor / hyperlink styling:
+
+- Colors: default, hover, visited, active, focus
+- Decoration: default and hover
+
+### Divider (`cmp_div_*`)
+
+Horizontal or vertical separator:
+
+- Width (thickness): `cmp_div_wdt`
+- Colors: default and subtle
+- Spacing: `cmp_div_mar`
+
+### Spinner (`cmp_spn_*`)
+
+Loading spinner animation:
+
+- Sizes: `cmp_spn_siz_sm/md/lg`
+- Border width: `cmp_spn_bdr_wdt`
+- Colors: default and track
+- Animation: `cmp_spn_dur`
+
+### Card (`cmp_cdl_*`)
 
 Container for related content:
 
@@ -77,7 +171,7 @@ Container for related content:
 - Section padding: `cmp_cdl_header_pad`, `cmp_cdl_body_pad`, `cmp_cdl_footer_pad`
 - `cmp_cdl_gap` - Gap between sections
 
-### Modal Component (`cmp_mod_*`)
+### Modal (`cmp_mod_*`)
 
 Dialog overlay pattern:
 
@@ -108,7 +202,7 @@ Dialog overlay pattern:
 
 - Enter/exit durations and easing functions
 
-### Dropdown Component (`cmp_drp_*`)
+### Dropdown (`cmp_drp_*`)
 
 Dropdown menu pattern:
 
@@ -130,7 +224,7 @@ Dropdown menu pattern:
 - `cmp_drp_divider_color` - Divider color
 - `cmp_drp_divider_mar` - Divider margin
 
-### Tooltip Component (`cmp_tip_*`)
+### Tooltip (`cmp_tip_*`)
 
 Contextual information overlay:
 
@@ -143,7 +237,7 @@ Contextual information overlay:
 - `cmp_tip_off` - Offset from trigger
 - Enter/exit animation durations
 
-### Popover Component (`cmp_pop_*`)
+### Popover (`cmp_pop_*`)
 
 Larger contextual overlay:
 
@@ -152,7 +246,7 @@ Larger contextual overlay:
 - `cmp_pop_max_wdt` - Maximum width
 - Arrow and offset properties
 
-### Toast Component (`cmp_tst_*`)
+### Toast (`cmp_tst_*`)
 
 Notification message pattern:
 
@@ -173,7 +267,7 @@ Each state (success, error, warning, info) has:
 
 - Enter/exit durations
 
-### Navigation Component (`cmp_nav_*`)
+### Navigation (`cmp_nav_*`)
 
 Top navigation bar:
 
@@ -194,7 +288,7 @@ Top navigation bar:
 
 - Height and color for active tab indicator
 
-### Sidebar Component (`cmp_sidebar_*`)
+### Sidebar (`cmp_sidebar_*`)
 
 Side navigation panel:
 
@@ -214,7 +308,7 @@ Side navigation panel:
 
 - `cmp_sidebar_trn_dur` - Transition duration for expand/collapse
 
-### Table Component (`cmp_tbl_*`)
+### Table (`cmp_tbl_*`)
 
 Data table pattern:
 
@@ -239,7 +333,7 @@ Data table pattern:
 - Selected background
 - Striped background (alternating rows)
 
-### Tabs Component (`cmp_tab_*`)
+### Tabs (`cmp_tab_*`)
 
 Tabbed interface pattern:
 
@@ -263,7 +357,7 @@ Tabbed interface pattern:
 
 - `cmp_tab_panel_pad` - Content padding
 
-### Accordion Component (`cmp_acc_*`)
+### Accordion (`cmp_acc_*`)
 
 Collapsible content sections:
 
@@ -286,7 +380,7 @@ Collapsible content sections:
 - Padding (x and y)
 - Animation duration for expand/collapse
 
-### Breadcrumb Component (`cmp_brd_*`)
+### Breadcrumb (`cmp_brd_*`)
 
 Navigation breadcrumb trail:
 
@@ -296,7 +390,7 @@ Navigation breadcrumb trail:
 - Link colors: default and hover
 - Separator color and size
 
-### Pagination Component (`cmp_pgn_*`)
+### Pagination (`cmp_pgn_*`)
 
 Page navigation controls:
 
@@ -306,7 +400,7 @@ Page navigation controls:
 - Text colors: default and active
 - Border colors: default and active
 
-### Progress Bar Component (`cmp_prg_*`)
+### Progress Bar (`cmp_prg_*`)
 
 Progress indicator:
 
@@ -316,7 +410,7 @@ Progress indicator:
 - Border radius
 - Transition duration
 
-### Slider Component (`cmp_sldr_*`)
+### Slider (`cmp_sldr_*`)
 
 Range input control:
 
@@ -331,7 +425,7 @@ Range input control:
 - Border color and width
 - Shadow states: default, hover, active
 
-### Alert Component (`cmp_alt_*`)
+### Alert (`cmp_alt_*`)
 
 Alert/banner message pattern:
 
@@ -348,7 +442,7 @@ Each state (info, success, warning, error) has:
 - Text color
 - Icon color
 
-### Select Component (`cmp_sel_*`)
+### Select (`cmp_sel_*`)
 
 Dropdown select input:
 
@@ -374,38 +468,53 @@ Dropdown select input:
 
 ### ✅ Do
 
-- Create complete component definitions with all variants
+- Search `cmp_` tokens first for any recognized UI pattern
+- Use `{sem_token}` references for colors, spacing, and typography shared across components
 - Define all interactive states (hover, active, disabled, focus)
-- Reference element tokens for base properties
-- Use semantic tokens for colors and spacing
 - Group related tokens by component
 
 ### ❌ Don't
 
-- Duplicate element-level properties (inherit them instead)
-- Create one-off components (use feature layer for specific contexts)
-- Reference feature tokens (violates layer hierarchy)
-- Mix multiple components in one token set
+- Hardcode hex values, rgb values, or pixel literals in `trait.style()` calls
+- Invent `cmp_` token keys that don't exist in `ComponentTokens`
+- Reference tokens that don't exist at all
 
-## Component Composition Pattern
+## Primary Token Layer for Code Generation
 
-Components build on elements:
+Component tokens are the **first choice** for any generated UI code. When an LLM needs to style a button, card, modal, dropdown, table, or any other recognized UI pattern, it should **first search for matching `cmp_` tokens** before falling back to `sem_`.
+
+**Token selection cascade:** **`cmp_`** → `sem_` → inline style
+
+### Example: Generating a Primary Button
 
 ```typescript
-// Element layer defines base button properties
-elm_btn_hgt_md: '2.5rem';
-elm_btn_pad_x_md: '1rem';
-elm_btn_bdr_rad: '{sem_rad_md}';
+import { theme } from './theme';
+import { tag, trait } from './templates';
 
-// Component layer defines variant-specific styling
-cmp_btn_pri_bkg: '{sem_color_interactive_pri}';
-cmp_btn_pri_bkg_hov: '{sem_color_interactive_pri_hov}';
-cmp_btn_pri_txt_color: '{sem_color_txt_inv}';
-
-// Button implementation uses both:
-// - elm_btn_* for size, padding, radius
-// - cmp_btn_pri_* for colors and states
+tag(
+  'button',
+  // Component tokens — variant styling
+  trait.style('backgroundColor', theme.$cmp_btn_pri_bkg),
+  trait.style('color', theme.$cmp_btn_pri_txt_color),
+  trait.style('borderColor', theme.$cmp_btn_pri_bdr_color),
+  trait.style('boxShadow', theme.$cmp_btn_pri_shd),
+  // Component tokens — structural properties
+  trait.style('height', theme.$cmp_btn_hgt_md),
+  trait.style('paddingInline', theme.$cmp_btn_pad_x_md),
+  trait.style('borderRadius', theme.$cmp_btn_bdr_rad),
+  trait.style('fontWeight', theme.$cmp_btn_fnt_wgt),
+  trait.style('fontSize', theme.$cmp_btn_fnt_siz_md),
+  trait.style(
+    'transition',
+    `background-color ${theme.cmp_btn_trn_dur()} ${theme.cmp_btn_trn_eas()}`,
+  ),
+  // Hover state
+  trait.styleOnEvent('mouseenter', 'backgroundColor', theme.$cmp_btn_pri_bkg_hov),
+  trait.styleOnEvent('mouseenter', 'boxShadow', theme.$cmp_btn_pri_shd_hov),
+);
 ```
+
+> **OEM has no component library.** The tokens above don't correspond to a prebuilt `<Button>` component. The LLM generates the full element from scratch using these tokens as the design specification.
 
 ## Variant Naming Convention
 
@@ -429,68 +538,3 @@ Use clear state suffixes:
 - `_dis` - Disabled state
 - `_foc` - Focus state
 - `_sel` - Selected state
-
-## Examples
-
-```typescript
-// ✅ Correct component usage
-cmp_btn_pri_bkg: '{sem_color_interactive_pri}';
-cmp_btn_pri_bkg_hov: '{sem_color_interactive_pri_hov}';
-cmp_btn_pri_txt_color: '{sem_color_txt_inv}';
-cmp_btn_pri_shd: '{sem_shd_sm}';
-
-// ❌ Incorrect - don't redefine element properties
-cmp_btn_pri_hgt: '{elm_btn_hgt_md}'; // Just use elm_btn_hgt_md directly
-
-// ❌ Incorrect - references higher layer
-cmp_btn_pri_bkg: '{ftr_checkout_cta_bkg}'; // NO!
-```
-
-## Related Layers
-
-- **References**: Element (Layer 4), Semantic (Layer 3), Expression (Layer 2), Primitives (Layer 1)
-- **Referenced by**: Feature (Layer 6)
-- **Inherits from**: Element layer provides base properties
-
-## Primary Token Layer for Code Generation
-
-Component tokens are the **first choice** for any generated UI code. When an LLM needs to style a button, card, modal, dropdown, table, or any other recognized UI pattern, it should **first search for matching `cmp_` tokens** before falling back.
-
-**Token selection cascade:** `ftr_` → **`cmp_`** → `elm_` → `sem_` → inline style
-
-### How to Map a UI Requirement to Tokens
-
-1. **Identify the concept** — e.g., "primary button", "card", "modal"
-2. **Search by prefix** — `cmp_btn_pri_*`, `cmp_cdl_*`, `cmp_mod_*`
-3. **Apply via `trait.style()`** — use the deferred `theme.$` getters for reactive traits
-
-### Example: Generating a Primary Button
-
-```typescript
-import { theme } from './theme';
-import { tag, trait } from './templates';
-
-tag(
-  'button',
-  // Component tokens for variant-specific styling
-  trait.style('backgroundColor', theme.$cmp_btn_pri_bkg),
-  trait.style('color', theme.$cmp_btn_pri_txt_color),
-  trait.style('borderColor', theme.$cmp_btn_pri_bdr_color),
-  trait.style('boxShadow', theme.$cmp_btn_pri_shd),
-  // Element tokens for shared base properties
-  trait.style('height', theme.$elm_btn_hgt_md),
-  trait.style('padding', theme.$elm_btn_pad_x_md),
-  trait.style('borderRadius', theme.$elm_btn_bdr_rad),
-  trait.style('fontWeight', theme.$elm_btn_fnt_wgt),
-  trait.style('fontSize', theme.$elm_btn_fnt_siz_md),
-  trait.style(
-    'transition',
-    `background-color ${theme.elm_btn_trn_dur()} ${theme.elm_btn_trn_eas()}`,
-  ),
-  // Hover state
-  trait.styleOnEvent('mouseenter', 'backgroundColor', theme.$cmp_btn_pri_bkg_hov),
-  trait.styleOnEvent('mouseenter', 'boxShadow', theme.$cmp_btn_pri_shd_hov),
-);
-```
-
-> **OEM has no component library.** The tokens above don’t correspond to a prebuilt `<Button>` component. The LLM generates the full element from scratch using these tokens as the design specification.

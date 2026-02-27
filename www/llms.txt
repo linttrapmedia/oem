@@ -1,0 +1,2501 @@
+# OEM
+
+> OEM is an agent-first UI framework and toolkit engineered for human-AI collaboration. It provides a design-token-driven system for generating declarative, reactive UI via a compositional syntax that unifies markup, styling, and behavior.
+
+## Core Library
+
+
+## Template & Traits
+
+### Overview
+
+The template module allows you to create your own template engine. It is the core mechanism that supports OEM's unique approach to declarative, reactive applications that combine HTML, Styling, Logic and Behavior.
+
+### Key Exports
+
+#### `Template<P>`
+
+- **Type**: Function
+- **Signature**: `function Template<P extends Record<string, TemplateTraitFunc>>(config?: P): TemplateReturnType<P>`
+- **Description**: Creates a tuple of [tagProxy, traitProxy] for element creation and trait application
+- **Parameters**:
+  - `config`: Optional object mapping trait names to trait implementation functions
+- **Returns**: A tuple `[tagProxy, traitProxy]` typically destructured as `[tag, trait]`
+- **Basic Example**:
+
+```typescript
+// Import Template and some traits from OEM
+import { Template, useEventTrait, useTextContentTrait, useStyleTrait } from '@linttrap/oem';
+
+// Create template and add traits
+export const [tag, trait] = Template({
+  event: useEventTrait,
+  text: useTextContentTrait,
+  style: useStyleTrait,
+});
+
+// Now you can generate elements with the tag proxy and apply available traits
+const button = tag.button(
+  trait.event('click', () => console.log('Clicked!')),
+  trait.text('Click Me'),
+  trait.style('backgroundColor', 'blue'),
+);
+```
+
+#### Tag Proxy (First element of tuple)
+
+- **Type**: Proxy object
+- **Description**: Creates HTML or SVG elements using property access
+- **Usage**: Access any valid HTML or SVG tag name as a property, which returns a function that creates that element
+
+##### Supported Element Types
+
+- **HTML Elements**: All standard HTML tags (div, span, button, input, etc.)
+- **SVG Elements**: svg, g, rect, circle, ellipse, line, polyline, polygon, path, text, defs, use, mask, clipPath
+
+##### Element Creation Function
+
+- **Signature**: `(...traits: Trait[]) => HTMLElement | SVGElement`
+- **Parameters**: Variable number of traits (strings, numbers, functions, elements, or trait appliers)
+- **Returns**: The created element
+
+#### Trait Proxy (Second element of tuple)
+
+- **Type**: Proxy object
+- **Description**: Creates trait applier functions from the config object
+- **Usage**: Access trait names defined in config, which returns a function that creates a trait applier
+
+##### Trait Applier Function
+
+- **Signature**: `(...args: Parameters<TraitFunc>) => (el: HTMLElement) => void`
+- **Parameters**: Arguments defined by the trait implementation (excluding the element parameter)
+- **Returns**: A function that applies the trait to an element
+
+#### Type Definitions
+
+##### `TemplateTraitFunc`
+
+- **Type**: Type alias
+- **Description**: `(...args: Args) => Return` - Function type for trait implementations
+
+##### `TemplateTraitApplier`
+
+- **Type**: Type alias
+- **Description**: `(el: HTMLElement | SVGElement) => void` - Function that applies a trait to an element
+
+##### `TemplateReturnType<P>`
+
+- **Type**: Type alias
+- **Description**: Complex type defining the return value structure with proper TypeScript inference for element types
+
+### Implementation Details
+
+#### Automatic Cleanup System
+
+The template module uses a sophisticated cleanup system:
+
+- **WeakMap**: Stores cleanup functions keyed by element reference
+- **MutationObserver**: Watches for element removal from the DOM
+- When an element is removed, all its cleanup functions are executed automatically
+- This prevents memory leaks from event listeners and subscriptions
+
+#### SVG Element Detection
+
+SVG elements are created using `createElementNS` with the SVG namespace. The module maintains a hardcoded set of common SVG tag names for detection.
+
+### Traits
+
+A trait is any function that takes an element as its first parameter, applies some behavior or configuration to it and returns a cleanup function. Traits can be defined in the config object passed to `Template()` and are accessed via the trait proxy.
+
+Here's an example of the implementation of the Style Trait
+
+```typescript
+export function useStyleTrait(
+  el: HTMLElement,
+  prop: keyof CSSStyleDeclaration | `--${string}`,
+  val: (() => string | number | undefined) | (string | number | undefined),
+  ...rest: (StateType<any> | Condition)[]
+) {
+  const states = extractStates(val, ...rest);
+  const conditions = extractConditions(...rest);
+  const apply = () => {
+    const _val = typeof val === 'function' ? val() : val;
+    const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));
+    if (applies) {
+      (prop as string).startsWith('--')
+        ? el.style.setProperty(prop as string, _val as string)
+        : (el.style[prop as any] = _val as any);
+    }
+  };
+  apply();
+  const unsubs = states.map((state) => state.sub(apply));
+  return () => unsubs.forEach((unsub) => unsub());
+}
+```
+
+### Conditional Patterns
+
+**IMPORTANT**: OEM prescribes using explicit conditions rather than ternary expressions when applying traits.
+
+#### Using Conditions (Preferred)
+
+All traits accept `...rest: (StateType<any> | Condition)[]` parameters. Use `$test()` from `@/core/util` to create conditions:
+
+```typescript
+import { $test } from '@/core/util';
+
+// ✅ CORRECT: Use separate trait calls with conditions
+trait.style('opacity', '0.6', $test(disabled)),
+trait.style('opacity', '1', $test(!disabled)),
+
+// ✅ CORRECT: Multiple conditions
+trait.style('backgroundColor', 'red', $test(isError && !disabled)),
+
+// ✅ CORRECT: Conditional event handlers
+trait.event('click', handleClick, $test(!disabled)),
+
+// ✅ CORRECT: Conditional attributes
+trait.attr('disabled', 'true', $test(disabled)),
+```
+
+Note: State objects come with a built-in `$test` method that creates a condition based on the state value (e.g. `state.$test(true)` creates a condition that checks if the state value is `true`). See [State.md](state.md) for more details.
+
+````typescript
+
+#### Avoiding Ternary Expressions (Anti-pattern)
+
+```typescript
+// ❌ INCORRECT: Do not use ternary expressions
+trait.style('opacity', disabled ? '0.6' : '1'),
+
+// ❌ INCORRECT: Do not use conditional spreads
+...(!disabled ? [trait.event('click', handleClick)] : []),
+
+// ❌ INCORRECT: Do not use inline conditionals
+trait.style('color', isError ? 'red' : 'blue'),
+````
+
+#### How Conditions Work
+
+Traits extract conditions using `extractConditions()` (see `@/core/util`) and only apply when all conditions evaluate to `true`:
+
+1. **Condition Creation**: `$test(value, expected = true)` creates a condition that checks if `value === expected`
+2. **Condition Extraction**: Traits filter rest parameters for objects with `type === '$test'`
+3. **Condition Evaluation**: All conditions must pass for the trait to apply
+4. **Reactive Updates**: When states change, conditions are re-evaluated
+
+This pattern ensures:
+
+- **Clarity**: Each condition is explicit and separate
+- **Reactivity**: Conditions can re-evaluate when states change
+- **Composability**: Multiple conditions can be combined
+- **Type Safety**: TypeScript can properly type-check each branch
+
+
+---
+
+
+## State
+
+### Overview
+
+The state function is an an event bus with reactive state management convention used by the OEM framework. It implements a publish-subscribe pattern with support for reducing, testing and augmenting with custom methods. State is designed to be simple and flexible, allowing you to manage reactive data in your applications without the overhead of more complex state management libraries.
+
+### Purpose
+
+State solves the problem of managing reactive data in applications where UI components need to automatically update when data changes. It provides a lightweight alternative to more complex state management libraries, with built-in support for:
+
+- Reactive subscriptions
+- State transformations
+- Predicate testing
+- Deferred execution patterns
+
+Use this module when you need to manage any state, especially with reactive data binding between your application state and UI components. State objects should live outside of function components to ensure they are shared across the application and not recreated on each render.
+
+### Key Exports
+
+#### `State<T, M>`
+
+- **Type**: Function
+- **Signature**: `function State<T, M>(param: T, customMethods?: M): StateType<T, M>`
+- **Description**: Creates a reactive state container that holds a value and notifies subscribers when it changes. Optionally accepts custom methods to extend state behavior.
+- **Parameters**:
+  - `param`: The initial value for the state
+  - `customMethods` (optional): An object containing custom methods that receive the state object as their first parameter
+- **Returns**: A `StateType<T, M>` object with methods for state management
+- **Usage Example**:
+
+```typescript
+// Basic usage
+const count = State(0);
+count.sub((value) => console.log('Count changed:', value));
+count.set(5); // Logs: "Count changed: 5"
+
+// With custom methods
+const counter = State(
+  { count: 0 },
+  {
+    increment: (state) => {
+      state.reduce((prev) => ({ count: prev.count + 1 }));
+    },
+    incrementBy: (state, amount: number) => {
+      state.reduce((prev) => ({ count: prev.count + amount }));
+    },
+  },
+);
+
+counter.increment(); // Increments count by 1
+counter.incrementBy(5); // Increments count by 5
+counter.$increment()(); // Deferred increment
+```
+
+Note: the `$`-prefixed methods (e.g. `$increment`) are automatically generated for each custom method and return a closure that can be used for deferred execution, such as in event handlers.
+
+#### `StateType<T>`
+
+- **Type**: Interface/Type
+- **Description**: The return type of `State()` function, providing methods for state manipulation and observation
+
+##### Methods
+
+###### `val()`
+
+- **Returns**: The current state value
+- **Usage**: `const currentValue = count.val();`
+
+###### `set(atom: T)`
+
+- **Description**: Sets a new state value and notifies all subscribers
+- **Parameters**: `atom` - The new value to set
+
+###### `reduce(cb: (prev: T) => T)`
+
+- **Description**: Updates state based on the previous value
+- **Parameters**: `cb` - A function that receives the current value and returns the new value
+- **Usage**: `count.reduce(prev => prev + 1);`
+
+###### `sub(cb: (atom: T) => any)`
+
+- **Description**: Subscribes to state changes
+- **Parameters**: `cb` - Callback function called with new value on each change
+- **Returns**: An unsubscribe function
+- **Usage**:
+
+```typescript
+const unsub = count.sub((value) => console.log(value));
+// Later: unsub() to stop listening
+```
+
+###### `test(predicate, checkFor?)`
+
+- **Description**: Tests the current state value against a predicate
+- **Parameters**:
+  - `predicate`: A RegExp, value, or function to test against
+  - `checkFor`: Optional boolean (default `true`) to invert the test result
+- **Returns**: Boolean indicating if the test passed
+- **Usage**:
+
+```typescript
+const isZero = count.test(0); // true if count is 0
+const isPositive = count.test((v) => v > 0);
+```
+
+##### Deferred Execution Methods ($ prefix)
+
+Each core method has a dollar-prefixed version (`$val`, `$set`, `$reduce`, `$test`, `$call`) that returns a closure for deferred execution. These closures include:
+
+- A `sub` property for subscribing to changes
+- A `type` property identifying the closure type
+
+**Usage Example**:
+
+```typescript
+const getDouble = count.$reduce((prev) => prev * 2);
+// Later: getDouble() executes the reduction
+```
+
+##### Custom Methods
+
+State supports extending functionality with custom methods via the second parameter. Custom methods:
+
+- Receive the state object as their first parameter
+- Can accept additional parameters
+- Have automatic deferred execution versions ($ prefix)
+- Provide full TypeScript intellisense and type safety
+
+**Usage Example**:
+
+```typescript
+type CounterState = { count: number; name: string };
+
+const counter = State<CounterState>(
+  { count: 0, name: 'MyCounter' },
+  {
+    increment: (state) => {
+      state.reduce((prev) => ({ ...prev, count: prev.count + 1 }));
+    },
+    incrementBy: (state, amount: number) => {
+      state.reduce((prev) => ({ ...prev, count: prev.count + amount }));
+    },
+    reset: (state) => {
+      state.set({ count: 0, name: state.val().name });
+    },
+    getDisplayText: (state) => {
+      const { count, name } = state.val();
+      return `${name}: ${count}`;
+    },
+  },
+);
+
+// Direct execution
+counter.increment();
+counter.incrementBy(5);
+console.log(counter.getDisplayText()); // "MyCounter: 6"
+
+// Deferred execution with $ prefix
+const incrementBtn = document.querySelector('#increment');
+incrementBtn.addEventListener('click', counter.$increment());
+
+const addFiveBtn = document.querySelector('#add-five');
+addFiveBtn.addEventListener('click', counter.$incrementBy(5));
+```
+
+Because custom methods take the state object as their first parameter, they have access to all state methods:
+
+- `state.val()` - Get current value
+- `state.set(newValue)` - Set new value
+- `state.reduce(cb)` - Update based on previous value
+- `state.sub(cb)` - Subscribe to changes
+- `state.test(predicate)` - Test current value
+
+### Implementation Details
+
+The state module uses a closure-based approach to maintain private state:
+
+- Internal value is stored in `_internalVal`
+- Subscribers are stored in a `Set<(atom: T) => any>`
+- When state changes via `set()` or `reduce()`, all subscribers are notified synchronously
+- The boxed type system allows calling methods like `toUpperCase()` on string states
+
+### Gotchas
+
+- There is no `pub` method; state updates are published automatically when using `set()` or `reduce()`
+- Custom methods must use the provided state object parameter to manipulate state; they cannot directly access internal variables
+- Deferred execution methods (with `$` prefix) return closures that are syntactic sugar for traits. Traits use them to get the current state value and subscribe to changes. Each trait is responsible for implementing the logic to re-run when the state changes. This design allows for flexible reactive patterns without coupling state directly to UI components.
+
+
+---
+
+
+## Types
+
+### Overview
+
+The types module provides common TypeScript type definitions used throughout the OEM framework. These types establish shared contracts for reactive conditions, testing, and utility type transformations.
+
+### Purpose
+
+Types serves as a central location for common type definitions, ensuring type consistency across the OEM codebase. It provides:
+
+- Type definitions for conditional expressions
+- Test function signatures for unit testing
+- Utility types for type-level programming
+
+Use this module when you need to import common type definitions or understand the type contracts used across OEM.
+
+### Key Exports
+
+#### `Condition`
+
+- **Type**: Type alias
+- **Signature**: `type Condition = (() => boolean) | boolean | 1 | 0`
+- **Description**: Represents a conditional expression that can be evaluated to determine truthiness
+- **Supported Forms**:
+  - `() => boolean`: A function that returns a boolean
+  - `boolean`: A static true/false value
+  - `1`: Truthy numeric value
+  - `0`: Falsy numeric value
+- **Usage Example**:
+
+```typescript
+const condition1: Condition = true;
+const condition2: Condition = () => count.val() > 0;
+const condition3: Condition = 1;
+
+// Used in OEM conditional rendering
+const element = h.div(condition1 && h.span('Visible when true'));
+```
+
+- **Use Cases**:
+  - Conditional rendering in templates
+  - Control flow in reactive systems
+  - Feature flags and toggles
+
+#### `Test`
+
+- **Type**: Type alias
+- **Signature**: `type Test = (sandbox?: HTMLElement) => Promise<{ pass: boolean; message?: string }>`
+- **Description**: Defines the signature for test functions in OEM's testing system
+- **Parameters**:
+  - `sandbox`: Optional HTMLElement that serves as a testing container for DOM operations
+- **Returns**: A Promise resolving to a test result object
+  - `pass`: Boolean indicating if the test passed
+  - `message`: Optional message providing test details or failure information
+- **Usage Example**:
+
+```typescript
+const myTest: Test = async (sandbox) => {
+  const element = h.div('Test content');
+  sandbox?.appendChild(element);
+
+  const hasContent = element.textContent === 'Test content';
+
+  return {
+    pass: hasContent,
+    message: hasContent ? 'Content matches' : 'Content mismatch',
+  };
+};
+```
+
+- **Use Cases**:
+  - Unit testing DOM components
+  - Integration testing with isolated DOM sandboxes
+  - Automated test suites
+
+#### `Tail<T>`
+
+- **Type**: Utility type
+- **Signature**: `type Tail<T extends any[]> = T extends [any, ...infer R] ? R : never`
+- **Description**: Extracts all elements from a tuple type except the first element
+- **Type Parameters**:
+  - `T`: A tuple type (array with fixed length and types)
+- **Returns**: A tuple type containing all elements except the first
+- **Usage Example**:
+
+```typescript
+type Original = [string, number, boolean];
+type Rest = Tail<Original>; // [number, boolean]
+
+type SingleElement = [string];
+type Empty = Tail<SingleElement>; // []
+
+// Used internally in Template trait parameter inference
+type TraitParams = Tail<Parameters<TraitFunction>>;
+```
+
+- **Use Cases**:
+  - Removing the first parameter from function signatures (e.g., removing the `element` parameter from trait functions)
+  - Type-level tuple manipulation
+  - Generic type transformations
+
+### Implementation Details
+
+#### Condition Design
+
+The `Condition` type is designed to be flexible and accommodate various patterns:
+
+- **Function form**: Enables dynamic conditions that can re-evaluate
+- **Boolean form**: For static conditions known at creation time
+- **Numeric form**: Allows using 1/0 as truthy/falsy, common in certain programming paradigms
+
+#### Test Design
+
+The `Test` type follows the async test pattern common in modern testing frameworks:
+
+- **Async by nature**: Returns a Promise to support async operations in tests
+- **Sandbox parameter**: Provides isolation for DOM tests
+- **Structured result**: Object with `pass` boolean and optional `message` for clear test output
+
+#### Tail Type Mechanics
+
+The `Tail` type uses TypeScript's conditional types and `infer` keyword:
+
+- Matches tuple types with at least one element `[any, ...infer R]`
+- Infers the rest of the tuple as `R`
+- Returns `never` for non-matching types (type safety)
+
+
+---
+
+
+## Util
+
+### Overview
+
+The util module provides utility functions for working with State objects and Conditions in the OEM framework. It offers runtime helpers for filtering, testing, and extracting reactive objects from mixed arrays.
+
+### Purpose
+
+Util solves the problem of identifying and working with OEM's special object types (State, Condition) at runtime. Key features include:
+
+- Creating conditional closures for reactive testing
+- Extracting State objects from mixed parameter arrays
+- Extracting Condition objects from mixed parameter arrays
+
+Use this module when you need to programmatically work with State or Condition objects, particularly when processing variable argument lists that may contain a mix of different types.
+
+### Key Exports
+
+#### `$test()`
+
+- **Type**: Function
+- **Signature**: `function $test(val: (() => any) | any, expected: any = true): Condition`
+- **Description**: Creates a conditional closure that tests a value against an expected result
+- **Parameters**:
+  - `val`: Either a function that returns a value, or a static value
+  - `expected`: The expected value to compare against (default: `true`)
+- **Returns**: A `Condition` function with a `type` property set to `'$test'`
+- **Usage Example**:
+
+```typescript
+// Test a static value
+const isTrue = $test(true); // () => true === true
+
+// Test a function result
+const count = State(5);
+const isPositive = $test(() => count.val() > 0, true);
+
+// Use in conditional rendering
+const element = h.div(isPositive && h.span('Count is positive'));
+
+// Custom expected value
+const isFive = $test(count.val, 5);
+```
+
+- **Behavior**:
+  - If `val` is a function, it's called on each evaluation
+  - If `val` is a static value, it's compared directly
+  - Returns true if `val === expected`, false otherwise
+  - The returned closure includes a `type` property for runtime identification
+
+#### `extractStates()`
+
+- **Type**: Function
+- **Signature**: `function extractStates(...rest: any): StateType<any>[]`
+- **Description**: Filters an array of mixed values to extract only State objects
+- **Parameters**:
+  - `...rest`: Variable number of arguments of any type
+- **Returns**: An array containing only the State objects from the input
+- **Usage Example**:
+
+```typescript
+const count = State(0);
+const name = State('Alice');
+const regularValue = 42;
+const regularFunc = () => 'hello';
+
+const states = extractStates(count, regularValue, name, regularFunc);
+// states = [count, name]
+
+// Use case: Subscribing to all states in a component
+states.forEach((state) => {
+  state.sub((value) => {
+    console.log('State changed:', value);
+  });
+});
+```
+
+- **Detection Logic**: Checks if objects have a `sub` property (characteristic of State objects)
+- **Use Cases**:
+  - Component lifecycle management
+  - Batch subscription to multiple states
+  - Analyzing dependencies
+
+#### `extractConditions()`
+
+- **Type**: Function
+- **Signature**: `function extractConditions(...rest: any[]): Condition[]`
+- **Description**: Filters an array of mixed values to extract only Condition objects
+- **Parameters**:
+  - `...rest`: Variable number of arguments of any type
+- **Returns**: An array containing only the Condition objects from the input
+- **Usage Example**:
+
+```typescript
+const isVisible = $test(true);
+const isEnabled = $test(() => count.val() > 0);
+const regularValue = 42;
+const regularFunc = () => 'hello';
+
+const conditions = extractConditions(isVisible, regularValue, isEnabled, regularFunc);
+// conditions = [isVisible, isEnabled]
+
+// Use case: Evaluating all conditions
+const allTrue = conditions.every((condition) =>
+  typeof condition === 'function' ? condition() : condition,
+);
+```
+
+- **Detection Logic**: Checks if objects have a `type` property equal to `'$test'`
+- **Use Cases**:
+  - Conditional rendering logic
+  - Form validation
+  - Feature flag evaluation
+  - Access control checks
+
+### Implementation Details
+
+#### Object Type Detection
+
+Both `extractStates` and `extractConditions` use runtime property checking to identify objects:
+
+- **State detection**: Uses `Object.hasOwn(i, 'sub')` to check for the subscription method
+- **Condition detection**: Uses `i.type === '$test'` to check for the type marker
+
+This approach relies on duck typing rather than instanceof checks, making it flexible but requiring consistent object shapes.
+
+#### $test Closure Structure
+
+The `$test` function returns a closure with:
+
+- **Function body**: Performs the comparison logic
+- **Type property**: Marker for runtime identification (`type: '$test'`)
+- This structure allows Conditions to be both executable and identifiable
+
+#### Type Safety Considerations
+
+- `extractStates` returns `StateType<any>[]`, losing specific type information
+- `extractConditions` returns `Condition[]`
+- Both functions use `any` types internally for flexibility with mixed arrays
+- Type information should be managed at the call site when possible
+
+### Related Modules
+
+- [state.ts](src/core/state.ts) - Defines the StateType interface that extractStates detects
+- [types.ts](src/core/types.ts) - Defines the Condition type used throughout this module
+- [template.ts](src/core/template.ts) - May use these utilities for processing mixed trait arrays
+
+
+## Trait Library
+
+
+# useFocusTrait
+
+Programmatically focuses an HTML element. Unlike most traits, Focus accepts `conditions` and `states` as explicit arrays rather than using the rest-parameter extraction pattern.
+
+## Signature
+
+```ts
+useFocusTrait(
+  el: HTMLElement,
+  conditions?: Condition[],
+  states?: StateType<any>[]
+) => () => void
+```
+
+## Parameters
+
+| Parameter    | Type               | Description                                                                                                             |
+| ------------ | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `el`         | `HTMLElement`      | The target element to focus                                                                                             |
+| `conditions` | `Condition[]`      | Optional array of Conditions. The element is focused only when all evaluate to truthy. Defaults to `[]`.                |
+| `states`     | `StateType<any>[]` | Optional array of State objects to subscribe to. The trait re-evaluates whenever any State publishes. Defaults to `[]`. |
+
+## Behavior
+
+1. Checks all Conditions — if all are truthy, calls `el.focus()`.
+2. Subscribes to every State so the trait re-runs on state changes.
+3. Useful for auto-focusing inputs when a modal opens, a route changes, or a condition becomes true.
+
+## Returns
+
+A cleanup function that unsubscribes from all State listeners.
+
+## Template Usage
+
+```ts
+trait.focus([() => modalState.get().open], [modalState]);
+trait.focus([], [routeState]);
+```
+
+
+---
+
+
+# useInputEventTrait
+
+Attaches an input-related event listener that extracts the value from `e.target.value` and passes it to a setter function. Designed for binding form element changes directly to state updates.
+
+## Signature
+
+```ts
+useInputEventTrait(
+  el: HTMLElement,
+  evt: 'input' | 'change' | 'keyup' | 'keydown' | 'keypress' | 'beforeinput' | 'paste' | 'cut' | 'compositionstart' | 'compositionupdate' | 'compositionend',
+  setter: (val: any) => void,
+  ...rest: (StateType<any> | Condition)[]
+) => () => void
+```
+
+## Parameters
+
+| Parameter | Type                              | Description                                                                                                                                                                                             |
+| --------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `el`      | `HTMLElement`                     | The target form element (typically `HTMLInputElement` or `HTMLTextAreaElement`)                                                                                                                         |
+| `evt`     | `string`                          | The input event type. Restricted to: `'input'`, `'change'`, `'keyup'`, `'keydown'`, `'keypress'`, `'beforeinput'`, `'paste'`, `'cut'`, `'compositionstart'`, `'compositionupdate'`, `'compositionend'`. |
+| `setter`  | `(val: any) => void`              | A function called with `e.target.value` when the event fires. Typically a State's `pub` method.                                                                                                         |
+| `...rest` | `(StateType<any> \| Condition)[]` | Optional State objects and/or Conditions. The listener is attached only when all Conditions are truthy.                                                                                                 |
+
+## Behavior
+
+1. Checks all Conditions — if all are truthy and the listener is not attached, adds the event listener.
+2. When the event fires, calls `setter(e.target.value)`.
+3. If any Condition becomes falsy, removes the listener.
+4. Tracks attachment state to prevent duplicate listeners.
+5. Subscribes to every State so the trait re-evaluates on state changes.
+
+## Returns
+
+A cleanup function that removes the event listener and unsubscribes from all State listeners.
+
+## Template Usage
+
+```ts
+trait.inputEvent('input', (val) => nameState.pub(val), nameState);
+trait.inputEvent('change', (val) => dispatch({ type: 'SET_FILTER', payload: val }));
+trait.inputEvent(
+  'keydown',
+  (val) => searchState.pub(val),
+  searchState,
+  () => enabled.get(),
+);
+```
+
+
+---
+
+
+# useTextContentTrait
+
+Sets the text content of an element reactively. Supports single values, arrays of values (concatenated as text nodes), and function getters.
+
+## Signature
+
+```ts
+useTextContentTrait(
+  el: HTMLElement,
+  text: TextContent | TextContent[] | (() => TextContent | TextContent[]),
+  ...rest: (StateType<any> | Condition)[]
+) => () => void
+```
+
+Where `TextContent = string | number | undefined | unknown`.
+
+## Parameters
+
+| Parameter | Type                                                                   | Description                                                                                                                        |
+| --------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `el`      | `HTMLElement`                                                          | The target element                                                                                                                 |
+| `text`    | `TextContent \| TextContent[] \| (() => TextContent \| TextContent[])` | The text to display. Can be a single value, an array of values (each appended as a text node), or a function returning either.     |
+| `...rest` | `(StateType<any> \| Condition)[]`                                      | Optional State objects and/or Conditions. The trait re-evaluates on state changes and only applies when all Conditions are truthy. |
+
+## Behavior
+
+1. Clears `el.textContent`.
+2. Evaluates `text` (calls it if it's a function).
+3. Checks all Conditions — if any are falsy, the element remains empty.
+4. For arrays: filters out `undefined` values and appends each as a text node.
+5. For single values: sets `el.textContent` to the stringified value.
+6. Subscribes to every State in `rest` so the trait re-runs on state changes.
+
+## Returns
+
+A cleanup function that unsubscribes from all State listeners.
+
+## Template Usage
+
+```ts
+trait.textContent('Hello, World!');
+trait.textContent(() => `Count: ${counter.get()}`, counter);
+trait.textContent(
+  () => items.get().length,
+  items,
+  () => items.get().length > 0,
+);
+```
+
+
+---
+
+
+# useAttributeTrait
+
+Sets or removes an HTML attribute on an element reactively. When the value is `undefined` or conditions evaluate to `false`, the attribute is removed from the element.
+
+## Signature
+
+```ts
+useAttributeTrait(
+  el: HTMLElement,
+  prop: string,
+  val: (() => string | number | boolean | undefined) | (string | number | boolean | undefined),
+  ...rest: (StateType<any> | Condition)[]
+) => () => void
+```
+
+## Parameters
+
+| Parameter | Type                                                                                           | Description                                                                                                                                  |
+| --------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `el`      | `HTMLElement`                                                                                  | The target element                                                                                                                           |
+| `prop`    | `string`                                                                                       | The attribute name (e.g. `'disabled'`, `'aria-label'`, `'data-id'`)                                                                          |
+| `val`     | `(() => string \| number \| boolean \| undefined) \| string \| number \| boolean \| undefined` | The attribute value. Pass a function for reactive evaluation, or a static value. `undefined` removes the attribute.                          |
+| `...rest` | `(StateType<any> \| Condition)[]`                                                              | Optional State objects and/or Conditions. The trait re-evaluates whenever a State publishes and only applies when all Conditions are truthy. |
+
+## Behavior
+
+1. Evaluates `val` (calls it if it's a function).
+2. Checks all Conditions — if any are falsy, removes the attribute.
+3. If all Conditions pass and `val` is `undefined`, removes the attribute.
+4. Otherwise, sets the attribute via `el.setAttribute(prop, String(val))`.
+5. Subscribes to every State in `rest` so the trait re-runs on state changes.
+
+## Returns
+
+A cleanup function that unsubscribes from all State listeners.
+
+## Template Usage
+
+When used through a Template's `trait` proxy, the `el` parameter is supplied automatically:
+
+```ts
+trait.attribute('disabled', () => !formState.get().isValid, formState);
+trait.attribute('aria-label', 'Close dialog');
+trait.attribute(
+  'data-active',
+  () => tabState.get().active === id,
+  tabState,
+  () => visible.get(),
+);
+```
+
+
+---
+
+
+# useStyleTrait
+
+Reactively sets a single CSS style property on an element. Supports both standard `CSSStyleDeclaration` properties and CSS custom properties (`--*`).
+
+## Signature
+
+```ts
+useStyleTrait(
+  el: HTMLElement,
+  prop: keyof CSSStyleDeclaration | `--${string}`,
+  val: (() => string | number | undefined) | (string | number | undefined),
+  ...rest: (StateType<any> | Condition)[]
+) => () => void
+```
+
+## Parameters
+
+| Parameter | Type                                                                     | Description                                                                                                                         |
+| --------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `el`      | `HTMLElement`                                                            | The target element                                                                                                                  |
+| `prop`    | `keyof CSSStyleDeclaration \| \`--\${string}\``                          | The CSS property name. Use camelCase for standard properties (e.g. `'backgroundColor'`) or `'--custom-prop'` for custom properties. |
+| `val`     | `(() => string \| number \| undefined) \| string \| number \| undefined` | The CSS value. Pass a function for reactive evaluation.                                                                             |
+| `...rest` | `(StateType<any> \| Condition)[]`                                        | Optional State objects and/or Conditions. The style is applied only when all Conditions are truthy.                                 |
+
+## Behavior
+
+1. Evaluates `val` (calls it if it's a function).
+2. Checks all Conditions — if all are truthy, applies the style.
+3. For custom properties (`--*`): uses `el.style.setProperty(prop, val)`.
+4. For standard properties: assigns directly to `el.style[prop]`.
+5. Subscribes to every State in `rest` so the trait re-runs on state changes.
+
+## Returns
+
+A cleanup function that unsubscribes from all State listeners.
+
+## Template Usage
+
+```ts
+// Static token value
+trait.style('backgroundColor', theme.sem_color_bkg_pri());
+trait.style('padding', theme.sem_spc_pad_md());
+
+// Reactive value from state
+trait.style('opacity', () => (visible.get() ? '1' : '0'), visible);
+
+// Deferred token getter (re-evaluates on theme change)
+trait.style('color', theme.$sem_color_txt_pri);
+
+// Custom CSS property
+trait.style('--header-height', '64px');
+
+// Conditional application
+trait.style('display', 'none', someState, () => !someState.get().visible);
+```
+
+
+---
+
+
+# useInputValueTrait
+
+Reactively sets the `value` property of an `<input>` or `<textarea>` element. Pairs with `useInputEventTrait` for two-way data binding.
+
+## Signature
+
+```ts
+useInputValueTrait(
+  el: HTMLInputElement | HTMLTextAreaElement,
+  value: (() => string | number | undefined) | (string | number | undefined),
+  ...rest: (StateType<any> | Condition)[]
+) => () => void
+```
+
+## Parameters
+
+| Parameter | Type                                                                     | Description                                                                                                                        |
+| --------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `el`      | `HTMLInputElement \| HTMLTextAreaElement`                                | The target input or textarea element                                                                                               |
+| `value`   | `(() => string \| number \| undefined) \| string \| number \| undefined` | The value to set. Pass a function for reactive evaluation.                                                                         |
+| `...rest` | `(StateType<any> \| Condition)[]`                                        | Optional State objects and/or Conditions. The trait re-evaluates on state changes and only applies when all Conditions are truthy. |
+
+## Behavior
+
+1. Evaluates `value` (calls it if it's a function).
+2. Checks all Conditions — if all are truthy, sets `el.value`.
+3. Subscribes to every State in `rest` so the trait re-runs on state changes.
+4. Typically used alongside `useInputEventTrait` to create a reactive loop: state → input value → user types → event → update state → input value updates.
+
+## Returns
+
+A cleanup function that unsubscribes from all State listeners.
+
+## Template Usage
+
+```ts
+// Two-way binding pattern
+tag.input(
+  trait.inputValue(() => nameState.get(), nameState),
+  trait.inputEvent('input', (val) => nameState.pub(val)),
+);
+
+// Conditional binding
+tag.input(
+  trait.inputValue(
+    () => searchState.get(),
+    searchState,
+    () => isEditing.get(),
+  ),
+);
+```
+
+
+---
+
+
+# useEventTrait
+
+Attaches a DOM event listener to an element. The listener is added or removed reactively based on Conditions and State changes.
+
+## Signature
+
+```ts
+useEventTrait(
+  el: HTMLElement,
+  evt: keyof GlobalEventHandlersEventMap,
+  cb: (evt?: GlobalEventHandlersEventMap[keyof GlobalEventHandlersEventMap]) => void,
+  ...rest: (StateType<any> | Condition)[]
+) => () => void
+```
+
+## Parameters
+
+| Parameter | Type                                | Description                                                                                                                                 |
+| --------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `el`      | `HTMLElement`                       | The target element                                                                                                                          |
+| `evt`     | `keyof GlobalEventHandlersEventMap` | The event name (e.g. `'click'`, `'mouseenter'`, `'submit'`)                                                                                 |
+| `cb`      | `(evt?) => void`                    | The event handler callback                                                                                                                  |
+| `...rest` | `(StateType<any> \| Condition)[]`   | Optional State objects and/or Conditions. The listener is attached only when all Conditions are truthy and detached when any becomes falsy. |
+
+## Behavior
+
+1. Checks all Conditions — if all are truthy and the listener is not already attached, calls `el.addEventListener(evt, cb)`.
+2. If any Condition becomes falsy, calls `el.removeEventListener(evt, cb)`.
+3. Tracks attachment state internally to prevent duplicate listeners.
+4. Subscribes to every State in `rest` so the trait re-evaluates on state changes.
+
+## Returns
+
+A cleanup function that removes the event listener and unsubscribes from all State listeners.
+
+## Template Usage
+
+```ts
+trait.event('click', () => dispatch({ type: 'INCREMENT' }));
+trait.event('submit', (e) => {
+  e.preventDefault();
+  save();
+});
+trait.event('mouseenter', showTooltip, visibilityState, () => enabled.get());
+```
+
+
+---
+
+
+# useInnerHTMLTrait
+
+Sets the inner content of an element by appending child elements or text nodes. Clears the element first, then appends children — making it safe for HTMLElement and SVGElement children (no serialization).
+
+## Signature
+
+```ts
+useInnerHTMLTrait(
+  el: HTMLElement,
+  children: Child | Child[] | (() => Child | Child[]),
+  ...rest: (StateType<any> | Condition)[]
+) => () => void
+```
+
+Where `Child = string | number | HTMLElement | SVGElement | undefined | unknown`.
+
+## Parameters
+
+| Parameter  | Type                                           | Description                                                                                                                                                                        |
+| ---------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `el`       | `HTMLElement`                                  | The parent element whose content will be set                                                                                                                                       |
+| `children` | `Child \| Child[] \| (() => Child \| Child[])` | The child content. Can be a single value, an array, or a function returning either. HTMLElement/SVGElement children are appended directly; primitives are converted to text nodes. |
+| `...rest`  | `(StateType<any> \| Condition)[]`              | Optional State objects and/or Conditions. The trait re-evaluates on state changes and only applies when all Conditions are truthy.                                                 |
+
+## Behavior
+
+1. Clears `el.innerHTML`.
+2. Evaluates `children` (calls it if it's a function).
+3. Checks all Conditions — if any are falsy, the element remains empty.
+4. For arrays: filters out falsy values, appends HTMLElement/SVGElement children via `appendChild`, and wraps primitives in text nodes.
+5. For single HTMLElement/SVGElement: appends directly.
+6. For single primitives: sets `el.innerHTML` to the stringified value.
+7. Subscribes to every State in `rest` so the trait re-runs on state changes.
+
+## Returns
+
+A cleanup function that unsubscribes from all State listeners.
+
+## Template Usage
+
+```ts
+tag.div(
+  trait.innerHTML(
+    () => [
+      tag.h1(trait.textContent('Hello')),
+      tag.p(trait.textContent(() => message.get(), message)),
+    ],
+    message,
+  ),
+);
+
+tag.ul(
+  trait.innerHTML(() => items.get().map((item) => tag.li(trait.textContent(item.label))), items),
+);
+```
+
+
+---
+
+
+# useClassNameTrait
+
+Sets the `class` attribute of an HTML element reactively. Replaces the entire class string — does not toggle individual classes.
+
+## Signature
+
+```ts
+useClassNameTrait(
+  el: HTMLElement,
+  className: string | (() => string),
+  ...rest: (StateType<any> | Condition)[]
+) => () => void
+```
+
+## Parameters
+
+| Parameter   | Type                              | Description                                                                                                                                  |
+| ----------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `el`        | `HTMLElement`                     | The target element                                                                                                                           |
+| `className` | `string \| (() => string)`        | The class string to apply. Pass a function for reactive evaluation.                                                                          |
+| `...rest`   | `(StateType<any> \| Condition)[]` | Optional State objects and/or Conditions. The trait re-evaluates whenever a State publishes and only applies when all Conditions are truthy. |
+
+## Behavior
+
+1. Evaluates `className` (calls it if it's a function).
+2. Checks all Conditions — if all are truthy, sets the class attribute via `el.setAttribute('class', ...)`.
+3. If any Condition is falsy, the class is not applied (the previous value remains).
+4. Subscribes to every State in `rest` so the trait re-runs on state changes.
+
+## Returns
+
+A cleanup function that unsubscribes from all State listeners.
+
+## Template Usage
+
+```ts
+trait.className('btn btn-primary');
+trait.className(() => (isActive.get() ? 'tab active' : 'tab'), isActive);
+```
+
+
+---
+
+
+# useStyleOnEventTrait
+
+Applies a CSS style property when a DOM event fires on the element. Unlike `useStyleTrait`, this trait does not subscribe to State objects — it runs the style application inside the event handler itself.
+
+## Signature
+
+```ts
+useStyleOnEventTrait(
+  el: HTMLElement,
+  evt: keyof HTMLElementEventMap,
+  prop: keyof CSSStyleDeclaration | `--${string}`,
+  val: (() => string | number | undefined) | (string | number | undefined),
+  ...rest: Condition[]
+) => () => void
+```
+
+## Parameters
+
+| Parameter | Type                                                                     | Description                                                                                                |
+| --------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `el`      | `HTMLElement`                                                            | The target element                                                                                         |
+| `evt`     | `keyof HTMLElementEventMap`                                              | The event that triggers the style application (e.g. `'mouseenter'`, `'mouseleave'`, `'focus'`)             |
+| `prop`    | `keyof CSSStyleDeclaration \| \`--\${string}\``                          | The CSS property name (camelCase or `--custom-prop`)                                                       |
+| `val`     | `(() => string \| number \| undefined) \| string \| number \| undefined` | The CSS value. Pass a function for reactive evaluation at event time.                                      |
+| `...rest` | `Condition[]`                                                            | Optional Conditions. The style is applied only when all Conditions are truthy at the time the event fires. |
+
+## Behavior
+
+1. Attaches an event listener for `evt` on `el`.
+2. When the event fires: evaluates `val`, checks Conditions, and applies the style if all pass.
+3. For custom properties (`--*`): uses `el.style.setProperty(prop, val)`.
+4. For standard properties: assigns directly to `el.style[prop]`.
+5. Does **not** subscribe to State objects — only re-evaluates when the event fires.
+
+## Returns
+
+A cleanup function that removes the event listener.
+
+## Template Usage
+
+```ts
+// Hover highlight pattern
+trait.styleOnEvent('mouseenter', 'backgroundColor', theme.sem_color_bkg_hover());
+trait.styleOnEvent('mouseleave', 'backgroundColor', theme.sem_color_bkg_pri());
+
+// Focus ring
+trait.styleOnEvent('focus', 'outline', () => `2px solid ${theme.sem_color_bdr_focus()}`);
+trait.styleOnEvent('blur', 'outline', 'none');
+```
+
+
+## State Library
+
+
+## UrlState
+
+
+---
+
+
+# MediaQueryState
+
+A reactive state hook that tracks whether the current viewport matches specified media query conditions.
+
+## Features
+
+- **Responsive tracking**: Automatically updates when window is resized
+- **Width-based queries**: Support for min and max width constraints
+- **Media type support**: Filter by screen, print, or all media types
+- **Reactive**: Returns a State object that updates when conditions change
+
+## Usage
+
+```typescript
+import { useMediaQueryState } from '@/states/MediaQueryState';
+
+// Track mobile viewport (max 768px)
+const isMobile = useMediaQueryState({
+  maxWidth: 768
+});
+
+// Track tablet viewport (768px - 1024px)
+const isTablet = useMediaQueryState({
+  minWidth: 768,
+  maxWidth: 1024
+});
+
+// Track desktop viewport (min 1024px)
+const isDesktop = useMediaQueryState({
+  minWidth: 1024
+});
+
+// Track print media
+const isPrint = useMediaQueryState({
+  type: 'print'
+});
+```
+
+## Props
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `type` | `'screen' \| 'print' \| 'all'` | `'all'` | Media type to match against |
+| `minWidth` | `number` | `0` | Minimum viewport width in pixels |
+| `maxWidth` | `number` | `Infinity` | Maximum viewport width in pixels |
+
+## Return Value
+
+Returns a `State<boolean>` that is `true` when the media query matches and `false` otherwise.
+
+## Behavior
+
+The state automatically:
+- Evaluates the media query on initialization
+- Adds a resize event listener to track viewport changes
+- Updates the state value when conditions change
+- Checks both width constraints AND media type (both must match)
+
+## Common Patterns
+
+### Responsive Breakpoints
+
+```typescript
+// Define standard breakpoints
+const isMobile = useMediaQueryState({ maxWidth: 639 });
+const isTablet = useMediaQueryState({ minWidth: 640, maxWidth: 1023 });
+const isDesktop = useMediaQueryState({ minWidth: 1024 });
+```
+
+### Conditional Rendering
+
+```typescript
+const isMobile = useMediaQueryState({ maxWidth: 768 });
+
+if (isMobile.val()) {
+  // Render mobile layout
+} else {
+  // Render desktop layout
+}
+```
+
+## Notes
+
+- The resize listener is added globally and will remain active
+- Consider cleanup if using in components that mount/unmount frequently
+- Width boundaries are inclusive (>= minWidth, <= maxWidth)
+
+
+---
+
+
+# useThemeState
+
+A state management system for handling multiple themes with reactive design token access. Supports dynamic theme switching and provides both immediate and deferred token getters through a Proxy-based API.
+
+## Features
+
+- **Multi-theme support**: Manage multiple theme definitions
+- **Dynamic switching**: Change themes at runtime
+- **Type-safe tokens**: Full TypeScript support for design tokens
+- **Reactive access**: Tokens update automatically when theme changes
+- **Deferred getters**: Support for computed token values with `$` prefix
+- **Validation**: Ensures themes exist before switching
+
+## Setup
+
+```typescript
+import { Template } from 'oem/core/template';
+import { useThemeState } from 'oem/states/ThemeState';
+import { darkTheme, lightTheme } from 'oem/themes';
+import { useStyleTrait } from 'oem/traits/Style';
+import { useTextContentTrait } from 'oem/traits/TextContent';
+import { useEventTrait } from 'oem/traits/Event';
+import { useInnerHTMLTrait } from 'oem/traits/InnerHTML';
+
+import type { Theme } from 'oem/states/ThemeState';
+
+const myDark: Theme = { name: 'dark', tokens: darkTheme };
+const myLight: Theme = { name: 'light', tokens: lightTheme };
+
+const theme = useThemeState([myDark, myLight], 'dark');
+const { tag, trait } = Template({
+  useStyleTrait,
+  useTextContentTrait,
+  useEventTrait,
+  useInnerHTMLTrait,
+});
+```
+
+## Type Definitions
+
+```typescript
+type Theme = {
+  name: string;
+  tokens: DesignTokens;
+};
+
+type ThemeStateValue = {
+  themes: Theme[];
+  currentTheme: string;
+};
+```
+
+## API
+
+### Constructor
+
+```typescript
+useThemeState(themes: Theme[], initialTheme?: string)
+```
+
+- `themes` — Array of theme definitions (must have at least one)
+- `initialTheme` — Optional initial theme name (defaults to first theme's name)
+
+Throws if `themes` is empty.
+
+### `getTheme()`
+
+Returns the name of the currently active theme.
+
+```typescript
+theme.getTheme(); // 'dark'
+```
+
+### `setTheme(themeName: string)`
+
+Sets the active theme by name. Throws if `themeName` doesn't match any loaded theme.
+
+```typescript
+theme.setTheme('light');
+```
+
+### Immediate Token Getter — `theme.{tokenKey}()`
+
+Returns the current value of the token by calling it as a function. Evaluates once at call time.
+
+```typescript
+theme.sem_color_bkg_pri(); // '#0a0a0a'
+theme.sem_spc_inset_md(); // '1rem'
+```
+
+### Deferred Token Getter — `theme.${tokenKey}`
+
+Returns a closure that retrieves the token value when called. Use in traits so the value re-evaluates on theme change.
+
+```typescript
+theme.$sem_color_bkg_pri; // () => '#0a0a0a' (re-evaluates on theme switch)
+```
+
+## Token Access in OEM Templates
+
+### Static Token Values
+
+Use the immediate getter when the value doesn't need to react to theme changes after initial render:
+
+```typescript
+tag.div(
+  trait.style('backgroundColor', theme.sem_color_bkg_pri()),
+  trait.style('color', theme.sem_color_txt_pri()),
+  trait.style('padding', theme.sem_spc_inset_lg()),
+  trait.textContent('Hello, OEM'),
+);
+```
+
+### Reactive Token Values (Deferred Getters)
+
+Use the `$`-prefixed deferred getter so the trait re-evaluates when the theme changes:
+
+```typescript
+tag.div(
+  trait.style('backgroundColor', theme.$sem_color_bkg_pri),
+  trait.style('color', theme.$sem_color_txt_pri),
+  trait.style('padding', theme.$sem_spc_inset_lg),
+  trait.textContent('This reacts to theme switches'),
+);
+```
+
+### Theme Switcher
+
+```typescript
+tag.button(
+  trait.style('backgroundColor', theme.$cmp_btn_pri_bkg),
+  trait.style('color', theme.$cmp_btn_pri_txt_color),
+  trait.style('height', theme.$cmp_btn_hgt_md),
+  trait.style('paddingInline', theme.$cmp_btn_pad_x_md),
+  trait.style('borderRadius', theme.$cmp_btn_bdr_rad),
+  trait.style('cursor', 'pointer'),
+  trait.textContent(() => `Theme: ${theme.getTheme()}`, theme),
+  trait.event('click', () => {
+    theme.setTheme(theme.getTheme() === 'dark' ? 'light' : 'dark');
+  }),
+);
+```
+
+### Themed Card
+
+```typescript
+tag.div(
+  trait.style('backgroundColor', theme.$cmp_cdl_bkg),
+  trait.style('borderColor', theme.$cmp_cdl_bdr_color),
+  trait.style('borderWidth', theme.$cmp_cdl_bdr_wdt),
+  trait.style('borderRadius', theme.$cmp_cdl_bdr_rad),
+  trait.style('padding', theme.$cmp_cdl_pad),
+  trait.style('boxShadow', theme.$cmp_cdl_shd),
+  trait.innerHTML([
+    tag.h2(
+      trait.style('color', theme.$sem_color_txt_pri),
+      trait.style('margin', '0 0 8px 0'),
+      trait.textContent('Card Title'),
+    ),
+    tag.p(
+      trait.style('color', theme.$sem_color_txt_sec),
+      trait.textContent('Card body text styled entirely with design tokens.'),
+    ),
+  ]),
+);
+```
+
+### Subscribing to Theme Changes
+
+Since useThemeState extends State, you can subscribe to changes directly:
+
+```typescript
+theme.sub((value) => {
+  console.log('Switched to:', value.currentTheme);
+});
+```
+
+## Design Token Layers
+
+useThemeState works with a 2-layer design token architecture. Access either layer through the same getter API:
+
+```typescript
+// Semantic — purpose-based values
+trait.style('backgroundColor', theme.$sem_color_bkg_pri);
+trait.style('color', theme.$sem_color_txt_pri);
+
+// Component — all UI parts (structural + visual)
+trait.style('height', theme.$cmp_btn_hgt_md);
+trait.style('backgroundColor', theme.$cmp_btn_pri_bkg);
+trait.style('borderRadius', theme.$cmp_cdl_bdr_rad);
+```
+
+**Token selection cascade:** `cmp_` → `sem_` → inline style
+
+Always search for a `cmp_` token first. Fall back to `sem_` when no component token fits the need. Use an inline style only as an absolute last resort.
+
+## Error Handling
+
+```typescript
+// Empty themes array
+useThemeState([]);
+// Throws: "At least one theme must be provided"
+
+// Non-existent theme name
+theme.setTheme('nonexistent');
+// Throws: 'Theme "nonexistent" not found'
+```
+
+
+## Theme Library
+
+
+# Component Tokens (Layer 2)
+
+**Prefix:** `cmp_`
+
+## Overview
+
+Component tokens cover all UI parts — both structural properties (heights, padding, radii, border widths) and visual/state properties (colors, shadows, transitions). This is a unified layer: there is no separate "element" or "feature" layer. Everything that describes a specific UI part lives under `cmp_`.
+
+## Purpose
+
+- Define structural properties for UI elements (sizes, radii, padding, border widths)
+- Provide complete styling for component variants (primary, secondary, ghost, danger)
+- Specify all interactive states (hover, active, disabled, focus)
+- Enable component-level theming and customization
+- Establish consistency across the entire UI
+
+## Architecture Rules
+
+- **May reference**: Semantic (Layer 1) via `{sem_token}` syntax
+- **Flat structure only** - No nested objects
+- **snake_case naming** - Consistent naming convention
+- **Component-focused naming** - Names describe the specific component part and variant
+
+## Token Categories
+
+### Button (`cmp_btn_*`)
+
+#### Base Properties
+
+Shared across all button variants:
+
+- Heights: `cmp_btn_hgt_sm`, `cmp_btn_hgt_md`, `cmp_btn_hgt_lg`
+- Font: `cmp_btn_fnt_wgt`, `cmp_btn_fnt_siz_sm/md/lg`
+- Border: `cmp_btn_bdr_wdt`, `cmp_btn_bdr_rad`
+- Layout: `cmp_btn_gap`, `cmp_btn_pad_x_sm/md/lg`
+- Transition: `cmp_btn_trn_dur`, `cmp_btn_trn_eas`
+
+#### Primary Button (`cmp_btn_pri_*`)
+
+High-emphasis action button:
+
+- Background states: default, hover, active, disabled
+- Text colors: default and disabled
+- Border color
+- Shadows: default and hover
+
+#### Secondary Button (`cmp_btn_sec_*`)
+
+Medium-emphasis action button:
+
+- Background states: default, hover, active, disabled
+- Text colors: default and disabled
+- Border colors: default and hover
+
+#### Ghost Button (`cmp_btn_gho_*`)
+
+Low-emphasis action button:
+
+- Background states: default, hover, active
+- Text colors: default and hover
+
+#### Danger Button (`cmp_btn_dng_*`)
+
+Destructive action button:
+
+- Background states: default, hover, active
+- Text color
+- Border color
+
+### Input (`cmp_inp_*`)
+
+Form text inputs:
+
+- Heights: `cmp_inp_hgt_sm`, `cmp_inp_hgt_md`, `cmp_inp_hgt_lg`
+- Font: `cmp_inp_fnt_siz_sm/md/lg`
+- Border: `cmp_inp_bdr_wdt`, `cmp_inp_bdr_rad`
+- Colors: `cmp_inp_bkg`, `cmp_inp_txt_color`, `cmp_inp_bdr_color`
+- States: focus border color, disabled background, disabled text color, placeholder color
+- Padding: `cmp_inp_pad_x`
+
+### Checkbox (`cmp_chk_*`)
+
+Checkbox input control:
+
+- Size: `cmp_chk_siz_sm`, `cmp_chk_siz_md`
+- Border: `cmp_chk_bdr_wdt`, `cmp_chk_bdr_rad`
+- Colors: border (default, checked, focus), background (default, checked), checkmark color
+
+### Radio (`cmp_rad_*`)
+
+Radio button control:
+
+- Size: `cmp_rad_siz_sm`, `cmp_rad_siz_md`
+- Border: `cmp_rad_bdr_wdt`
+- Colors: border (default, selected, focus), background (default, selected), dot color
+
+### Switch (`cmp_swt_*`)
+
+Toggle switch control:
+
+- Dimensions: width, height (sm/md)
+- Background states: off, on, disabled
+- Thumb: size, background, shadow
+- Transition: `cmp_swt_trn_dur`
+
+### Badge (`cmp_bdg_*`)
+
+Small status or count indicator:
+
+- Heights: `cmp_bdg_hgt_sm`, `cmp_bdg_hgt_md`
+- Padding: `cmp_bdg_pad_x_sm/md`
+- Font: `cmp_bdg_fnt_siz_sm/md`, `cmp_bdg_fnt_wgt`
+- Border: `cmp_bdg_bdr_rad`
+
+### Avatar (`cmp_avt_*`)
+
+User avatar / profile image:
+
+- Sizes: `cmp_avt_siz_sm/md/lg/xl`
+- Border: `cmp_avt_bdr_rad`, `cmp_avt_bdr_wdt`, `cmp_avt_bdr_color`
+- Font: `cmp_avt_fnt_siz_sm/md/lg/xl`, `cmp_avt_fnt_wgt`
+
+### Icon (`cmp_ico_*`)
+
+Icon size tokens:
+
+- Sizes: `cmp_ico_siz_xs/sm/md/lg/xl`
+- Colors by context: `cmp_ico_color_default/muted/action/err/suc/wrn`
+
+### Link (`cmp_lnk_*`)
+
+Anchor / hyperlink styling:
+
+- Colors: default, hover, visited, active, focus
+- Decoration: default and hover
+
+### Divider (`cmp_div_*`)
+
+Horizontal or vertical separator:
+
+- Width (thickness): `cmp_div_wdt`
+- Colors: default and subtle
+- Spacing: `cmp_div_mar`
+
+### Spinner (`cmp_spn_*`)
+
+Loading spinner animation:
+
+- Sizes: `cmp_spn_siz_sm/md/lg`
+- Border width: `cmp_spn_bdr_wdt`
+- Colors: default and track
+- Animation: `cmp_spn_dur`
+
+### Card (`cmp_cdl_*`)
+
+Container for related content:
+
+- `cmp_cdl_bkg` - Background
+- `cmp_cdl_bdr_color`, `cmp_cdl_bdr_wdt`, `cmp_cdl_bdr_rad` - Border properties
+- `cmp_cdl_pad` - Overall padding
+- `cmp_cdl_shd`, `cmp_cdl_shd_hov` - Shadow states
+- Section padding: `cmp_cdl_header_pad`, `cmp_cdl_body_pad`, `cmp_cdl_footer_pad`
+- `cmp_cdl_gap` - Gap between sections
+
+### Modal (`cmp_mod_*`)
+
+Dialog overlay pattern:
+
+#### Container
+
+- `cmp_mod_bkg` - Modal background
+- `cmp_mod_bdr_rad` - Border radius
+- `cmp_mod_shd` - Shadow
+- Max widths: `cmp_mod_max_wdt_sm` through `cmp_mod_max_wdt_xl`
+
+#### Overlay
+
+- `cmp_mod_overlay_bkg` - Backdrop color
+- `cmp_mod_overlay_opac` - Backdrop opacity
+- `cmp_mod_overlay_blur` - Backdrop blur
+
+#### Layout
+
+- Section padding: header, body, footer
+- `cmp_mod_gap` - Gap between sections
+
+#### Close Button
+
+- `cmp_mod_close_siz` - Close button size
+- `cmp_mod_close_color`, `cmp_mod_close_color_hov` - Close button colors
+
+#### Animation
+
+- Enter/exit durations and easing functions
+
+### Dropdown (`cmp_drp_*`)
+
+Dropdown menu pattern:
+
+#### Container
+
+- Background, border, shadow
+- `cmp_drp_pad` - Internal padding
+- `cmp_drp_max_hgt` - Maximum height (for scrolling)
+
+#### Items
+
+- Padding: `cmp_drp_item_pad_x`, `cmp_drp_item_pad_y`
+- Background states: hover, active
+- Text colors: default, active
+- `cmp_drp_item_bdr_rad` - Item border radius
+
+#### Divider
+
+- `cmp_drp_divider_color` - Divider color
+- `cmp_drp_divider_mar` - Divider margin
+
+### Tooltip (`cmp_tip_*`)
+
+Contextual information overlay:
+
+- Background and text color
+- Padding (x and y)
+- Font size
+- Border radius, shadow
+- `cmp_tip_max_wdt` - Maximum width
+- `cmp_tip_arrow_siz` - Arrow size
+- `cmp_tip_off` - Offset from trigger
+- Enter/exit animation durations
+
+### Popover (`cmp_pop_*`)
+
+Larger contextual overlay:
+
+- Background, border, shadow
+- `cmp_pop_pad` - Internal padding
+- `cmp_pop_max_wdt` - Maximum width
+- Arrow and offset properties
+
+### Toast (`cmp_tst_*`)
+
+Notification message pattern:
+
+#### Base
+
+- Background, border radius, shadow
+- Padding, max width, gap
+
+#### Variants by State
+
+Each state (success, error, warning, info) has:
+
+- Background color
+- Border color
+- Icon color
+
+#### Animation
+
+- Enter/exit durations
+
+### Navigation (`cmp_nav_*`)
+
+Top navigation bar:
+
+#### Container
+
+- Background, border, height
+- Padding, shadow
+
+#### Nav Items
+
+- Padding (x and y), gap
+- Text colors: default, hover, active
+- Background states: hover, active
+- Border radius
+- Font weights: default and active
+
+#### Active Indicator
+
+- Height and color for active tab indicator
+
+### Sidebar (`cmp_sidebar_*`)
+
+Side navigation panel:
+
+#### Container
+
+- Widths: expanded and collapsed
+- Background, border
+- Padding
+
+#### Sidebar Items
+
+- Padding, gap, icon size
+- Text colors and backgrounds (default, hover, active)
+- Border radius
+
+#### Animation
+
+- `cmp_sidebar_trn_dur` - Transition duration for expand/collapse
+
+### Table (`cmp_tbl_*`)
+
+Data table pattern:
+
+#### Table Container
+
+- Background, border properties, shadow
+
+#### Header
+
+- Background, text color, font weight
+- Padding (x and y)
+- Border color
+
+#### Cells
+
+- Padding (x and y)
+- Border color
+
+#### Row States
+
+- Hover background
+- Selected background
+- Striped background (alternating rows)
+
+### Tabs (`cmp_tab_*`)
+
+Tabbed interface pattern:
+
+#### Container
+
+- Border color, width, gap
+
+#### Tab Items
+
+- Padding (x and y)
+- Text colors: default, hover, active
+- Background states: hover, active
+- Border radius
+- Font weights: default and active
+
+#### Active Indicator
+
+- Height, color, transition duration
+
+#### Tab Panel
+
+- `cmp_tab_panel_pad` - Content padding
+
+### Accordion (`cmp_acc_*`)
+
+Collapsible content sections:
+
+#### Container
+
+- Border color, width, radius
+
+#### Items
+
+- Padding (x and y)
+- Background states: default, hover, active
+
+#### Trigger
+
+- Font weight, text color
+- Icon size, icon transition duration
+
+#### Content
+
+- Padding (x and y)
+- Animation duration for expand/collapse
+
+### Breadcrumb (`cmp_brd_*`)
+
+Navigation breadcrumb trail:
+
+- Gap between items
+- Font size
+- Text colors: default and current
+- Link colors: default and hover
+- Separator color and size
+
+### Pagination (`cmp_pgn_*`)
+
+Page navigation controls:
+
+- Gap between items
+- Item size, border radius
+- Background states: default, hover, active
+- Text colors: default and active
+- Border colors: default and active
+
+### Progress Bar (`cmp_prg_*`)
+
+Progress indicator:
+
+- Heights: small, medium, large
+- Background (track)
+- Fill background
+- Border radius
+- Transition duration
+
+### Slider (`cmp_sldr_*`)
+
+Range input control:
+
+#### Track
+
+- Height, background (empty and filled)
+- Border radius
+
+#### Thumb
+
+- Size, background
+- Border color and width
+- Shadow states: default, hover, active
+
+### Alert (`cmp_alt_*`)
+
+Alert/banner message pattern:
+
+#### Base
+
+- Padding, border radius, width, gap
+
+#### Variants by State
+
+Each state (info, success, warning, error) has:
+
+- Background color
+- Border color
+- Text color
+- Icon color
+
+### Select (`cmp_sel_*`)
+
+Dropdown select input:
+
+#### Trigger
+
+- Heights: small, medium, large
+- Padding, background
+- Border properties
+- Icon size and color
+
+#### Menu
+
+- Background, border, shadow
+- Max height
+
+#### Options
+
+- Padding (x and y)
+- Background states: hover, selected
+- Text colors: default, selected
+
+## Usage Guidelines
+
+### ✅ Do
+
+- Search `cmp_` tokens first for any recognized UI pattern
+- Use `{sem_token}` references for colors, spacing, and typography shared across components
+- Define all interactive states (hover, active, disabled, focus)
+- Group related tokens by component
+
+### ❌ Don't
+
+- Hardcode hex values, rgb values, or pixel literals in `trait.style()` calls
+- Invent `cmp_` token keys that don't exist in `ComponentTokens`
+- Reference tokens that don't exist at all
+
+## Primary Token Layer for Code Generation
+
+Component tokens are the **first choice** for any generated UI code. When an LLM needs to style a button, card, modal, dropdown, table, or any other recognized UI pattern, it should **first search for matching `cmp_` tokens** before falling back to `sem_`.
+
+**Token selection cascade:** **`cmp_`** → `sem_` → inline style
+
+### Example: Generating a Primary Button
+
+```typescript
+import { theme } from './theme';
+import { tag, trait } from './templates';
+
+tag(
+  'button',
+  // Component tokens — variant styling
+  trait.style('backgroundColor', theme.$cmp_btn_pri_bkg),
+  trait.style('color', theme.$cmp_btn_pri_txt_color),
+  trait.style('borderColor', theme.$cmp_btn_pri_bdr_color),
+  trait.style('boxShadow', theme.$cmp_btn_pri_shd),
+  // Component tokens — structural properties
+  trait.style('height', theme.$cmp_btn_hgt_md),
+  trait.style('paddingInline', theme.$cmp_btn_pad_x_md),
+  trait.style('borderRadius', theme.$cmp_btn_bdr_rad),
+  trait.style('fontWeight', theme.$cmp_btn_fnt_wgt),
+  trait.style('fontSize', theme.$cmp_btn_fnt_siz_md),
+  trait.style(
+    'transition',
+    `background-color ${theme.cmp_btn_trn_dur()} ${theme.cmp_btn_trn_eas()}`,
+  ),
+  // Hover state
+  trait.styleOnEvent('mouseenter', 'backgroundColor', theme.$cmp_btn_pri_bkg_hov),
+  trait.styleOnEvent('mouseenter', 'boxShadow', theme.$cmp_btn_pri_shd_hov),
+);
+```
+
+> **OEM has no component library.** The tokens above don't correspond to a prebuilt `<Button>` component. The LLM generates the full element from scratch using these tokens as the design specification.
+
+## Variant Naming Convention
+
+Use clear variant suffixes:
+
+- `_pri` - Primary variant
+- `_sec` - Secondary variant
+- `_gho` - Ghost/minimal variant
+- `_dng` - Danger/destructive variant
+- `_inf` - Info state
+- `_suc` - Success state
+- `_wrn` - Warning state
+- `_err` - Error state
+
+## State Naming Convention
+
+Use clear state suffixes:
+
+- `_hov` - Hover state
+- `_act` - Active/selected state
+- `_dis` - Disabled state
+- `_foc` - Focus state
+- `_sel` - Selected state
+
+
+---
+
+
+# Semantic Tokens (Layer 1)
+
+**Prefix:** `sem_`
+
+## Overview
+
+Semantic tokens hold direct CSS values organized by purpose. They describe **what** a value is used for, not **how** it looks — enabling theme switching without touching any UI code.
+
+## Purpose
+
+- Provide meaningful names that describe usage (e.g., `sem_color_txt_pri` vs `'#171717'`)
+- Enable theme switching (light/dark) by mapping semantic meanings to different CSS values
+- Create consistency across components through shared semantic values
+- Decouple visual appearance from functional purpose
+
+## Architecture Rules
+
+- **Holds direct CSS values** - No references to other token layers
+- **Flat structure only** - No nested objects
+- **snake_case naming** - Consistent naming convention
+- **Semantic naming** - Names describe purpose, not appearance
+
+## Token Categories
+
+### Semantic Colors
+
+#### Backgrounds
+
+- `sem_color_bkg_pri` - Primary background (main canvas)
+- `sem_color_bkg_sec` - Secondary background (cards, panels)
+- `sem_color_bkg_ter` - Tertiary background (nested elements)
+- `sem_color_bkg_inv` - Inverted background (dark on light theme)
+- `sem_color_bkg_overlay` - Modal/overlay backgrounds
+- `sem_color_bkg_elevated` - Elevated surfaces (raised cards)
+- `sem_color_bkg_sunken` - Sunken surfaces (wells, inputs)
+
+#### Text
+
+- `sem_color_txt_pri` - Primary text (body copy, headings)
+- `sem_color_txt_sec` - Secondary text (supporting information)
+- `sem_color_txt_ter` - Tertiary text (captions, metadata)
+- `sem_color_txt_inv` - Inverted text (light on dark)
+- `sem_color_txt_dis` - Disabled text
+- `sem_color_txt_placeholder` - Input placeholder text
+- `sem_color_txt_lnk` - Link text default
+- `sem_color_txt_lnk_hov` - Link text on hover
+
+#### Borders
+
+- `sem_color_bdr_default` - Standard border
+- `sem_color_bdr_str` - Strong/emphasized border
+- `sem_color_bdr_sub` - Subtle/de-emphasized border
+- `sem_color_bdr_inv` - Inverted border
+- `sem_color_bdr_dis` - Disabled border
+- `sem_color_bdr_foc` - Focus ring border
+
+#### States
+
+Organized by state type (error, success, warning, info):
+
+- Background: `sem_color_state_err_bkg`, `sem_color_state_suc_bkg`, etc.
+- Border: `sem_color_state_err_bdr`, `sem_color_state_wrn_bdr`, etc.
+- Text: `sem_color_state_err_txt`, `sem_color_state_inf_txt`, etc.
+- Base: `sem_color_state_err`, `sem_color_state_suc`, etc.
+
+#### Interactive
+
+Primary, secondary, and accent interactive states:
+
+- Base, hover, active, disabled variants for each
+- Example: `sem_color_interactive_pri`, `sem_color_interactive_pri_hov`, `sem_color_interactive_pri_act`
+
+### Semantic Spacing
+
+#### Inline Spacing (horizontal)
+
+- Five sizes: `sem_spc_inline_xs` through `sem_spc_inline_xl`
+- Used for gaps between inline elements (buttons, badges, etc.)
+
+#### Stack Spacing (vertical)
+
+- Six sizes: `sem_spc_stack_xs` through `sem_spc_stack_2xl`
+- Used for vertical spacing between stacked elements
+
+#### Inset Spacing (padding)
+
+- Five sizes: `sem_spc_inset_xs` through `sem_spc_inset_xl`
+- Used for internal padding within components
+
+### Semantic Typography
+
+Complete type scale with size, weight, line height, and letter spacing:
+
+#### Display Text
+
+- Large, medium, small variants
+- Example: `sem_typo_display_lrg_siz`, `sem_typo_display_lrg_wgt`, `sem_typo_display_lrg_lnh`
+
+#### Headings
+
+- Four levels: XL, LG, MD, SM
+- Each with size, weight, and line height tokens
+
+#### Body Text
+
+- Three sizes: LG, MD, SM
+- Each with size, weight, and line height tokens
+
+#### Caption & Overline
+
+- Specialized text styles for small annotations
+- Overline includes letter spacing for uppercase text
+
+#### Code
+
+- Monospace font family, size, and weight
+
+### Semantic Radius
+
+Six border radius options from `sem_rad_none` to `sem_rad_full`
+
+### Semantic Shadows
+
+Seven shadow depths:
+
+- `sem_shd_none` through `sem_shd_2xl`
+- `sem_shd_inner` for inset shadows
+
+### Semantic Motion
+
+#### Duration
+
+- Four speeds: `instant`, `fast`, `normal`, `slow`
+
+#### Easing
+
+- Four curves: `std`, `accelerate`, `decelerate`, `bounce`
+
+### Semantic Effects
+
+#### Focus Ring
+
+- Width, color, offset, style for focus indicators
+- Example: `sem_effect_foc_ring_wdt`, `sem_effect_foc_ring_color`
+
+#### State Effects
+
+- Disabled opacity: `sem_effect_dis_opac`
+- Hover opacity: `sem_effect_hov_opac`
+
+## Usage Guidelines
+
+### ✅ Do
+
+- Use semantic tokens in component tokens via `{sem_token}` references
+- Use semantic tokens directly in UI when no component token fits
+- Name tokens by purpose (what they do) not appearance (what they look like)
+- Group related tokens logically (all text colors together)
+
+### ❌ Don't
+
+- Hardcode hex values, rgb values, or pixel literals in `trait.style()` calls when a token exists
+- Name tokens by their visual appearance (`sem_color_dark_gray` ❌, use `sem_color_txt_sec` ✅)
+- Invent semantic token keys that don't exist in `SemanticTokens`
+
+## Theme Switching Example
+
+Semantic tokens enable easy theme switching by holding different CSS values per theme:
+
+```typescript
+// Light theme — sem_ tokens hold CSS values directly
+sem_color_bkg_pri: '#ffffff';
+sem_color_txt_pri: '#171717';
+sem_color_bdr_default: '#e5e5e5';
+
+// Dark theme — same semantic names, different values
+sem_color_bkg_pri: '#0a0a0a';
+sem_color_txt_pri: '#fafafa';
+sem_color_bdr_default: '#404040';
+```
+
+## Semantic Naming Philosophy
+
+**Bad (appearance-based):**
+
+- `sem_color_light_blue`
+- `sem_spc_16px`
+- `sem_typo_20px_bold`
+
+**Good (purpose-based):**
+
+- `sem_color_interactive_pri`
+- `sem_spc_inset_md`
+- `sem_typo_heading_lg_siz`
+
+## Usage in Generated Code
+
+Semantic tokens are the **fallback layer** for generated UI code. Use them when no `cmp_` token matches the UI need:
+
+- Styling a custom divider with no matching `cmp_` token? Use `sem_color_bdr_default` and `sem_spc_*`.
+- Need a background for a bespoke layout? Use `sem_color_bkg_pri` or `sem_color_bkg_sec`.
+- Need typography for body text outside a component? Use `sem_typo_body_md_*`.
+
+**Token selection cascade:** `cmp_` → **`sem_`** → inline style
+
+> Semantic tokens sit at position 2 in the cascade. Always check for a more specific `cmp_` token before reaching for `sem_` tokens.
+
+
+---
+
+
+# Design Token System Overview
+
+## No Component Library — Token-Driven Code Generation
+
+OEM deliberately has **no predefined component library**. All UI is synthesized by LLMs interpreting design tokens. Tokens like `cmp_btn_pri_*` prescribe the _design intent_ for a primary button — the LLM uses these to construct the button's styling in `trait.style()` calls. This token-driven approach allows any UI to be generated on demand without importing prebuilt components.
+
+## Token Selection for Code Generation
+
+When generating UI code, always search for the **most specific matching token** first and fall through the cascade:
+
+```
+1. cmp_  (component)  → Check first — buttons, inputs, cards, modals, etc.
+2. sem_  (semantic)   → Fallback — colors, spacing, typography by purpose
+3. inline style       → Absolute last resort for truly unique one-off values
+```
+
+### Decision Heuristic
+
+When styling a UI element, identify its concept and search for matching tokens by prefix:
+
+1. **Building a primary button?** → Search `cmp_btn_pri_*` first → fall back to `sem_*` for anything else
+2. **Building a card?** → Search `cmp_cdl_*` first → fall back to `sem_*`
+3. **Building a custom separator?** → No component token fits → use `sem_color_bdr_default` and `sem_spc_*`
+4. **Truly unique one-off value?** → Inline style as last resort
+
+## Architecture
+
+The design token system uses two public layers. Each layer holds direct CSS values — no internal indirection layers exist.
+
+## The 2 Layers
+
+```
+┌─────────────────────────────────────┐
+│  2. COMPONENT (cmp_)                │ ← All UI parts: structure + styling
+│     May reference: sem_             │
+├─────────────────────────────────────┤
+│  1. SEMANTIC (sem_)                 │ ← Purpose-based values
+│     Holds direct CSS values         │
+└─────────────────────────────────────┘
+```
+
+## Layer Details
+
+### 1. Semantic (`sem_`)
+
+[→ Full Documentation](./semantic.md)
+
+Purpose-based design values that hold direct CSS values. Describes **what** a value is used for, not how it looks.
+
+**Contains:**
+
+- Colors (backgrounds, text, borders, states, interactive)
+- Spacing (inline, stack, inset)
+- Typography (display, headings, body, caption, overline, code)
+- Radius (none to full)
+- Shadows (none to 2xl, plus inner)
+- Motion (duration, easing)
+- Effects (focus ring, opacity states)
+
+**Key principle:** Names describe purpose, not appearance
+
+### 2. Component (`cmp_`)
+
+[→ Full Documentation](./component.md)
+
+All UI parts — both structural properties (sizes, spacing, radii) and visual/state properties (colors, shadows, transitions). This is the primary token layer for all generated UI code.
+
+**Contains:**
+
+- Button base properties (heights, padding, radius, font) and variants (primary, secondary, ghost, danger)
+- Input, Checkbox, Radio, Switch, Badge, Avatar, Icon, Link, Divider, Spinner
+- Card, Modal, Dropdown, Tooltip, Popover, Toast
+- Navigation, Sidebar, Table, Tabs, Accordion
+- Breadcrumb, Pagination
+- Progress Bar, Slider
+- Alert, Select
+
+**Key principle:** Search here first for any recognized UI pattern
+
+## Naming Conventions
+
+### General Rules
+
+- **Flat structure only** - No nested objects
+- **snake_case** - All token names use snake_case
+- **Prefixes** - Each layer has a unique 3-letter prefix
+- **Minimum 3 letters** - Abbreviations are at least 3 letters (except `_x`, `_y`, `_sm`, `_md`, `_lg`, `_xl`)
+
+### Common Abbreviations
+
+#### Properties
+
+- `bkg` = background
+- `txt` = text
+- `bdr` = border
+- `pad` = padding
+- `spc` = spacing
+- `fnt` = font
+- `siz` = size
+- `wgt` = weight
+- `hgt` = height
+- `wdt` = width
+- `rad` = radius
+- `shd` = shadow
+- `opac` = opacity
+- `trn` = transition
+- `dur` = duration
+- `eas` = easing
+
+#### States
+
+- `hov` = hover
+- `act` = active
+- `dis` = disabled
+- `foc` = focus
+- `sel` = selected
+
+#### Semantic Meanings
+
+- `pri` = primary
+- `sec` = secondary
+- `ter` = tertiary
+- `inv` = inverted
+- `err` = error
+- `suc` = success
+- `wrn` = warning
+- `inf` = info
+
+#### UI Elements
+
+- `btn` = button
+- `inp` = input
+- `chk` = checkbox
+- `rad` = radio
+- `swt` = switch
+- `bdg` = badge
+- `avt` = avatar
+- `ico` = icon
+- `lnk` = link
+- `div` = divider
+- `spn` = spinner
+- `cdl` = card
+- `mod` = modal
+- `drp` = dropdown
+- `tip` = tooltip
+- `pop` = popover
+- `tst` = toast
+- `nav` = navigation
+- `tbl` = table
+- `acc` = accordion
+- `brd` = breadcrumb
+- `pgn` = pagination
+- `prg` = progress
+- `sldr` = slider
+- `alt` = alert
+
+## Token Reference Syntax
+
+Component tokens may reference semantic tokens using the `{token_name}` syntax:
+
+```typescript
+// Semantic layer — direct CSS values
+sem_color_interactive_pri: '#2563eb';
+sem_rad_md: '0.375rem';
+
+// Component layer — may reference sem_
+cmp_btn_pri_bkg: '{sem_color_interactive_pri}';
+cmp_btn_bdr_rad: '{sem_rad_md}';
+```
+
+## Usage Guidelines
+
+### ✅ Do
+
+- Search `cmp_` first for any recognized UI pattern
+- Fall back to `sem_` when no component token fits
+- Reference tokens using `{token_name}` syntax (cmp_ → sem_ only)
+- Keep the structure flat (no nesting)
+- Use consistent abbreviations
+
+### ❌ Don't
+
+- Hardcode hex values, rgb values, or pixel literals in `trait.style()` calls
+- Invent token keys that don't exist in `DesignTokens`
+- Create circular token references
+- Mix naming conventions
+
+## Type Safety
+
+Both layers are TypeScript typed for compile-time validation:
+
+```typescript
+// Complete token set
+export type DesignTokens = SemanticTokens & ComponentTokens;
+```
+
+## Benefits of This System
+
+### 1. **Simplicity**
+
+Two layers are easy to reason about — component tokens for UI parts, semantic tokens for purpose-based values.
+
+### 2. **Consistency**
+
+Shared semantic tokens ensure components look cohesive across the system.
+
+### 3. **Theming**
+
+Swap semantic values to create light/dark themes without touching component tokens.
+
+### 4. **Type Safety**
+
+TypeScript types catch invalid token references at compile time.
+
+### 5. **Code Generation**
+
+A flat, predictable cascade (`cmp_` → `sem_` → inline) is easy for LLMs to apply consistently.
+
+## Getting Started
+
+1. **Define semantics** — Establish purpose-based colors, spacing, typography, etc.
+2. **Map components** — Define UI parts using semantic tokens and direct values
+3. **Generate UI** — LLMs compose UI from tokens using the selection cascade (`cmp_` → `sem_` → inline)
+
+## Example: Token Flow
+
+```typescript
+// SEMANTIC: Purpose-based value (direct CSS)
+sem_color_interactive_pri: '#2563eb';
+sem_rad_md: '0.375rem';
+sem_spc_inset_md: '1rem';
+
+// COMPONENT: UI part references semantics
+cmp_btn_pri_bkg: '{sem_color_interactive_pri}';
+cmp_btn_pri_bkg_hov: '{sem_color_interactive_pri_hov}';
+cmp_btn_pri_txt_color: '{sem_color_txt_inv}';
+cmp_btn_bdr_rad: '{sem_rad_md}';
+cmp_btn_hgt_md: '2.5rem';
+cmp_btn_pad_x_md: '{sem_spc_inset_md}';
+```
+
+## Further Reading
+
+- [Semantic Documentation](./semantic.md)
+- [Component Documentation](./component.md)
+
