@@ -97,3 +97,4 @@ Token names follow the pattern `<category>_<property>_<variant>`:
 4. **Never hardcode visual values.** Every color, size, spacing, and shadow must come from a token.
 5. **Search before creating.** Read the existing tokens before adding a new one — reuse over reinvent.
 6. **Follow the naming convention.** `<category>_<property>_<variant>` — no exceptions.
+7. **Tokens work with responsive design.** Bind tokens to traits using `$val` — they compose naturally with breakpoint conditions. Base (mobile) styles use tokens directly; desktop overrides use the same tokens gated by `isDesktop.$test(true)`.

@@ -27,22 +27,22 @@ When the structure already exists, follow it. Every piece of application logic b
 
 Each category below has its own detailed guide. Every category must be its own file (or folder of files if it grows large):
 
-| File / Folder  | Purpose                                                     | Guide                                |
-| -------------- | ----------------------------------------------------------- | ------------------------------------ |
-| `bdd/`         | Requirements, acceptance criteria, BDD scenarios            | [BDD Guide](file-bdd.md)             |
-| `types.ts`     | Type definitions for state, actions, data structures        | [Types Guide](file-types.md)         |
-| `constants.ts` | Fixed values (API endpoints, enums, config literals)        | [Constants Guide](file-constants.md) |
-| `config.ts`    | Environment-aware settings, feature flags                   | [Config Guide](file-config.md)       |
-| `data.ts`      | Static data (dropdown options, static content)              | [Data Guide](file-data.md)           |
-| `states.ts`    | Reactive State objects shared across the app                | [States Guide](file-states.md)       |
-| `actions.ts`   | Action creator functions returning `{ type, payload }`      | [Actions Guide](file-actions.md)     |
-| `machines.ts`  | State machines as switch statements on state + action       | [Machines Guide](file-machines.md)   |
-| `traits.ts`    | Custom trait functions (beyond the core trait library)      | [Traits Guide](file-traits.md)       |
-| `templates.ts` | Template definitions using `Template()` → `[tag, trait]`    | [Templates Guide](file-templates.md) |
-| `theme.ts`     | Design tokens (`useThemeState` + `useTokenState` instances) | [Theme Guide](file-theme.md)         |
-| `ui.ts`        | UI rendering — the main template tree and helper functions  | [UI Guide](file-ui.md)               |
-| `test/`        | Unit and integration tests                                  | [Test Guide](file-test.md)           |
-| `main.ts`      | App entry point — initializes state, renders UI             | [Main Guide](file-main.md)           |
+| File / Folder  | Purpose                                                     | Guide                           |
+| -------------- | ----------------------------------------------------------- | ------------------------------- |
+| `bdd/`         | Requirements, acceptance criteria, BDD scenarios            | [BDD Guide](bdd.md)             |
+| `types.ts`     | Type definitions for state, actions, data structures        | [Types Guide](types.md)         |
+| `constants.ts` | Fixed values (API endpoints, enums, config literals)        | [Constants Guide](constants.md) |
+| `config.ts`    | Environment-aware settings, feature flags                   | [Config Guide](config.md)       |
+| `data.ts`      | Static data (dropdown options, static content)              | [Data Guide](data.md)           |
+| `states.ts`    | Reactive State objects shared across the app                | [States Guide](states.md)       |
+| `actions.ts`   | Action creator functions returning `{ type, payload }`      | [Actions Guide](actions.md)     |
+| `machines.ts`  | State machines as switch statements on state + action       | [Machines Guide](machines.md)   |
+| `traits.ts`    | Custom trait functions (beyond the core trait library)      | [Traits Guide](traits.md)       |
+| `templates.ts` | Template definitions using `Template()` → `[tag, trait]`    | [Templates Guide](templates.md) |
+| `theme.ts`     | Design tokens (`useThemeState` + `useTokenState` instances) | [Theme Guide](theme.md)         |
+| `ui.ts`        | UI rendering — the main template tree and helper functions  | [UI Guide](ui.md)               |
+| `test/`        | Unit and integration tests                                  | [Test Guide](test.md)           |
+| `main.ts`      | App entry point — initializes state, renders UI             | [Main Guide](main.md)           |
 
 ## Example Structure
 

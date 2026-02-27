@@ -46,15 +46,16 @@ Create `constants.ts` when the application has any fixed values that are used in
 
 ```typescript
 // constants.ts
+import type { Filter, KeyboardShortcut } from './types';
 
-export const API_BASE_URL = 'https://api.example.com/v1';
-export const MAX_TODOS = 100;
-export const STORAGE_KEY = 'todo-app-state';
-export const DEBOUNCE_MS = 300;
+export const API_BASE_URL: string = 'https://api.example.com/v1';
+export const MAX_TODOS: number = 100;
+export const STORAGE_KEY: string = 'todo-app-state';
+export const DEBOUNCE_MS: number = 300;
 
-export const FILTER_OPTIONS = ['all', 'active', 'completed'] as const;
+export const FILTER_OPTIONS: readonly Filter[] = ['all', 'active', 'completed'] as const;
 
-export const KEYBOARD = {
+export const KEYBOARD: KeyboardShortcut = {
   ENTER: 'Enter',
   ESCAPE: 'Escape',
 } as const;

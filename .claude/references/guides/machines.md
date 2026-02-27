@@ -76,17 +76,33 @@ export function dispatch(action: Action) {
       break;
   }
 }
+
+// $ thunk — returns a closure for use in event handlers
+export const $dispatch = (action: Action) => () => dispatch(action);
 ```
 
 ## Usage in UI
 
+Use `$dispatch` to wire actions directly to event handlers without wrapping in an arrow function:
+
+```typescript
+import { $dispatch } from './machines';
+import { toggleTodo, deleteTodo, setFilter } from './actions';
+
+// $dispatch returns a closure — no arrow function needed
+trait.event('click', $dispatch(toggleTodo(todo.id))),
+trait.event('click', $dispatch(deleteTodo(todo.id))),
+trait.event('click', $dispatch(setFilter('active'))),
+```
+
+For actions that need a value read at event time (e.g., current input text), use `dispatch` directly:
+
 ```typescript
 import { dispatch } from './machines';
-import { addTodo, toggleTodo } from './actions';
+import { addTodo } from './actions';
 
-// Wire dispatch to event handlers
-trait.event('click', () => dispatch(addTodo(newTodoText.val())));
-trait.event('change', () => dispatch(toggleTodo(todo.id)));
+// dispatch directly when the payload depends on state at call time
+trait.event('click', () => dispatch(addTodo(newTodoText.val()))),
 ```
 
 ## Rules
@@ -96,3 +112,4 @@ trait.event('change', () => dispatch(toggleTodo(todo.id)));
 3. **Machines mutate State objects.** They call `.set()`, `.reduce()`, or custom methods on imported State objects.
 4. **Machines are synchronous.** If you need async operations, trigger them from the machine case but resolve the state mutation synchronously.
 5. **Keep cases focused.** Each case should be a few lines. If a case grows complex, extract the logic into a helper function within the same file.
+6. **Export `$dispatch` alongside `dispatch`.** `$dispatch(action)` returns `() => dispatch(action)` — use it in `trait.event()` calls where the action payload is already known. Use `dispatch` directly only when the payload must be read at event time.

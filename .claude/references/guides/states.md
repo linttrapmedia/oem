@@ -72,6 +72,21 @@ export const todoList = State<Todo[]>([], {
 });
 ```
 
+## Responsive Breakpoints
+
+Every app should define mobile-first breakpoint states. These are `State<boolean>` objects that update automatically when the viewport crosses a width boundary:
+
+```typescript
+// states.ts
+import { useMediaQueryState } from '@linttrap/oem';
+
+export const isMobile = useMediaQueryState({ maxWidth: 639 });
+export const isTablet = useMediaQueryState({ minWidth: 640, maxWidth: 1023 });
+export const isDesktop = useMediaQueryState({ minWidth: 1024 });
+```
+
+Use these in UI code via `.$test(true)` conditions on traits. Base styles (no condition) target mobile; breakpoint conditions layer on overrides for larger viewports. See the [Responsive Design](responsive-design.md) guide for full patterns.
+
 ## Usage Patterns
 
 ```typescript
@@ -89,6 +104,26 @@ trait.event('click', todoList.$toggle(todo.id));
 
 // Verbose form for computed values
 trait.text(() => `${todos.val().filter((t) => !t.completed).length} items left`, todos);
+```
+
+## Persistence
+
+If a State needs to survive page reloads, subscribe to it and persist its value. Load the persisted value back on startup:
+
+```typescript
+// states.ts
+import { State } from '@linttrap/oem';
+import type { Todo } from './types';
+import { STORAGE_KEY } from './constants';
+
+const saved = localStorage.getItem(STORAGE_KEY);
+const initial: Todo[] = saved ? JSON.parse(saved) : [];
+
+export const todos = State<Todo[]>(initial);
+
+todos.sub((value) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+});
 ```
 
 ## Rules

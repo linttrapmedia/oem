@@ -57,14 +57,8 @@ Elements are created by calling a tag function with traits and child elements as
 tag.div(
   trait.style('padding', '16px'),
   trait.style('backgroundColor', surface_bg_primary.$val),
-  tag.h1(
-    trait.text('Hello, OEM'),
-    trait.style('fontSize', type_size_xl.$val),
-  ),
-  tag.p(
-    trait.text(message.$val),
-    trait.style('color', text_fg_secondary.$val),
-  ),
+  tag.h1(trait.text('Hello, OEM'), trait.style('fontSize', type_size_xl.$val)),
+  tag.p(trait.text(message.$val), trait.style('color', text_fg_secondary.$val)),
 );
 ```
 
@@ -217,7 +211,11 @@ trait.text(count.$val);
 trait.style('color', text_fg_primary.$val);
 
 // $test: both a condition AND a subscribable
-trait.style('opacity', '1', count.$test((v) => v > 0));
+trait.style(
+  'opacity',
+  '1',
+  count.$test((v) => v > 0),
+);
 ```
 
 ### Custom methods follow the same pattern
@@ -320,25 +318,14 @@ function TodoItem(todo: Todo) {
 Use `trait.innerHTML` with a reactive function to render lists that update when state changes:
 
 ```ts
-tag.ul(
-  trait.innerHTML(
-    () => todos.val().map((todo) => TodoItem(todo)),
-    todos,
-  ),
-);
+tag.ul(trait.innerHTML(() => todos.val().map((todo) => TodoItem(todo)), todos));
 ```
 
 The `innerHTML` trait clears the element and re-appends children on every state change — it is a full tear-down-and-rebuild, not a diff. Child elements are appended directly via `appendChild` (no serialization). Pass all State objects the list depends on as trailing arguments:
 
 ```ts
 // List depends on both `todos` and `filter` state
-tag.ul(
-  trait.innerHTML(
-    () => filteredTodos().map((todo) => TodoItem(todo)),
-    todos,
-    filter,
-  ),
-);
+tag.ul(trait.innerHTML(() => filteredTodos().map((todo) => TodoItem(todo)), todos, filter));
 ```
 
 ---
@@ -358,11 +345,7 @@ trait.event(
 );
 
 // Conditional event — only attached when condition is true
-trait.event(
-  'click',
-  handleSubmit,
-  isSubmitting.$test(false),
-);
+trait.event('click', handleSubmit, isSubmitting.$test(false));
 ```
 
 Events are automatically removed when the element is removed from the DOM.
@@ -384,17 +367,18 @@ You never need to manually unsubscribe or tear down. Build elements, append them
 
 ## Summary of Rules
 
-| Rule                                          | Why                                                                  |
-| --------------------------------------------- | -------------------------------------------------------------------- |
-| Destructure `Template` into `[tag, trait]`    | Establishes the two proxies used everywhere                          |
-| Prefer `$val` over verbose `() => val(), st`  | Collapses getter + subscription into one reference                   |
-| Never use ternaries in trait args             | Conditions keep branches explicit and reactive                       |
-| Prefer `state.$test()` for conditions         | Self-subscribing — auto-detected as both Condition and State         |
-| Never hardcode visual values                  | Tokens ensure consistency and automatic theming                      |
-| Reuse tokens, not trait arrays                | Tokens are the reusable visual primitives, not shared trait groups   |
-| Apply traits directly and inline              | Traits belong to their element; do not store or share them           |
-| Use `$`-thunked methods for event handlers    | Avoids wrapping lambdas; clean event wiring                          |
-| State lives at module level                   | No prop drilling; any trait can subscribe to any state               |
-| Extract functions only when reused or huge    | Default to inlining; extract only for reuse, factories, or >1k lines |
-| Use `innerHTML` for dynamic lists             | Clears and re-renders on state change; appends real DOM nodes        |
-| Let cleanup happen automatically              | MutationObserver + WeakMap handles all teardown                      |
+| Rule                                         | Why                                                                  |
+| -------------------------------------------- | -------------------------------------------------------------------- |
+| Destructure `Template` into `[tag, trait]`   | Establishes the two proxies used everywhere                          |
+| Prefer `$val` over verbose `() => val(), st` | Collapses getter + subscription into one reference                   |
+| Never use ternaries in trait args            | Conditions keep branches explicit and reactive                       |
+| Prefer `state.$test()` for conditions        | Self-subscribing — auto-detected as both Condition and State         |
+| Never hardcode visual values                 | Tokens ensure consistency and automatic theming                      |
+| Reuse tokens, not trait arrays               | Tokens are the reusable visual primitives, not shared trait groups   |
+| Apply traits directly and inline             | Traits belong to their element; do not store or share them           |
+| Design mobile-first                          | Base styles have no condition; breakpoint overrides layer on top     |
+| Use `$`-thunked methods for event handlers   | Avoids wrapping lambdas; clean event wiring                          |
+| State lives at module level                  | No prop drilling; any trait can subscribe to any state               |
+| Extract functions only when reused or huge   | Default to inlining; extract only for reuse, factories, or >1k lines |
+| Use `innerHTML` for dynamic lists            | Clears and re-renders on state change; appends real DOM nodes        |
+| Let cleanup happen automatically             | MutationObserver + WeakMap handles all teardown                      |

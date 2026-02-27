@@ -46,20 +46,21 @@ Create `data.ts` when the application has any static data sets — lists, lookup
 
 ```typescript
 // data.ts
+import type { NavItem, PriorityOption, Todo } from './types';
 
-export const navItems = [
+export const navItems: NavItem[] = [
   { label: 'Home', path: '/' },
   { label: 'About', path: '/about' },
   { label: 'Contact', path: '/contact' },
-] as const;
+];
 
-export const priorityOptions = [
+export const priorityOptions: PriorityOption[] = [
   { value: 'low', label: 'Low' },
   { value: 'medium', label: 'Medium' },
   { value: 'high', label: 'High' },
-] as const;
+];
 
-export const defaultTodos = [
+export const defaultTodos: Todo[] = [
   { id: '1', text: 'Learn OEM', completed: false },
   { id: '2', text: 'Build an app', completed: false },
 ];

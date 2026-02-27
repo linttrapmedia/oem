@@ -31,7 +31,6 @@ Create `main.ts` as one of the first files in any new OEM application.
 
 - Importing the root UI element from `ui.ts`
 - Mounting the UI to the DOM via `tag.$(document.body)(...)` or `document.body.appendChild(...)`
-- One-time initialization (loading persisted state from localStorage, setting initial theme, etc.)
 - Global event listeners that don't belong to a specific element
 
 ## What Does NOT Belong Here
@@ -48,23 +47,6 @@ Create `main.ts` as one of the first files in any new OEM application.
 // main.ts
 import { tag, trait } from './templates';
 import { app } from './ui';
-import { todos } from './states';
-import { STORAGE_KEY } from './constants';
-
-// Load persisted state
-const saved = localStorage.getItem(STORAGE_KEY);
-if (saved) {
-  try {
-    todos.set(JSON.parse(saved));
-  } catch {
-    // ignore invalid data
-  }
-}
-
-// Persist state on changes
-todos.sub((value) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
-});
 
 // Mount the app
 tag.$(document.body)(

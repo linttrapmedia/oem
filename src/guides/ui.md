@@ -33,6 +33,7 @@ Create `ui.ts` at the start of any new OEM application, after `templates.ts` and
 - All `tag.*()` calls that build the DOM tree
 - All `trait.*()` calls that apply behaviors to elements
 - Helper functions ("components") that return elements — but ONLY when they are reused multiple times, serve as factories with parameters, or exceed ~1000 lines
+- Responsive breakpoint conditions on traits — base styles target mobile, breakpoint overrides for larger viewports
 
 ## What Does NOT Belong Here
 
@@ -51,6 +52,7 @@ import { tag, trait } from './templates';
 import { todos, filter, newTodoText, editingId } from './states';
 import { dispatch } from './machines';
 import { addTodo, toggleTodo, deleteTodo, setFilter } from './actions';
+import { isDesktop } from './states';
 import {
   surface_bg_primary,
   text_fg_primary,
@@ -84,9 +86,16 @@ function TodoItem(todo: Todo) {
 }
 
 export const app = tag.div(
+  // Base (mobile) styles — no breakpoint condition
   trait.style('backgroundColor', surface_bg_primary.$val),
   trait.style('color', text_fg_primary.$val),
-  trait.style('padding', space_padding_md.$val),
+  trait.style('padding', '8px'),
+  trait.style('maxWidth', '100%'),
+
+  // Desktop overrides
+  trait.style('padding', space_padding_md.$val, isDesktop.$test(true)),
+  trait.style('maxWidth', '960px', isDesktop.$test(true)),
+
   tag.h1(trait.text('Todo App')),
   tag.input(
     trait.inputValue(newTodoText.$val),
@@ -108,6 +117,7 @@ export const app = tag.div(
 - **Apply traits directly.** Traits belong inline on their target element — do not store them in shared arrays.
 - **Use `$val` for reactive bindings.** Prefer `token.$val` over the verbose `() => token.val(), token` form.
 - **Use `$test` for conditions.** Prefer `state.$test(...)` over standalone `$test()` with separate state arguments.
+- **Design mobile-first.** Base styles (no condition) target mobile. Use `isTablet.$test(true)` and `isDesktop.$test(true)` to layer on overrides for larger viewports. See [Responsive Design](responsive-design.md).
 - **Keep the file readable.** Indentation reflects DOM nesting. Each `tag.*()` call is a visual representation of the DOM tree.
 
 ## Rules

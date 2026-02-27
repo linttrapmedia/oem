@@ -91,6 +91,26 @@ trait.event('click', todoList.$toggle(todo.id));
 trait.text(() => `${todos.val().filter((t) => !t.completed).length} items left`, todos);
 ```
 
+## Persistence
+
+If a State needs to survive page reloads, subscribe to it and persist its value. Load the persisted value back on startup:
+
+```typescript
+// states.ts
+import { State } from '@linttrap/oem';
+import type { Todo } from './types';
+import { STORAGE_KEY } from './constants';
+
+const saved = localStorage.getItem(STORAGE_KEY);
+const initial: Todo[] = saved ? JSON.parse(saved) : [];
+
+export const todos = State<Todo[]>(initial);
+
+todos.sub((value) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+});
+```
+
 ## Rules
 
 1. **One file for all State objects.** Only split into a folder if the file grows unmanageable.
