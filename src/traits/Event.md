@@ -45,10 +45,13 @@ A cleanup function that removes the event listener and unsubscribes from all Sta
 ## Template Usage
 
 ```ts
-trait.event('click', () => dispatch({ type: 'INCREMENT' }));
+trait.event(
+  'click',
+  count.$reduce((prev) => prev + 1),
+);
 trait.event('submit', (e) => {
   e.preventDefault();
   save();
 });
-trait.event('mouseenter', showTooltip, visibilityState, () => enabled.get());
+trait.event('mouseenter', showTooltip, enabled.$test(true));
 ```

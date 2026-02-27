@@ -144,7 +144,7 @@ export function useStyleTrait(
 All traits accept `...rest: (StateType<any> | Condition)[]` parameters. Use `$test()` from `@/core/util` to create conditions:
 
 ```typescript
-import { $test } from '@/core/util';
+import { $test } from '@linttrap/oem';
 
 // ✅ CORRECT: Use separate trait calls with conditions
 trait.style('opacity', '0.6', $test(disabled)),

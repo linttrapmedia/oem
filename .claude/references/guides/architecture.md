@@ -1,56 +1,75 @@
 ---
-name: Architectural Patterns
-description: File structure conventions and architectural patterns for OEM applications.
+name: Folder & File Structure
+description: Canonical folder and file structure for OEM applications, with links to detailed guides for each category.
 license: MIT
 metadata:
   author: Kevin Lint
   version: '1.0'
 ---
 
-# Architectural Patterns
+# Folder & File Structure
 
-## Folder/File Structure
+## When to Create This Structure
 
-In order to keep a clean separation of concerns file structures should be based on High Cohesion and Low Coupling and optimized for LLM interpretation and management. The cohesion should exist as "logical coupling", like that of a Mathematical Library where each function is related to the other merely by category. For example "actions" is just a library of actions. They aren't necessarily meant to be "used together", only they share a common role in the code base (to carry out actions). Below is a list of the basic categories. Based on complexity, the following items could exist either as single files or folders with files. Start by making them single files, but if they grow too large, break them down into folders with multiple files.
+When starting a new OEM application or adding OEM to an existing project, create the following file/folder structure at the root of the app. Each category starts as a **single file** (e.g., `states.ts`, `actions.ts`). If a file grows too large to manage, convert it into a **folder** with multiple files (e.g., `states/todos.ts`, `states/auth.ts`). Always start with single files.
 
-- **bdd**:
-  Behavior-driven design files that document requirements, acceptance criteria, and use cases for the app. These files should clearly articulate expected behaviors and scenarios to guide development and provide context for LLM-assisted coding sessions.
+## When to Use This Structure
 
-- **types**:
-  Type definitions for the app. This can include types for the state, actions, and any other relevant data structures.
+When the structure already exists, follow it. Every piece of application logic belongs in exactly one of these categories. Before creating a new file or adding code, identify which category it falls under and place it there. This keeps the codebase predictable for both humans and LLMs.
 
-- **constants**:
-  Any constant values that are used throughout the app. This can include things like API endpoints, fixed configuration values, or any other data that is truly constant and does not need to trigger re-renders when it changes.
+## Design Principles
 
-- **config**:
-  Configuration settings for the app. This can include things like feature flags, environment variables, or any other settings that may need to be changed based on the deployment environment but do not need to trigger re-renders when they change.
+- **High Cohesion, Low Coupling**: Each category groups logically related code — like a math library where functions share a role, not necessarily a dependency.
+- **LLM-Optimized**: The structure is flat and predictable so LLMs can navigate, read, and generate code without ambiguity about where things belong.
+- **Single Responsibility**: Each file/folder owns one concern. No mixing state definitions with UI templates or actions with type definitions.
 
-- **data**:
-  Static data that is used in the app. This can include things like lists of options for dropdowns, static content for marketing pages, or any other data that is not expected to change frequently and does not need to trigger re-renders when it changes.
+## Categories
 
-- **states**:
-  State objects that can be used in the app. These can be simple reactive state objects created with the State function, they should be used to store any state that needs to be shared across multiple components or that needs to trigger re-renders when it changes.
+Each category below has its own detailed guide. Every category must be its own file (or folder of files if it grows large):
 
-- **actions**:
-  A library of all the actions that can be dispatched in the app. Each action is a function that returns an object with a type and a payload.
+| File / Folder  | Purpose                                                     | Guide                                |
+| -------------- | ----------------------------------------------------------- | ------------------------------------ |
+| `bdd/`         | Requirements, acceptance criteria, BDD scenarios            | [BDD Guide](file-bdd.md)             |
+| `types.ts`     | Type definitions for state, actions, data structures        | [Types Guide](file-types.md)         |
+| `constants.ts` | Fixed values (API endpoints, enums, config literals)        | [Constants Guide](file-constants.md) |
+| `config.ts`    | Environment-aware settings, feature flags                   | [Config Guide](file-config.md)       |
+| `data.ts`      | Static data (dropdown options, static content)              | [Data Guide](file-data.md)           |
+| `states.ts`    | Reactive State objects shared across the app                | [States Guide](file-states.md)       |
+| `actions.ts`   | Action creator functions returning `{ type, payload }`      | [Actions Guide](file-actions.md)     |
+| `machines.ts`  | State machines as switch statements on state + action       | [Machines Guide](file-machines.md)   |
+| `traits.ts`    | Custom trait functions (beyond the core trait library)      | [Traits Guide](file-traits.md)       |
+| `templates.ts` | Template definitions using `Template()` → `[tag, trait]`    | [Templates Guide](file-templates.md) |
+| `theme.ts`     | Design tokens (`useThemeState` + `useTokenState` instances) | [Theme Guide](file-theme.md)         |
+| `ui.ts`        | UI rendering — the main template tree and helper functions  | [UI Guide](file-ui.md)               |
+| `test/`        | Unit and integration tests                                  | [Test Guide](file-test.md)           |
+| `main.ts`      | App entry point — initializes state, renders UI             | [Main Guide](file-main.md)           |
 
-- **machines**:
-  State machines that define the behavior of the app. Each machine has a state, a set of transitions, and a set of actions that can be dispatched. Implement them as simple switch statements, switching on the current state and the dispatched action.
+## Example Structure
 
-- **traits**:
-  The default traits provided by the core library are often sufficient for most use cases, but you may find that you need to create custom traits to handle specific behaviors or patterns in your app. This file or folder can be used to store a library of any custom traits that you create for your app. These traits can then be imported and used in your templates to add functionality to your UI components.
+```
+my-app/
+  bdd/
+    todo-app.md
+  types.ts
+  constants.ts
+  config.ts
+  data.ts
+  states.ts
+  actions.ts
+  machines.ts
+  traits.ts
+  templates.ts
+  theme.ts
+  ui.ts
+  test/
+    states.test.ts
+    machines.test.ts
+  main.ts
+```
 
-- **templates**:
-  A library of templates (using Template and it's destructured [tag, trait]) that can be used to render the UI. Multiple templates can be used in the app, but it's often best to keep them organized in a single file or folder.
+## Rules
 
-- **theme**:
-  A library of all the design tokens used in the app. Contains the single `useThemeState` instance and all `useTokenState` tokens generated during development. Each token must have a documentation comment (what / when to use / when not to use) so that future LLM sessions can reuse existing tokens or decide when to add new ones. Tokens follow the `<category>_<property>_<variant>` naming convention.
-
-- **ui**:
-  Using proper idiomatic OEM usually allows for their to be a single UI as one large template function that renders the entire app since state in OEM is made up of a number of reactive state objects that can be used anywhere and not tied to any single template or component. However, in more complex apps, you may want to break down the UI into smaller components for better organization and readability. This file or folder can be used to store these components, which can then be imported and used in the main UI template. Components are just regular functions no different then if they written inline in the main UI template, but breaking them out can help with organization and readability.
-
-- **test**
-  Unit and integration tests for the app. Test files should mirror the structure of the source code and use a testing framework appropriate for your environment (e.g., Jest, Vitest, or similar). Tests should cover state management, actions, machines, and UI components to ensure reliability and maintainability.
-
-- **main**:
-  The entry point of the app. It initializes the state machine and sets up the event listeners for the UI. It also renders the UI based on the current state of the machine.
+1. **Every category is its own file.** Do not combine categories (e.g., do not put actions inside states.ts).
+2. **Start with single files.** Only break into a folder when the file becomes unmanageable.
+3. **No orphan code.** Every piece of logic must belong to one of these categories.
+4. **Read before writing.** Before adding to a file, read its current contents to avoid duplication.

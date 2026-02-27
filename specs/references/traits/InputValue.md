@@ -44,17 +44,8 @@ A cleanup function that unsubscribes from all State listeners.
 
 ```ts
 // Two-way binding pattern
-tag.input(
-  trait.inputValue(() => nameState.get(), nameState),
-  trait.inputEvent('input', (val) => nameState.pub(val)),
-);
+tag.input(trait.inputValue(nameState.$val), trait.inputEvent('input', nameState.set));
 
 // Conditional binding
-tag.input(
-  trait.inputValue(
-    () => searchState.get(),
-    searchState,
-    () => isEditing.get(),
-  ),
-);
+tag.input(trait.inputValue(searchState.$val, isEditing.$test(true)));
 ```

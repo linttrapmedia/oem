@@ -20,7 +20,7 @@ A small state hook for managing the current theme as a reactive `State` value.
 ## Usage
 
 ```typescript
-import { useThemeState } from '@/registry';
+import { useThemeState } from '@linttrap/oem';
 
 const theme = useThemeState('light');
 

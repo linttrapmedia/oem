@@ -42,6 +42,6 @@ A cleanup function that unsubscribes from all State listeners.
 ## Template Usage
 
 ```ts
-trait.focus([() => modalState.get().open], [modalState]);
+trait.focus([modalState.$test((s) => s.open)], [modalState]);
 trait.focus([], [routeState]);
 ```

@@ -30,7 +30,7 @@ useThemeState('light')          ← single source of truth for current theme
 Every app must create exactly **one** `useThemeState` instance and export it from a central `theme.ts` file:
 
 ```ts
-import { useThemeState, useTokenState } from '@/registry';
+import { useThemeState, useTokenState } from '@linttrap/oem';
 
 // Single source of truth
 export const theme = useThemeState('light');
@@ -118,8 +118,8 @@ export const action_bg_danger = useTokenState('#dc2626', '#ef4444', theme);
 Tokens are `State` objects. Pass them as reactive watchers to traits:
 
 ```ts
-trait.style('backgroundColor', () => surface_bg_primary.val(), surface_bg_primary);
-trait.style('color', () => text_fg_primary.val(), text_fg_primary);
+trait.style('backgroundColor', surface_bg_primary.$val);
+trait.style('color', text_fg_primary.$val);
 ```
 
 When the theme changes, every token fires its subscribers and the UI updates automatically.

@@ -21,37 +21,37 @@ A reactive state hook that tracks whether the current viewport matches specified
 ## Usage
 
 ```typescript
-import { useMediaQueryState } from '@/states/MediaQueryState';
+import { useMediaQueryState } from '@linttrap/oem';
 
 // Track mobile viewport (max 768px)
 const isMobile = useMediaQueryState({
-  maxWidth: 768
+  maxWidth: 768,
 });
 
 // Track tablet viewport (768px - 1024px)
 const isTablet = useMediaQueryState({
   minWidth: 768,
-  maxWidth: 1024
+  maxWidth: 1024,
 });
 
 // Track desktop viewport (min 1024px)
 const isDesktop = useMediaQueryState({
-  minWidth: 1024
+  minWidth: 1024,
 });
 
 // Track print media
 const isPrint = useMediaQueryState({
-  type: 'print'
+  type: 'print',
 });
 ```
 
 ## Props
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `type` | `'screen' \| 'print' \| 'all'` | `'all'` | Media type to match against |
-| `minWidth` | `number` | `0` | Minimum viewport width in pixels |
-| `maxWidth` | `number` | `Infinity` | Maximum viewport width in pixels |
+| Property   | Type                           | Default    | Description                      |
+| ---------- | ------------------------------ | ---------- | -------------------------------- |
+| `type`     | `'screen' \| 'print' \| 'all'` | `'all'`    | Media type to match against      |
+| `minWidth` | `number`                       | `0`        | Minimum viewport width in pixels |
+| `maxWidth` | `number`                       | `Infinity` | Maximum viewport width in pixels |
 
 ## Return Value
 
@@ -60,6 +60,7 @@ Returns a `State<boolean>` that is `true` when the media query matches and `fals
 ## Behavior
 
 The state automatically:
+
 - Evaluates the media query on initialization
 - Adds a resize event listener to track viewport changes
 - Updates the state value when conditions change

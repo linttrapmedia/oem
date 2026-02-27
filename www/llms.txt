@@ -142,7 +142,7 @@ export function useStyleTrait(
 All traits accept `...rest: (StateType<any> | Condition)[]` parameters. Use `$test()` from `@/core/util` to create conditions:
 
 ```typescript
-import { $test } from '@/core/util';
+import { $test } from '@linttrap/oem';
 
 // ✅ CORRECT: Use separate trait calls with conditions
 trait.style('opacity', '0.6', $test(disabled)),
@@ -704,7 +704,7 @@ A cleanup function that unsubscribes from all State listeners.
 ## Template Usage
 
 ```ts
-trait.focus([() => modalState.get().open], [modalState]);
+trait.focus([modalState.$test((s) => s.open)], [modalState]);
 trait.focus([], [routeState]);
 ```
 
@@ -733,7 +733,7 @@ useInputEventTrait(
 | --------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `el`      | `HTMLElement`                     | The target form element (typically `HTMLInputElement` or `HTMLTextAreaElement`)                                                                                                                         |
 | `evt`     | `string`                          | The input event type. Restricted to: `'input'`, `'change'`, `'keyup'`, `'keydown'`, `'keypress'`, `'beforeinput'`, `'paste'`, `'cut'`, `'compositionstart'`, `'compositionupdate'`, `'compositionend'`. |
-| `setter`  | `(val: any) => void`              | A function called with `e.target.value` when the event fires. Typically a State's `pub` method.                                                                                                         |
+| `setter`  | `(val: any) => void`              | A function called with `e.target.value` when the event fires. Typically a State's `set` method.                                                                                                         |
 | `...rest` | `(StateType<any> \| Condition)[]` | Optional State objects and/or Conditions. The listener is attached only when all Conditions are truthy.                                                                                                 |
 
 ## Behavior
@@ -751,14 +751,9 @@ A cleanup function that removes the event listener and unsubscribes from all Sta
 ## Template Usage
 
 ```ts
-trait.inputEvent('input', (val) => nameState.pub(val), nameState);
-trait.inputEvent('change', (val) => dispatch({ type: 'SET_FILTER', payload: val }));
-trait.inputEvent(
-  'keydown',
-  (val) => searchState.pub(val),
-  searchState,
-  () => enabled.get(),
-);
+trait.inputEvent('input', nameState.set);
+trait.inputEvent('change', (val) => filterState.set(val));
+trait.inputEvent('keydown', searchState.set, enabled.$test(true));
 ```
 
 
@@ -806,12 +801,8 @@ A cleanup function that unsubscribes from all State listeners.
 
 ```ts
 trait.textContent('Hello, World!');
-trait.textContent(() => `Count: ${counter.get()}`, counter);
-trait.textContent(
-  () => items.get().length,
-  items,
-  () => items.get().length > 0,
-);
+trait.textContent(counter.$val);
+trait.textContent(() => `${items.val().length} items`, items);
 ```
 
 
@@ -859,13 +850,17 @@ A cleanup function that unsubscribes from all State listeners.
 When used through a Template's `trait` proxy, the `el` parameter is supplied automatically:
 
 ```ts
-trait.attribute('disabled', () => !formState.get().isValid, formState);
+trait.attribute(
+  'disabled',
+  'true',
+  formState.$test((s) => !s.isValid),
+);
 trait.attribute('aria-label', 'Close dialog');
 trait.attribute(
   'data-active',
-  () => tabState.get().active === id,
-  tabState,
-  () => visible.get(),
+  'true',
+  tabState.$test((s) => s.active === id),
+  visible.$test(true),
 );
 ```
 
@@ -912,21 +907,23 @@ A cleanup function that unsubscribes from all State listeners.
 ## Template Usage
 
 ```ts
-// Static token value
-trait.style('backgroundColor', theme.sem_color_bkg_pri());
-trait.style('padding', theme.sem_spc_pad_md());
+// Token value (re-evaluates on theme change via $val)
+trait.style('backgroundColor', surface_bg_primary.$val);
+trait.style('padding', space_padding_md.$val);
 
 // Reactive value from state
-trait.style('opacity', () => (visible.get() ? '1' : '0'), visible);
-
-// Deferred token getter (re-evaluates on theme change)
-trait.style('color', theme.$sem_color_txt_pri);
+trait.style('opacity', '1', visible.$test(true));
+trait.style('opacity', '0', visible.$test(false));
 
 // Custom CSS property
 trait.style('--header-height', '64px');
 
 // Conditional application
-trait.style('display', 'none', someState, () => !someState.get().visible);
+trait.style(
+  'display',
+  'none',
+  someState.$test((s) => !s.visible),
+);
 ```
 
 
@@ -970,19 +967,10 @@ A cleanup function that unsubscribes from all State listeners.
 
 ```ts
 // Two-way binding pattern
-tag.input(
-  trait.inputValue(() => nameState.get(), nameState),
-  trait.inputEvent('input', (val) => nameState.pub(val)),
-);
+tag.input(trait.inputValue(nameState.$val), trait.inputEvent('input', nameState.set));
 
 // Conditional binding
-tag.input(
-  trait.inputValue(
-    () => searchState.get(),
-    searchState,
-    () => isEditing.get(),
-  ),
-);
+tag.input(trait.inputValue(searchState.$val, isEditing.$test(true)));
 ```
 
 
@@ -1027,12 +1015,15 @@ A cleanup function that removes the event listener and unsubscribes from all Sta
 ## Template Usage
 
 ```ts
-trait.event('click', () => dispatch({ type: 'INCREMENT' }));
+trait.event(
+  'click',
+  count.$reduce((prev) => prev + 1),
+);
 trait.event('submit', (e) => {
   e.preventDefault();
   save();
 });
-trait.event('mouseenter', showTooltip, visibilityState, () => enabled.get());
+trait.event('mouseenter', showTooltip, enabled.$test(true));
 ```
 
 
@@ -1082,16 +1073,13 @@ A cleanup function that unsubscribes from all State listeners.
 ```ts
 tag.div(
   trait.innerHTML(
-    () => [
-      tag.h1(trait.textContent('Hello')),
-      tag.p(trait.textContent(() => message.get(), message)),
-    ],
+    () => [tag.h1(trait.textContent('Hello')), tag.p(trait.textContent(message.$val))],
     message,
   ),
 );
 
 tag.ul(
-  trait.innerHTML(() => items.get().map((item) => tag.li(trait.textContent(item.label))), items),
+  trait.innerHTML(() => items.val().map((item) => tag.li(trait.textContent(item.label))), items),
 );
 ```
 
@@ -1136,7 +1124,8 @@ A cleanup function that unsubscribes from all State listeners.
 
 ```ts
 trait.className('btn btn-primary');
-trait.className(() => (isActive.get() ? 'tab active' : 'tab'), isActive);
+trait.className('tab active', isActive.$test(true));
+trait.className('tab', isActive.$test(false));
 ```
 
 
@@ -1185,11 +1174,11 @@ A cleanup function that removes the event listener.
 
 ```ts
 // Hover highlight pattern
-trait.styleOnEvent('mouseenter', 'backgroundColor', theme.sem_color_bkg_hover());
-trait.styleOnEvent('mouseleave', 'backgroundColor', theme.sem_color_bkg_pri());
+trait.styleOnEvent('mouseenter', 'backgroundColor', action_bg_hover.$val);
+trait.styleOnEvent('mouseleave', 'backgroundColor', action_bg_primary.$val);
 
 // Focus ring
-trait.styleOnEvent('focus', 'outline', () => `2px solid ${theme.sem_color_bdr_focus()}`);
+trait.styleOnEvent('focus', 'outline', () => `2px solid ${focus_border_primary.val()}`);
 trait.styleOnEvent('blur', 'outline', 'none');
 ```
 
@@ -1217,37 +1206,37 @@ A reactive state hook that tracks whether the current viewport matches specified
 ## Usage
 
 ```typescript
-import { useMediaQueryState } from '@/states/MediaQueryState';
+import { useMediaQueryState } from '@linttrap/oem';
 
 // Track mobile viewport (max 768px)
 const isMobile = useMediaQueryState({
-  maxWidth: 768
+  maxWidth: 768,
 });
 
 // Track tablet viewport (768px - 1024px)
 const isTablet = useMediaQueryState({
   minWidth: 768,
-  maxWidth: 1024
+  maxWidth: 1024,
 });
 
 // Track desktop viewport (min 1024px)
 const isDesktop = useMediaQueryState({
-  minWidth: 1024
+  minWidth: 1024,
 });
 
 // Track print media
 const isPrint = useMediaQueryState({
-  type: 'print'
+  type: 'print',
 });
 ```
 
 ## Props
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `type` | `'screen' \| 'print' \| 'all'` | `'all'` | Media type to match against |
-| `minWidth` | `number` | `0` | Minimum viewport width in pixels |
-| `maxWidth` | `number` | `Infinity` | Maximum viewport width in pixels |
+| Property   | Type                           | Default    | Description                      |
+| ---------- | ------------------------------ | ---------- | -------------------------------- |
+| `type`     | `'screen' \| 'print' \| 'all'` | `'all'`    | Media type to match against      |
+| `minWidth` | `number`                       | `0`        | Minimum viewport width in pixels |
+| `maxWidth` | `number`                       | `Infinity` | Maximum viewport width in pixels |
 
 ## Return Value
 
@@ -1256,6 +1245,7 @@ Returns a `State<boolean>` that is `true` when the media query matches and `fals
 ## Behavior
 
 The state automatically:
+
 - Evaluates the media query on initialization
 - Adds a resize event listener to track viewport changes
 - Updates the state value when conditions change
@@ -1307,7 +1297,7 @@ A small state hook for managing the current theme as a reactive `State` value.
 ## Usage
 
 ```typescript
-import { useThemeState } from '@/registry';
+import { useThemeState } from '@linttrap/oem';
 
 const theme = useThemeState('light');
 
@@ -1364,7 +1354,7 @@ A derived state hook that selects between two token values based on the current 
 ## Usage
 
 ```typescript
-import { useThemeState, useTokenState } from '@/registry';
+import { useThemeState, useTokenState } from '@linttrap/oem';
 
 const theme = useThemeState('light');
 const primaryColor = useTokenState('#111827', '#f9fafb', theme);
@@ -1420,53 +1410,726 @@ const bgColor = useTokenState('#fff', '#0b0f1a', theme);
 ## Guides
 
 
-# Architectural Patterns
+# Data File
 
-## Folder/File Structure
+## What This File Is
 
-In order to keep a clean separation of concerns file structures should be based on High Cohesion and Low Coupling and optimized for LLM interpretation and management. The cohesion should exist as "logical coupling", like that of a Mathematical Library where each function is related to the other merely by category. For example "actions" is just a library of actions. They aren't necessarily meant to be "used together", only they share a common role in the code base (to carry out actions). Below is a list of the basic categories. Based on complexity, the following items could exist either as single files or folders with files. Start by making them single files, but if they grow too large, break them down into folders with multiple files.
+`data.ts` is the single file (or `data/` folder) containing static data used in the application. This is data that is known at build time, does not change at runtime, and does not need to trigger re-renders.
 
-- **bdd**:
-  Behavior-driven design files that document requirements, acceptance criteria, and use cases for the app. These files should clearly articulate expected behaviors and scenarios to guide development and provide context for LLM-assisted coding sessions.
+## Why It Must Be Its Own File
 
-- **types**:
-  Type definitions for the app. This can include types for the state, actions, and any other relevant data structures.
+Static data (dropdown options, navigation items, static content) is referenced by UI code but is conceptually separate from both the UI structure and the reactive state. Isolating it makes it easy to update content without touching logic, and gives LLMs a clear place to look for reference data.
 
-- **constants**:
-  Any constant values that are used throughout the app. This can include things like API endpoints, fixed configuration values, or any other data that is truly constant and does not need to trigger re-renders when it changes.
+## When to Create
 
-- **config**:
-  Configuration settings for the app. This can include things like feature flags, environment variables, or any other settings that may need to be changed based on the deployment environment but do not need to trigger re-renders when they change.
+Create `data.ts` when the application has any static data sets — lists, lookup tables, menu items, or content that is hardcoded rather than fetched.
 
-- **data**:
-  Static data that is used in the app. This can include things like lists of options for dropdowns, static content for marketing pages, or any other data that is not expected to change frequently and does not need to trigger re-renders when it changes.
+## When to Use
 
-- **states**:
-  State objects that can be used in the app. These can be simple reactive state objects created with the State function, they should be used to store any state that needs to be shared across multiple components or that needs to trigger re-renders when it changes.
+- **When rendering static lists**: Import data arrays and `.map()` over them in `trait.innerHTML`.
+- **When populating dropdowns or menus**: Import option arrays from this file.
+- **When displaying static content**: Import text blocks or structured content objects.
 
-- **actions**:
-  A library of all the actions that can be dispatched in the app. Each action is a function that returns an object with a type and a payload.
+## What Belongs Here
 
-- **machines**:
-  State machines that define the behavior of the app. Each machine has a state, a set of transitions, and a set of actions that can be dispatched. Implement them as simple switch statements, switching on the current state and the dispatched action.
+- Arrays of options for dropdowns, radio groups, or select menus
+- Navigation item definitions (label + route)
+- Static content strings or structured content objects
+- Lookup tables and mappings
+- Seed data or default data sets
 
-- **traits**:
-  The default traits provided by the core library are often sufficient for most use cases, but you may find that you need to create custom traits to handle specific behaviors or patterns in your app. This file or folder can be used to store a library of any custom traits that you create for your app. These traits can then be imported and used in your templates to add functionality to your UI components.
+## What Does NOT Belong Here
 
-- **templates**:
-  A library of templates (using Template and it's destructured [tag, trait]) that can be used to render the UI. Multiple templates can be used in the app, but it's often best to keep them organized in a single file or folder.
+- Data fetched from an API at runtime (that goes into State objects in `states.ts`)
+- Reactive values (those go in `states.ts`)
+- Configuration settings (those go in `config.ts`)
+- Single constant values (those go in `constants.ts`)
 
-- **theme**:
-  A library of all the design tokens used in the app. Contains the single `useThemeState` instance and all `useTokenState` tokens generated during development. Each token must have a documentation comment (what / when to use / when not to use) so that future LLM sessions can reuse existing tokens or decide when to add new ones. Tokens follow the `<category>_<property>_<variant>` naming convention.
+## Example
 
-- **ui**:
-  Using proper idiomatic OEM usually allows for their to be a single UI as one large template function that renders the entire app since state in OEM is made up of a number of reactive state objects that can be used anywhere and not tied to any single template or component. However, in more complex apps, you may want to break down the UI into smaller components for better organization and readability. This file or folder can be used to store these components, which can then be imported and used in the main UI template. Components are just regular functions no different then if they written inline in the main UI template, but breaking them out can help with organization and readability.
+```typescript
+// data.ts
 
-- **test**
-  Unit and integration tests for the app. Test files should mirror the structure of the source code and use a testing framework appropriate for your environment (e.g., Jest, Vitest, or similar). Tests should cover state management, actions, machines, and UI components to ensure reliability and maintainability.
+export const navItems = [
+  { label: 'Home', path: '/' },
+  { label: 'About', path: '/about' },
+  { label: 'Contact', path: '/contact' },
+] as const;
 
-- **main**:
-  The entry point of the app. It initializes the state machine and sets up the event listeners for the UI. It also renders the UI based on the current state of the machine.
+export const priorityOptions = [
+  { value: 'low', label: 'Low' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'high', label: 'High' },
+] as const;
+
+export const defaultTodos = [
+  { id: '1', text: 'Learn OEM', completed: false },
+  { id: '2', text: 'Build an app', completed: false },
+];
+```
+
+## Rules
+
+1. **One file for all static data.** Only split into a folder if the file grows unmanageable.
+2. **Use `as const`** for arrays and objects that should have literal types.
+3. **No runtime logic.** This file only contains data declarations.
+4. **No reactive values.** If data changes at runtime, it belongs in `states.ts`.
+5. **Keep data flat and simple.** Complex nested structures are harder for LLMs to parse.
+
+
+---
+
+
+# Folder & File Structure
+
+## When to Create This Structure
+
+When starting a new OEM application or adding OEM to an existing project, create the following file/folder structure at the root of the app. Each category starts as a **single file** (e.g., `states.ts`, `actions.ts`). If a file grows too large to manage, convert it into a **folder** with multiple files (e.g., `states/todos.ts`, `states/auth.ts`). Always start with single files.
+
+## When to Use This Structure
+
+When the structure already exists, follow it. Every piece of application logic belongs in exactly one of these categories. Before creating a new file or adding code, identify which category it falls under and place it there. This keeps the codebase predictable for both humans and LLMs.
+
+## Design Principles
+
+- **High Cohesion, Low Coupling**: Each category groups logically related code — like a math library where functions share a role, not necessarily a dependency.
+- **LLM-Optimized**: The structure is flat and predictable so LLMs can navigate, read, and generate code without ambiguity about where things belong.
+- **Single Responsibility**: Each file/folder owns one concern. No mixing state definitions with UI templates or actions with type definitions.
+
+## Categories
+
+Each category below has its own detailed guide. Every category must be its own file (or folder of files if it grows large):
+
+| File / Folder  | Purpose                                                     | Guide                                |
+| -------------- | ----------------------------------------------------------- | ------------------------------------ |
+| `bdd/`         | Requirements, acceptance criteria, BDD scenarios            | [BDD Guide](file-bdd.md)             |
+| `types.ts`     | Type definitions for state, actions, data structures        | [Types Guide](file-types.md)         |
+| `constants.ts` | Fixed values (API endpoints, enums, config literals)        | [Constants Guide](file-constants.md) |
+| `config.ts`    | Environment-aware settings, feature flags                   | [Config Guide](file-config.md)       |
+| `data.ts`      | Static data (dropdown options, static content)              | [Data Guide](file-data.md)           |
+| `states.ts`    | Reactive State objects shared across the app                | [States Guide](file-states.md)       |
+| `actions.ts`   | Action creator functions returning `{ type, payload }`      | [Actions Guide](file-actions.md)     |
+| `machines.ts`  | State machines as switch statements on state + action       | [Machines Guide](file-machines.md)   |
+| `traits.ts`    | Custom trait functions (beyond the core trait library)      | [Traits Guide](file-traits.md)       |
+| `templates.ts` | Template definitions using `Template()` → `[tag, trait]`    | [Templates Guide](file-templates.md) |
+| `theme.ts`     | Design tokens (`useThemeState` + `useTokenState` instances) | [Theme Guide](file-theme.md)         |
+| `ui.ts`        | UI rendering — the main template tree and helper functions  | [UI Guide](file-ui.md)               |
+| `test/`        | Unit and integration tests                                  | [Test Guide](file-test.md)           |
+| `main.ts`      | App entry point — initializes state, renders UI             | [Main Guide](file-main.md)           |
+
+## Example Structure
+
+```
+my-app/
+  bdd/
+    todo-app.md
+  types.ts
+  constants.ts
+  config.ts
+  data.ts
+  states.ts
+  actions.ts
+  machines.ts
+  traits.ts
+  templates.ts
+  theme.ts
+  ui.ts
+  test/
+    states.test.ts
+    machines.test.ts
+  main.ts
+```
+
+## Rules
+
+1. **Every category is its own file.** Do not combine categories (e.g., do not put actions inside states.ts).
+2. **Start with single files.** Only break into a folder when the file becomes unmanageable.
+3. **No orphan code.** Every piece of logic must belong to one of these categories.
+4. **Read before writing.** Before adding to a file, read its current contents to avoid duplication.
+
+
+---
+
+
+# Constants File
+
+## What This File Is
+
+`constants.ts` is the single file (or `constants/` folder) containing all fixed, immutable values used throughout the application. These are values that are truly constant — they never change at runtime and do not need to trigger re-renders.
+
+## Why It Must Be Its Own File
+
+Constants are referenced across multiple files (states, machines, UI, config). Centralizing them prevents magic literals scattered throughout the codebase and gives LLMs a single place to look up fixed values.
+
+## When to Create
+
+Create `constants.ts` when the application has any fixed values that are used in more than one place, or any value that should be named for clarity rather than inlined as a literal.
+
+## When to Use
+
+- **When writing state or machine logic**: Import constants instead of using magic strings or numbers.
+- **When adding API calls**: Define endpoint URLs here.
+- **When defining enums or fixed option sets**: Place them here if they don't need to be reactive.
+
+## What Belongs Here
+
+- API endpoint URLs
+- Fixed configuration values (timeouts, limits, thresholds)
+- Enum-like objects or frozen arrays
+- Key names, storage keys, event names
+- Any literal value used in more than one place
+
+## What Does NOT Belong Here
+
+- Reactive values (those are State objects in `states.ts`)
+- Design tokens (those go in `theme.ts`)
+- Environment-dependent settings (those go in `config.ts`)
+- Type definitions (those go in `types.ts`)
+
+## Example
+
+```typescript
+// constants.ts
+
+export const API_BASE_URL = 'https://api.example.com/v1';
+export const MAX_TODOS = 100;
+export const STORAGE_KEY = 'todo-app-state';
+export const DEBOUNCE_MS = 300;
+
+export const FILTER_OPTIONS = ['all', 'active', 'completed'] as const;
+
+export const KEYBOARD = {
+  ENTER: 'Enter',
+  ESCAPE: 'Escape',
+} as const;
+```
+
+## Rules
+
+1. **One file for all constants.** Only split into a folder if the file grows unmanageable.
+2. **Use UPPER_SNAKE_CASE** for primitive constants and PascalCase or UPPER_SNAKE_CASE for object constants.
+3. **Use `as const`** for literal types — this gives TypeScript the narrowest possible type.
+4. **No runtime logic.** This file only contains value declarations.
+5. **No reactive values.** If a value needs to trigger UI updates when it changes, it belongs in `states.ts`.
+
+
+---
+
+
+# Theme File
+
+## What This File Is
+
+`theme.ts` is the single file (or `theme/` folder) containing the application's theming infrastructure: one `useThemeState` instance and all `useTokenState` token definitions. Tokens are the single source of truth for every visual property in the app — colors, spacing, typography, radii, shadows, and more.
+
+## Why It Must Be Its Own File
+
+Tokens are referenced by every piece of UI code. Centralizing them ensures consistent visual properties across the entire app and prevents duplicate tokens. Every token must have a documentation comment so that LLMs can decide whether to reuse an existing token or create a new one.
+
+## When to Create
+
+Create `theme.ts` at the start of any new OEM application, before writing any UI code.
+
+## When to Use
+
+- **When writing UI code**: Import tokens and bind them to style traits using `token.$val`.
+- **When adding new visual properties**: Check this file first — if a matching token exists, use it. Only create a new token if no existing token covers the intent.
+- **When switching themes**: Call `theme.set('dark')` or `theme.set('light')` — all tokens update automatically.
+
+## What Belongs Here
+
+- The single `useThemeState` instance
+- All `useTokenState` token definitions
+- Documentation comments above every token (what / when to use / when not to use)
+
+## What Does NOT Belong Here
+
+- UI rendering code (that goes in `ui.ts`)
+- State objects unrelated to theming (those go in `states.ts`)
+- Trait definitions (those go in `traits.ts` or `templates.ts`)
+
+## Example
+
+```typescript
+// theme.ts
+import { useThemeState, useTokenState } from '@linttrap/oem';
+
+// Single source of truth for current theme
+export const theme = useThemeState('light');
+
+// — Surface: primary background
+// USE: main content area background
+// AVOID: small interactive elements
+export const surface_bg_primary = useTokenState('#ffffff', '#0b0f1a', theme);
+
+// — Surface: secondary background
+// USE: cards, panels, sidebars
+// AVOID: full-page backgrounds
+export const surface_bg_secondary = useTokenState('#f4f5f7', '#151922', theme);
+
+// — Action: primary button background
+// USE: primary CTA buttons
+// AVOID: non-interactive surfaces
+export const action_bg_primary = useTokenState('#2563eb', '#3b82f6', theme);
+
+// — Text: primary foreground
+// USE: body copy, headings
+// AVOID: muted or disabled text
+export const text_fg_primary = useTokenState('#111827', '#f9fafb', theme);
+
+// — Space: medium padding
+// USE: card padding, section padding
+// AVOID: tight inline spacing
+export const space_padding_md = useTokenState('16px', '16px', theme);
+
+// — Radius: medium border radius
+// USE: cards, buttons, inputs
+// AVOID: full-bleed or pill shapes
+export const radius_size_md = useTokenState('8px', '8px', theme);
+```
+
+## Token Naming Convention
+
+Token names follow the pattern `<category>_<property>_<variant>`:
+
+| Segment      | Purpose                   | Examples                                                                                      |
+| ------------ | ------------------------- | --------------------------------------------------------------------------------------------- |
+| **category** | Semantic role             | `surface`, `action`, `text`, `border`, `feedback`, `nav`, `space`, `radius`, `shadow`, `type` |
+| **property** | CSS-adjacent property     | `bg`, `fg`, `border`, `size`, `weight`, `gap`, `padding`                                      |
+| **variant**  | Hierarchy within category | `primary`, `secondary`, `muted`, `hover`, `active`, `disabled`                                |
+
+## Rules
+
+1. **One file for all tokens.** Only split into a folder if the file grows unmanageable.
+2. **One `useThemeState` per app.** Never create multiple theme instances.
+3. **Document every token.** Each token must have a comment stating what it is, when to use it, and when to avoid it.
+4. **Never hardcode visual values.** Every color, size, spacing, and shadow must come from a token.
+5. **Search before creating.** Read the existing tokens before adding a new one — reuse over reinvent.
+6. **Follow the naming convention.** `<category>_<property>_<variant>` — no exceptions.
+
+
+---
+
+
+# UI File
+
+## What This File Is
+
+`ui.ts` is the single file (or `ui/` folder) containing the UI rendering code for the application. This is where `tag` and `trait` (from `templates.ts`) are used to construct the DOM tree. The UI file builds the entire visible interface by composing elements, applying traits, and binding state.
+
+## Why It Must Be Its Own File
+
+The UI layer consumes everything else — states, tokens, actions, templates — but should not define any of them. Isolating UI rendering into its own file keeps the DOM construction readable and ensures that reactive data, styling tokens, and behavioral logic are imported from their canonical locations rather than defined inline.
+
+## When to Create
+
+Create `ui.ts` at the start of any new OEM application, after `templates.ts` and `theme.ts` are set up.
+
+## When to Use
+
+- **When building the interface**: All DOM construction happens here.
+- **When modifying the layout**: Edit this file to change structure, add elements, or adjust trait bindings.
+- **When adding new views**: Add them inline in this file, or extract helper functions when warranted.
+
+## What Belongs Here
+
+- The root element construction (the main `tag.$(document.body)(...)` or equivalent)
+- All `tag.*()` calls that build the DOM tree
+- All `trait.*()` calls that apply behaviors to elements
+- Helper functions ("components") that return elements — but ONLY when they are reused multiple times, serve as factories with parameters, or exceed ~1000 lines
+
+## What Does NOT Belong Here
+
+- State definitions (those go in `states.ts`)
+- Token definitions (those go in `theme.ts`)
+- Template definitions (those go in `templates.ts`)
+- Action creators (those go in `actions.ts`)
+- Machine logic (those go in `machines.ts`)
+- Type definitions (those go in `types.ts`)
+
+## Example
+
+```typescript
+// ui.ts
+import { tag, trait } from './templates';
+import { todos, filter, newTodoText, editingId } from './states';
+import { dispatch } from './machines';
+import { addTodo, toggleTodo, deleteTodo, setFilter } from './actions';
+import {
+  surface_bg_primary,
+  text_fg_primary,
+  action_bg_primary,
+  space_padding_md,
+  radius_size_md,
+} from './theme';
+
+function TodoItem(todo: Todo) {
+  return tag.li(
+    trait.style('display', 'flex'),
+    trait.style('alignItems', 'center'),
+    trait.style('padding', space_padding_md.$val),
+    tag.input(
+      trait.attr('type', 'checkbox'),
+      trait.event('change', () => dispatch(toggleTodo(todo.id))),
+    ),
+    tag.span(
+      trait.text(todo.text),
+      trait.style(
+        'textDecoration',
+        'line-through',
+        todos.$test((t) => t.find((i) => i.id === todo.id)?.completed),
+      ),
+    ),
+    tag.button(
+      trait.text('×'),
+      trait.event('click', () => dispatch(deleteTodo(todo.id))),
+    ),
+  );
+}
+
+export const app = tag.div(
+  trait.style('backgroundColor', surface_bg_primary.$val),
+  trait.style('color', text_fg_primary.$val),
+  trait.style('padding', space_padding_md.$val),
+  tag.h1(trait.text('Todo App')),
+  tag.input(
+    trait.inputValue(newTodoText.$val),
+    trait.inputEvent('input', newTodoText.set),
+    trait.event('keydown', (e) => {
+      if ((e as KeyboardEvent).key === 'Enter') {
+        dispatch(addTodo(newTodoText.val()));
+        newTodoText.set('');
+      }
+    }),
+  ),
+  tag.ul(trait.innerHTML(() => todos.val().map((todo) => TodoItem(todo)), todos)),
+);
+```
+
+## Guidelines
+
+- **Default to inlining everything.** Write the entire UI as one nested expression. Only extract helper functions when they are reused multiple times, serve as factories, or are extremely large (>1000 lines).
+- **Apply traits directly.** Traits belong inline on their target element — do not store them in shared arrays.
+- **Use `$val` for reactive bindings.** Prefer `token.$val` over the verbose `() => token.val(), token` form.
+- **Use `$test` for conditions.** Prefer `state.$test(...)` over standalone `$test()` with separate state arguments.
+- **Keep the file readable.** Indentation reflects DOM nesting. Each `tag.*()` call is a visual representation of the DOM tree.
+
+## Rules
+
+1. **One file for all UI.** Only split into a `ui/` folder if the file exceeds manageable size.
+2. **Import everything, define nothing.** States, tokens, templates, actions — all come from their own files.
+3. **Helper functions are just functions.** There is no component API. A "component" is a function that returns an element.
+4. **Extract functions sparingly.** Only when reused, parameterized, or massive.
+5. **The UI file is the final consumer.** It reads from every other file but nothing reads from it except `main.ts`.
+
+
+---
+
+
+# BDD Files
+
+## What This File Is
+
+The `bdd/` folder contains behavior-driven design files — markdown documents that describe **what the application should do** in terms of requirements, acceptance criteria, and concrete scenarios. Each feature or major use case gets its own `.md` file inside this folder.
+
+## Why It Must Be Its Own File
+
+BDD files are the **source of truth for intent**. They exist so that LLMs (and humans) can read the expected behavior before writing or modifying code. Mixing requirements with implementation would make it impossible to reason about what the app _should_ do vs. what it _currently_ does.
+
+## When to Create
+
+Create a `bdd/` folder at the start of any new OEM application. Add a `.md` file for each distinct feature or user story before writing implementation code.
+
+## When to Use
+
+- **Before coding**: Read the relevant BDD file to understand what needs to be built.
+- **During coding**: Reference the scenarios to ensure the implementation matches the specification.
+- **After coding**: Verify the implementation satisfies every scenario in the BDD file.
+- **When adding features**: Create a new BDD file for the new feature before writing any code.
+
+## File Structure
+
+Each BDD file should contain:
+
+1. **Feature title** — a clear, descriptive name
+2. **Requirements** — a numbered list of what the feature must do
+3. **Properties / Data model** — what data the feature works with
+4. **BDD Scenarios** — Gherkin-style Given/When/Then blocks
+
+## Example
+
+```markdown
+# User Authentication
+
+## Requirements
+
+1. Users can sign in with email and password
+2. Failed sign-in shows an error message
+3. Successful sign-in redirects to the dashboard
+4. Users can sign out from any page
+
+## Data Model
+
+- Email: string
+- Password: string
+- Auth token: string | null
+- Error message: string | null
+
+## Scenarios
+
+### Scenario: Successful sign-in
+
+Given I am on the sign-in page
+When I enter a valid email and password
+And I click "Sign In"
+Then I should be redirected to the dashboard
+And I should see my username in the header
+
+### Scenario: Failed sign-in
+
+Given I am on the sign-in page
+When I enter an invalid password
+And I click "Sign In"
+Then I should see "Invalid credentials" error message
+And I should remain on the sign-in page
+```
+
+## Rules
+
+1. **One file per feature or major use case.** Do not combine unrelated features into a single BDD file.
+2. **Write BDD before implementation.** The BDD file drives what gets built.
+3. **Use Gherkin format** (Given/When/Then) for scenarios — it is unambiguous and parseable by LLMs.
+4. **Keep scenarios concrete.** Use specific values, not vague descriptions.
+5. **Update BDD files when requirements change.** They must stay in sync with the current expected behavior.
+
+
+---
+
+
+# Main File
+
+## What This File Is
+
+`main.ts` is the single entry point of the OEM application. It is the file that gets loaded by the HTML page's `<script>` tag. Its job is to initialize the application — wire the UI into the DOM and perform any one-time setup.
+
+## Why It Must Be Its Own File
+
+The entry point is the only file with side effects on import (it mounts the UI to the DOM). Keeping it minimal and separate ensures that all other files are pure and importable without side effects, which makes them testable and reusable.
+
+## When to Create
+
+Create `main.ts` as one of the first files in any new OEM application.
+
+## When to Use
+
+- **When starting the application**: This is what the browser loads.
+- **When changing initialization logic**: Edit this file to modify what happens on app startup.
+- **When adding global setup**: One-time side effects (loading from localStorage, adding global event listeners) go here.
+
+## What Belongs Here
+
+- Importing the root UI element from `ui.ts`
+- Mounting the UI to the DOM via `tag.$(document.body)(...)` or `document.body.appendChild(...)`
+- One-time initialization (loading persisted state from localStorage, setting initial theme, etc.)
+- Global event listeners that don't belong to a specific element
+
+## What Does NOT Belong Here
+
+- State definitions (those go in `states.ts`)
+- UI construction (that goes in `ui.ts`)
+- Token definitions (those go in `theme.ts`)
+- Template definitions (those go in `templates.ts`)
+- Machine logic (that goes in `machines.ts`)
+
+## Example
+
+```typescript
+// main.ts
+import { tag, trait } from './templates';
+import { app } from './ui';
+import { todos } from './states';
+import { STORAGE_KEY } from './constants';
+
+// Load persisted state
+const saved = localStorage.getItem(STORAGE_KEY);
+if (saved) {
+  try {
+    todos.set(JSON.parse(saved));
+  } catch {
+    // ignore invalid data
+  }
+}
+
+// Persist state on changes
+todos.sub((value) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+});
+
+// Mount the app
+tag.$(document.body)(
+  trait.style('margin', '0'),
+  trait.style('fontFamily', 'system-ui, sans-serif'),
+  app,
+);
+```
+
+## HTML Integration
+
+The HTML file simply loads the entry point:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My App</title>
+  </head>
+  <body>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
+```
+
+## Rules
+
+1. **One entry point per app.** There is exactly one `main.ts`.
+2. **Keep it minimal.** Import, initialize, mount — nothing more.
+3. **No UI construction.** The DOM tree is built in `ui.ts` and imported here.
+4. **Side effects are OK here** — this is the only file where side effects on import are expected.
+5. **Global listeners go here** — if a listener doesn't belong to a specific element (e.g., `window.onbeforeunload`), attach it in `main.ts`.
+
+
+---
+
+
+# Types File
+
+## What This File Is
+
+`types.ts` is the single file (or `types/` folder) containing all TypeScript type definitions for the application. This includes types for state shapes, action payloads, data structures, function signatures, and any other custom types used across the app.
+
+## Why It Must Be Its Own File
+
+Types are referenced by every other category — states, actions, machines, UI, and traits all depend on shared type definitions. Centralizing them in one file eliminates circular imports, ensures a single source of truth, and lets LLMs quickly scan the entire type surface of the app.
+
+## When to Create
+
+Create `types.ts` at the start of any new OEM application, immediately after the BDD files define the data model.
+
+## When to Use
+
+- **Before writing state or actions**: Define the shape of your state and action types here first.
+- **When adding a new feature**: Add any new types to this file before implementing them elsewhere.
+- **When refactoring**: Check this file first to understand the app's data model.
+
+## What Belongs Here
+
+- State shape interfaces (e.g., `Todo`, `AppState`, `Filter`)
+- Action type unions and payload interfaces
+- Enum-like union types (e.g., `type Theme = 'light' | 'dark'`)
+- Utility types specific to the app
+- Props/parameter interfaces for helper functions
+
+## What Does NOT Belong Here
+
+- OEM framework types (these come from `@linttrap/oem`)
+- Implementation logic of any kind
+- Constants or literal values (those go in `constants.ts`)
+- Runtime code
+
+## Example
+
+```typescript
+// types.ts
+
+export type Todo = {
+  id: string;
+  text: string;
+  completed: boolean;
+  createdAt: number;
+  editedAt?: number;
+};
+
+export type Filter = 'all' | 'active' | 'completed';
+
+export type Action =
+  | { type: 'ADD_TODO'; payload: { text: string } }
+  | { type: 'TOGGLE_TODO'; payload: { id: string } }
+  | { type: 'DELETE_TODO'; payload: { id: string } }
+  | { type: 'SET_FILTER'; payload: { filter: Filter } };
+```
+
+## Rules
+
+1. **One file for all types.** Only split into a `types/` folder if the file exceeds manageable size.
+2. **Export everything.** Every type should be exported so other files can import it.
+3. **No runtime code.** This file contains only `type`, `interface`, and `enum` declarations.
+4. **Name types clearly.** Use PascalCase and descriptive names that match the domain.
+5. **Define types before implementation.** Types should exist before the code that uses them.
+
+
+---
+
+
+# Config File
+
+## What This File Is
+
+`config.ts` is the single file (or `config/` folder) containing environment-aware configuration settings for the application. These are values that may differ between development, staging, and production environments but do not need to trigger re-renders when they change.
+
+## Why It Must Be Its Own File
+
+Configuration is separate from constants because config values are environment-dependent. Isolating them makes it easy for LLMs and developers to see what can be changed per deployment without touching application logic.
+
+## When to Create
+
+Create `config.ts` when the application has any settings that vary by environment (e.g., API URLs, feature flags, debug toggles).
+
+## When to Use
+
+- **When setting up API calls**: Import the base URL or environment-specific endpoints from config.
+- **When toggling features**: Check feature flags defined in config.
+- **When deploying**: Review this file to confirm environment-specific settings.
+
+## What Belongs Here
+
+- Environment-specific API URLs
+- Feature flags (boolean toggles for unreleased features)
+- Debug/logging settings
+- Environment detection logic (`isDev`, `isProd`)
+- Third-party service keys (non-secret, client-side only)
+
+## What Does NOT Belong Here
+
+- Fixed values that never change per environment (those go in `constants.ts`)
+- Reactive values (those go in `states.ts`)
+- Design tokens (those go in `theme.ts`)
+- Type definitions (those go in `types.ts`)
+
+## Example
+
+```typescript
+// config.ts
+
+const ENV = import.meta.env?.MODE ?? 'development';
+
+export const config = {
+  isDev: ENV === 'development',
+  isProd: ENV === 'production',
+  apiBaseUrl: ENV === 'production' ? 'https://api.example.com/v1' : 'http://localhost:3000/v1',
+  enableAnalytics: ENV === 'production',
+  logLevel: ENV === 'production' ? 'error' : 'debug',
+} as const;
+```
+
+## Rules
+
+1. **One file for all config.** Only split into a folder if the file grows unmanageable.
+2. **Export a single `config` object** or named exports — keep access patterns consistent.
+3. **No reactive values.** Config does not trigger re-renders. If it needs to, use a State object in `states.ts`.
+4. **No secrets.** Never put API keys, passwords, or tokens in client-side config.
+5. **Keep it declarative.** Config should be a set of values, not logic or side effects.
 
 
 ---
@@ -1507,7 +2170,7 @@ An OEM application is built by creating elements, decorating them with traits, a
 Every OEM file that produces UI starts by creating a template and destructuring it into `tag` and `trait`:
 
 ```ts
-import { Template, useStyleTrait, useTextContentTrait, useEventTrait } from '@/registry';
+import { Template, useStyleTrait, useTextContentTrait, useEventTrait } from '@linttrap/oem';
 
 export const [tag, trait] = Template({
   style: useStyleTrait,
@@ -1529,19 +2192,19 @@ Elements are created by calling a tag function with traits and child elements as
 ```ts
 tag.div(
   trait.style('padding', '16px'),
-  trait.style('backgroundColor', () => surface_bg_primary.val(), surface_bg_primary),
+  trait.style('backgroundColor', surface_bg_primary.$val),
   tag.h1(
     trait.text('Hello, OEM'),
-    trait.style('fontSize', () => type_size_xl.val(), type_size_xl),
+    trait.style('fontSize', type_size_xl.$val),
   ),
   tag.p(
-    trait.text(() => message.val(), message),
-    trait.style('color', () => text_fg_secondary.val(), text_fg_secondary),
+    trait.text(message.$val),
+    trait.style('color', text_fg_secondary.$val),
   ),
 );
 ```
 
-This is the heart of idiomatic OEM: a single nested expression that declaratively specifies structure, style, content, and reactivity in one place.
+This is the heart of idiomatic OEM: a single nested expression that declaratively specifies structure, style, content, and reactivity in one place. Notice that `token.$val` is used rather than `() => token.val(), token` — `$val` is simultaneously a getter function AND a subscribable (it carries a `.sub` property), so traits auto-detect it as both the value source and the subscription source.
 
 ### Adopting Existing Elements
 
@@ -1561,21 +2224,7 @@ tag.$(document.body)(
 
 A trait call like `trait.style('color', 'red')` does **not** immediately mutate the DOM. It returns a function `(el: HTMLElement) => void` — an **applier**. The tag proxy calls each applier with the created element after it exists.
 
-This indirection is what makes composition work: you can store trait appliers in variables, pass them into functions, and spread them into element constructors without ever referencing a specific element:
-
-```ts
-const primaryButton = [
-  trait.style('backgroundColor', () => action_bg_primary.val(), action_bg_primary),
-  trait.style('color', () => action_fg_primary.val(), action_fg_primary),
-  trait.style('border', 'none'),
-  trait.style('padding', () => space_padding_md.val(), space_padding_md),
-  trait.style('borderRadius', () => radius_size_md.val(), radius_size_md),
-  trait.style('cursor', 'pointer'),
-];
-
-tag.button(...primaryButton, trait.text('Save'), trait.event('click', handleSave));
-tag.button(...primaryButton, trait.text('Cancel'), trait.event('click', handleCancel));
-```
+This is an implementation detail. Traits should always be applied directly and inline to their target element — do not store trait appliers in shared variables or pass them between elements.
 
 ---
 
@@ -1589,18 +2238,26 @@ OEM's reactivity is **push-based** and **surgically scoped**:
 
 ### How traits subscribe to state
 
-Every trait accepts `...rest: (StateType | Condition)[]` as trailing arguments. The runtime uses duck-typing to separate these:
+Every trait accepts `...rest: (StateType | Condition)[]` as trailing arguments. The runtime uses `extractStates()` and `extractConditions()` with duck-typing to separate these:
 
 - Objects with a `.sub` property → **State** (subscribed to for re-evaluation)
 - Objects with `.type === '$test'` → **Condition** (gates whether the trait applies)
 
-```ts
-// The trait subscribes to `count` and re-evaluates `() => count.val()` whenever it changes
-trait.text(() => `Count: ${count.val()}`, count);
+The key insight is that `state.$val` has a `.sub` property attached to it, so it is auto-detected as a State by `extractStates`. This means `$val` serves as **both** the getter function and the subscription source, collapsing two arguments into one:
 
-// The trait subscribes to `theme` (via the token) and re-evaluates the color
+```ts
+// ✅ Idiomatic: $val is both the getter and the subscription
+trait.style('color', text_fg_primary.$val);
+trait.text(message.$val);
+
+// Verbose equivalent (only needed for computed/derived values):
+trait.text(() => `Count: ${count.val()}`, count);
 trait.style('color', () => text_fg_primary.val(), text_fg_primary);
 ```
+
+Use `$val` when you need the state's raw value. Use the verbose `() => expr, state` form only when you need to compute or transform the value (e.g., string interpolation, `.map()`, property access on complex objects).
+
+For State objects with custom methods, each method auto-generates a `$`-prefixed deferred version. For complex state objects (Objects, Arrays), custom getter methods provide targeted access to specific keys or values. These custom `$`-prefixed methods work as thunks for event handlers, but they do NOT carry `.sub` — so for reactive binding of complex state values, use the verbose form or `$val` when the whole value is needed.
 
 ### Static vs. dynamic values
 
@@ -1608,7 +2265,7 @@ Every trait parameter that accepts a value also accepts a `() => value` function
 
 ```ts
 trait.style('display', 'flex'); // static — never changes
-trait.style('opacity', () => (isVisible.val() ? '1' : '0')); // dynamic — but see "Conditions" below
+trait.style('opacity', () => '...some computed value...'); // dynamic — re-evaluates on state change
 ```
 
 ---
@@ -1619,8 +2276,8 @@ trait.style('opacity', () => (isVisible.val() ? '1' : '0')); // dynamic — but 
 
 ```ts
 // ✅ Idiomatic: separate trait calls with conditions
-trait.style('opacity', '1', $test(enabled)),
-trait.style('opacity', '0.4', $test(enabled, false)),
+trait.style('opacity', '1', enabled.$test(true)),
+trait.style('opacity', '0.4', enabled.$test(false)),
 
 // ❌ Anti-pattern: ternary hides branches
 trait.style('opacity', enabled ? '1' : '0.4'),
@@ -1628,22 +2285,26 @@ trait.style('opacity', enabled ? '1' : '0.4'),
 
 ### Creating conditions
 
-Use `$test()` from `@/core/util` or the `$test` method on any State object:
+State objects have `.test()` for immediate evaluation and `.$test()` for reactive conditions. The standalone `$test()` helper from `@linttrap/oem` handles cases where State's built-in `.$test` doesn't apply:
 
 ```ts
-import { $test } from '@/core/util';
-
-// From a static or computed boolean
-$test(true);
-$test(() => count.val() > 0);
-$test(() => filter.val() === 'active');
-
-// From a State's built-in $test (returns a closure with .sub attached)
+// Preferred: State's built-in $test (self-subscribing — has .sub attached)
 count.$test(0); // true when count === 0
 count.$test((v) => v > 10); // true when count > 10
 filter.$test('active'); // true when filter === 'active'
 filter.$test(/active|all/); // true when filter matches regex
+
+// State's immediate .test (for non-reactive checks)
+count.test(0); // returns boolean right now
+count.test((v) => v > 10); // returns boolean right now
+
+// Standalone $test helper (NOT self-subscribing — you must pass states separately)
+import { $test } from '@linttrap/oem';
+$test(true);
+$test(() => count.val() > 0); // must also pass `count` in ...rest
 ```
+
+**Important**: `state.$test(...)` is self-subscribing because it carries `.sub` — the trait auto-detects it as a subscription source AND a condition simultaneously. The standalone `$test()` from util does NOT have `.sub`, so when using it with state-derived values you must pass the state objects separately in `...rest`.
 
 ### Multiple conditions are AND-ed
 
@@ -1652,10 +2313,9 @@ When a trait receives multiple conditions, **all** must be truthy for the trait 
 ```ts
 trait.style(
   'backgroundColor',
-  () => action_bg_primary.val(),
-  action_bg_primary,
-  $test(() => !disabled.val()),
-  $test(() => isHovered.val()),
+  action_bg_primary.$val,
+  disabled.$test(false),
+  isHovered.$test(true),
 );
 ```
 
@@ -1684,12 +2344,16 @@ trait.event(
 trait.event('click', darkMode.$set('dark'));
 ```
 
-Thunked getters like `$val` and `$test` also carry a `.sub` property, so they double as reactive sources when passed in `...rest`:
+`$val` and `$test` are special — they also carry a `.sub` property, so they double as reactive subscription sources when passed to traits:
 
 ```ts
-// state.$val is both a getter AND a subscribable — traits detect it automatically
+// $val: both a getter AND a subscribable — traits detect it automatically
 trait.attr('data-count', count.$val);
-trait.text(count.$val, count);
+trait.text(count.$val);
+trait.style('color', text_fg_primary.$val);
+
+// $test: both a condition AND a subscribable
+trait.style('opacity', '1', count.$test((v) => v > 0));
 ```
 
 ### Custom methods follow the same pattern
@@ -1736,34 +2400,34 @@ trait.style('backgroundColor', '#2563eb');
 trait.style('padding', '16px');
 
 // ✅ Idiomatic
-trait.style('backgroundColor', () => action_bg_primary.val(), action_bg_primary);
-trait.style('padding', () => space_padding_md.val(), space_padding_md);
+trait.style('backgroundColor', action_bg_primary.$val);
+trait.style('padding', space_padding_md.$val);
 ```
 
-Tokens are State objects — they react to theme changes automatically. See the [Theming & Design Tokens](theming.md) guide for full details on token naming, creation, and reuse.
+Tokens are State objects — they react to theme changes automatically. Tokens are the **only** mechanism for reusable visual consistency across elements. Do not create shared trait arrays as "reusable styles" — reuse comes from referencing the same tokens. See the [Theming & Design Tokens](theming.md) guide for full details on token naming, creation, and reuse.
 
 ---
 
 ## Composition Patterns
 
-### Trait arrays as reusable "styles"
+### Apply traits directly and inline
 
-Group related traits into arrays and spread them:
+Traits should be applied directly to their target element, not stored in shared variables. Reusable visual consistency comes from tokens, not from shared trait arrays:
 
 ```ts
-const cardStyles = [
-  trait.style('backgroundColor', () => surface_bg_secondary.val(), surface_bg_secondary),
-  trait.style('borderRadius', () => radius_size_md.val(), radius_size_md),
-  trait.style('padding', () => space_padding_lg.val(), space_padding_lg),
-  trait.style('boxShadow', () => shadow_box_sm.val(), shadow_box_sm),
-];
-
-tag.div(...cardStyles, tag.h2(trait.text('Card Title')), tag.p(trait.text('Card body')));
+// ✅ Idiomatic: traits applied directly, tokens provide consistency
+tag.div(
+  trait.style('backgroundColor', surface_bg_secondary.$val),
+  trait.style('borderRadius', radius_size_md.$val),
+  trait.style('padding', space_padding_lg.$val),
+  tag.h2(trait.text('Card Title')),
+  tag.p(trait.text('Card body')),
+);
 ```
 
-### Helper functions as "components"
+### Helper functions ("components")
 
-When a subtree is reused or grows complex, extract it into a plain function. There is no special component API — it's just a function that returns an element:
+Extract a subtree into a plain function **only** when: (a) it is used multiple times, (b) it needs to exist as a factory with parameters, or (c) it is extremely large (>1000 lines). There is no special component API — it's just a function that returns an element. Default to inlining everything:
 
 ```ts
 function TodoItem(todo: Todo) {
@@ -1787,15 +2451,31 @@ function TodoItem(todo: Todo) {
 }
 ```
 
-### innerHTML for dynamic lists
+### Looping / Dynamic Lists
 
 Use `trait.innerHTML` with a reactive function to render lists that update when state changes:
 
 ```ts
-tag.ul(trait.innerHTML(() => filteredTodos().map((todo) => TodoItem(todo)), todos, filter));
+tag.ul(
+  trait.innerHTML(
+    () => todos.val().map((todo) => TodoItem(todo)),
+    todos,
+  ),
+);
 ```
 
-The `innerHTML` trait clears the element and re-appends children on every state change. Child elements (returned by `TodoItem`) are appended directly — no serialization.
+The `innerHTML` trait clears the element and re-appends children on every state change — it is a full tear-down-and-rebuild, not a diff. Child elements are appended directly via `appendChild` (no serialization). Pass all State objects the list depends on as trailing arguments:
+
+```ts
+// List depends on both `todos` and `filter` state
+tag.ul(
+  trait.innerHTML(
+    () => filteredTodos().map((todo) => TodoItem(todo)),
+    todos,
+    filter,
+  ),
+);
+```
 
 ---
 
@@ -1817,8 +2497,7 @@ trait.event(
 trait.event(
   'click',
   handleSubmit,
-  $test(() => !isSubmitting.val()),
-  isSubmitting,
+  isSubmitting.$test(false),
 );
 ```
 
@@ -1841,17 +2520,20 @@ You never need to manually unsubscribe or tear down. Build elements, append them
 
 ## Summary of Rules
 
-| Rule                                          | Why                                                           |
-| --------------------------------------------- | ------------------------------------------------------------- |
-| Destructure `Template` into `[tag, trait]`    | Establishes the two proxies used everywhere                   |
-| Never use ternaries in trait args             | Conditions keep branches explicit and reactive                |
-| Never hardcode visual values                  | Tokens ensure consistency and automatic theming               |
-| Use `$`-thunked methods for event handlers    | Avoids wrapping lambdas; carries `.sub` for traits            |
-| State lives at module level                   | No prop drilling; any trait can subscribe to any state        |
-| Extract repeated trait groups into arrays     | Reuse without abstraction overhead                            |
-| Extract complex subtrees into plain functions | Components are just functions that return elements            |
-| Use `innerHTML` for dynamic lists             | Clears and re-renders on state change; appends real DOM nodes |
-| Let cleanup happen automatically              | MutationObserver + WeakMap handles all teardown               |
+| Rule                                          | Why                                                                  |
+| --------------------------------------------- | -------------------------------------------------------------------- |
+| Destructure `Template` into `[tag, trait]`    | Establishes the two proxies used everywhere                          |
+| Prefer `$val` over verbose `() => val(), st`  | Collapses getter + subscription into one reference                   |
+| Never use ternaries in trait args             | Conditions keep branches explicit and reactive                       |
+| Prefer `state.$test()` for conditions         | Self-subscribing — auto-detected as both Condition and State         |
+| Never hardcode visual values                  | Tokens ensure consistency and automatic theming                      |
+| Reuse tokens, not trait arrays                | Tokens are the reusable visual primitives, not shared trait groups   |
+| Apply traits directly and inline              | Traits belong to their element; do not store or share them           |
+| Use `$`-thunked methods for event handlers    | Avoids wrapping lambdas; clean event wiring                          |
+| State lives at module level                   | No prop drilling; any trait can subscribe to any state               |
+| Extract functions only when reused or huge    | Default to inlining; extract only for reuse, factories, or >1k lines |
+| Use `innerHTML` for dynamic lists             | Clears and re-renders on state change; appends real DOM nodes        |
+| Let cleanup happen automatically              | MutationObserver + WeakMap handles all teardown                      |
 
 
 ---
@@ -2024,7 +2706,7 @@ useThemeState('light')          ← single source of truth for current theme
 Every app must create exactly **one** `useThemeState` instance and export it from a central `theme.ts` file:
 
 ```ts
-import { useThemeState, useTokenState } from '@/registry';
+import { useThemeState, useTokenState } from '@linttrap/oem';
 
 // Single source of truth
 export const theme = useThemeState('light');
@@ -2112,8 +2794,8 @@ export const action_bg_danger = useTokenState('#dc2626', '#ef4444', theme);
 Tokens are `State` objects. Pass them as reactive watchers to traits:
 
 ```ts
-trait.style('backgroundColor', () => surface_bg_primary.val(), surface_bg_primary);
-trait.style('color', () => text_fg_primary.val(), text_fg_primary);
+trait.style('backgroundColor', surface_bg_primary.$val);
+trait.style('color', text_fg_primary.$val);
 ```
 
 When the theme changes, every token fires its subscribers and the UI updates automatically.
@@ -2129,7 +2811,535 @@ When the theme changes, every token fires its subscribers and the UI updates aut
 ---
 
 
+# Test Files
+
+## What This File Is
+
+`test/` is the folder containing all unit and integration tests for the application. Test files mirror the structure of the source code and verify that states, actions, machines, and UI behavior work as expected.
+
+## Why It Must Be Its Own Folder
+
+Tests are not application code — they are verification code. Isolating them in a `test/` folder keeps the main source clean and makes it clear which files are production code and which are test harnesses.
+
+## When to Create
+
+Create a `test/` folder as soon as the application has state or machine logic worth verifying. Tests should be written alongside implementation, not deferred until later.
+
+## When to Use
+
+- **After implementing state logic**: Write tests for State objects, custom methods, and reducers.
+- **After implementing machines**: Write tests for each action/case in the machine.
+- **After implementing actions**: Verify action creators return the correct shape.
+- **When debugging**: Write a failing test that reproduces the bug, then fix it.
+
+## What Belongs Here
+
+- Unit tests for State objects (`.set()`, `.reduce()`, `.test()`, custom methods)
+- Unit tests for machine dispatch functions
+- Unit tests for action creators
+- Integration tests for state + machine interactions
+- Test utilities and mocks
+
+## What Does NOT Belong Here
+
+- Application code of any kind
+- Production state or configuration
+
+## Example Structure
+
+```
+test/
+  states.test.ts
+  machines.test.ts
+  actions.test.ts
+```
+
+## Example Test
+
+```typescript
+// test/states.test.ts
+import { State } from '@linttrap/oem';
+
+const count = State(0);
+
+// Test set
+count.set(5);
+console.assert(count.val() === 5, 'set should update value');
+
+// Test reduce
+count.reduce((prev) => prev + 1);
+console.assert(count.val() === 6, 'reduce should transform value');
+
+// Test subscription
+let received: number | undefined;
+const unsub = count.sub((v) => (received = v));
+count.set(10);
+console.assert(received === 10, 'subscriber should receive new value');
+unsub();
+count.set(20);
+console.assert(received === 10, 'unsubscribed listener should not receive');
+
+// Test $test
+console.assert(count.test(20) === true, 'test should check equality');
+console.assert(count.test((v) => v > 10) === true, 'test should accept predicates');
+```
+
+## Important Note
+
+Test files need to interact with internals in ways that application code never should. **Do not use test files as examples of idiomatic OEM.** Tests may import from internal paths, directly manipulate subscriptions, or use patterns that are inappropriate for production UI code.
+
+## Rules
+
+1. **Tests live in the `test/` folder.** Not alongside source files, not in a root `__tests__` directory.
+2. **Mirror source structure.** `states.ts` → `test/states.test.ts`, `machines.ts` → `test/machines.test.ts`.
+3. **Test behavior, not implementation.** Verify what State values result from actions, not how they get there.
+4. **Do not use test patterns as examples.** Tests interact with internals; production code should use the idiomatic `$val` / `$test` / `$reduce` patterns.
+5. **Write tests alongside implementation.** Don't defer testing to a later phase.
+
+
+---
+
+
+# States File
+
+## What This File Is
+
+`states.ts` is the single file (or `states/` folder) containing all reactive State objects for the application. State objects are created with the `State()` function from OEM and are the mechanism for storing any value that needs to trigger UI re-renders when it changes.
+
+## Why It Must Be Its Own File
+
+State objects are module-level singletons shared across the entire application. Centralizing them in one file gives LLMs and developers a single inventory of all reactive data in the app. It also prevents accidental duplication — before creating a new State, check this file to see if one already exists.
+
+## When to Create
+
+Create `states.ts` at the start of any new OEM application, as soon as the types are defined.
+
+## When to Use
+
+- **When rendering UI**: Import State objects and bind them to traits using `$val` or the verbose form.
+- **When handling events**: Import State objects and use `$set`, `$reduce`, or custom `$`-prefixed methods.
+- **When adding a new feature**: Add any new State objects to this file.
+- **Before creating a new State**: Read this file to check if an appropriate State already exists.
+
+## What Belongs Here
+
+- All `State()` instances for the application
+- Custom methods defined on State objects (passed as the second argument to `State()`)
+- State objects for any data that UI traits subscribe to
+
+## What Does NOT Belong Here
+
+- Type definitions (those go in `types.ts`)
+- Static data that never changes (those go in `data.ts`)
+- Constants (those go in `constants.ts`)
+- Design tokens (those go in `theme.ts` using `useTokenState`)
+- Action creator functions (those go in `actions.ts`)
+- Machine/dispatch logic (those go in `machines.ts`)
+
+## Example
+
+```typescript
+// states.ts
+import { State } from '@linttrap/oem';
+import type { Todo, Filter } from './types';
+
+export const todos = State<Todo[]>([]);
+export const filter = State<Filter>('all');
+export const editingId = State<string | null>(null);
+export const newTodoText = State('');
+
+// State with custom methods
+export const todoList = State<Todo[]>([], {
+  add: (state, text: string) => {
+    state.reduce((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), text, completed: false, createdAt: Date.now() },
+    ]);
+  },
+  toggle: (state, id: string) => {
+    state.reduce((prev) => prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
+  },
+  remove: (state, id: string) => {
+    state.reduce((prev) => prev.filter((t) => t.id !== id));
+  },
+});
+```
+
+## Usage Patterns
+
+```typescript
+// In UI — binding to traits using $val
+trait.text(filter.$val);
+trait.style(
+  'opacity',
+  '1',
+  editingId.$test((id) => id !== null),
+);
+
+// In event handlers — using $ thunks
+trait.event('click', filter.$set('active'));
+trait.event('click', todoList.$toggle(todo.id));
+
+// Verbose form for computed values
+trait.text(() => `${todos.val().filter((t) => !t.completed).length} items left`, todos);
+```
+
+## Rules
+
+1. **One file for all State objects.** Only split into a folder if the file grows unmanageable.
+2. **State objects are module-level singletons.** Never create State inside a function or loop.
+3. **Import types from `types.ts`.** State objects should be typed with the app's type definitions.
+4. **Check before creating.** Read the file first to avoid duplicate State objects.
+5. **Use custom methods** for complex mutations that would otherwise require inline `reduce` callbacks everywhere.
+
+
+---
+
+
 # Git
 
 TBD
+
+
+---
+
+
+# Machines File
+
+## What This File Is
+
+`machines.ts` is the single file (or `machines/` folder) containing all state machines for the application. Each machine is a function that takes the current state and a dispatched action, then uses a switch statement to determine what state mutation to perform.
+
+## Why It Must Be Its Own File
+
+Machines are the decision-making layer of the application. They determine how the app responds to actions. Isolating them from state definitions, actions, and UI makes the behavioral logic easy to read, test, and modify without affecting other layers.
+
+## When to Create
+
+Create `machines.ts` when the application has complex state transitions that benefit from a centralized dispatch pattern — especially when multiple actions affect multiple State objects in coordinated ways.
+
+## When to Use
+
+- **When processing dispatched actions**: The machine reads the action type and performs the appropriate state mutations.
+- **When adding new behavior**: Add a new case to the relevant machine's switch statement.
+- **When debugging behavior**: Read the machine to trace how an action maps to a state change.
+
+## What Belongs Here
+
+- Machine functions (switch statements on action type)
+- Dispatch functions that feed actions into machines
+- Any coordination logic that involves multiple State objects reacting to a single action
+
+## What Does NOT Belong Here
+
+- State object definitions (those go in `states.ts`)
+- Action creator functions (those go in `actions.ts`)
+- Type definitions (those go in `types.ts`)
+- UI code or trait calls
+
+## Example
+
+```typescript
+// machines.ts
+import type { Action } from './types';
+import { todos, filter, editingId } from './states';
+
+export function dispatch(action: Action) {
+  switch (action.type) {
+    case 'ADD_TODO':
+      todos.reduce((prev) => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          text: action.payload.text,
+          completed: false,
+          createdAt: Date.now(),
+        },
+      ]);
+      break;
+
+    case 'TOGGLE_TODO':
+      todos.reduce((prev) =>
+        prev.map((t) => (t.id === action.payload.id ? { ...t, completed: !t.completed } : t)),
+      );
+      break;
+
+    case 'DELETE_TODO':
+      todos.reduce((prev) => prev.filter((t) => t.id !== action.payload.id));
+      break;
+
+    case 'SET_FILTER':
+      filter.set(action.payload.filter);
+      break;
+  }
+}
+```
+
+## Usage in UI
+
+```typescript
+import { dispatch } from './machines';
+import { addTodo, toggleTodo } from './actions';
+
+// Wire dispatch to event handlers
+trait.event('click', () => dispatch(addTodo(newTodoText.val())));
+trait.event('change', () => dispatch(toggleTodo(todo.id)));
+```
+
+## Rules
+
+1. **One file for all machines.** Only split into a folder if the file grows unmanageable.
+2. **Use simple switch statements.** Each case handles one action type. No nesting, no complex conditionals.
+3. **Machines mutate State objects.** They call `.set()`, `.reduce()`, or custom methods on imported State objects.
+4. **Machines are synchronous.** If you need async operations, trigger them from the machine case but resolve the state mutation synchronously.
+5. **Keep cases focused.** Each case should be a few lines. If a case grows complex, extract the logic into a helper function within the same file.
+
+
+---
+
+
+# Actions File
+
+## What This File Is
+
+`actions.ts` is the single file (or `actions/` folder) containing all action creator functions for the application. Each action is a function that returns an object with a `type` and an optional `payload`. Actions describe **what happened** — they do not execute the change themselves.
+
+## Why It Must Be Its Own File
+
+Actions are the vocabulary of the application's behavior. Centralizing them in one file gives LLMs and developers a complete inventory of every user intent the app can handle. It also keeps action definitions separate from the machine logic that processes them.
+
+## When to Create
+
+Create `actions.ts` when the application uses a state machine pattern (i.e., it has a `machines.ts` file). Actions are the inputs to machines.
+
+## When to Use
+
+- **When dispatching from event handlers**: Import action creators and call them to produce action objects.
+- **When writing machines**: Reference action types to handle each case.
+- **When adding new user interactions**: Define a new action creator here before wiring it into the machine.
+
+## What Belongs Here
+
+- Action creator functions (functions that return `{ type, payload }` objects)
+- Action type constants (if not using string literals directly)
+- The Action union type (or import it from `types.ts`)
+
+## What Does NOT Belong Here
+
+- State mutation logic (that goes in `machines.ts` or State custom methods in `states.ts`)
+- UI code or trait calls
+- State object definitions
+
+## Example
+
+```typescript
+// actions.ts
+import type { Action } from './types';
+
+export const addTodo = (text: string): Action => ({
+  type: 'ADD_TODO',
+  payload: { text },
+});
+
+export const toggleTodo = (id: string): Action => ({
+  type: 'TOGGLE_TODO',
+  payload: { id },
+});
+
+export const deleteTodo = (id: string): Action => ({
+  type: 'DELETE_TODO',
+  payload: { id },
+});
+
+export const setFilter = (filter: 'all' | 'active' | 'completed'): Action => ({
+  type: 'SET_FILTER',
+  payload: { filter },
+});
+```
+
+## Rules
+
+1. **One file for all actions.** Only split into a folder if the file grows unmanageable.
+2. **Actions are pure functions.** They return data objects, nothing more — no side effects, no state mutation.
+3. **One function per action type.** Each action creator maps to exactly one `type` string.
+4. **Keep payloads minimal.** Only include the data needed to process the action.
+5. **Name action creators as verbs** (`addTodo`, `toggleTodo`) and action types as UPPER_SNAKE_CASE strings (`'ADD_TODO'`, `'TOGGLE_TODO'`).
+
+
+---
+
+
+# Templates File
+
+## What This File Is
+
+`templates.ts` is the single file (or `templates/` folder) containing all `Template()` definitions for the application. Each `Template()` call creates a `[tag, trait]` pair — a custom template engine configured with a specific set of traits.
+
+## Why It Must Be Its Own File
+
+Templates are the bridge between OEM's trait system and the UI. They define _which_ traits are available in each part of the app. Centralizing template definitions makes it easy to see what capabilities each template has and ensures consistent trait naming across the application.
+
+## When to Create
+
+Create `templates.ts` at the start of any new OEM application, immediately after deciding which traits the app needs.
+
+## When to Use
+
+- **When writing UI code**: Import `[tag, trait]` from this file.
+- **When adding new traits**: Register them in the appropriate Template definition here.
+- **When starting a new view or module**: Decide whether to use an existing template or create a new one.
+
+## What Belongs Here
+
+- All `Template()` calls and their destructured `[tag, trait]` exports
+- Imports of built-in traits from `@linttrap/oem`
+- Imports of custom traits from `traits.ts`
+
+## What Does NOT Belong Here
+
+- Trait implementations (those go in `traits.ts` for custom traits, or come from `@linttrap/oem`)
+- UI rendering code (that goes in `ui.ts`)
+- State definitions (those go in `states.ts`)
+
+## Example
+
+```typescript
+// templates.ts
+import {
+  Template,
+  useStyleTrait,
+  useStyleOnEventTrait,
+  useEventTrait,
+  useTextContentTrait,
+  useAttributeTrait,
+  useClassNameTrait,
+  useInnerHTMLTrait,
+  useInputValueTrait,
+  useInputEventTrait,
+  useFocusTrait,
+} from '@linttrap/oem';
+
+export const [tag, trait] = Template({
+  style: useStyleTrait,
+  styleOnEvent: useStyleOnEventTrait,
+  event: useEventTrait,
+  text: useTextContentTrait,
+  attr: useAttributeTrait,
+  className: useClassNameTrait,
+  innerHTML: useInnerHTMLTrait,
+  inputValue: useInputValueTrait,
+  inputEvent: useInputEventTrait,
+  focus: useFocusTrait,
+});
+```
+
+## Multiple Templates
+
+Most applications need only one template. Create additional templates only when different parts of the app need different trait sets (e.g., an SVG-heavy section that needs specialized traits):
+
+```typescript
+// A second template with a subset of traits
+export const [svgTag, svgTrait] = Template({
+  style: useStyleTrait,
+  attr: useAttributeTrait,
+  event: useEventTrait,
+});
+```
+
+## Rules
+
+1. **One file for all templates.** Only split into a folder if the file grows unmanageable.
+2. **Most apps need exactly one template.** Don't create multiple unless there's a clear reason.
+3. **Name trait keys consistently** across templates — `style`, `event`, `text`, `attr`, etc.
+4. **Import traits, don't define them here.** This file wires traits together, it doesn't implement them.
+5. **Export `[tag, trait]`** so UI files can import them directly.
+
+
+---
+
+
+# Custom Traits File
+
+## What This File Is
+
+`traits.ts` is the single file (or `traits/` folder) containing any custom trait functions created for the application. Custom traits extend the behavior of OEM's template system beyond the built-in traits (style, event, attribute, textContent, className, innerHTML, etc.).
+
+## Why It Must Be Its Own File
+
+Custom traits are reusable behavioral building blocks — they are registered into Templates just like built-in traits. Isolating them in their own file keeps them discoverable and prevents them from being buried inside UI code where they'd be hard to find and reuse.
+
+## When to Create
+
+Create `traits.ts` only when the built-in trait library does not cover a behavior you need. Most applications do not need custom traits — the core library is designed to be sufficient for typical use cases.
+
+## When to Use
+
+- **When building a Template**: Import custom traits and register them alongside built-in traits.
+- **When you need a repeating DOM behavior** that isn't covered by the built-in traits.
+- **Before creating a custom trait**: Check whether a built-in trait already handles the use case.
+
+## What Belongs Here
+
+- Custom trait functions following the OEM trait signature: `(el: HTMLElement, ...args, ...rest: (StateType | Condition)[]) => (() => void) | void`
+- Each trait should handle its own subscription to State objects and return a cleanup function
+
+## What Does NOT Belong Here
+
+- Built-in traits (those come from `@linttrap/oem`)
+- UI rendering code (that goes in `ui.ts`)
+- State definitions (those go in `states.ts`)
+
+## Example
+
+```typescript
+// traits.ts
+import { extractStates, extractConditions } from '@linttrap/oem';
+import type { StateType, Condition } from '@linttrap/oem';
+
+export function useScrollToTrait(
+  el: HTMLElement,
+  behavior: ScrollBehavior = 'smooth',
+  ...rest: (StateType<any> | Condition)[]
+) {
+  const states = extractStates(...rest);
+  const conditions = extractConditions(...rest);
+
+  const apply = () => {
+    const applies = conditions.every((c) => (typeof c === 'function' ? c() : c));
+    if (applies) {
+      el.scrollIntoView({ behavior });
+    }
+  };
+
+  apply();
+  const unsubs = states.map((state) => state.sub(apply));
+  return () => unsubs.forEach((unsub) => unsub());
+}
+```
+
+## Registering Custom Traits
+
+```typescript
+// templates.ts
+import { Template, useStyleTrait, useEventTrait, useTextContentTrait } from '@linttrap/oem';
+import { useScrollToTrait } from './traits';
+
+export const [tag, trait] = Template({
+  style: useStyleTrait,
+  event: useEventTrait,
+  text: useTextContentTrait,
+  scrollTo: useScrollToTrait,
+});
+
+// Usage
+trait.scrollTo('smooth', someCondition.$test(true));
+```
+
+## Rules
+
+1. **One file for all custom traits.** Only split into a folder if the file grows unmanageable.
+2. **Follow the trait signature convention.** First parameter is `el`, then trait-specific args, then `...rest: (StateType | Condition)[]`.
+3. **Return a cleanup function.** Unsubscribe from all State listeners and remove any event listeners.
+4. **Use `extractStates` and `extractConditions`** from OEM's util to handle the `...rest` parameter.
+5. **Most apps need zero custom traits.** Only create one when the built-in library genuinely doesn't cover the behavior.
 

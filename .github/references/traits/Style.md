@@ -46,19 +46,21 @@ A cleanup function that unsubscribes from all State listeners.
 ## Template Usage
 
 ```ts
-// Static token value
-trait.style('backgroundColor', theme.sem_color_bkg_pri());
-trait.style('padding', theme.sem_spc_pad_md());
+// Token value (re-evaluates on theme change via $val)
+trait.style('backgroundColor', surface_bg_primary.$val);
+trait.style('padding', space_padding_md.$val);
 
 // Reactive value from state
-trait.style('opacity', () => (visible.get() ? '1' : '0'), visible);
-
-// Deferred token getter (re-evaluates on theme change)
-trait.style('color', theme.$sem_color_txt_pri);
+trait.style('opacity', '1', visible.$test(true));
+trait.style('opacity', '0', visible.$test(false));
 
 // Custom CSS property
 trait.style('--header-height', '64px');
 
 // Conditional application
-trait.style('display', 'none', someState, () => !someState.get().visible);
+trait.style(
+  'display',
+  'none',
+  someState.$test((s) => !s.visible),
+);
 ```

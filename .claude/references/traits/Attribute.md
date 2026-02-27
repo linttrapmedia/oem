@@ -48,12 +48,16 @@ A cleanup function that unsubscribes from all State listeners.
 When used through a Template's `trait` proxy, the `el` parameter is supplied automatically:
 
 ```ts
-trait.attribute('disabled', () => !formState.get().isValid, formState);
+trait.attribute(
+  'disabled',
+  'true',
+  formState.$test((s) => !s.isValid),
+);
 trait.attribute('aria-label', 'Close dialog');
 trait.attribute(
   'data-active',
-  () => tabState.get().active === id,
-  tabState,
-  () => visible.get(),
+  'true',
+  tabState.$test((s) => s.active === id),
+  visible.$test(true),
 );
 ```

@@ -50,15 +50,12 @@ A cleanup function that unsubscribes from all State listeners.
 ```ts
 tag.div(
   trait.innerHTML(
-    () => [
-      tag.h1(trait.textContent('Hello')),
-      tag.p(trait.textContent(() => message.get(), message)),
-    ],
+    () => [tag.h1(trait.textContent('Hello')), tag.p(trait.textContent(message.$val))],
     message,
   ),
 );
 
 tag.ul(
-  trait.innerHTML(() => items.get().map((item) => tag.li(trait.textContent(item.label))), items),
+  trait.innerHTML(() => items.val().map((item) => tag.li(trait.textContent(item.label))), items),
 );
 ```

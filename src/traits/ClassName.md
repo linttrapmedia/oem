@@ -44,5 +44,6 @@ A cleanup function that unsubscribes from all State listeners.
 
 ```ts
 trait.className('btn btn-primary');
-trait.className(() => (isActive.get() ? 'tab active' : 'tab'), isActive);
+trait.className('tab active', isActive.$test(true));
+trait.className('tab', isActive.$test(false));
 ```

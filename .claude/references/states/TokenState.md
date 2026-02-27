@@ -20,7 +20,7 @@ A derived state hook that selects between two token values based on the current 
 ## Usage
 
 ```typescript
-import { useThemeState, useTokenState } from '@/registry';
+import { useThemeState, useTokenState } from '@linttrap/oem';
 
 const theme = useThemeState('light');
 const primaryColor = useTokenState('#111827', '#f9fafb', theme);

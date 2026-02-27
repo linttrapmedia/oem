@@ -48,10 +48,6 @@ A cleanup function that unsubscribes from all State listeners.
 
 ```ts
 trait.textContent('Hello, World!');
-trait.textContent(() => `Count: ${counter.get()}`, counter);
-trait.textContent(
-  () => items.get().length,
-  items,
-  () => items.get().length > 0,
-);
+trait.textContent(counter.$val);
+trait.textContent(() => `${items.val().length} items`, items);
 ```

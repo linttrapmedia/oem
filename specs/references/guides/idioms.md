@@ -34,7 +34,7 @@ An OEM application is built by creating elements, decorating them with traits, a
 Every OEM file that produces UI starts by creating a template and destructuring it into `tag` and `trait`:
 
 ```ts
-import { Template, useStyleTrait, useTextContentTrait, useEventTrait } from '@/registry';
+import { Template, useStyleTrait, useTextContentTrait, useEventTrait } from '@linttrap/oem';
 
 export const [tag, trait] = Template({
   style: useStyleTrait,
@@ -56,19 +56,19 @@ Elements are created by calling a tag function with traits and child elements as
 ```ts
 tag.div(
   trait.style('padding', '16px'),
-  trait.style('backgroundColor', () => surface_bg_primary.val(), surface_bg_primary),
+  trait.style('backgroundColor', surface_bg_primary.$val),
   tag.h1(
     trait.text('Hello, OEM'),
-    trait.style('fontSize', () => type_size_xl.val(), type_size_xl),
+    trait.style('fontSize', type_size_xl.$val),
   ),
   tag.p(
-    trait.text(() => message.val(), message),
-    trait.style('color', () => text_fg_secondary.val(), text_fg_secondary),
+    trait.text(message.$val),
+    trait.style('color', text_fg_secondary.$val),
   ),
 );
 ```
 
-This is the heart of idiomatic OEM: a single nested expression that declaratively specifies structure, style, content, and reactivity in one place.
+This is the heart of idiomatic OEM: a single nested expression that declaratively specifies structure, style, content, and reactivity in one place. Notice that `token.$val` is used rather than `() => token.val(), token` — `$val` is simultaneously a getter function AND a subscribable (it carries a `.sub` property), so traits auto-detect it as both the value source and the subscription source.
 
 ### Adopting Existing Elements
 
@@ -88,21 +88,7 @@ tag.$(document.body)(
 
 A trait call like `trait.style('color', 'red')` does **not** immediately mutate the DOM. It returns a function `(el: HTMLElement) => void` — an **applier**. The tag proxy calls each applier with the created element after it exists.
 
-This indirection is what makes composition work: you can store trait appliers in variables, pass them into functions, and spread them into element constructors without ever referencing a specific element:
-
-```ts
-const primaryButton = [
-  trait.style('backgroundColor', () => action_bg_primary.val(), action_bg_primary),
-  trait.style('color', () => action_fg_primary.val(), action_fg_primary),
-  trait.style('border', 'none'),
-  trait.style('padding', () => space_padding_md.val(), space_padding_md),
-  trait.style('borderRadius', () => radius_size_md.val(), radius_size_md),
-  trait.style('cursor', 'pointer'),
-];
-
-tag.button(...primaryButton, trait.text('Save'), trait.event('click', handleSave));
-tag.button(...primaryButton, trait.text('Cancel'), trait.event('click', handleCancel));
-```
+This is an implementation detail. Traits should always be applied directly and inline to their target element — do not store trait appliers in shared variables or pass them between elements.
 
 ---
 
@@ -116,18 +102,26 @@ OEM's reactivity is **push-based** and **surgically scoped**:
 
 ### How traits subscribe to state
 
-Every trait accepts `...rest: (StateType | Condition)[]` as trailing arguments. The runtime uses duck-typing to separate these:
+Every trait accepts `...rest: (StateType | Condition)[]` as trailing arguments. The runtime uses `extractStates()` and `extractConditions()` with duck-typing to separate these:
 
 - Objects with a `.sub` property → **State** (subscribed to for re-evaluation)
 - Objects with `.type === '$test'` → **Condition** (gates whether the trait applies)
 
-```ts
-// The trait subscribes to `count` and re-evaluates `() => count.val()` whenever it changes
-trait.text(() => `Count: ${count.val()}`, count);
+The key insight is that `state.$val` has a `.sub` property attached to it, so it is auto-detected as a State by `extractStates`. This means `$val` serves as **both** the getter function and the subscription source, collapsing two arguments into one:
 
-// The trait subscribes to `theme` (via the token) and re-evaluates the color
+```ts
+// ✅ Idiomatic: $val is both the getter and the subscription
+trait.style('color', text_fg_primary.$val);
+trait.text(message.$val);
+
+// Verbose equivalent (only needed for computed/derived values):
+trait.text(() => `Count: ${count.val()}`, count);
 trait.style('color', () => text_fg_primary.val(), text_fg_primary);
 ```
+
+Use `$val` when you need the state's raw value. Use the verbose `() => expr, state` form only when you need to compute or transform the value (e.g., string interpolation, `.map()`, property access on complex objects).
+
+For State objects with custom methods, each method auto-generates a `$`-prefixed deferred version. For complex state objects (Objects, Arrays), custom getter methods provide targeted access to specific keys or values. These custom `$`-prefixed methods work as thunks for event handlers, but they do NOT carry `.sub` — so for reactive binding of complex state values, use the verbose form or `$val` when the whole value is needed.
 
 ### Static vs. dynamic values
 
@@ -135,7 +129,7 @@ Every trait parameter that accepts a value also accepts a `() => value` function
 
 ```ts
 trait.style('display', 'flex'); // static — never changes
-trait.style('opacity', () => (isVisible.val() ? '1' : '0')); // dynamic — but see "Conditions" below
+trait.style('opacity', () => '...some computed value...'); // dynamic — re-evaluates on state change
 ```
 
 ---
@@ -146,8 +140,8 @@ trait.style('opacity', () => (isVisible.val() ? '1' : '0')); // dynamic — but 
 
 ```ts
 // ✅ Idiomatic: separate trait calls with conditions
-trait.style('opacity', '1', $test(enabled)),
-trait.style('opacity', '0.4', $test(enabled, false)),
+trait.style('opacity', '1', enabled.$test(true)),
+trait.style('opacity', '0.4', enabled.$test(false)),
 
 // ❌ Anti-pattern: ternary hides branches
 trait.style('opacity', enabled ? '1' : '0.4'),
@@ -155,22 +149,26 @@ trait.style('opacity', enabled ? '1' : '0.4'),
 
 ### Creating conditions
 
-Use `$test()` from `@/core/util` or the `$test` method on any State object:
+State objects have `.test()` for immediate evaluation and `.$test()` for reactive conditions. The standalone `$test()` helper from `@linttrap/oem` handles cases where State's built-in `.$test` doesn't apply:
 
 ```ts
-import { $test } from '@/core/util';
-
-// From a static or computed boolean
-$test(true);
-$test(() => count.val() > 0);
-$test(() => filter.val() === 'active');
-
-// From a State's built-in $test (returns a closure with .sub attached)
+// Preferred: State's built-in $test (self-subscribing — has .sub attached)
 count.$test(0); // true when count === 0
 count.$test((v) => v > 10); // true when count > 10
 filter.$test('active'); // true when filter === 'active'
 filter.$test(/active|all/); // true when filter matches regex
+
+// State's immediate .test (for non-reactive checks)
+count.test(0); // returns boolean right now
+count.test((v) => v > 10); // returns boolean right now
+
+// Standalone $test helper (NOT self-subscribing — you must pass states separately)
+import { $test } from '@linttrap/oem';
+$test(true);
+$test(() => count.val() > 0); // must also pass `count` in ...rest
 ```
+
+**Important**: `state.$test(...)` is self-subscribing because it carries `.sub` — the trait auto-detects it as a subscription source AND a condition simultaneously. The standalone `$test()` from util does NOT have `.sub`, so when using it with state-derived values you must pass the state objects separately in `...rest`.
 
 ### Multiple conditions are AND-ed
 
@@ -179,10 +177,9 @@ When a trait receives multiple conditions, **all** must be truthy for the trait 
 ```ts
 trait.style(
   'backgroundColor',
-  () => action_bg_primary.val(),
-  action_bg_primary,
-  $test(() => !disabled.val()),
-  $test(() => isHovered.val()),
+  action_bg_primary.$val,
+  disabled.$test(false),
+  isHovered.$test(true),
 );
 ```
 
@@ -211,12 +208,16 @@ trait.event(
 trait.event('click', darkMode.$set('dark'));
 ```
 
-Thunked getters like `$val` and `$test` also carry a `.sub` property, so they double as reactive sources when passed in `...rest`:
+`$val` and `$test` are special — they also carry a `.sub` property, so they double as reactive subscription sources when passed to traits:
 
 ```ts
-// state.$val is both a getter AND a subscribable — traits detect it automatically
+// $val: both a getter AND a subscribable — traits detect it automatically
 trait.attr('data-count', count.$val);
-trait.text(count.$val, count);
+trait.text(count.$val);
+trait.style('color', text_fg_primary.$val);
+
+// $test: both a condition AND a subscribable
+trait.style('opacity', '1', count.$test((v) => v > 0));
 ```
 
 ### Custom methods follow the same pattern
@@ -263,34 +264,34 @@ trait.style('backgroundColor', '#2563eb');
 trait.style('padding', '16px');
 
 // ✅ Idiomatic
-trait.style('backgroundColor', () => action_bg_primary.val(), action_bg_primary);
-trait.style('padding', () => space_padding_md.val(), space_padding_md);
+trait.style('backgroundColor', action_bg_primary.$val);
+trait.style('padding', space_padding_md.$val);
 ```
 
-Tokens are State objects — they react to theme changes automatically. See the [Theming & Design Tokens](theming.md) guide for full details on token naming, creation, and reuse.
+Tokens are State objects — they react to theme changes automatically. Tokens are the **only** mechanism for reusable visual consistency across elements. Do not create shared trait arrays as "reusable styles" — reuse comes from referencing the same tokens. See the [Theming & Design Tokens](theming.md) guide for full details on token naming, creation, and reuse.
 
 ---
 
 ## Composition Patterns
 
-### Trait arrays as reusable "styles"
+### Apply traits directly and inline
 
-Group related traits into arrays and spread them:
+Traits should be applied directly to their target element, not stored in shared variables. Reusable visual consistency comes from tokens, not from shared trait arrays:
 
 ```ts
-const cardStyles = [
-  trait.style('backgroundColor', () => surface_bg_secondary.val(), surface_bg_secondary),
-  trait.style('borderRadius', () => radius_size_md.val(), radius_size_md),
-  trait.style('padding', () => space_padding_lg.val(), space_padding_lg),
-  trait.style('boxShadow', () => shadow_box_sm.val(), shadow_box_sm),
-];
-
-tag.div(...cardStyles, tag.h2(trait.text('Card Title')), tag.p(trait.text('Card body')));
+// ✅ Idiomatic: traits applied directly, tokens provide consistency
+tag.div(
+  trait.style('backgroundColor', surface_bg_secondary.$val),
+  trait.style('borderRadius', radius_size_md.$val),
+  trait.style('padding', space_padding_lg.$val),
+  tag.h2(trait.text('Card Title')),
+  tag.p(trait.text('Card body')),
+);
 ```
 
-### Helper functions as "components"
+### Helper functions ("components")
 
-When a subtree is reused or grows complex, extract it into a plain function. There is no special component API — it's just a function that returns an element:
+Extract a subtree into a plain function **only** when: (a) it is used multiple times, (b) it needs to exist as a factory with parameters, or (c) it is extremely large (>1000 lines). There is no special component API — it's just a function that returns an element. Default to inlining everything:
 
 ```ts
 function TodoItem(todo: Todo) {
@@ -314,15 +315,31 @@ function TodoItem(todo: Todo) {
 }
 ```
 
-### innerHTML for dynamic lists
+### Looping / Dynamic Lists
 
 Use `trait.innerHTML` with a reactive function to render lists that update when state changes:
 
 ```ts
-tag.ul(trait.innerHTML(() => filteredTodos().map((todo) => TodoItem(todo)), todos, filter));
+tag.ul(
+  trait.innerHTML(
+    () => todos.val().map((todo) => TodoItem(todo)),
+    todos,
+  ),
+);
 ```
 
-The `innerHTML` trait clears the element and re-appends children on every state change. Child elements (returned by `TodoItem`) are appended directly — no serialization.
+The `innerHTML` trait clears the element and re-appends children on every state change — it is a full tear-down-and-rebuild, not a diff. Child elements are appended directly via `appendChild` (no serialization). Pass all State objects the list depends on as trailing arguments:
+
+```ts
+// List depends on both `todos` and `filter` state
+tag.ul(
+  trait.innerHTML(
+    () => filteredTodos().map((todo) => TodoItem(todo)),
+    todos,
+    filter,
+  ),
+);
+```
 
 ---
 
@@ -344,8 +361,7 @@ trait.event(
 trait.event(
   'click',
   handleSubmit,
-  $test(() => !isSubmitting.val()),
-  isSubmitting,
+  isSubmitting.$test(false),
 );
 ```
 
@@ -368,14 +384,17 @@ You never need to manually unsubscribe or tear down. Build elements, append them
 
 ## Summary of Rules
 
-| Rule                                          | Why                                                           |
-| --------------------------------------------- | ------------------------------------------------------------- |
-| Destructure `Template` into `[tag, trait]`    | Establishes the two proxies used everywhere                   |
-| Never use ternaries in trait args             | Conditions keep branches explicit and reactive                |
-| Never hardcode visual values                  | Tokens ensure consistency and automatic theming               |
-| Use `$`-thunked methods for event handlers    | Avoids wrapping lambdas; carries `.sub` for traits            |
-| State lives at module level                   | No prop drilling; any trait can subscribe to any state        |
-| Extract repeated trait groups into arrays     | Reuse without abstraction overhead                            |
-| Extract complex subtrees into plain functions | Components are just functions that return elements            |
-| Use `innerHTML` for dynamic lists             | Clears and re-renders on state change; appends real DOM nodes |
-| Let cleanup happen automatically              | MutationObserver + WeakMap handles all teardown               |
+| Rule                                          | Why                                                                  |
+| --------------------------------------------- | -------------------------------------------------------------------- |
+| Destructure `Template` into `[tag, trait]`    | Establishes the two proxies used everywhere                          |
+| Prefer `$val` over verbose `() => val(), st`  | Collapses getter + subscription into one reference                   |
+| Never use ternaries in trait args             | Conditions keep branches explicit and reactive                       |
+| Prefer `state.$test()` for conditions         | Self-subscribing — auto-detected as both Condition and State         |
+| Never hardcode visual values                  | Tokens ensure consistency and automatic theming                      |
+| Reuse tokens, not trait arrays                | Tokens are the reusable visual primitives, not shared trait groups   |
+| Apply traits directly and inline              | Traits belong to their element; do not store or share them           |
+| Use `$`-thunked methods for event handlers    | Avoids wrapping lambdas; clean event wiring                          |
+| State lives at module level                   | No prop drilling; any trait can subscribe to any state               |
+| Extract functions only when reused or huge    | Default to inlining; extract only for reuse, factories, or >1k lines |
+| Use `innerHTML` for dynamic lists             | Clears and re-renders on state change; appends real DOM nodes        |
+| Let cleanup happen automatically              | MutationObserver + WeakMap handles all teardown                      |

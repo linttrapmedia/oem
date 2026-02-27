@@ -28,7 +28,7 @@ useInputEventTrait(
 | --------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `el`      | `HTMLElement`                     | The target form element (typically `HTMLInputElement` or `HTMLTextAreaElement`)                                                                                                                         |
 | `evt`     | `string`                          | The input event type. Restricted to: `'input'`, `'change'`, `'keyup'`, `'keydown'`, `'keypress'`, `'beforeinput'`, `'paste'`, `'cut'`, `'compositionstart'`, `'compositionupdate'`, `'compositionend'`. |
-| `setter`  | `(val: any) => void`              | A function called with `e.target.value` when the event fires. Typically a State's `pub` method.                                                                                                         |
+| `setter`  | `(val: any) => void`              | A function called with `e.target.value` when the event fires. Typically a State's `set` method.                                                                                                         |
 | `...rest` | `(StateType<any> \| Condition)[]` | Optional State objects and/or Conditions. The listener is attached only when all Conditions are truthy.                                                                                                 |
 
 ## Behavior
@@ -46,12 +46,7 @@ A cleanup function that removes the event listener and unsubscribes from all Sta
 ## Template Usage
 
 ```ts
-trait.inputEvent('input', (val) => nameState.pub(val), nameState);
-trait.inputEvent('change', (val) => dispatch({ type: 'SET_FILTER', payload: val }));
-trait.inputEvent(
-  'keydown',
-  (val) => searchState.pub(val),
-  searchState,
-  () => enabled.get(),
-);
+trait.inputEvent('input', nameState.set);
+trait.inputEvent('change', (val) => filterState.set(val));
+trait.inputEvent('keydown', searchState.set, enabled.$test(true));
 ```

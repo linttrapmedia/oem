@@ -46,9 +46,23 @@ OEM's state management system is simple yet powerful, providing a flexible way t
 
 The following guides cover theming, design decisions, code idioms, and architectural patterns:
 
-- [Architectural Patterns](../references/guides/architecture.md) - File structure conventions and architectural patterns for OEM applications.
+- [Data File](../references/guides/file-data.md) - How to define and organize static data in OEM applications.
+- [Folder & File Structure](../references/guides/architecture.md) - Canonical folder and file structure for OEM applications, with links to detailed guides for each category.
+- [Constants File](../references/guides/file-constants.md) - How to define and organize constant values in OEM applications.
+- [Theme File](../references/guides/file-theme.md) - How to define and organize design tokens and theming in OEM applications.
+- [UI File](../references/guides/file-ui.md) - How to structure and organize the UI rendering layer in OEM applications.
+- [BDD Files](../references/guides/file-bdd.md) - How to write and use behavior-driven design files that document requirements, acceptance criteria, and use cases.
+- [Main File](../references/guides/file-main.md) - How to structure the application entry point in OEM applications.
+- [Types File](../references/guides/file-types.md) - How to define and organize TypeScript type definitions for OEM applications.
+- [Config File](../references/guides/file-config.md) - How to define and organize environment-aware configuration settings in OEM applications.
 - [Testing](../references/guides/testing.md) - A comprehensive guide to testing strategies, best practices, and tools for ensuring code quality and reliability in your projects.
 - [Idiomatic OEM](../references/guides/idioms.md) - Best practices and idioms for writing clean, consistent OEM code.
 - [Design Decision Guide](../references/guides/design-decisions.md) - Heuristics and rules for making visual and structural design decisions in OEM applications.
 - [Theming & Design Tokens](../references/guides/theming.md) - How OEM's token-driven theming system works — architecture, token creation, naming conventions, and usage rules.
+- [Test Files](../references/guides/file-test.md) - How to organize and write tests for OEM applications.
+- [States File](../references/guides/file-states.md) - How to define and organize reactive State objects in OEM applications.
 - [Git](../references/guides/git.md) - Best practices and conventions for using Git in your projects
+- [Machines File](../references/guides/file-machines.md) - How to define and organize state machines in OEM applications.
+- [Actions File](../references/guides/file-actions.md) - How to define and organize action creator functions in OEM applications.
+- [Templates File](../references/guides/file-templates.md) - How to define and organize Template instances in OEM applications.
+- [Custom Traits File](../references/guides/file-traits.md) - How to define and organize custom trait functions in OEM applications.

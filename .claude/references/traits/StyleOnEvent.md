@@ -49,10 +49,10 @@ A cleanup function that removes the event listener.
 
 ```ts
 // Hover highlight pattern
-trait.styleOnEvent('mouseenter', 'backgroundColor', theme.sem_color_bkg_hover());
-trait.styleOnEvent('mouseleave', 'backgroundColor', theme.sem_color_bkg_pri());
+trait.styleOnEvent('mouseenter', 'backgroundColor', action_bg_hover.$val);
+trait.styleOnEvent('mouseleave', 'backgroundColor', action_bg_primary.$val);
 
 // Focus ring
-trait.styleOnEvent('focus', 'outline', () => `2px solid ${theme.sem_color_bdr_focus()}`);
+trait.styleOnEvent('focus', 'outline', () => `2px solid ${focus_border_primary.val()}`);
 trait.styleOnEvent('blur', 'outline', 'none');
 ```
