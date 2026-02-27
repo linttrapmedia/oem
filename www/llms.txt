@@ -1294,1208 +1294,842 @@ if (isMobile.val()) {
 ---
 
 
-# useThemeState
+# ThemeState
 
-A state management system for handling multiple themes with reactive design token access. Supports dynamic theme switching and provides both immediate and deferred token getters through a Proxy-based API.
+A small state hook for managing the current theme as a reactive `State` value.
 
 ## Features
 
-- **Multi-theme support**: Manage multiple theme definitions
-- **Dynamic switching**: Change themes at runtime
-- **Type-safe tokens**: Full TypeScript support for design tokens
-- **Reactive access**: Tokens update automatically when theme changes
-- **Deferred getters**: Support for computed token values with `$` prefix
-- **Validation**: Ensures themes exist before switching
+- **Typed themes**: Constrains the theme to `'light'` or `'dark'`
+- **Reactive**: Returns a `State` object that can be observed or updated
+- **Minimal**: No side effects, no DOM reads, no global listeners
 
-## Setup
+## Usage
 
 ```typescript
-import { Template } from 'oem/core/template';
-import { useThemeState } from 'oem/states/ThemeState';
-import { darkTheme, lightTheme } from 'oem/themes';
-import { useStyleTrait } from 'oem/traits/Style';
-import { useTextContentTrait } from 'oem/traits/TextContent';
-import { useEventTrait } from 'oem/traits/Event';
-import { useInnerHTMLTrait } from 'oem/traits/InnerHTML';
+import { useThemeState } from '@/registry';
 
-import type { Theme } from 'oem/states/ThemeState';
+const theme = useThemeState('light');
 
-const myDark: Theme = { name: 'dark', tokens: darkTheme };
-const myLight: Theme = { name: 'light', tokens: lightTheme };
+// Read the current theme
+const current = theme.val();
 
-const theme = useThemeState([myDark, myLight], 'dark');
-const { tag, trait } = Template({
-  useStyleTrait,
-  useTextContentTrait,
-  useEventTrait,
-  useInnerHTMLTrait,
-});
+// Update the theme
+theme.set('dark');
 ```
 
-## Type Definitions
+## Signature
 
 ```typescript
-type Theme = {
-  name: string;
-  tokens: DesignTokens;
-};
+type Theme = 'light' | 'dark';
 
-type ThemeStateValue = {
-  themes: Theme[];
-  currentTheme: string;
-};
+function useThemeState(theme: Theme): State<Theme>;
 ```
 
-## API
+## Parameters
 
-### Constructor
+| Parameter | Type    | Default | Description                                 |
+| --------- | ------- | ------- | ------------------------------------------- |
+| `theme`   | `Theme` | —       | Initial theme value (`'light'` or `'dark'`) |
+
+## Return Value
+
+Returns a `State<Theme>` representing the current theme.
+
+## Behavior
+
+- Initializes with the provided theme value
+- Updates whenever `set()` is called
+- Subscribers receive the latest theme value
+
+## Notes
+
+- This hook does not persist to storage or read from the DOM
+- Intended to be composed with other reactive state hooks
+
+
+---
+
+
+# TokenState
+
+A derived state hook that selects between two token values based on the current theme.
+
+## Features
+
+- **Theme-aware**: Switches between light and dark values
+- **Derived state**: Recomputes when the theme state changes
+- **Generic**: Works with any token value type
+
+## Usage
 
 ```typescript
-useThemeState(themes: Theme[], initialTheme?: string)
+import { useThemeState, useTokenState } from '@/registry';
+
+const theme = useThemeState('light');
+const primaryColor = useTokenState('#111827', '#f9fafb', theme);
+
+// Read the current token value
+const color = primaryColor.val();
+
+// Switch theme and let token update
+theme.set('dark');
 ```
 
-- `themes` — Array of theme definitions (must have at least one)
-- `initialTheme` — Optional initial theme name (defaults to first theme's name)
-
-Throws if `themes` is empty.
-
-### `getTheme()`
-
-Returns the name of the currently active theme.
+## Signature
 
 ```typescript
-theme.getTheme(); // 'dark'
+function useTokenState<T>(lightVal: T, darkVal: T, themeState: StateType<Theme, {}>): State<T>;
 ```
 
-### `setTheme(themeName: string)`
+## Parameters
 
-Sets the active theme by name. Throws if `themeName` doesn't match any loaded theme.
+| Parameter    | Type                   | Default | Description                                 |
+| ------------ | ---------------------- | ------- | ------------------------------------------- |
+| `lightVal`   | `T`                    | —       | Token value for the light theme             |
+| `darkVal`    | `T`                    | —       | Token value for the dark theme              |
+| `themeState` | `StateType<Theme, {}>` | —       | Theme state used to select the active token |
+
+## Return Value
+
+Returns a `State<T>` whose value updates when the theme changes.
+
+## Behavior
+
+- Initializes to `lightVal` or `darkVal` based on `themeState.val()`
+- Subscribes to `themeState` and updates the token whenever the theme changes
+
+## Common Patterns
 
 ```typescript
-theme.setTheme('light');
+const theme = useThemeState('light');
+const textColor = useTokenState('#111', '#eee', theme);
+const bgColor = useTokenState('#fff', '#0b0f1a', theme);
 ```
 
-### Immediate Token Getter — `theme.{tokenKey}()`
+## Notes
 
-Returns the current value of the token by calling it as a function. Evaluates once at call time.
-
-```typescript
-theme.sem_color_bkg_pri(); // '#0a0a0a'
-theme.sem_spc_inset_md(); // '1rem'
-```
-
-### Deferred Token Getter — `theme.${tokenKey}`
-
-Returns a closure that retrieves the token value when called. Use in traits so the value re-evaluates on theme change.
-
-```typescript
-theme.$sem_color_bkg_pri; // () => '#0a0a0a' (re-evaluates on theme switch)
-```
-
-## Token Access in OEM Templates
-
-### Static Token Values
-
-Use the immediate getter when the value doesn't need to react to theme changes after initial render:
-
-```typescript
-tag.div(
-  trait.style('backgroundColor', theme.sem_color_bkg_pri()),
-  trait.style('color', theme.sem_color_txt_pri()),
-  trait.style('padding', theme.sem_spc_inset_lg()),
-  trait.textContent('Hello, OEM'),
-);
-```
-
-### Reactive Token Values (Deferred Getters)
-
-Use the `$`-prefixed deferred getter so the trait re-evaluates when the theme changes:
-
-```typescript
-tag.div(
-  trait.style('backgroundColor', theme.$sem_color_bkg_pri),
-  trait.style('color', theme.$sem_color_txt_pri),
-  trait.style('padding', theme.$sem_spc_inset_lg),
-  trait.textContent('This reacts to theme switches'),
-);
-```
-
-### Theme Switcher
-
-```typescript
-tag.button(
-  trait.style('backgroundColor', theme.$cmp_btn_pri_bkg),
-  trait.style('color', theme.$cmp_btn_pri_txt_color),
-  trait.style('height', theme.$cmp_btn_hgt_md),
-  trait.style('paddingInline', theme.$cmp_btn_pad_x_md),
-  trait.style('borderRadius', theme.$cmp_btn_bdr_rad),
-  trait.style('cursor', 'pointer'),
-  trait.textContent(() => `Theme: ${theme.getTheme()}`, theme),
-  trait.event('click', () => {
-    theme.setTheme(theme.getTheme() === 'dark' ? 'light' : 'dark');
-  }),
-);
-```
-
-### Themed Card
-
-```typescript
-tag.div(
-  trait.style('backgroundColor', theme.$cmp_cdl_bkg),
-  trait.style('borderColor', theme.$cmp_cdl_bdr_color),
-  trait.style('borderWidth', theme.$cmp_cdl_bdr_wdt),
-  trait.style('borderRadius', theme.$cmp_cdl_bdr_rad),
-  trait.style('padding', theme.$cmp_cdl_pad),
-  trait.style('boxShadow', theme.$cmp_cdl_shd),
-  trait.innerHTML([
-    tag.h2(
-      trait.style('color', theme.$sem_color_txt_pri),
-      trait.style('margin', '0 0 8px 0'),
-      trait.textContent('Card Title'),
-    ),
-    tag.p(
-      trait.style('color', theme.$sem_color_txt_sec),
-      trait.textContent('Card body text styled entirely with design tokens.'),
-    ),
-  ]),
-);
-```
-
-### Subscribing to Theme Changes
-
-Since useThemeState extends State, you can subscribe to changes directly:
-
-```typescript
-theme.sub((value) => {
-  console.log('Switched to:', value.currentTheme);
-});
-```
-
-## Design Token Layers
-
-useThemeState works with a 2-layer design token architecture. Access either layer through the same getter API:
-
-```typescript
-// Semantic — purpose-based values
-trait.style('backgroundColor', theme.$sem_color_bkg_pri);
-trait.style('color', theme.$sem_color_txt_pri);
-
-// Component — all UI parts (structural + visual)
-trait.style('height', theme.$cmp_btn_hgt_md);
-trait.style('backgroundColor', theme.$cmp_btn_pri_bkg);
-trait.style('borderRadius', theme.$cmp_cdl_bdr_rad);
-```
-
-**Token selection cascade:** `cmp_` → `sem_` → inline style
-
-Always search for a `cmp_` token first. Fall back to `sem_` when no component token fits the need. Use an inline style only as an absolute last resort.
-
-## Error Handling
-
-```typescript
-// Empty themes array
-useThemeState([]);
-// Throws: "At least one theme must be provided"
-
-// Non-existent theme name
-theme.setTheme('nonexistent');
-// Throws: 'Theme "nonexistent" not found'
-```
+- The subscription remains active as long as `themeState` exists
+- Ensure the `themeState` is shared across tokens to keep updates consistent
 
 
 ## Theme Library
 
 
-# Component Tokens (Layer 2)
 
-**Prefix:** `cmp_`
+## Guides
 
-## Overview
 
-Component tokens cover all UI parts — both structural properties (heights, padding, radii, border widths) and visual/state properties (colors, shadows, transitions). This is a unified layer: there is no separate "element" or "feature" layer. Everything that describes a specific UI part lives under `cmp_`.
+# Architectural Patterns
 
-## Purpose
+## Folder/File Structure
 
-- Define structural properties for UI elements (sizes, radii, padding, border widths)
-- Provide complete styling for component variants (primary, secondary, ghost, danger)
-- Specify all interactive states (hover, active, disabled, focus)
-- Enable component-level theming and customization
-- Establish consistency across the entire UI
+In order to keep a clean separation of concerns file structures should be based on High Cohesion and Low Coupling and optimized for LLM interpretation and management. The cohesion should exist as "logical coupling", like that of a Mathematical Library where each function is related to the other merely by category. For example "actions" is just a library of actions. They aren't necessarily meant to be "used together", only they share a common role in the code base (to carry out actions). Below is a list of the basic categories. Based on complexity, the following items could exist either as single files or folders with files. Start by making them single files, but if they grow too large, break them down into folders with multiple files.
 
-## Architecture Rules
+- **bdd**:
+  Behavior-driven design files that document requirements, acceptance criteria, and use cases for the app. These files should clearly articulate expected behaviors and scenarios to guide development and provide context for LLM-assisted coding sessions.
 
-- **May reference**: Semantic (Layer 1) via `{sem_token}` syntax
-- **Flat structure only** - No nested objects
-- **snake_case naming** - Consistent naming convention
-- **Component-focused naming** - Names describe the specific component part and variant
+- **types**:
+  Type definitions for the app. This can include types for the state, actions, and any other relevant data structures.
 
-## Token Categories
+- **constants**:
+  Any constant values that are used throughout the app. This can include things like API endpoints, fixed configuration values, or any other data that is truly constant and does not need to trigger re-renders when it changes.
 
-### Button (`cmp_btn_*`)
+- **config**:
+  Configuration settings for the app. This can include things like feature flags, environment variables, or any other settings that may need to be changed based on the deployment environment but do not need to trigger re-renders when they change.
 
-#### Base Properties
+- **data**:
+  Static data that is used in the app. This can include things like lists of options for dropdowns, static content for marketing pages, or any other data that is not expected to change frequently and does not need to trigger re-renders when it changes.
 
-Shared across all button variants:
+- **states**:
+  State objects that can be used in the app. These can be simple reactive state objects created with the State function, they should be used to store any state that needs to be shared across multiple components or that needs to trigger re-renders when it changes.
 
-- Heights: `cmp_btn_hgt_sm`, `cmp_btn_hgt_md`, `cmp_btn_hgt_lg`
-- Font: `cmp_btn_fnt_wgt`, `cmp_btn_fnt_siz_sm/md/lg`
-- Border: `cmp_btn_bdr_wdt`, `cmp_btn_bdr_rad`
-- Layout: `cmp_btn_gap`, `cmp_btn_pad_x_sm/md/lg`
-- Transition: `cmp_btn_trn_dur`, `cmp_btn_trn_eas`
+- **actions**:
+  A library of all the actions that can be dispatched in the app. Each action is a function that returns an object with a type and a payload.
 
-#### Primary Button (`cmp_btn_pri_*`)
+- **machines**:
+  State machines that define the behavior of the app. Each machine has a state, a set of transitions, and a set of actions that can be dispatched. Implement them as simple switch statements, switching on the current state and the dispatched action.
 
-High-emphasis action button:
+- **traits**:
+  The default traits provided by the core library are often sufficient for most use cases, but you may find that you need to create custom traits to handle specific behaviors or patterns in your app. This file or folder can be used to store a library of any custom traits that you create for your app. These traits can then be imported and used in your templates to add functionality to your UI components.
 
-- Background states: default, hover, active, disabled
-- Text colors: default and disabled
-- Border color
-- Shadows: default and hover
+- **templates**:
+  A library of templates (using Template and it's destructured [tag, trait]) that can be used to render the UI. Multiple templates can be used in the app, but it's often best to keep them organized in a single file or folder.
 
-#### Secondary Button (`cmp_btn_sec_*`)
+- **theme**:
+  A library of all the design tokens used in the app. Contains the single `useThemeState` instance and all `useTokenState` tokens generated during development. Each token must have a documentation comment (what / when to use / when not to use) so that future LLM sessions can reuse existing tokens or decide when to add new ones. Tokens follow the `<category>_<property>_<variant>` naming convention.
 
-Medium-emphasis action button:
+- **ui**:
+  Using proper idiomatic OEM usually allows for their to be a single UI as one large template function that renders the entire app since state in OEM is made up of a number of reactive state objects that can be used anywhere and not tied to any single template or component. However, in more complex apps, you may want to break down the UI into smaller components for better organization and readability. This file or folder can be used to store these components, which can then be imported and used in the main UI template. Components are just regular functions no different then if they written inline in the main UI template, but breaking them out can help with organization and readability.
 
-- Background states: default, hover, active, disabled
-- Text colors: default and disabled
-- Border colors: default and hover
+- **test**
+  Unit and integration tests for the app. Test files should mirror the structure of the source code and use a testing framework appropriate for your environment (e.g., Jest, Vitest, or similar). Tests should cover state management, actions, machines, and UI components to ensure reliability and maintainability.
 
-#### Ghost Button (`cmp_btn_gho_*`)
+- **main**:
+  The entry point of the app. It initializes the state machine and sets up the event listeners for the UI. It also renders the UI based on the current state of the machine.
 
-Low-emphasis action button:
 
-- Background states: default, hover, active
-- Text colors: default and hover
+---
 
-#### Danger Button (`cmp_btn_dng_*`)
 
-Destructive action button:
+# Testing
 
-- Background states: default, hover, active
-- Text color
-- Border color
+TBD
 
-### Input (`cmp_inp_*`)
 
-Form text inputs:
+---
 
-- Heights: `cmp_inp_hgt_sm`, `cmp_inp_hgt_md`, `cmp_inp_hgt_lg`
-- Font: `cmp_inp_fnt_siz_sm/md/lg`
-- Border: `cmp_inp_bdr_wdt`, `cmp_inp_bdr_rad`
-- Colors: `cmp_inp_bkg`, `cmp_inp_txt_color`, `cmp_inp_bdr_color`
-- States: focus border color, disabled background, disabled text color, placeholder color
-- Padding: `cmp_inp_pad_x`
 
-### Checkbox (`cmp_chk_*`)
+# Idiomatic OEM
 
-Checkbox input control:
+OEM is unlike traditional UI frameworks. There is no virtual DOM, no JSX, no component lifecycle, and no render loop. Instead, OEM models UI as a flat composition of **elements**, **traits**, and **state** — three primitives that combine into a declarative, reactive system that reads like a blueprint and behaves like a living document.
 
-- Size: `cmp_chk_siz_sm`, `cmp_chk_siz_md`
-- Border: `cmp_chk_bdr_wdt`, `cmp_chk_bdr_rad`
-- Colors: border (default, checked, focus), background (default, checked), checkmark color
+This guide codifies the patterns and conventions that make OEM code idiomatic: easy for humans to read, easy for LLMs to generate, and easy for the runtime to keep efficient.
 
-### Radio (`cmp_rad_*`)
+---
 
-Radio button control:
+## The Three Primitives
 
-- Size: `cmp_rad_siz_sm`, `cmp_rad_siz_md`
-- Border: `cmp_rad_bdr_wdt`
-- Colors: border (default, selected, focus), background (default, selected), dot color
+Everything in OEM reduces to three things:
 
-### Switch (`cmp_swt_*`)
+| Primitive   | What it is                                                             | Created by                                   |
+| ----------- | ---------------------------------------------------------------------- | -------------------------------------------- |
+| **Element** | A real DOM node (HTML or SVG)                                          | `tag.div(...)`, `tag.button(...)`, etc.      |
+| **Trait**   | A behavior applied to an element (style, event, attribute, content, …) | `trait.style(...)`, `trait.event(...)`, etc. |
+| **State**   | A reactive value that notifies subscribers when it changes             | `State(initialValue)`                        |
 
-Toggle switch control:
+An OEM application is built by creating elements, decorating them with traits, and wiring those traits to state objects so the UI updates automatically.
 
-- Dimensions: width, height (sm/md)
-- Background states: off, on, disabled
-- Thumb: size, background, shadow
-- Transition: `cmp_swt_trn_dur`
+---
 
-### Badge (`cmp_bdg_*`)
+## Template Destructuring
 
-Small status or count indicator:
+Every OEM file that produces UI starts by creating a template and destructuring it into `tag` and `trait`:
 
-- Heights: `cmp_bdg_hgt_sm`, `cmp_bdg_hgt_md`
-- Padding: `cmp_bdg_pad_x_sm/md`
-- Font: `cmp_bdg_fnt_siz_sm/md`, `cmp_bdg_fnt_wgt`
-- Border: `cmp_bdg_bdr_rad`
+```ts
+import { Template, useStyleTrait, useTextContentTrait, useEventTrait } from '@/registry';
 
-### Avatar (`cmp_avt_*`)
+export const [tag, trait] = Template({
+  style: useStyleTrait,
+  text: useTextContentTrait,
+  event: useEventTrait,
+});
+```
 
-User avatar / profile image:
-
-- Sizes: `cmp_avt_siz_sm/md/lg/xl`
-- Border: `cmp_avt_bdr_rad`, `cmp_avt_bdr_wdt`, `cmp_avt_bdr_color`
-- Font: `cmp_avt_fnt_siz_sm/md/lg/xl`, `cmp_avt_fnt_wgt`
-
-### Icon (`cmp_ico_*`)
-
-Icon size tokens:
-
-- Sizes: `cmp_ico_siz_xs/sm/md/lg/xl`
-- Colors by context: `cmp_ico_color_default/muted/action/err/suc/wrn`
-
-### Link (`cmp_lnk_*`)
-
-Anchor / hyperlink styling:
-
-- Colors: default, hover, visited, active, focus
-- Decoration: default and hover
-
-### Divider (`cmp_div_*`)
-
-Horizontal or vertical separator:
-
-- Width (thickness): `cmp_div_wdt`
-- Colors: default and subtle
-- Spacing: `cmp_div_mar`
-
-### Spinner (`cmp_spn_*`)
-
-Loading spinner animation:
-
-- Sizes: `cmp_spn_siz_sm/md/lg`
-- Border width: `cmp_spn_bdr_wdt`
-- Colors: default and track
-- Animation: `cmp_spn_dur`
-
-### Card (`cmp_cdl_*`)
-
-Container for related content:
-
-- `cmp_cdl_bkg` - Background
-- `cmp_cdl_bdr_color`, `cmp_cdl_bdr_wdt`, `cmp_cdl_bdr_rad` - Border properties
-- `cmp_cdl_pad` - Overall padding
-- `cmp_cdl_shd`, `cmp_cdl_shd_hov` - Shadow states
-- Section padding: `cmp_cdl_header_pad`, `cmp_cdl_body_pad`, `cmp_cdl_footer_pad`
-- `cmp_cdl_gap` - Gap between sections
-
-### Modal (`cmp_mod_*`)
-
-Dialog overlay pattern:
-
-#### Container
-
-- `cmp_mod_bkg` - Modal background
-- `cmp_mod_bdr_rad` - Border radius
-- `cmp_mod_shd` - Shadow
-- Max widths: `cmp_mod_max_wdt_sm` through `cmp_mod_max_wdt_xl`
-
-#### Overlay
-
-- `cmp_mod_overlay_bkg` - Backdrop color
-- `cmp_mod_overlay_opac` - Backdrop opacity
-- `cmp_mod_overlay_blur` - Backdrop blur
-
-#### Layout
-
-- Section padding: header, body, footer
-- `cmp_mod_gap` - Gap between sections
-
-#### Close Button
-
-- `cmp_mod_close_siz` - Close button size
-- `cmp_mod_close_color`, `cmp_mod_close_color_hov` - Close button colors
-
-#### Animation
-
-- Enter/exit durations and easing functions
-
-### Dropdown (`cmp_drp_*`)
-
-Dropdown menu pattern:
-
-#### Container
-
-- Background, border, shadow
-- `cmp_drp_pad` - Internal padding
-- `cmp_drp_max_hgt` - Maximum height (for scrolling)
-
-#### Items
-
-- Padding: `cmp_drp_item_pad_x`, `cmp_drp_item_pad_y`
-- Background states: hover, active
-- Text colors: default, active
-- `cmp_drp_item_bdr_rad` - Item border radius
-
-#### Divider
-
-- `cmp_drp_divider_color` - Divider color
-- `cmp_drp_divider_mar` - Divider margin
-
-### Tooltip (`cmp_tip_*`)
-
-Contextual information overlay:
-
-- Background and text color
-- Padding (x and y)
-- Font size
-- Border radius, shadow
-- `cmp_tip_max_wdt` - Maximum width
-- `cmp_tip_arrow_siz` - Arrow size
-- `cmp_tip_off` - Offset from trigger
-- Enter/exit animation durations
-
-### Popover (`cmp_pop_*`)
-
-Larger contextual overlay:
-
-- Background, border, shadow
-- `cmp_pop_pad` - Internal padding
-- `cmp_pop_max_wdt` - Maximum width
-- Arrow and offset properties
-
-### Toast (`cmp_tst_*`)
-
-Notification message pattern:
-
-#### Base
-
-- Background, border radius, shadow
-- Padding, max width, gap
-
-#### Variants by State
-
-Each state (success, error, warning, info) has:
-
-- Background color
-- Border color
-- Icon color
-
-#### Animation
-
-- Enter/exit durations
-
-### Navigation (`cmp_nav_*`)
-
-Top navigation bar:
-
-#### Container
-
-- Background, border, height
-- Padding, shadow
-
-#### Nav Items
-
-- Padding (x and y), gap
-- Text colors: default, hover, active
-- Background states: hover, active
-- Border radius
-- Font weights: default and active
-
-#### Active Indicator
-
-- Height and color for active tab indicator
-
-### Sidebar (`cmp_sidebar_*`)
-
-Side navigation panel:
-
-#### Container
-
-- Widths: expanded and collapsed
-- Background, border
-- Padding
-
-#### Sidebar Items
-
-- Padding, gap, icon size
-- Text colors and backgrounds (default, hover, active)
-- Border radius
-
-#### Animation
-
-- `cmp_sidebar_trn_dur` - Transition duration for expand/collapse
-
-### Table (`cmp_tbl_*`)
-
-Data table pattern:
-
-#### Table Container
-
-- Background, border properties, shadow
-
-#### Header
-
-- Background, text color, font weight
-- Padding (x and y)
-- Border color
-
-#### Cells
-
-- Padding (x and y)
-- Border color
-
-#### Row States
-
-- Hover background
-- Selected background
-- Striped background (alternating rows)
-
-### Tabs (`cmp_tab_*`)
-
-Tabbed interface pattern:
-
-#### Container
-
-- Border color, width, gap
-
-#### Tab Items
-
-- Padding (x and y)
-- Text colors: default, hover, active
-- Background states: hover, active
-- Border radius
-- Font weights: default and active
-
-#### Active Indicator
-
-- Height, color, transition duration
-
-#### Tab Panel
-
-- `cmp_tab_panel_pad` - Content padding
-
-### Accordion (`cmp_acc_*`)
-
-Collapsible content sections:
-
-#### Container
-
-- Border color, width, radius
-
-#### Items
-
-- Padding (x and y)
-- Background states: default, hover, active
-
-#### Trigger
-
-- Font weight, text color
-- Icon size, icon transition duration
-
-#### Content
-
-- Padding (x and y)
-- Animation duration for expand/collapse
-
-### Breadcrumb (`cmp_brd_*`)
-
-Navigation breadcrumb trail:
-
-- Gap between items
-- Font size
-- Text colors: default and current
-- Link colors: default and hover
-- Separator color and size
-
-### Pagination (`cmp_pgn_*`)
-
-Page navigation controls:
-
-- Gap between items
-- Item size, border radius
-- Background states: default, hover, active
-- Text colors: default and active
-- Border colors: default and active
-
-### Progress Bar (`cmp_prg_*`)
-
-Progress indicator:
-
-- Heights: small, medium, large
-- Background (track)
-- Fill background
-- Border radius
-- Transition duration
-
-### Slider (`cmp_sldr_*`)
-
-Range input control:
-
-#### Track
-
-- Height, background (empty and filled)
-- Border radius
-
-#### Thumb
-
-- Size, background
-- Border color and width
-- Shadow states: default, hover, active
-
-### Alert (`cmp_alt_*`)
-
-Alert/banner message pattern:
-
-#### Base
-
-- Padding, border radius, width, gap
-
-#### Variants by State
-
-Each state (info, success, warning, error) has:
-
-- Background color
-- Border color
-- Text color
-- Icon color
-
-### Select (`cmp_sel_*`)
-
-Dropdown select input:
-
-#### Trigger
-
-- Heights: small, medium, large
-- Padding, background
-- Border properties
-- Icon size and color
-
-#### Menu
-
-- Background, border, shadow
-- Max height
-
-#### Options
-
-- Padding (x and y)
-- Background states: hover, selected
-- Text colors: default, selected
-
-## Usage Guidelines
-
-### ✅ Do
-
-- Search `cmp_` tokens first for any recognized UI pattern
-- Use `{sem_token}` references for colors, spacing, and typography shared across components
-- Define all interactive states (hover, active, disabled, focus)
-- Group related tokens by component
-
-### ❌ Don't
-
-- Hardcode hex values, rgb values, or pixel literals in `trait.style()` calls
-- Invent `cmp_` token keys that don't exist in `ComponentTokens`
-- Reference tokens that don't exist at all
-
-## Primary Token Layer for Code Generation
-
-Component tokens are the **first choice** for any generated UI code. When an LLM needs to style a button, card, modal, dropdown, table, or any other recognized UI pattern, it should **first search for matching `cmp_` tokens** before falling back to `sem_`.
-
-**Token selection cascade:** **`cmp_`** → `sem_` → inline style
-
-### Example: Generating a Primary Button
-
-```typescript
-import { theme } from './theme';
-import { tag, trait } from './templates';
-
-tag(
-  'button',
-  // Component tokens — variant styling
-  trait.style('backgroundColor', theme.$cmp_btn_pri_bkg),
-  trait.style('color', theme.$cmp_btn_pri_txt_color),
-  trait.style('borderColor', theme.$cmp_btn_pri_bdr_color),
-  trait.style('boxShadow', theme.$cmp_btn_pri_shd),
-  // Component tokens — structural properties
-  trait.style('height', theme.$cmp_btn_hgt_md),
-  trait.style('paddingInline', theme.$cmp_btn_pad_x_md),
-  trait.style('borderRadius', theme.$cmp_btn_bdr_rad),
-  trait.style('fontWeight', theme.$cmp_btn_fnt_wgt),
-  trait.style('fontSize', theme.$cmp_btn_fnt_siz_md),
-  trait.style(
-    'transition',
-    `background-color ${theme.cmp_btn_trn_dur()} ${theme.cmp_btn_trn_eas()}`,
+- `tag` is a proxy — access any HTML or SVG tag name as a property: `tag.div`, `tag.span`, `tag.svg`, `tag.circle`, etc.
+- `trait` is a proxy — access any trait name from the config: `trait.style`, `trait.text`, `trait.event`, etc.
+- A template is defined once per module and reused throughout that module.
+
+---
+
+## Element Construction
+
+Elements are created by calling a tag function with traits and child elements as arguments. Traits and children are interleaved freely — order determines DOM order for children, and trait application order for behaviors:
+
+```ts
+tag.div(
+  trait.style('padding', '16px'),
+  trait.style('backgroundColor', () => surface_bg_primary.val(), surface_bg_primary),
+  tag.h1(
+    trait.text('Hello, OEM'),
+    trait.style('fontSize', () => type_size_xl.val(), type_size_xl),
   ),
-  // Hover state
-  trait.styleOnEvent('mouseenter', 'backgroundColor', theme.$cmp_btn_pri_bkg_hov),
-  trait.styleOnEvent('mouseenter', 'boxShadow', theme.$cmp_btn_pri_shd_hov),
+  tag.p(
+    trait.text(() => message.val(), message),
+    trait.style('color', () => text_fg_secondary.val(), text_fg_secondary),
+  ),
 );
 ```
 
-> **OEM has no component library.** The tokens above don't correspond to a prebuilt `<Button>` component. The LLM generates the full element from scratch using these tokens as the design specification.
+This is the heart of idiomatic OEM: a single nested expression that declaratively specifies structure, style, content, and reactivity in one place.
 
-## Variant Naming Convention
+### Adopting Existing Elements
 
-Use clear variant suffixes:
+Use `tag.$(existingElement)` to wrap an existing DOM node and apply traits to it:
 
-- `_pri` - Primary variant
-- `_sec` - Secondary variant
-- `_gho` - Ghost/minimal variant
-- `_dng` - Danger/destructive variant
-- `_inf` - Info state
-- `_suc` - Success state
-- `_wrn` - Warning state
-- `_err` - Error state
+```ts
+tag.$(document.body)(
+  trait.style('margin', '0'),
+  trait.style('fontFamily', 'system-ui, sans-serif'),
+  myAppRoot,
+);
+```
 
-## State Naming Convention
+---
 
-Use clear state suffixes:
+## Traits Are Appliers
 
-- `_hov` - Hover state
-- `_act` - Active/selected state
-- `_dis` - Disabled state
-- `_foc` - Focus state
-- `_sel` - Selected state
+A trait call like `trait.style('color', 'red')` does **not** immediately mutate the DOM. It returns a function `(el: HTMLElement) => void` — an **applier**. The tag proxy calls each applier with the created element after it exists.
+
+This indirection is what makes composition work: you can store trait appliers in variables, pass them into functions, and spread them into element constructors without ever referencing a specific element:
+
+```ts
+const primaryButton = [
+  trait.style('backgroundColor', () => action_bg_primary.val(), action_bg_primary),
+  trait.style('color', () => action_fg_primary.val(), action_fg_primary),
+  trait.style('border', 'none'),
+  trait.style('padding', () => space_padding_md.val(), space_padding_md),
+  trait.style('borderRadius', () => radius_size_md.val(), radius_size_md),
+  trait.style('cursor', 'pointer'),
+];
+
+tag.button(...primaryButton, trait.text('Save'), trait.event('click', handleSave));
+tag.button(...primaryButton, trait.text('Cancel'), trait.event('click', handleCancel));
+```
+
+---
+
+## Reactivity Model
+
+OEM's reactivity is **push-based** and **surgically scoped**:
+
+1. A `State` object holds a value and a set of subscribers.
+2. Traits subscribe to states they depend on. When a state changes, only the traits subscribed to that state re-run — no diffing, no reconciliation, no tree walk.
+3. When an element is removed from the DOM, a `MutationObserver` fires and all its trait subscriptions are cleaned up automatically via a `WeakMap`.
+
+### How traits subscribe to state
+
+Every trait accepts `...rest: (StateType | Condition)[]` as trailing arguments. The runtime uses duck-typing to separate these:
+
+- Objects with a `.sub` property → **State** (subscribed to for re-evaluation)
+- Objects with `.type === '$test'` → **Condition** (gates whether the trait applies)
+
+```ts
+// The trait subscribes to `count` and re-evaluates `() => count.val()` whenever it changes
+trait.text(() => `Count: ${count.val()}`, count);
+
+// The trait subscribes to `theme` (via the token) and re-evaluates the color
+trait.style('color', () => text_fg_primary.val(), text_fg_primary);
+```
+
+### Static vs. dynamic values
+
+Every trait parameter that accepts a value also accepts a `() => value` function. Use a function when the value should re-evaluate on state changes; use a literal when it's constant:
+
+```ts
+trait.style('display', 'flex'); // static — never changes
+trait.style('opacity', () => (isVisible.val() ? '1' : '0')); // dynamic — but see "Conditions" below
+```
+
+---
+
+## Conditions Over Ternaries
+
+**Never use ternary operators in trait arguments.** Instead, use separate trait calls gated by conditions. This keeps each branch explicit, reactive, and independently addressable:
+
+```ts
+// ✅ Idiomatic: separate trait calls with conditions
+trait.style('opacity', '1', $test(enabled)),
+trait.style('opacity', '0.4', $test(enabled, false)),
+
+// ❌ Anti-pattern: ternary hides branches
+trait.style('opacity', enabled ? '1' : '0.4'),
+```
+
+### Creating conditions
+
+Use `$test()` from `@/core/util` or the `$test` method on any State object:
+
+```ts
+import { $test } from '@/core/util';
+
+// From a static or computed boolean
+$test(true);
+$test(() => count.val() > 0);
+$test(() => filter.val() === 'active');
+
+// From a State's built-in $test (returns a closure with .sub attached)
+count.$test(0); // true when count === 0
+count.$test((v) => v > 10); // true when count > 10
+filter.$test('active'); // true when filter === 'active'
+filter.$test(/active|all/); // true when filter matches regex
+```
+
+### Multiple conditions are AND-ed
+
+When a trait receives multiple conditions, **all** must be truthy for the trait to apply:
+
+```ts
+trait.style(
+  'backgroundColor',
+  () => action_bg_primary.val(),
+  action_bg_primary,
+  $test(() => !disabled.val()),
+  $test(() => isHovered.val()),
+);
+```
+
+---
+
+## The `$` Thunk Convention
+
+Every State method has a `$`-prefixed twin that returns a **closure** instead of executing immediately. This is the primary mechanism for wiring state to event handlers and traits without intermediate arrow functions:
+
+```ts
+const count = State(0);
+
+// Direct execution
+count.set(5); // sets immediately
+count.reduce((prev) => prev + 1); // increments immediately
+
+// Thunked (deferred) execution — returns () => void
+count.$set(5); // returns () => count.set(5)
+count.$reduce((prev) => prev + 1); // returns () => count.reduce(prev + 1)
+
+// Perfect for event handlers
+trait.event(
+  'click',
+  count.$reduce((prev) => prev + 1),
+);
+trait.event('click', darkMode.$set('dark'));
+```
+
+Thunked getters like `$val` and `$test` also carry a `.sub` property, so they double as reactive sources when passed in `...rest`:
+
+```ts
+// state.$val is both a getter AND a subscribable — traits detect it automatically
+trait.attr('data-count', count.$val);
+trait.text(count.$val, count);
+```
+
+### Custom methods follow the same pattern
+
+```ts
+const counter = State(
+  { count: 0 },
+  {
+    increment: (state) => state.reduce((prev) => ({ count: prev.count + 1 })),
+  },
+);
+
+// Direct
+counter.increment();
+
+// Deferred — wire directly to an event
+trait.event('click', counter.$increment());
+```
+
+---
+
+## State Lives Outside Functions
+
+State objects are **module-level singletons**, not component-local. They are created once and imported wherever needed:
+
+```ts
+// states.ts
+export const todos = State<Todo[]>([]);
+export const filter = State<'all' | 'active' | 'completed'>('all');
+export const editingId = State<string | null>(null);
+```
+
+This is fundamental to OEM's architecture. Because state is not scoped to a component tree, there is no prop drilling, no context providers, and no need for a global store pattern. Any trait in any template can subscribe to any state.
+
+---
+
+## Token-Driven Styling
+
+**Never hardcode visual values.** Every color, spacing, font size, radius, shadow, and other design property must come from a `useTokenState` token:
+
+```ts
+// ❌ Anti-pattern
+trait.style('backgroundColor', '#2563eb');
+trait.style('padding', '16px');
+
+// ✅ Idiomatic
+trait.style('backgroundColor', () => action_bg_primary.val(), action_bg_primary);
+trait.style('padding', () => space_padding_md.val(), space_padding_md);
+```
+
+Tokens are State objects — they react to theme changes automatically. See the [Theming & Design Tokens](theming.md) guide for full details on token naming, creation, and reuse.
+
+---
+
+## Composition Patterns
+
+### Trait arrays as reusable "styles"
+
+Group related traits into arrays and spread them:
+
+```ts
+const cardStyles = [
+  trait.style('backgroundColor', () => surface_bg_secondary.val(), surface_bg_secondary),
+  trait.style('borderRadius', () => radius_size_md.val(), radius_size_md),
+  trait.style('padding', () => space_padding_lg.val(), space_padding_lg),
+  trait.style('boxShadow', () => shadow_box_sm.val(), shadow_box_sm),
+];
+
+tag.div(...cardStyles, tag.h2(trait.text('Card Title')), tag.p(trait.text('Card body')));
+```
+
+### Helper functions as "components"
+
+When a subtree is reused or grows complex, extract it into a plain function. There is no special component API — it's just a function that returns an element:
+
+```ts
+function TodoItem(todo: Todo) {
+  return tag.li(
+    trait.style('display', 'flex'),
+    trait.style('alignItems', 'center'),
+    trait.event('dblclick', () => editingId.set(todo.id)),
+    tag.input(
+      trait.attr('type', 'checkbox'),
+      trait.event('change', () => toggleTodo(todo.id)),
+    ),
+    tag.span(
+      trait.text(todo.text),
+      trait.style(
+        'textDecoration',
+        'line-through',
+        todos.$test((t) => t.find((i) => i.id === todo.id)?.completed),
+      ),
+    ),
+  );
+}
+```
+
+### innerHTML for dynamic lists
+
+Use `trait.innerHTML` with a reactive function to render lists that update when state changes:
+
+```ts
+tag.ul(trait.innerHTML(() => filteredTodos().map((todo) => TodoItem(todo)), todos, filter));
+```
+
+The `innerHTML` trait clears the element and re-appends children on every state change. Child elements (returned by `TodoItem`) are appended directly — no serialization.
+
+---
+
+## Event Handling
+
+Wire events with `trait.event`. Handlers can be plain functions or `$`-thunked state operations:
+
+```ts
+// Plain handler
+trait.event('click', () => console.log('clicked'));
+
+// Thunked state mutation
+trait.event(
+  'click',
+  count.$reduce((prev) => prev + 1),
+);
+
+// Conditional event — only attached when condition is true
+trait.event(
+  'click',
+  handleSubmit,
+  $test(() => !isSubmitting.val()),
+  isSubmitting,
+);
+```
+
+Events are automatically removed when the element is removed from the DOM.
+
+---
+
+## Automatic Cleanup
+
+OEM manages memory automatically:
+
+1. Every trait returns an unsubscribe function.
+2. `Template` stores these in a `WeakMap<Element, cleanup[]>`.
+3. A global `MutationObserver` watches for element removal.
+4. When an element is removed, all its cleanup functions execute — event listeners are detached, state subscriptions are dropped.
+
+You never need to manually unsubscribe or tear down. Build elements, append them, remove them — the framework handles the rest.
+
+---
+
+## Summary of Rules
+
+| Rule                                          | Why                                                           |
+| --------------------------------------------- | ------------------------------------------------------------- |
+| Destructure `Template` into `[tag, trait]`    | Establishes the two proxies used everywhere                   |
+| Never use ternaries in trait args             | Conditions keep branches explicit and reactive                |
+| Never hardcode visual values                  | Tokens ensure consistency and automatic theming               |
+| Use `$`-thunked methods for event handlers    | Avoids wrapping lambdas; carries `.sub` for traits            |
+| State lives at module level                   | No prop drilling; any trait can subscribe to any state        |
+| Extract repeated trait groups into arrays     | Reuse without abstraction overhead                            |
+| Extract complex subtrees into plain functions | Components are just functions that return elements            |
+| Use `innerHTML` for dynamic lists             | Clears and re-renders on state change; appends real DOM nodes |
+| Let cleanup happen automatically              | MutationObserver + WeakMap handles all teardown               |
 
 
 ---
 
 
-# Semantic Tokens (Layer 1)
-
-**Prefix:** `sem_`
-
-## Overview
-
-Semantic tokens hold direct CSS values organized by purpose. They describe **what** a value is used for, not **how** it looks — enabling theme switching without touching any UI code.
-
-## Purpose
-
-- Provide meaningful names that describe usage (e.g., `sem_color_txt_pri` vs `'#171717'`)
-- Enable theme switching (light/dark) by mapping semantic meanings to different CSS values
-- Create consistency across components through shared semantic values
-- Decouple visual appearance from functional purpose
-
-## Architecture Rules
-
-- **Holds direct CSS values** - No references to other token layers
-- **Flat structure only** - No nested objects
-- **snake_case naming** - Consistent naming convention
-- **Semantic naming** - Names describe purpose, not appearance
-
-## Token Categories
-
-### Semantic Colors
-
-#### Backgrounds
-
-- `sem_color_bkg_pri` - Primary background (main canvas)
-- `sem_color_bkg_sec` - Secondary background (cards, panels)
-- `sem_color_bkg_ter` - Tertiary background (nested elements)
-- `sem_color_bkg_inv` - Inverted background (dark on light theme)
-- `sem_color_bkg_overlay` - Modal/overlay backgrounds
-- `sem_color_bkg_elevated` - Elevated surfaces (raised cards)
-- `sem_color_bkg_sunken` - Sunken surfaces (wells, inputs)
-
-#### Text
-
-- `sem_color_txt_pri` - Primary text (body copy, headings)
-- `sem_color_txt_sec` - Secondary text (supporting information)
-- `sem_color_txt_ter` - Tertiary text (captions, metadata)
-- `sem_color_txt_inv` - Inverted text (light on dark)
-- `sem_color_txt_dis` - Disabled text
-- `sem_color_txt_placeholder` - Input placeholder text
-- `sem_color_txt_lnk` - Link text default
-- `sem_color_txt_lnk_hov` - Link text on hover
-
-#### Borders
-
-- `sem_color_bdr_default` - Standard border
-- `sem_color_bdr_str` - Strong/emphasized border
-- `sem_color_bdr_sub` - Subtle/de-emphasized border
-- `sem_color_bdr_inv` - Inverted border
-- `sem_color_bdr_dis` - Disabled border
-- `sem_color_bdr_foc` - Focus ring border
-
-#### States
-
-Organized by state type (error, success, warning, info):
-
-- Background: `sem_color_state_err_bkg`, `sem_color_state_suc_bkg`, etc.
-- Border: `sem_color_state_err_bdr`, `sem_color_state_wrn_bdr`, etc.
-- Text: `sem_color_state_err_txt`, `sem_color_state_inf_txt`, etc.
-- Base: `sem_color_state_err`, `sem_color_state_suc`, etc.
-
-#### Interactive
-
-Primary, secondary, and accent interactive states:
-
-- Base, hover, active, disabled variants for each
-- Example: `sem_color_interactive_pri`, `sem_color_interactive_pri_hov`, `sem_color_interactive_pri_act`
-
-### Semantic Spacing
-
-#### Inline Spacing (horizontal)
-
-- Five sizes: `sem_spc_inline_xs` through `sem_spc_inline_xl`
-- Used for gaps between inline elements (buttons, badges, etc.)
-
-#### Stack Spacing (vertical)
-
-- Six sizes: `sem_spc_stack_xs` through `sem_spc_stack_2xl`
-- Used for vertical spacing between stacked elements
-
-#### Inset Spacing (padding)
-
-- Five sizes: `sem_spc_inset_xs` through `sem_spc_inset_xl`
-- Used for internal padding within components
-
-### Semantic Typography
-
-Complete type scale with size, weight, line height, and letter spacing:
-
-#### Display Text
-
-- Large, medium, small variants
-- Example: `sem_typo_display_lrg_siz`, `sem_typo_display_lrg_wgt`, `sem_typo_display_lrg_lnh`
-
-#### Headings
-
-- Four levels: XL, LG, MD, SM
-- Each with size, weight, and line height tokens
-
-#### Body Text
-
-- Three sizes: LG, MD, SM
-- Each with size, weight, and line height tokens
-
-#### Caption & Overline
-
-- Specialized text styles for small annotations
-- Overline includes letter spacing for uppercase text
-
-#### Code
-
-- Monospace font family, size, and weight
-
-### Semantic Radius
-
-Six border radius options from `sem_rad_none` to `sem_rad_full`
-
-### Semantic Shadows
-
-Seven shadow depths:
-
-- `sem_shd_none` through `sem_shd_2xl`
-- `sem_shd_inner` for inset shadows
-
-### Semantic Motion
-
-#### Duration
-
-- Four speeds: `instant`, `fast`, `normal`, `slow`
-
-#### Easing
-
-- Four curves: `std`, `accelerate`, `decelerate`, `bounce`
-
-### Semantic Effects
-
-#### Focus Ring
-
-- Width, color, offset, style for focus indicators
-- Example: `sem_effect_foc_ring_wdt`, `sem_effect_foc_ring_color`
-
-#### State Effects
-
-- Disabled opacity: `sem_effect_dis_opac`
-- Hover opacity: `sem_effect_hov_opac`
-
-## Usage Guidelines
-
-### ✅ Do
-
-- Use semantic tokens in component tokens via `{sem_token}` references
-- Use semantic tokens directly in UI when no component token fits
-- Name tokens by purpose (what they do) not appearance (what they look like)
-- Group related tokens logically (all text colors together)
-
-### ❌ Don't
-
-- Hardcode hex values, rgb values, or pixel literals in `trait.style()` calls when a token exists
-- Name tokens by their visual appearance (`sem_color_dark_gray` ❌, use `sem_color_txt_sec` ✅)
-- Invent semantic token keys that don't exist in `SemanticTokens`
-
-## Theme Switching Example
-
-Semantic tokens enable easy theme switching by holding different CSS values per theme:
-
-```typescript
-// Light theme — sem_ tokens hold CSS values directly
-sem_color_bkg_pri: '#ffffff';
-sem_color_txt_pri: '#171717';
-sem_color_bdr_default: '#e5e5e5';
-
-// Dark theme — same semantic names, different values
-sem_color_bkg_pri: '#0a0a0a';
-sem_color_txt_pri: '#fafafa';
-sem_color_bdr_default: '#404040';
-```
-
-## Semantic Naming Philosophy
-
-**Bad (appearance-based):**
-
-- `sem_color_light_blue`
-- `sem_spc_16px`
-- `sem_typo_20px_bold`
-
-**Good (purpose-based):**
-
-- `sem_color_interactive_pri`
-- `sem_spc_inset_md`
-- `sem_typo_heading_lg_siz`
-
-## Usage in Generated Code
-
-Semantic tokens are the **fallback layer** for generated UI code. Use them when no `cmp_` token matches the UI need:
-
-- Styling a custom divider with no matching `cmp_` token? Use `sem_color_bdr_default` and `sem_spc_*`.
-- Need a background for a bespoke layout? Use `sem_color_bkg_pri` or `sem_color_bkg_sec`.
-- Need typography for body text outside a component? Use `sem_typo_body_md_*`.
-
-**Token selection cascade:** `cmp_` → **`sem_`** → inline style
-
-> Semantic tokens sit at position 2 in the cascade. Always check for a more specific `cmp_` token before reaching for `sem_` tokens.
+# Design Decision Guide
+
+The following heuristics should be applied when making visual and structural design decisions. They reflect the reasoning of a world-class UI expert and ensure consistent, intentional output.
+
+## Foundational Principles
+
+| Principle                  | Rule                                                                                                                                           |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Golden Ratio (1.618)**   | Use for scaling relationships — type scales, spacing progressions, element proportions. If a base is 16px, the next step is ~26px, then ~42px. |
+| **8-Point Grid**           | All spacing and sizing should be multiples of 8 (4 allowed for tight contexts). Padding, margin, gap, height, width.                           |
+| **Visual Hierarchy**       | Every screen has exactly one primary focal point. Use size, weight, color, and whitespace to create a clear reading order.                     |
+| **Progressive Disclosure** | Show only what is needed at each step. Reduce cognitive load by hiding secondary information behind intentional interactions.                  |
+| **Consistency**            | Similar elements must look and behave identically. Reuse tokens ruthlessly.                                                                    |
+
+## Category: Structure
+
+Tokens: `surface_*`, `space_*`, `radius_*`, `shadow_*`
+
+| Aspect              | Heuristic                                                                                                            |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Intent**          | Define containment, grouping, and spatial relationships                                                              |
+| **Hierarchy**       | primary → secondary → tertiary maps to: page → section → card                                                        |
+| **Spacing**         | Use 8pt grid: `xs=4`, `sm=8`, `md=16`, `lg=24`, `xl=32`, `2xl=48`, `3xl=64`                                          |
+| **Radius**          | None for full-bleed, sm (4px) for subtle softening, md (8px) for cards, lg (12px) for modals, full for pills/avatars |
+| **Shadow**          | Elevation communicates layer: none (flat), sm (raised), md (floating), lg (overlay)                                  |
+| **When to use**     | Any element that contains, separates, or groups other elements                                                       |
+| **When NOT to use** | Inline text runs, single atomic icons                                                                                |
+
+## Category: Actions
+
+Tokens: `action_*`
+
+| Aspect                   | Heuristic                                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------------------------- |
+| **Intent**               | Communicate clickability, interactivity, and importance                                           |
+| **Hierarchy**            | primary (filled, high contrast) → secondary (outlined or ghost) → tertiary (text-only link)       |
+| **Psychological effect** | Primary attracts commitment; secondary suggests alternatives; tertiary feels low-friction         |
+| **Hover / Active**       | Every interactive element must have visible hover and active states — minimum 10% luminance shift |
+| **Disabled**             | 40-50% opacity, no pointer events, cursor not-allowed                                             |
+| **When to use**          | Buttons, links, toggles, interactive chips                                                        |
+| **When NOT to use**      | Static labels, read-only badges, non-interactive status indicators                                |
+
+## Category: Surfaces
+
+Tokens: `surface_*`
+
+| Aspect              | Heuristic                                                                            |
+| ------------------- | ------------------------------------------------------------------------------------ |
+| **Intent**          | Provide visual containment and background context                                    |
+| **Hierarchy**       | primary (page base) → secondary (card/panel) → tertiary (nested section within card) |
+| **Contrast**        | Adjacent surfaces must differ by at least 3-5% luminance for clear delineation       |
+| **Visual role**     | Ground layer (primary), content container (secondary), inset region (tertiary)       |
+| **When to use**     | Backgrounds, cards, modals, sidebars, popovers                                       |
+| **When NOT to use** | Inline text styling, icon fills                                                      |
+
+## Category: Feedback
+
+Tokens: `feedback_*`
+
+| Aspect                   | Heuristic                                                                                                                        |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Intent**               | Communicate system status to the user                                                                                            |
+| **Category mapping**     | success (green) → positive outcome · warning (amber) → caution · danger (red) → error/destructive · info (blue) → neutral notice |
+| **Psychological effect** | Color primes emotional response — green reassures, red alerts, amber cautions                                                    |
+| **Hierarchy**            | Background tint (subtle) → border accent (moderate) → solid fill (strong)                                                        |
+| **When to use**          | Toasts, banners, inline validation, status badges                                                                                |
+| **When NOT to use**      | Decorative elements, branding, navigation states                                                                                 |
+
+## Category: Navigation
+
+Tokens: `nav_*`
+
+| Aspect              | Heuristic                                                                                                                                      |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Intent**          | Orient the user and indicate current location                                                                                                  |
+| **Hierarchy**       | active (highlighted) → default (neutral) → disabled (unreachable)                                                                              |
+| **Visual cues**     | Active items receive background fill or bold weight + accent underline; default items are muted foreground; disabled items drop to 40% opacity |
+| **When to use**     | Tabs, sidebars, breadcrumbs, pagination, steppers                                                                                              |
+| **When NOT to use** | In-page links within body copy (use text links instead)                                                                                        |
+
+## Category: Data
+
+Tokens: `data_*`
+
+| Aspect              | Heuristic                                                                                                                   |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Intent**          | Present structured information clearly                                                                                      |
+| **Hierarchy**       | header (bold, larger) → row (standard) → muted (secondary detail)                                                           |
+| **Visual rules**    | Alternate row tinting at 2-3% luminance shift; header bottom border 1px solid; right-align numeric columns; left-align text |
+| **Density**         | Default (40px rows), compact (32px rows), comfortable (48px rows)                                                           |
+| **When to use**     | Tables, lists, key-value pairs, stat cards                                                                                  |
+| **When NOT to use** | Free-form content, marketing sections                                                                                       |
+
+## Category: Text & Typography
+
+Tokens: `text_*`, `type_*`
+
+| Aspect              | Heuristic                                                                                                                                                 |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Intent**          | Establish reading hierarchy and legibility                                                                                                                |
+| **Scale**           | Use a ratio-based type scale — base 16px, scaled by ~1.25 (minor third) or ~1.333 (perfect fourth). Heading sizes: h1 ≈ 2.5×, h2 ≈ 2×, h3 ≈ 1.5×, body 1× |
+| **Weight**          | Regular (400) for body, Medium (500) for emphasis, Bold (700) for headings and CTAs                                                                       |
+| **Line height**     | Body: 1.5–1.6, Headings: 1.2–1.3, Compact UI: 1.3–1.4                                                                                                     |
+| **Color hierarchy** | primary (high contrast body) → secondary (labels, captions) → muted (placeholders, disabled) → inverse (text on filled backgrounds)                       |
+| **When to use**     | All visible text content                                                                                                                                  |
+| **When NOT to use** | N/A — every text element needs typographic tokens                                                                                                         |
+
+## Category: Focus & Accessibility
+
+Tokens: `focus_*`
+
+| Aspect              | Heuristic                                                                               |
+| ------------------- | --------------------------------------------------------------------------------------- |
+| **Intent**          | Make keyboard navigation visible and accessible                                         |
+| **Visual rule**     | 2px solid ring, offset 2px, high-contrast color (typically brand blue or white on dark) |
+| **Contrast**        | Focus indicator must have ≥ 3:1 contrast against adjacent colors (WCAG 2.2)             |
+| **When to use**     | Every focusable element: buttons, inputs, links, custom controls                        |
+| **When NOT to use** | Mouse-only decorative hover effects                                                     |
+
+## Category: Borders
+
+Tokens: `border_*`
+
+| Aspect              | Heuristic                                                                                        |
+| ------------------- | ------------------------------------------------------------------------------------------------ |
+| **Intent**          | Separate, contain, or emphasize elements                                                         |
+| **Hierarchy**       | primary (visible dividers) → secondary (subtle separation) → accent (emphasis, active indicator) |
+| **Width**           | 1px standard, 2px for emphasis or focus                                                          |
+| **When to use**     | Dividers, input outlines, card edges, active tab indicators                                      |
+| **When NOT to use** | Decorative gradients, background patterns                                                        |
+
+## Decision Checklist — Before Creating Any Token
+
+1. **What category does this belong to?** (structure, action, surface, feedback, nav, data, text, focus, border)
+2. **What property am I setting?** (bg, fg, border, size, weight, gap, padding, radius, shadow, opacity)
+3. **What variant describes the hierarchy or state?** (primary, secondary, muted, hover, active, disabled, success, danger …)
+4. **Does a token with this exact name already exist?** → Reuse it.
+5. **Does a token with the same intent but different name exist?** → Reuse it and consider whether it should be renamed.
+6. **Is this truly new?** → Create it with a documentation comment (what / when to use / when NOT to use).
 
 
 ---
 
 
-# Design Token System Overview
+# Theming & Design Tokens
 
-## No Component Library — Token-Driven Code Generation
+OEM does not ship pre-built components or a fixed token palette. Instead, every visual property — color, spacing, typography, radius, shadow, etc. — is expressed as a reactive token that LLMs generate on the fly while building UI. This gives every app a bespoke design system that grows organically and stays perfectly consistent.
 
-OEM deliberately has **no predefined component library**. All UI is synthesized by LLMs interpreting design tokens. Tokens like `cmp_btn_pri_*` prescribe the _design intent_ for a primary button — the LLM uses these to construct the button's styling in `trait.style()` calls. This token-driven approach allows any UI to be generated on demand without importing prebuilt components.
-
-## Token Selection for Code Generation
-
-When generating UI code, always search for the **most specific matching token** first and fall through the cascade:
+## Architecture Overview
 
 ```
-1. cmp_  (component)  → Check first — buttons, inputs, cards, modals, etc.
-2. sem_  (semantic)   → Fallback — colors, spacing, typography by purpose
-3. inline style       → Absolute last resort for truly unique one-off values
+useThemeState('light')          ← single source of truth for current theme
+        │
+        ├─▸ useTokenState(lightVal, darkVal, themeState)   ← one per design token
+        ├─▸ useTokenState(...)
+        └─▸ ...
 ```
 
-### Decision Heuristic
+1. **Create one `useThemeState` instance per app.** It holds the current theme (`'light'` or `'dark'`).
+2. **Create tokens with `useTokenState`.** Each token receives a light value, a dark value, and the shared `themeState` dependency. When the theme changes, every token automatically updates.
+3. **Reference tokens in traits.** Tokens are plain `State` objects, so they plug directly into traits as reactive values.
 
-When styling a UI element, identify its concept and search for matching tokens by prefix:
+## Step 1 — Create the Theme Instance
 
-1. **Building a primary button?** → Search `cmp_btn_pri_*` first → fall back to `sem_*` for anything else
-2. **Building a card?** → Search `cmp_cdl_*` first → fall back to `sem_*`
-3. **Building a custom separator?** → No component token fits → use `sem_color_bdr_default` and `sem_spc_*`
-4. **Truly unique one-off value?** → Inline style as last resort
+Every app must create exactly **one** `useThemeState` instance and export it from a central `theme.ts` file:
 
-## Architecture
+```ts
+import { useThemeState, useTokenState } from '@/registry';
 
-The design token system uses two public layers. Each layer holds direct CSS values — no internal indirection layers exist.
-
-## The 2 Layers
-
-```
-┌─────────────────────────────────────┐
-│  2. COMPONENT (cmp_)                │ ← All UI parts: structure + styling
-│     May reference: sem_             │
-├─────────────────────────────────────┤
-│  1. SEMANTIC (sem_)                 │ ← Purpose-based values
-│     Holds direct CSS values         │
-└─────────────────────────────────────┘
+// Single source of truth
+export const theme = useThemeState('light');
 ```
 
-## Layer Details
+## Step 2 — Generate Tokens On-the-Fly
 
-### 1. Semantic (`sem_`)
+LLMs create tokens as they build UI. Each token is an instance of `useTokenState` that derives its value from the shared theme:
 
-[→ Full Documentation](./semantic.md)
+```ts
+// — Surface: primary background
+// USE: main content area background
+// AVOID: small interactive elements
+export const surface_bg_primary = useTokenState('#ffffff', '#0b0f1a', theme);
 
-Purpose-based design values that hold direct CSS values. Describes **what** a value is used for, not how it looks.
+// — Surface: secondary background
+// USE: cards, panels, sidebars
+// AVOID: full-page backgrounds
+export const surface_bg_secondary = useTokenState('#f4f5f7', '#151922', theme);
 
-**Contains:**
+// — Action: primary button background
+// USE: primary CTA buttons
+// AVOID: non-interactive surfaces
+export const action_bg_primary = useTokenState('#2563eb', '#3b82f6', theme);
 
-- Colors (backgrounds, text, borders, states, interactive)
-- Spacing (inline, stack, inset)
-- Typography (display, headings, body, caption, overline, code)
-- Radius (none to full)
-- Shadows (none to 2xl, plus inner)
-- Motion (duration, easing)
-- Effects (focus ring, opacity states)
-
-**Key principle:** Names describe purpose, not appearance
-
-### 2. Component (`cmp_`)
-
-[→ Full Documentation](./component.md)
-
-All UI parts — both structural properties (sizes, spacing, radii) and visual/state properties (colors, shadows, transitions). This is the primary token layer for all generated UI code.
-
-**Contains:**
-
-- Button base properties (heights, padding, radius, font) and variants (primary, secondary, ghost, danger)
-- Input, Checkbox, Radio, Switch, Badge, Avatar, Icon, Link, Divider, Spinner
-- Card, Modal, Dropdown, Tooltip, Popover, Toast
-- Navigation, Sidebar, Table, Tabs, Accordion
-- Breadcrumb, Pagination
-- Progress Bar, Slider
-- Alert, Select
-
-**Key principle:** Search here first for any recognized UI pattern
-
-## Naming Conventions
-
-### General Rules
-
-- **Flat structure only** - No nested objects
-- **snake_case** - All token names use snake_case
-- **Prefixes** - Each layer has a unique 3-letter prefix
-- **Minimum 3 letters** - Abbreviations are at least 3 letters (except `_x`, `_y`, `_sm`, `_md`, `_lg`, `_xl`)
-
-### Common Abbreviations
-
-#### Properties
-
-- `bkg` = background
-- `txt` = text
-- `bdr` = border
-- `pad` = padding
-- `spc` = spacing
-- `fnt` = font
-- `siz` = size
-- `wgt` = weight
-- `hgt` = height
-- `wdt` = width
-- `rad` = radius
-- `shd` = shadow
-- `opac` = opacity
-- `trn` = transition
-- `dur` = duration
-- `eas` = easing
-
-#### States
-
-- `hov` = hover
-- `act` = active
-- `dis` = disabled
-- `foc` = focus
-- `sel` = selected
-
-#### Semantic Meanings
-
-- `pri` = primary
-- `sec` = secondary
-- `ter` = tertiary
-- `inv` = inverted
-- `err` = error
-- `suc` = success
-- `wrn` = warning
-- `inf` = info
-
-#### UI Elements
-
-- `btn` = button
-- `inp` = input
-- `chk` = checkbox
-- `rad` = radio
-- `swt` = switch
-- `bdg` = badge
-- `avt` = avatar
-- `ico` = icon
-- `lnk` = link
-- `div` = divider
-- `spn` = spinner
-- `cdl` = card
-- `mod` = modal
-- `drp` = dropdown
-- `tip` = tooltip
-- `pop` = popover
-- `tst` = toast
-- `nav` = navigation
-- `tbl` = table
-- `acc` = accordion
-- `brd` = breadcrumb
-- `pgn` = pagination
-- `prg` = progress
-- `sldr` = slider
-- `alt` = alert
-
-## Token Reference Syntax
-
-Component tokens may reference semantic tokens using the `{token_name}` syntax:
-
-```typescript
-// Semantic layer — direct CSS values
-sem_color_interactive_pri: '#2563eb';
-sem_rad_md: '0.375rem';
-
-// Component layer — may reference sem_
-cmp_btn_pri_bkg: '{sem_color_interactive_pri}';
-cmp_btn_bdr_rad: '{sem_rad_md}';
+// — Text: primary foreground
+// USE: body copy, headings
+// AVOID: muted or disabled text
+export const text_fg_primary = useTokenState('#111827', '#f9fafb', theme);
 ```
 
-## Usage Guidelines
+## Token Naming Convention
 
-### ✅ Do
+Token names follow a strict pattern that prevents duplication and communicates intent:
 
-- Search `cmp_` first for any recognized UI pattern
-- Fall back to `sem_` when no component token fits
-- Reference tokens using `{token_name}` syntax (cmp_ → sem_ only)
-- Keep the structure flat (no nesting)
-- Use consistent abbreviations
-
-### ❌ Don't
-
-- Hardcode hex values, rgb values, or pixel literals in `trait.style()` calls
-- Invent token keys that don't exist in `DesignTokens`
-- Create circular token references
-- Mix naming conventions
-
-## Type Safety
-
-Both layers are TypeScript typed for compile-time validation:
-
-```typescript
-// Complete token set
-export type DesignTokens = SemanticTokens & ComponentTokens;
+```
+<category>_<property>_<variant>
 ```
 
-## Benefits of This System
+| Segment      | Purpose                                     | Examples                                                                                                                      |
+| ------------ | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **category** | Semantic role of the element                | `surface`, `action`, `text`, `border`, `feedback`, `nav`, `data`, `focus`, `space`, `radius`, `shadow`, `type`                |
+| **property** | CSS-adjacent property being set             | `bg`, `fg`, `border`, `size`, `weight`, `gap`, `padding`, `radius`, `shadow`, `opacity`                                       |
+| **variant**  | Specificity / hierarchy within the category | `primary`, `secondary`, `tertiary`, `muted`, `inverse`, `success`, `warning`, `danger`, `info`, `hover`, `active`, `disabled` |
 
-### 1. **Simplicity**
+**Examples:**
 
-Two layers are easy to reason about — component tokens for UI parts, semantic tokens for purpose-based values.
-
-### 2. **Consistency**
-
-Shared semantic tokens ensure components look cohesive across the system.
-
-### 3. **Theming**
-
-Swap semantic values to create light/dark themes without touching component tokens.
-
-### 4. **Type Safety**
-
-TypeScript types catch invalid token references at compile time.
-
-### 5. **Code Generation**
-
-A flat, predictable cascade (`cmp_` → `sem_` → inline) is easy for LLMs to apply consistently.
-
-## Getting Started
-
-1. **Define semantics** — Establish purpose-based colors, spacing, typography, etc.
-2. **Map components** — Define UI parts using semantic tokens and direct values
-3. **Generate UI** — LLMs compose UI from tokens using the selection cascade (`cmp_` → `sem_` → inline)
-
-## Example: Token Flow
-
-```typescript
-// SEMANTIC: Purpose-based value (direct CSS)
-sem_color_interactive_pri: '#2563eb';
-sem_rad_md: '0.375rem';
-sem_spc_inset_md: '1rem';
-
-// COMPONENT: UI part references semantics
-cmp_btn_pri_bkg: '{sem_color_interactive_pri}';
-cmp_btn_pri_bkg_hov: '{sem_color_interactive_pri_hov}';
-cmp_btn_pri_txt_color: '{sem_color_txt_inv}';
-cmp_btn_bdr_rad: '{sem_rad_md}';
-cmp_btn_hgt_md: '2.5rem';
-cmp_btn_pad_x_md: '{sem_spc_inset_md}';
+```
+surface_bg_primary        // main page background
+surface_bg_secondary      // card / panel background
+action_bg_primary         // primary CTA
+action_bg_hover           // primary CTA hover state
+action_fg_primary         // primary CTA label color
+text_fg_primary           // body text
+text_fg_muted             // secondary / helper text
+border_color_primary      // standard border
+feedback_bg_success       // success banner background
+feedback_fg_danger        // error text
+nav_bg_active             // active nav item background
+space_gap_md              // medium spacing gap
+radius_size_md            // medium border radius
+shadow_box_md             // medium elevation shadow
+type_size_base            // base font size
+type_weight_bold          // bold font weight
 ```
 
-## Further Reading
+## Preventing Token Duplication
 
-- [Semantic Documentation](./semantic.md)
-- [Component Documentation](./component.md)
+Before creating a new token, **always** check whether an existing token already covers the same intent. Follow these rules:
+
+1. **Search the `theme.ts` file first.** Read the documentation comment above each token — it states the intended use case and when to avoid the token.
+2. **Reuse over reinvent.** If `action_bg_primary` already exists and fits a new button, use it. Do not create `button_bg_main`.
+3. **Extend, don't fork.** If you need a new variant (e.g., a danger button), add a new variant token (`action_bg_danger`) rather than duplicating the primary with different values.
+4. **Document every token.** Each token **must** have a comment block above it stating: what it is, when to use it, and when not to use it. This ensures future LLM sessions can make informed reuse decisions.
+
+```ts
+// — Action: danger button background
+// USE: destructive actions (delete, remove)
+// AVOID: non-destructive call-to-actions
+export const action_bg_danger = useTokenState('#dc2626', '#ef4444', theme);
+```
+
+## Using Tokens in Traits
+
+Tokens are `State` objects. Pass them as reactive watchers to traits:
+
+```ts
+trait.style('backgroundColor', () => surface_bg_primary.val(), surface_bg_primary);
+trait.style('color', () => text_fg_primary.val(), text_fg_primary);
+```
+
+When the theme changes, every token fires its subscribers and the UI updates automatically.
+
+## Token Usage Rules
+
+- **Never** write a hex value, rgb value, or pixel literal directly in a `trait.style()` call.
+- **Always** create or reference a token from `theme.ts`.
+- **Never** invent a token name that doesn't follow the `<category>_<property>_<variant>` convention.
+- When no existing token fits, create a new one with full documentation and add it to `theme.ts`.
+
+
+---
+
+
+# Git
+
+TBD
 

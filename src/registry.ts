@@ -13,6 +13,8 @@ export { Template } from './core/template';
 
 // States
 export { useMediaQueryState } from './states/MediaQueryState';
+export { useThemeState } from './states/ThemeState';
+export { useTokenState } from './states/TokenState';
 
 // Traits
 export { useAttributeTrait } from './traits/Attribute';
