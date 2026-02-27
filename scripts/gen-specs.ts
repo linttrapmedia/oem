@@ -224,6 +224,21 @@ Using proper idiomatic OEM usually allows for their to be a single UI as one lar
 `,
 );
 
+// Generate specs/commands/oem.md — slash command that routes to the oem subagent
+const oemCommandContent = `---
+description: Use OEM to generate front-end UI applications and components
+allowed-tools: Task
+argument-hint: <your UI request>
+---
+
+Use the \`oem\` subagent to handle this request:
+
+$ARGUMENTS
+`;
+
+await Bun.write(`${specDir}/commands/oem.md`, oemCommandContent);
+await Bun.write(`${resolve(projectRoot, '.claude')}/commands/oem.md`, oemCommandContent);
+
 // Generate www/llms.txt — a single file with all documentation for LLM consumption
 await Bun.write(
   `${wwwDir}/llms.txt`,
