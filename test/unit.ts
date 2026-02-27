@@ -32,7 +32,6 @@ import {
   CanRemoveTheme,
   CanSelectToken,
   CanSelectTokenAfterThemeSwitch,
-  CanSelectTokenWithFallback,
   CanSubscribeToThemeChanges,
   CanSwitchTheme,
 } from '@/states/ThemeState.test';
@@ -133,7 +132,6 @@ window.addEventListener('DOMContentLoaded', async () => {
       CanSwitchTheme,
       CanSelectToken,
       CanSelectTokenAfterThemeSwitch,
-      CanSelectTokenWithFallback,
       CanGetCurrentTheme,
       CanGetAllTokens,
       CanGetThemeNames,

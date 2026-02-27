@@ -1,6 +1,12 @@
 /**
  * LAYER 5: COMPONENT (cmp_)
- * Design system components - may reference element/semantic/primitives/expression
+ * Design system components — may reference element/semantic/primitives/expression.
+ *
+ * Component tokens are the PRIMARY layer for generated UI code. When an LLM
+ * needs to style a button, card, modal, dropdown, etc., it should first
+ * search for matching cmp_ tokens before falling back to elm_ or sem_.
+ *
+ * Token selection cascade: ftr_ → cmp_ → elm_ → sem_ → inline
  */
 
 export type ComponentTokens = {

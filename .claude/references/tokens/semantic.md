@@ -34,6 +34,7 @@ Semantic tokens assign meaning to design values. They translate raw primitives a
 ### Semantic Colors
 
 #### Backgrounds
+
 - `sem_color_bkg_pri` - Primary background (main canvas)
 - `sem_color_bkg_sec` - Secondary background (cards, panels)
 - `sem_color_bkg_ter` - Tertiary background (nested elements)
@@ -43,6 +44,7 @@ Semantic tokens assign meaning to design values. They translate raw primitives a
 - `sem_color_bkg_sunken` - Sunken surfaces (wells, inputs)
 
 #### Text
+
 - `sem_color_txt_pri` - Primary text (body copy, headings)
 - `sem_color_txt_sec` - Secondary text (supporting information)
 - `sem_color_txt_ter` - Tertiary text (captions, metadata)
@@ -53,6 +55,7 @@ Semantic tokens assign meaning to design values. They translate raw primitives a
 - `sem_color_txt_lnk_hov` - Link text on hover
 
 #### Borders
+
 - `sem_color_bdr_default` - Standard border
 - `sem_color_bdr_str` - Strong/emphasized border
 - `sem_color_bdr_sub` - Subtle/de-emphasized border
@@ -61,6 +64,7 @@ Semantic tokens assign meaning to design values. They translate raw primitives a
 - `sem_color_bdr_foc` - Focus ring border
 
 #### States
+
 Organized by state type (error, success, warning, info):
 
 - Background: `sem_color_state_err_bkg`, `sem_color_state_suc_bkg`, etc.
@@ -69,6 +73,7 @@ Organized by state type (error, success, warning, info):
 - Base: `sem_color_state_err`, `sem_color_state_suc`, etc.
 
 #### Interactive
+
 Primary, secondary, and accent interactive states:
 
 - Base, hover, active, disabled variants for each
@@ -77,14 +82,17 @@ Primary, secondary, and accent interactive states:
 ### Semantic Spacing
 
 #### Inline Spacing (horizontal)
+
 - Five sizes: `sem_spc_inline_xs` through `sem_spc_inline_xl`
 - Used for gaps between inline elements (buttons, badges, etc.)
 
 #### Stack Spacing (vertical)
+
 - Six sizes: `sem_spc_stack_xs` through `sem_spc_stack_2xl`
 - Used for vertical spacing between stacked elements
 
 #### Inset Spacing (padding)
+
 - Five sizes: `sem_spc_inset_xs` through `sem_spc_inset_xl`
 - Used for internal padding within components
 
@@ -93,22 +101,27 @@ Primary, secondary, and accent interactive states:
 Complete type scale with size, weight, line height, and letter spacing:
 
 #### Display Text
+
 - Large, medium, small variants
 - Example: `sem_typo_display_lrg_siz`, `sem_typo_display_lrg_wgt`, `sem_typo_display_lrg_lnh`
 
 #### Headings
+
 - Four levels: XL, LG, MD, SM
 - Each with size, weight, and line height tokens
 
 #### Body Text
+
 - Three sizes: LG, MD, SM
 - Each with size, weight, and line height tokens
 
 #### Caption & Overline
+
 - Specialized text styles for small annotations
 - Overline includes letter spacing for uppercase text
 
 #### Code
+
 - Monospace font family, size, and weight
 
 ### Semantic Radius
@@ -118,25 +131,30 @@ Six border radius options from `sem_rad_none` to `sem_rad_full`
 ### Semantic Shadows
 
 Seven shadow depths:
+
 - `sem_shd_none` through `sem_shd_2xl`
 - `sem_shd_inner` for inset shadows
 
 ### Semantic Motion
 
 #### Duration
+
 - Four speeds: `instant`, `fast`, `normal`, `slow`
 - Respects expression layer motion energy settings
 
 #### Easing
+
 - Four curves: `std`, `accelerate`, `decelerate`, `bounce`
 
 ### Semantic Effects
 
 #### Focus Ring
+
 - Width, color, offset, style for focus indicators
 - Example: `sem_effect_foc_ring_wdt`, `sem_effect_foc_ring_color`
 
 #### State Effects
+
 - Disabled opacity: `sem_effect_dis_opac`
 - Hover opacity: `sem_effect_hov_opac`
 
@@ -162,24 +180,26 @@ Semantic tokens enable easy theme switching:
 
 ```typescript
 // Light theme
-sem_color_bkg_pri: '{pmt_color_white}'
-sem_color_txt_pri: '{pmt_color_gray_900}'
-sem_color_bdr_default: '{pmt_color_gray_200}'
+sem_color_bkg_pri: '{pmt_color_white}';
+sem_color_txt_pri: '{pmt_color_gray_900}';
+sem_color_bdr_default: '{pmt_color_gray_200}';
 
 // Dark theme - same semantic names, different primitives
-sem_color_bkg_pri: '{pmt_color_gray_900}'
-sem_color_txt_pri: '{pmt_color_gray_50}'
-sem_color_bdr_default: '{pmt_color_gray_700}'
+sem_color_bkg_pri: '{pmt_color_gray_900}';
+sem_color_txt_pri: '{pmt_color_gray_50}';
+sem_color_bdr_default: '{pmt_color_gray_700}';
 ```
 
 ## Semantic Naming Philosophy
 
 **Bad (appearance-based):**
+
 - `sem_color_light_blue`
 - `sem_spc_16px`
 - `sem_typo_20px_bold`
 
 **Good (purpose-based):**
+
 - `sem_color_interactive_pri`
 - `sem_spc_inset_md`
 - `sem_typo_heading_lg_siz`
@@ -188,3 +208,15 @@ sem_color_bdr_default: '{pmt_color_gray_700}'
 
 - **References**: Primitives (Layer 1), Expression (Layer 2)
 - **Referenced by**: Element (Layer 4), Component (Layer 5), Feature (Layer 6)
+
+## Usage in Generated Code
+
+Semantic tokens are the **fallback layer** for generated UI code. Use them only when no `elm_` or `cmp_` token matches the UI need:
+
+- Styling a custom divider with no matching `elm_` token? Use `sem_color_bdr_default` and `sem_spc_*`.
+- Need a background for a bespoke layout? Use `sem_color_bkg_pri` or `sem_color_bkg_sec`.
+- Need typography for body text outside a component? Use `sem_typo_body_md_*`.
+
+**Token selection cascade:** `ftr_` → `cmp_` → `elm_` → **`sem_`** → inline style
+
+> Semantic tokens sit at position 4 in the cascade. Always check for a more specific `ftr_`, `cmp_`, or `elm_` token before reaching for `sem_` tokens.

@@ -1,6 +1,11 @@
 /**
  * LAYER 1: PRIMITIVES (pmt_)
- * Raw measurable values - no references allowed
+ * Raw measurable values — no references allowed.
+ *
+ * @internal These tokens exist solely to feed the Expression and Semantic
+ * layers. They must NEVER be referenced in UI code, trait.style() calls,
+ * or any generated output. Use semantic (sem_), element (elm_), component
+ * (cmp_), or feature (ftr_) tokens instead.
  */
 
 export type PrimitiveTokens = {

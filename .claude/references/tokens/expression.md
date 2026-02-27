@@ -11,6 +11,13 @@ metadata:
 
 **Prefix:** `exp_`
 
+> **⚠ Internal Layer — Do Not Use in UI Code**
+>
+> Expression tokens are global personality knobs consumed by the Semantic
+> layer. They must **never** be referenced in `trait.style()` calls or any
+> generated UI code. Their effects cascade automatically through the
+> semantic → element → component chain.
+
 ## Overview
 
 Expression tokens define the global personality and behavior of your design system. They control system-wide aesthetic choices that affect multiple components simultaneously, creating a cohesive visual and interactive experience.
@@ -94,8 +101,8 @@ Use the `_act` (active) tokens to reference the current user preference:
 
 ```typescript
 // Reference the active setting
-exp_density_act: '{exp_density_comfortable}'
-exp_motion_energy_act: '{exp_motion_energy_med}'
+exp_density_act: '{exp_density_comfortable}';
+exp_motion_energy_act: '{exp_motion_energy_med}';
 ```
 
 ### Multiplier Pattern
@@ -104,7 +111,7 @@ Expression tokens often work as multipliers:
 
 ```typescript
 // In semantic layer
-sem_spc_inline_md: 'calc({pmt_spc_4} * {exp_density_act})'
+sem_spc_inline_md: 'calc({pmt_spc_4} * {exp_density_act})';
 
 // Results:
 // - Comfortable mode: 1rem * 1 = 1rem
@@ -151,16 +158,16 @@ Express your brand through global controls:
 
 ```typescript
 // ✅ Correct expression usage
-exp_roundness_sharp: '{pmt_rad_2}'
-exp_roundness_moderate: '{pmt_rad_6}'
-exp_roundness_soft: '{pmt_rad_12}'
-exp_roundness_act: '{exp_roundness_moderate}'
+exp_roundness_sharp: '{pmt_rad_2}';
+exp_roundness_moderate: '{pmt_rad_6}';
+exp_roundness_soft: '{pmt_rad_12}';
+exp_roundness_act: '{exp_roundness_moderate}';
 
 // In semantic layer
-sem_rad_md: '{exp_roundness_act}'
+sem_rad_md: '{exp_roundness_act}';
 
 // ❌ Incorrect - references higher layer
-exp_roundness_act: '{elm_btn_bdr_rad}' // NO!
+exp_roundness_act: '{elm_btn_bdr_rad}'; // NO!
 ```
 
 ## Related Layers

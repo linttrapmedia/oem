@@ -1,6 +1,11 @@
 /**
  * LAYER 2: EXPRESSION (exp_)
- * Global personality controls - may reference primitives only
+ * Global personality controls — may reference primitives only.
+ *
+ * @internal These tokens are system-wide personality knobs consumed by the
+ * Semantic layer. They must NEVER be referenced in UI code, trait.style()
+ * calls, or any generated output. Their effects cascade automatically
+ * through the semantic → element → component chain.
  */
 
 export type ExpressionTokens = {

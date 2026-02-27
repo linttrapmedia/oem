@@ -1,6 +1,12 @@
 /**
  * LAYER 6: FEATURE (ftr_)
- * Product-level overrides - may reference any layer
+ * Product-level overrides — may reference any layer.
+ *
+ * Feature tokens are checked FIRST in the token selection cascade when
+ * building feature-specific flows (checkout, dashboard, auth, etc.).
+ * Use sparingly — most styling should come from cmp_ tokens.
+ *
+ * Token selection cascade: ftr_ → cmp_ → elm_ → sem_ → inline
  */
 
 export type FeatureTokens = {

@@ -36,17 +36,20 @@ Element tokens define the visual properties of atomic UI parts - the smallest in
 Base button properties that apply to all button variants:
 
 #### Sizes
+
 - Heights: `elm_btn_hgt_sm`, `elm_btn_hgt_md`, `elm_btn_hgt_lg`
 - Horizontal padding: `elm_btn_pad_x_sm`, `elm_btn_pad_x_md`, `elm_btn_pad_x_lg`
 - Font sizes: `elm_btn_fnt_siz_sm`, `elm_btn_fnt_siz_md`, `elm_btn_fnt_siz_lg`
 
 #### Styling
+
 - `elm_btn_fnt_wgt` - Font weight
 - `elm_btn_bdr_wdt` - Border width
 - `elm_btn_bdr_rad` - Border radius
 - `elm_btn_gap` - Gap between icon and text
 
 #### Transitions
+
 - `elm_btn_trn_dur` - Transition duration
 - `elm_btn_trn_eas` - Transition easing
 
@@ -55,11 +58,13 @@ Base button properties that apply to all button variants:
 Text input field properties:
 
 #### Sizes
+
 - Heights: `elm_inp_hgt_sm`, `elm_inp_hgt_md`, `elm_inp_hgt_lg`
 - Horizontal padding: `elm_inp_pad_x_sm`, `elm_inp_pad_x_md`, `elm_inp_pad_x_lg`
 - Font sizes: `elm_inp_fnt_siz_sm`, `elm_inp_fnt_siz_md`, `elm_inp_fnt_siz_lg`
 
 #### Border States
+
 - `elm_inp_bdr_wdt` - Border width
 - `elm_inp_bdr_rad` - Border radius
 - `elm_inp_bdr_color` - Default border
@@ -68,6 +73,7 @@ Text input field properties:
 - `elm_inp_bdr_color_err` - Error state
 
 #### Colors
+
 - `elm_inp_bkg` - Background
 - `elm_inp_bkg_dis` - Disabled background
 - `elm_inp_txt_color` - Text color
@@ -75,6 +81,7 @@ Text input field properties:
 - `elm_inp_placeholder_color` - Placeholder text
 
 #### Animation
+
 - `elm_inp_trn_dur` - Transition duration
 
 ### Checkbox/Radio Element
@@ -82,9 +89,11 @@ Text input field properties:
 Checkbox and radio button properties:
 
 #### Sizes
+
 - `elm_chk_siz_sm`, `elm_chk_siz_md`, `elm_chk_siz_lg`
 
 #### Styling
+
 - `elm_chk_bdr_wdt` - Border width
 - `elm_chk_bdr_rad` - Border radius (checkbox)
 - `elm_rad_bdr_rad` - Border radius (radio, typically circular)
@@ -92,6 +101,7 @@ Checkbox and radio button properties:
 - `elm_chk_bdr_color_chk` - Checked border
 
 #### States
+
 - `elm_chk_bkg` - Unchecked background
 - `elm_chk_bkg_chk` - Checked background
 - `elm_chk_checkmark_color` - Checkmark color
@@ -101,16 +111,19 @@ Checkbox and radio button properties:
 Toggle switch properties:
 
 #### Sizes
+
 - Width: `elm_swt_wdt_sm`, `elm_swt_wdt_md`, `elm_swt_wdt_lg`
 - Height: `elm_swt_hgt_sm`, `elm_swt_hgt_md`, `elm_swt_hgt_lg`
 - Thumb size: `elm_swt_thumb_siz_sm`, `elm_swt_thumb_siz_md`, `elm_swt_thumb_siz_lg`
 
 #### Colors
+
 - `elm_swt_bkg` - Unchecked background
 - `elm_swt_bkg_chk` - Checked background
 - `elm_swt_thumb_color` - Thumb color
 
 #### Styling
+
 - `elm_swt_bdr_rad` - Border radius
 - `elm_swt_trn_dur` - Transition duration
 
@@ -119,11 +132,13 @@ Toggle switch properties:
 Small status/count indicators:
 
 #### Sizes
+
 - Horizontal padding: `elm_bdg_pad_x_sm`, `elm_bdg_pad_x_md`
 - Vertical padding: `elm_bdg_pad_y_sm`, `elm_bdg_pad_y_md`
 - Font sizes: `elm_bdg_fnt_siz_sm`, `elm_bdg_fnt_siz_md`
 
 #### Styling
+
 - `elm_bdg_fnt_wgt` - Font weight
 - `elm_bdg_bdr_rad` - Border radius
 - `elm_bdg_bdr_wdt` - Border width
@@ -133,9 +148,11 @@ Small status/count indicators:
 User avatar/profile picture properties:
 
 #### Sizes
+
 - Six sizes from `elm_avt_siz_xs` to `elm_avt_siz_2xl`
 
 #### Styling
+
 - `elm_avt_bdr_rad` - Border radius
 - `elm_avt_bdr_wdt` - Border width
 - `elm_avt_bdr_color` - Border color
@@ -147,9 +164,11 @@ User avatar/profile picture properties:
 Icon display properties:
 
 #### Sizes
+
 - Six sizes from `elm_ico_siz_xs` to `elm_ico_siz_2xl`
 
 #### Colors by Context
+
 - `elm_ico_color_default` - Default icon
 - `elm_ico_color_muted` - De-emphasized icon
 - `elm_ico_color_pri` - Primary/brand icon
@@ -182,9 +201,11 @@ Horizontal/vertical rule properties:
 Loading spinner properties:
 
 #### Sizes
+
 - `elm_spn_siz_sm`, `elm_spn_siz_md`, `elm_spn_siz_lg`
 
 #### Styling
+
 - `elm_spn_color` - Spinner color
 - `elm_spn_track_color` - Track/background color
 - `elm_spn_bdr_wdt` - Spinner stroke width
@@ -219,26 +240,28 @@ elm_btn_bdr_rad → cmp_btn_sec_* (uses button element radius)
 
 ```typescript
 // ✅ Correct element usage
-elm_btn_hgt_md: '{sem_spc_inset_md}'
-elm_btn_bdr_rad: '{sem_rad_md}'
-elm_btn_fnt_siz_md: '{sem_typo_body_md_siz}'
+elm_btn_hgt_md: '{sem_spc_inset_md}';
+elm_btn_bdr_rad: '{sem_rad_md}';
+elm_btn_fnt_siz_md: '{sem_typo_body_md_siz}';
 
 // Used in component layer
-cmp_btn_pri_bkg: '{sem_color_interactive_pri}'
+cmp_btn_pri_bkg: '{sem_color_interactive_pri}';
 // Inherits height from element layer
 // Component uses elm_btn_hgt_md implicitly
 
 // ❌ Incorrect - references primitive directly
-elm_btn_bdr_rad: '{pmt_rad_8}' // Should reference semantic
+elm_btn_bdr_rad: '{pmt_rad_8}'; // Should reference semantic
 ```
 
 ## Element vs Component
 
 **Element tokens** define the base properties shared across variants:
+
 - Button height, padding, font size (applies to all buttons)
 - Input border width, radius (applies to all inputs)
 
 **Component tokens** define variant-specific styling:
+
 - Primary button background color
 - Secondary button border color
 - Ghost button hover state
@@ -248,3 +271,30 @@ elm_btn_bdr_rad: '{pmt_rad_8}' // Should reference semantic
 - **References**: Semantic (Layer 3), Expression (Layer 2), Primitives (Layer 1)
 - **Referenced by**: Component (Layer 5), Feature (Layer 6)
 - **Implicit usage**: Components inherit element properties as defaults
+
+## Usage in Generated Code
+
+Element tokens define shared base properties for atomic UI parts. In generated UI code:
+
+1. **Check `cmp_` tokens first.** If a component variant exists for the element you’re building (e.g., `cmp_btn_pri_*` for a primary button), use those.
+2. **Use `elm_` tokens for base properties** not covered by a component variant — sizes, padding, border radii, transition timing, etc.
+3. Fall back to `sem_` tokens for anything else.
+
+**Token selection cascade:** `ftr_` → `cmp_` → **`elm_`** → `sem_` → inline style
+
+### Example: Generating a Button
+
+```typescript
+// Use cmp_ for variant-specific colors
+trait.style('backgroundColor', theme.$cmp_btn_pri_bkg);
+trait.style('color', theme.$cmp_btn_pri_txt_color);
+
+// Use elm_ for shared base properties
+trait.style('height', theme.$elm_btn_hgt_md);
+trait.style('borderRadius', theme.$elm_btn_bdr_rad);
+trait.style('padding', theme.$elm_btn_pad_x_md);
+```
+
+> **Note on theme definitions vs UI code:** In theme definition files (dark.ts, light.ts),
+> element tokens _may_ reference primitives (`pmt_`) — that’s how the layer hierarchy
+> works. The restriction on `pmt_` applies only to generated UI / `trait.style()` calls.

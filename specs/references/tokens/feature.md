@@ -156,10 +156,10 @@ Feature tokens typically override component tokens:
 
 ```typescript
 // Component layer - default button
-cmp_btn_pri_bkg: '{sem_color_interactive_pri}'
+cmp_btn_pri_bkg: '{sem_color_interactive_pri}';
 
 // Feature layer - checkout button override
-ftr_checkout_cta_bkg: '{pmt_color_green_600}'
+ftr_checkout_cta_bkg: '{pmt_color_green_600}';
 
 // In checkout context, use feature token
 // In other contexts, use component token
@@ -171,9 +171,7 @@ Feature tokens are applied conditionally based on context:
 
 ```typescript
 // Pseudocode for button in checkout
-background = isCheckoutFlow
-  ? theme.ftr_checkout_cta_bkg
-  : theme.cmp_btn_pri_bkg
+background = isCheckoutFlow ? theme.ftr_checkout_cta_bkg : theme.cmp_btn_pri_bkg;
 ```
 
 ### Composition Pattern
@@ -182,13 +180,13 @@ Feature tokens can reference any layer:
 
 ```typescript
 // Reference primitive directly for specific need
-ftr_checkout_cta_bkg: '{pmt_color_green_600}'
+ftr_checkout_cta_bkg: '{pmt_color_green_600}';
 
 // Reference component for consistency
-ftr_dashboard_widget_bkg: '{cmp_cdl_bkg}'
+ftr_dashboard_widget_bkg: '{cmp_cdl_bkg}';
 
 // Reference semantic for theme-aware value
-ftr_auth_lnk_color: '{sem_color_txt_lnk}'
+ftr_auth_lnk_color: '{sem_color_txt_lnk}';
 ```
 
 ## Usage Guidelines
@@ -214,6 +212,7 @@ ftr_auth_lnk_color: '{sem_color_txt_lnk}'
 Follow the pattern: `ftr_[feature]_[element]_[property]_[state]`
 
 Examples:
+
 - `ftr_checkout_cta_bkg_hov` - Checkout CTA background hover
 - `ftr_dashboard_chart_pri_color` - Dashboard primary chart color
 - `ftr_settings_danger_zone_bkg` - Settings danger zone background
@@ -249,7 +248,7 @@ Always document why a feature token exists:
  * Checkout CTA uses high-converting green instead of brand blue
  * per A/B test results (ticket: CHK-123)
  */
-ftr_checkout_cta_bkg: '{pmt_color_green_600}'
+ftr_checkout_cta_bkg: '{pmt_color_green_600}';
 ```
 
 ## Multi-Brand/White-Label Use Case
@@ -258,12 +257,12 @@ Feature tokens enable multi-brand products:
 
 ```typescript
 // Brand A theme
-ftr_checkout_cta_bkg: '{pmt_color_blue_600}'
-ftr_dashboard_chart_pri_color: '{pmt_color_blue_500}'
+ftr_checkout_cta_bkg: '{pmt_color_blue_600}';
+ftr_dashboard_chart_pri_color: '{pmt_color_blue_500}';
 
 // Brand B theme (different file/config)
-ftr_checkout_cta_bkg: '{pmt_color_purple_600}'
-ftr_dashboard_chart_pri_color: '{pmt_color_purple_500}'
+ftr_checkout_cta_bkg: '{pmt_color_purple_600}';
+ftr_dashboard_chart_pri_color: '{pmt_color_purple_500}';
 ```
 
 ## Examples
@@ -291,3 +290,23 @@ ftr_settings_cancel_btn_hov_bdr_color: ... // Just use existing button variant
 - **References**: All layers (Component, Element, Semantic, Expression, Primitives)
 - **Referenced by**: None (top layer)
 - **Usage**: Applied conditionally based on feature/context
+
+## Usage in Generated Code
+
+Feature tokens are **product-specific overrides**. When building feature-specific flows — checkout, dashboard, auth, onboarding, etc. — check for matching `ftr_` tokens **first**, then fall through the standard cascade.
+
+**Token selection cascade:** **`ftr_`** → `cmp_` → `elm_` → `sem_` → inline style
+
+### Example: Checkout CTA vs Standard Button
+
+```typescript
+// In a checkout flow, use ftr_ tokens for the CTA:
+trait.style('backgroundColor', theme.$ftr_checkout_cta_bkg);
+trait.style('color', theme.$ftr_checkout_cta_txt_color);
+
+// Outside checkout, use standard cmp_ tokens:
+trait.style('backgroundColor', theme.$cmp_btn_pri_bkg);
+trait.style('color', theme.$cmp_btn_pri_txt_color);
+```
+
+> Feature tokens are the exception, not the rule. Most styling should come from `cmp_` tokens. Only use `ftr_` tokens when a specific feature or flow demands distinct visual treatment with a documented business reason.

@@ -1,6 +1,13 @@
 /**
  * LAYER 4: ELEMENT (elm_)
- * Atomic UI parts - may reference semantic/primitives/expression
+ * Atomic UI parts — may reference semantic/primitives/expression.
+ *
+ * Element tokens define shared base properties for atomic UI parts (button
+ * heights, input radii, badge sizing, etc.). In generated UI code, prefer
+ * cmp_ tokens first; use elm_ tokens for base properties not covered by a
+ * specific component variant.
+ *
+ * Token selection cascade: ftr_ → cmp_ → elm_ → sem_ → inline
  */
 
 export type ElementTokens = {

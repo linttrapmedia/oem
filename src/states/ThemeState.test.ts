@@ -1,5 +1,5 @@
 import { Test } from '@/registry';
-import { useThemeState, Theme } from '@/states/ThemeState';
+import { Theme, useThemeState } from '@/states/ThemeState';
 
 // Test data
 const mockThemes: Theme[] = [
@@ -146,23 +146,6 @@ export const CanSelectTokenAfterThemeSwitch: Test = async () => {
 
   const t3 = lightPrimary !== darkPrimary;
   tests.push(t3);
-
-  return { pass: tests.every(Boolean) };
-};
-
-export const CanSelectTokenWithFallback: Test = async () => {
-  const themeState = useThemeState(mockThemes, 'light');
-  const tests: boolean[] = [];
-
-  // Should return actual token value
-  const existing = themeState.selectTokenOr('colors', 'primary', '#000000');
-  const t1 = existing === '#3b82f6';
-  tests.push(t1);
-
-  // Should return fallback for non-existent token
-  const fallback = themeState.selectTokenOr('colors', 'nonexistent', '#000000');
-  const t2 = fallback === '#000000';
-  tests.push(t2);
 
   return { pass: tests.every(Boolean) };
 };

@@ -11,6 +11,13 @@ metadata:
 
 **Prefix:** `pmt_`
 
+> **⚠ Internal Layer — Do Not Use in UI Code**
+>
+> Primitive tokens exist solely to feed the Expression and Semantic layers.
+> They must **never** be referenced in `trait.style()` calls or any generated
+> UI code. Use semantic (`sem_`), element (`elm_`), component (`cmp_`), or
+> feature (`ftr_`) tokens instead.
+
 ## Overview
 
 Primitives are the foundation layer of the design token system. They contain raw, measurable values with **no references to other tokens**. These are the atomic building blocks that all other layers build upon.
@@ -53,18 +60,23 @@ T-shirt sizing with pixel/rem equivalents:
 ### Typography
 
 #### Font Families
+
 - `pmt_fnt_family_sans`, `pmt_fnt_family_serif`, `pmt_fnt_family_mono`
 
 #### Font Sizes
+
 - Range: `pmt_fnt_siz_10` (0.625rem) to `pmt_fnt_siz_72` (4.5rem)
 
 #### Font Weights
+
 - Nine weights from `pmt_fnt_wgt_thin` (100) to `pmt_fnt_wgt_black` (900)
 
 #### Line Heights
+
 - Five options: `pmt_lnh_tight` (1.25) to `pmt_lnh_loose` (2)
 
 #### Letter Spacing
+
 - Six options: `pmt_lsp_tighter` (-0.05em) to `pmt_lsp_widest` (0.1em)
 
 ### Border Radius
@@ -115,13 +127,13 @@ T-shirt sizing with pixel/rem equivalents:
 
 ```typescript
 // ✅ Correct primitive definitions
-pmt_color_blue_500: '#3B82F6'
-pmt_spc_4: '1rem'
-pmt_fnt_wgt_bold: 700
-pmt_dur_normal: '200ms'
+pmt_color_blue_500: '#3B82F6';
+pmt_spc_4: '1rem';
+pmt_fnt_wgt_bold: 700;
+pmt_dur_normal: '200ms';
 
 // ❌ Incorrect - no references allowed in primitives
-pmt_color_primary: '{pmt_color_blue_500}' // NO!
+pmt_color_primary: '{pmt_color_blue_500}'; // NO!
 ```
 
 ## Related Layers

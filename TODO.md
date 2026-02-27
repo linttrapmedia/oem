@@ -1,3 +1,4 @@
 - Make a prompt maker (page, feature, component)
 - Make skills/docs/website auto gened
 - Add traits for: url, theme
+- create a llms.txt file (see: https://llmstxt.org/)
