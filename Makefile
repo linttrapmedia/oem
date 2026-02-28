@@ -23,12 +23,12 @@ help:
 
 clean: ## Clean the project
 	@echo $(STATUS) Cleaning...
-	@rm -rf ./www/main.min.js ./www/main.min.js.map ./node_modules ./package-lock.json ./dist
+	@rm -rf ./docs/main.min.js ./docs/main.min.js.map ./node_modules ./package-lock.json ./dist
 
 dev: ## Run the project in development mode
 	@echo $(STATUS) Running in development mode...
 	@open http://localhost:3000
-	@bun ./www/index.dev.html --watch
+	@bun ./docs/index.dev.html --watch
 
 deploy: ## Deploy the project to GitHub Pages/oem.js.org
 	@echo $(STATUS) Deploying...
@@ -40,12 +40,12 @@ deploy: ## Deploy the project to GitHub Pages/oem.js.org
 
 build: ## Build www
 	@echo $(STATUS) Building www...
-	@bun build ./www/main.ts \
+	@bun build ./docs/main.ts \
 		--sourcemap \
 		--minify \
 		--bundle \
 		--format=iife \
-		--outfile=./www/main.js \
+		--outfile=./docs/main.js \
 		--target=browser \
 
 examples: ## Dev todo example
