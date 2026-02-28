@@ -489,7 +489,7 @@ const Dialog = tag.div(
           tag.span(
             trait.text(t.signature),
             trait.style('fontFamily', FONT_MONO),
-            trait.style('fontSize', '9px'),
+            trait.style('fontSize', '10px'),
             trait.style('color', text_fg_muted.$val),
             trait.style('minWidth', '150px'),
             trait.style('flexShrink', '0'),
@@ -554,7 +554,7 @@ const Dialog = tag.div(
           tag.span(
             trait.text(s.signature),
             trait.style('fontFamily', FONT_MONO),
-            trait.style('fontSize', '9px'),
+            trait.style('fontSize', '10px'),
             trait.style('color', text_fg_muted.$val),
             trait.style('minWidth', '150px'),
             trait.style('flexShrink', '0'),
@@ -1420,7 +1420,7 @@ const TraitsSection = SectionContainer(
           tag.span(
             trait.text(t.signature),
             trait.style('fontFamily', FONT_MONO),
-            trait.style('fontSize', '9px'),
+            trait.style('fontSize', '10px'),
             trait.style('color', text_fg_muted.$val),
           ),
         ),
@@ -1491,7 +1491,7 @@ const StatesSection = SectionContainer(
           tag.span(
             trait.text(s.signature),
             trait.style('fontFamily', FONT_MONO),
-            trait.style('fontSize', '9px'),
+            trait.style('fontSize', '10px'),
             trait.style('color', text_fg_muted.$val),
           ),
         ),
@@ -1634,13 +1634,13 @@ trait.style('backgroundColor', bg.$val);  // reactive, zero flicker`),
           tag.div(
             trait.text(item.token),
             trait.style('fontFamily', FONT_MONO),
-            trait.style('fontSize', '9px'),
+            trait.style('fontSize', '10px'),
             trait.style('color', '#c7c7c7'),
             trait.style('marginBottom', '1px'),
           ),
           tag.div(
             trait.text(item.desc),
-            trait.style('fontSize', '9px'),
+            trait.style('fontSize', '10px'),
             trait.style('color', '#888888'),
           ),
         ),
@@ -1662,58 +1662,156 @@ trait.style('backgroundColor', bg.$val);  // reactive, zero flicker`),
 );
 
 // ═══════════════════════════════════════════════
-// ARCHITECTURE SECTION (COMPACT)
+// ARCHITECTURE SECTION
 // ═══════════════════════════════════════════════
+
+const ARCH_LAYERS: { label: string; color: string; files: typeof ARCH_FILES[number][] }[] = [
+  {
+    label: 'Foundation',
+    color: '#888888',
+    files: ARCH_FILES.filter((f) =>
+      ['types.ts', 'constants.ts', 'data.ts'].includes(f.name),
+    ),
+  },
+  {
+    label: 'State & Logic',
+    color: accent_neon_purple.val(),
+    files: ARCH_FILES.filter((f) =>
+      ['states.ts', 'actions.ts', 'machines.ts'].includes(f.name),
+    ),
+  },
+  {
+    label: 'Presentation',
+    color: accent_neon_cyan.val(),
+    files: ARCH_FILES.filter((f) =>
+      ['theme.ts', 'templates.ts', 'traits.ts', 'icons.ts'].includes(f.name),
+    ),
+  },
+  {
+    label: 'Assembly',
+    color: accent_neon_pink.val(),
+    files: ARCH_FILES.filter((f) => ['ui.ts', 'main.ts'].includes(f.name)),
+  },
+];
 
 const ArchitectureSection = SectionContainer(
   'architecture',
   SectionTitle('File Architecture'),
   SectionSubtitle('One file per concern. Strict separation. LLM-friendly.'),
 
-  // File grid
+  // Layered architecture
   tag.div(
-    trait.style('display', 'grid'),
-    trait.style('gridTemplateColumns', '1fr'),
-    trait.style('gridTemplateColumns', 'repeat(2, 1fr)', isDesktop.$test(true)),
-    trait.style('gap', '4px'),
-    trait.style('marginBottom', space_padding_md.$val),
+    trait.style('display', 'flex'),
+    trait.style('flexDirection', 'column'),
+    trait.style('gap', space_gap_md.$val),
+    trait.style('marginBottom', space_padding_lg.$val),
 
-    ...ARCH_FILES.map((file, i) =>
+    ...ARCH_LAYERS.map((layer, li) =>
       tag.div(
-        trait.style('display', 'flex'),
-        trait.style('alignItems', 'center'),
-        trait.style('gap', space_gap_sm.$val),
-        trait.style(
-          'padding',
-          `${space_padding_xs.val()} ${space_padding_sm.val()}`,
-        ),
-        trait.style('borderRadius', radius_size_sm.$val),
-        trait.style('transition', transition_fast.$val),
-        trait.styleOnEvent('mouseenter', 'backgroundColor', () =>
-          surface_bg_tertiary.val(),
-        ),
-        trait.styleOnEvent('mouseleave', 'backgroundColor', () => 'transparent'),
-        onMount((el) => fadeInUp(el, i * 30)),
+        onMount((el) => fadeInUp(el, li * 100)),
 
-        tag.span(
-          trait.text(file.name),
-          trait.style('fontFamily', FONT_MONO),
-          trait.style('fontSize', type_size_xs.$val),
-          trait.style('color', text_fg_primary.$val),
-          trait.style('fontWeight', type_weight_bold.$val),
-          trait.style('minWidth', '100px'),
+        // Layer label
+        tag.div(
+          trait.style('display', 'flex'),
+          trait.style('alignItems', 'center'),
+          trait.style('gap', space_gap_sm.$val),
+          trait.style('marginBottom', space_padding_xs.$val),
+
+          // Colored dot
+          tag.div(
+            trait.style('width', '8px'),
+            trait.style('height', '8px'),
+            trait.style('borderRadius', radius_size_full.$val),
+            trait.style('backgroundColor', layer.color),
+            trait.style('flexShrink', '0'),
+          ),
+          tag.span(
+            trait.text(layer.label),
+            trait.style('fontSize', type_size_xs.$val),
+            trait.style('fontWeight', type_weight_bold.$val),
+            trait.style('color', text_fg_muted.$val),
+            trait.style('textTransform', 'uppercase'),
+            trait.style('letterSpacing', '0.08em'),
+          ),
         ),
-        tag.span(
-          trait.text(file.purpose),
-          trait.style('fontSize', type_size_xs.$val),
-          trait.style('color', text_fg_secondary.$val),
+
+        // Files in this layer
+        tag.div(
+          trait.style('display', 'grid'),
+          trait.style('gridTemplateColumns', '1fr'),
+          trait.style('gridTemplateColumns', 'repeat(auto-fill, minmax(280px, 1fr))', isDesktop.$test(true)),
+          trait.style('gap', '6px'),
+          trait.style('paddingLeft', '18px'),
+          trait.style('borderLeft', `2px solid ${layer.color}22`),
+
+          ...layer.files.map((file) =>
+            tag.div(
+              trait.style('display', 'flex'),
+              trait.style('alignItems', 'baseline'),
+              trait.style('gap', space_gap_sm.$val),
+              trait.style('padding', `${space_padding_xs.val()} ${space_padding_sm.val()}`),
+              trait.style('borderRadius', radius_size_sm.$val),
+              trait.style('transition', transition_fast.$val),
+              trait.styleOnEvent('mouseenter', 'backgroundColor', () =>
+                surface_bg_tertiary.val(),
+              ),
+              trait.styleOnEvent('mouseleave', 'backgroundColor', () => 'transparent'),
+
+              tag.span(
+                trait.text(file.name),
+                trait.style('fontFamily', FONT_MONO),
+                trait.style('fontSize', type_size_xs.$val),
+                trait.style('color', layer.color),
+                trait.style('fontWeight', type_weight_bold.$val),
+                trait.style('flexShrink', '0'),
+              ),
+              tag.span(
+                trait.text(file.purpose),
+                trait.style('fontSize', type_size_xs.$val),
+                trait.style('color', text_fg_secondary.$val),
+                trait.style('lineHeight', '1.4'),
+              ),
+            ),
+          ),
         ),
+
+        // Down arrow between layers (except last)
+        ...(li < ARCH_LAYERS.length - 1
+          ? [
+              tag.div(
+                trait.style('display', 'flex'),
+                trait.style('justifyContent', 'center'),
+                trait.style('padding', `${space_padding_xs.val()} 0`),
+                trait.style('color', text_fg_muted.$val),
+                trait.style('fontSize', type_size_sm.$val),
+                trait.style('opacity', '0.4'),
+                trait.text('↓'),
+              ),
+            ]
+          : []),
       ),
     ),
   ),
 
-  // Dependency diagram
-  tag.div(onMount((el) => fadeInUp(el, 400)), CodeBlock(ARCH_DIAGRAM_CODE)),
+  // Dependency flow (compact code block)
+  tag.div(
+    onMount((el) => fadeInUp(el, 500)),
+    tag.div(
+      trait.style('display', 'flex'),
+      trait.style('alignItems', 'center'),
+      trait.style('gap', space_gap_sm.$val),
+      trait.style('marginBottom', space_padding_sm.$val),
+      tag.span(
+        trait.text('Dependency Flow'),
+        trait.style('fontSize', type_size_xs.$val),
+        trait.style('fontWeight', type_weight_bold.$val),
+        trait.style('color', text_fg_muted.$val),
+        trait.style('textTransform', 'uppercase'),
+        trait.style('letterSpacing', '0.08em'),
+      ),
+    ),
+    CodeBlock(ARCH_DIAGRAM_CODE),
+  ),
 );
 
 // ═══════════════════════════════════════════════

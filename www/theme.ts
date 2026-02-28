@@ -274,7 +274,7 @@ export const shadow_glow_lg = useTokenState(
 // ═══════════════════════════════════════════════
 
 // — Type: xs (10px)
-export const type_size_xs = useTokenState('10px', '10px', theme);
+export const type_size_xs = useTokenState('12px', '12px', theme);
 
 // — Type: sm (12px)
 export const type_size_sm = useTokenState('12px', '12px', theme);
