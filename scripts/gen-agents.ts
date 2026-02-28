@@ -5,12 +5,12 @@ import { resolve } from 'node:path';
 import { extractFrontMatter, stripFrontMatter } from 'scripts/helpers';
 
 const projectRoot = resolve(import.meta.dir, '..');
-const specDir = resolve(projectRoot, 'specs');
+const agentsDir = resolve(projectRoot, '.agents');
 const wwwDir = resolve(projectRoot, 'www');
 
 // delete the specs directory if it exists, then recreate it with the necessary subdirectories
-if (await Bun.file(specDir).exists()) {
-  await Bun.file(specDir).unlink();
+if (await Bun.file(agentsDir).exists()) {
+  await Bun.file(agentsDir).unlink();
 }
 
 // copy core files to specs/references/core
@@ -20,7 +20,7 @@ for await (const fileName of new Glob('src/core/*.md').scan('.')) {
   const content = await Bun.file(filePath).text();
   const frontMatter = extractFrontMatter(content);
   // copy to references/core
-  const referencePath = `${specDir}/references/core/${fileName.split('/').pop()!}`;
+  const referencePath = `${agentsDir}/references/core/${fileName.split('/').pop()!}`;
   await Bun.write(referencePath, content);
   coreFiles.push([`../references/core/${fileName.split('/').pop()!}`, frontMatter, content]);
 }
@@ -32,7 +32,7 @@ for await (const file of new Glob('src/traits/*.md').scan('.')) {
   const fileName = file.split('/').pop()!;
   const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
   // copy to references/traits
-  const referencePath = `${specDir}/references/traits/${fileName}`;
+  const referencePath = `${agentsDir}/references/traits/${fileName}`;
   await Bun.write(referencePath, content);
   traitFiles.push([`../references/traits/${fileName}`, frontMatter, content]);
 }
@@ -44,7 +44,7 @@ for await (const file of new Glob('src/states/*.md').scan('.')) {
   const fileName = file.split('/').pop()!;
   const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
   // copy to references/states
-  const referencePath = `${specDir}/references/states/${fileName}`;
+  const referencePath = `${agentsDir}/references/states/${fileName}`;
   await Bun.write(referencePath, content);
   stateFiles.push([`../references/states/${fileName}`, frontMatter, content]);
 }
@@ -56,7 +56,7 @@ for await (const file of new Glob('src/themes/tokens/*.md').scan('.')) {
   const fileName = file.split('/').pop()!;
   const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
   // copy to references/tokens
-  const referencePath = `${specDir}/references/tokens/${fileName}`;
+  const referencePath = `${agentsDir}/references/tokens/${fileName}`;
   await Bun.write(referencePath, content);
   themeFiles.push([`../references/tokens/${fileName}`, frontMatter, content]);
 }
@@ -68,14 +68,14 @@ for await (const file of new Glob('src/guides/*.md').scan('.')) {
   const fileName = file.split('/').pop()!;
   const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
   // copy to references/guides
-  const referencePath = `${specDir}/references/guides/${fileName}`;
+  const referencePath = `${agentsDir}/references/guides/${fileName}`;
   await Bun.write(referencePath, content);
   guideFiles.push([`../references/guides/${fileName}`, frontMatter, content]);
 }
 
 // Create an empty Skill.md (overwrite if exists)
 await Bun.write(
-  `${specDir}/agents/oem.md`,
+  `${agentsDir}/agents/oem.md`,
   `---
 name: oem
 description: Manual for generating front-end applications using OEM, the agent-first UI framework and toolkit.
@@ -135,7 +135,7 @@ ${guideFiles
 
 // Generate specs/commands/oem.md — slash command that routes to the oem subagent
 const oemCommandContent = `---
-description: Use OEM to generate front-end UI applications and components
+description: Use the oem agent to generate front-end UI applications and components
 allowed-tools: Task
 argument-hint: <your UI request>
 ---
@@ -145,8 +145,7 @@ Use the \`oem\` subagent to handle this request:
 $ARGUMENTS
 `;
 
-await Bun.write(`${specDir}/commands/oem.md`, oemCommandContent);
-await Bun.write(`${resolve(projectRoot, '.claude')}/commands/oem.md`, oemCommandContent);
+await Bun.write(`${agentsDir}/commands/oem.md`, oemCommandContent);
 
 // Generate www/llms.txt — a single file with all documentation for LLM consumption
 await Bun.write(

@@ -1,5 +1,6 @@
 TODO
 
+- Animation is shitty, needs a trait I think
 - Regen the website
 - Make a prompt maker (page, feature, component)
 
