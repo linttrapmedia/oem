@@ -379,11 +379,24 @@
   function useStyleTrait(el, prop, val, ...rest) {
     const states = extractStates(val, ...rest);
     const conditions = extractConditions(...rest);
+    const isCustomProp = prop.startsWith("--");
+    const hasConditions = conditions.length > 0;
+    let _savedValue;
+    const _get = () => isCustomProp ? el.style.getPropertyValue(prop) : el.style[prop] ?? "";
+    const _set = (v) => {
+      isCustomProp ? el.style.setProperty(prop, v) : el.style[prop] = v;
+    };
     const apply = () => {
       const _val = typeof val === "function" ? val() : val;
       const applies = conditions.every((i) => typeof i === "function" ? i() : i);
       if (applies) {
-        prop.startsWith("--") ? el.style.setProperty(prop, _val) : el.style[prop] = _val;
+        if (hasConditions && _savedValue === undefined) {
+          _savedValue = _get();
+        }
+        _set(_val);
+      } else if (hasConditions && _savedValue !== undefined) {
+        _set(_savedValue);
+        _savedValue = undefined;
       }
     };
     apply();
@@ -1295,5 +1308,5 @@ trait.style('backgroundColor', bg.$val);  // reactive, zero flicker`)), tag.div(
   tag.$(document.body)(trait.style("margin", "0"), trait.style("padding", "0"), trait.style("fontFamily", FONT_DISPLAY), trait.style("backgroundColor", surface_bg_primary.$val), trait.style("color", text_fg_primary.$val), trait.style("minHeight", "100vh"), trait.style("height", "auto"), trait.style("overflow", "visible"), trait.style("overflowX", "hidden"), trait.style("display", "block"), trait.style("transition", transition_medium.$val), app);
 })();
 
-//# debugId=AEAD770B60F1DA7764756E2164756E21
+//# debugId=BE62E965B37253CB64756E2164756E21
 //# sourceMappingURL=main.js.map
