@@ -1329,7 +1329,11 @@ const ExamplesSection = SectionContainer(
           tag.div(
             trait.style('transition', 'transform 0.2s ease'),
             trait.style('transform', 'rotate(0deg)'),
-            trait.style('transform', 'rotate(180deg)', expandedExamples.$test((v) => v.has(i))),
+            trait.style(
+              'transform',
+              'rotate(180deg)',
+              expandedExamples.$test((v) => v.has(i)),
+            ),
             trait.style('color', text_fg_muted.$val),
             trait.style('display', 'flex'),
             ChevronDownIcon({ size: '16' }),
@@ -1341,7 +1345,11 @@ const ExamplesSection = SectionContainer(
           trait.style('overflow', 'hidden'),
           trait.style('transition', 'max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1)'),
           trait.style('maxHeight', '0px'),
-          trait.style('maxHeight', '800px', expandedExamples.$test((v) => v.has(i))),
+          trait.style(
+            'maxHeight',
+            '800px',
+            expandedExamples.$test((v) => v.has(i)),
+          ),
 
           tag.div(
             trait.style('padding', `0 ${space_padding_sm.val()} ${space_padding_sm.val()}`),
@@ -1602,7 +1610,7 @@ trait.style('backgroundColor', bg.$val);  // reactive, zero flicker`),
         { token: 'transition_fast', desc: '150ms ease' },
       ].map((item) =>
         tag.div(
-          trait.style('padding', space_padding_xs.$val),
+          trait.style('padding', space_padding_md.$val),
           trait.style('borderRadius', radius_size_sm.$val),
           trait.style('backgroundColor', surface_bg_code.$val),
           tag.div(
