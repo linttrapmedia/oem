@@ -33,7 +33,7 @@ The [oem.js.org](https://oem.js.org/) website includes a Prompt Wizard that lets
 ## Documentation
 
 - **Human Docs** — [oem.js.org](https://oem.js.org/)
-- **Agent Specs** — [specs/agents/oem.md](./specs/agents/oem.md)
+- **Agent Specs** — [specs/agents/oem.md](./github/agents/oem.md)
 
 ## License
 
