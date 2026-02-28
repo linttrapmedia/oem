@@ -37,8 +37,8 @@ The following traits come with OEM. Traits are reusable pieces of logic that giv
 
 OEM's state management system is simple yet powerful, providing a flexible way to manage state in your applications. The following states are available in the OEM ecosystem:
 
-- [UrlState](../references/states/UrlState.md) - State Object to track the current URL in the application.
-- [MediaQueryState](../references/states/MediaQueryState.md) - Reactive state for tracking media query matches based on viewport width and media type
+- [useUrlState](../references/states/UrlState.md) - State Object to track the current URL in the application.
+- [useMediaQueryState](../references/states/MediaQueryState.md) - Reactive state for tracking media query matches based on viewport width and media type
 - [useThemeState](../references/states/ThemeState.md) - A simple State object of 'light' and 'dark'
 - [useTokenState](../references/states/TokenState.md) - A simple State object to manage a single design token setting
 

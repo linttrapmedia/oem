@@ -1,5 +1,5 @@
 ---
-name: UrlState
+name: useUrlState
 description: State Object to track the current URL in the application.
 license: MIT
 metadata:

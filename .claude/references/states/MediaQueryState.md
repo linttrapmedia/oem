@@ -1,5 +1,5 @@
 ---
-name: MediaQueryState
+name: useMediaQueryState
 description: Reactive state for tracking media query matches based on viewport width and media type
 license: MIT
 metadata:

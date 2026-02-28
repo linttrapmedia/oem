@@ -3,6 +3,7 @@ TODO
 - Regen the website
 - Make a prompt maker (page, feature, component)
 - fix tests
+- Add icon library
 
 DONE
 
