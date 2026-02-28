@@ -56,7 +56,7 @@ const button = tag.button(
 ##### Element Creation Function
 
 - **Signature**: `(...traits: Trait[]) => HTMLElement | SVGElement`
-- **Parameters**: Variable number of traits (strings, numbers, functions, elements, or trait appliers)
+- **Parameters**: Variable number of traits (TemplateTraitAppliers)
 - **Returns**: The created element
 
 #### Trait Proxy (Second element of tuple)
@@ -375,7 +375,6 @@ The state module uses a closure-based approach to maintain private state:
 - Internal value is stored in `_internalVal`
 - Subscribers are stored in a `Set<(atom: T) => any>`
 - When state changes via `set()` or `reduce()`, all subscribers are notified synchronously
-- The boxed type system allows calling methods like `toUpperCase()` on string states
 
 ### Gotchas
 
@@ -658,12 +657,6 @@ The `$test` function returns a closure with:
 - `extractConditions` returns `Condition[]`
 - Both functions use `any` types internally for flexibility with mixed arrays
 - Type information should be managed at the call site when possible
-
-### Related Modules
-
-- [state.ts](src/core/state.ts) - Defines the StateType interface that extractStates detects
-- [types.ts](src/core/types.ts) - Defines the Condition type used throughout this module
-- [template.ts](src/core/template.ts) - May use these utilities for processing mixed trait arrays
 
 
 ## Trait Library
@@ -1188,6 +1181,8 @@ trait.styleOnEvent('blur', 'outline', 'none');
 
 ## UrlState
 
+TODO
+
 
 ---
 
@@ -1407,96 +1402,7 @@ const bgColor = useTokenState('#fff', '#0b0f1a', theme);
 
 
 
-## Guides
-
-
-# Custom Traits File
-
-## What This File Is
-
-`traits.ts` is the single file (or `traits/` folder) containing any custom trait functions created for the application. Custom traits extend the behavior of OEM's template system beyond the built-in traits (style, event, attribute, textContent, className, innerHTML, etc.).
-
-## Why It Must Be Its Own File
-
-Custom traits are reusable behavioral building blocks — they are registered into Templates just like built-in traits. Isolating them in their own file keeps them discoverable and prevents them from being buried inside UI code where they'd be hard to find and reuse.
-
-## When to Create
-
-Create `traits.ts` only when the built-in trait library does not cover a behavior you need. Most applications do not need custom traits — the core library is designed to be sufficient for typical use cases.
-
-## When to Use
-
-- **When building a Template**: Import custom traits and register them alongside built-in traits.
-- **When you need a repeating DOM behavior** that isn't covered by the built-in traits.
-- **Before creating a custom trait**: Check whether a built-in trait already handles the use case.
-
-## What Belongs Here
-
-- Custom trait functions following the OEM trait signature: `(el: HTMLElement, ...args, ...rest: (StateType | Condition)[]) => (() => void) | void`
-- Each trait should handle its own subscription to State objects and return a cleanup function
-
-## What Does NOT Belong Here
-
-- Built-in traits (those come from `@linttrap/oem`)
-- UI rendering code (that goes in `ui.ts`)
-- State definitions (those go in `states.ts`)
-
-## Example
-
-```typescript
-// traits.ts
-import { extractStates, extractConditions } from '@linttrap/oem';
-import type { StateType, Condition } from '@linttrap/oem';
-
-export function useScrollToTrait(
-  el: HTMLElement,
-  behavior: ScrollBehavior = 'smooth',
-  ...rest: (StateType<any> | Condition)[]
-) {
-  const states = extractStates(...rest);
-  const conditions = extractConditions(...rest);
-
-  const apply = () => {
-    const applies = conditions.every((c) => (typeof c === 'function' ? c() : c));
-    if (applies) {
-      el.scrollIntoView({ behavior });
-    }
-  };
-
-  apply();
-  const unsubs = states.map((state) => state.sub(apply));
-  return () => unsubs.forEach((unsub) => unsub());
-}
-```
-
-## Registering Custom Traits
-
-```typescript
-// templates.ts
-import { Template, useStyleTrait, useEventTrait, useTextContentTrait } from '@linttrap/oem';
-import { useScrollToTrait } from './traits';
-
-export const [tag, trait] = Template({
-  style: useStyleTrait,
-  event: useEventTrait,
-  text: useTextContentTrait,
-  scrollTo: useScrollToTrait,
-});
-
-// Usage
-trait.scrollTo('smooth', someCondition.$test(true));
-```
-
-## Rules
-
-1. **One file for all custom traits.** Only split into a folder if the file grows unmanageable.
-2. **Follow the trait signature convention.** First parameter is `el`, then trait-specific args, then `...rest: (StateType | Condition)[]`.
-3. **Return a cleanup function.** Unsubscribe from all State listeners and remove any event listeners.
-4. **Use `extractStates` and `extractConditions`** from OEM's util to handle the `...rest` parameter.
-5. **Most apps need zero custom traits.** Only create one when the built-in library genuinely doesn't cover the behavior.
-
-
----
+## Skills
 
 
 # Folder & File Structure
@@ -1567,166 +1473,6 @@ my-app/
 2. **Start with single files.** Only break into a folder when the file becomes unmanageable.
 3. **No orphan code.** Every piece of logic must belong to one of these categories.
 4. **Read before writing.** Before adding to a file, read its current contents to avoid duplication.
-
-
----
-
-
-# Templates File
-
-## What This File Is
-
-`templates.ts` is the single file (or `templates/` folder) containing all `Template()` definitions for the application. Each `Template()` call creates a `[tag, trait]` pair — a custom template engine configured with a specific set of traits.
-
-## Why It Must Be Its Own File
-
-Templates are the bridge between OEM's trait system and the UI. They define _which_ traits are available in each part of the app. Centralizing template definitions makes it easy to see what capabilities each template has and ensures consistent trait naming across the application.
-
-## When to Create
-
-Create `templates.ts` at the start of any new OEM application, immediately after deciding which traits the app needs.
-
-## When to Use
-
-- **When writing UI code**: Import `[tag, trait]` from this file.
-- **When adding new traits**: Register them in the appropriate Template definition here.
-- **When starting a new view or module**: Decide whether to use an existing template or create a new one.
-
-## What Belongs Here
-
-- All `Template()` calls and their destructured `[tag, trait]` exports
-- Imports of built-in traits from `@linttrap/oem`
-- Imports of custom traits from `traits.ts`
-
-## What Does NOT Belong Here
-
-- Trait implementations (those go in `traits.ts` for custom traits, or come from `@linttrap/oem`)
-- UI rendering code (that goes in `ui.ts`)
-- State definitions (those go in `states.ts`)
-
-## Example
-
-```typescript
-// templates.ts
-import {
-  Template,
-  useStyleTrait,
-  useStyleOnEventTrait,
-  useEventTrait,
-  useTextContentTrait,
-  useAttributeTrait,
-  useClassNameTrait,
-  useInnerHTMLTrait,
-  useInputValueTrait,
-  useInputEventTrait,
-  useFocusTrait,
-} from '@linttrap/oem';
-
-export const [tag, trait] = Template({
-  style: useStyleTrait,
-  styleOnEvent: useStyleOnEventTrait,
-  event: useEventTrait,
-  text: useTextContentTrait,
-  attr: useAttributeTrait,
-  className: useClassNameTrait,
-  innerHTML: useInnerHTMLTrait,
-  inputValue: useInputValueTrait,
-  inputEvent: useInputEventTrait,
-  focus: useFocusTrait,
-});
-```
-
-## Multiple Templates
-
-Most applications need only one template. Create additional templates only when different parts of the app need different trait sets (e.g., an SVG-heavy section that needs specialized traits):
-
-```typescript
-// A second template with a subset of traits
-export const [svgTag, svgTrait] = Template({
-  style: useStyleTrait,
-  attr: useAttributeTrait,
-  event: useEventTrait,
-});
-```
-
-## Rules
-
-1. **One file for all templates.** Only split into a folder if the file grows unmanageable.
-2. **Most apps need exactly one template.** Don't create multiple unless there's a clear reason.
-3. **Name trait keys consistently** across templates — `style`, `event`, `text`, `attr`, etc.
-4. **Import traits, don't define them here.** This file wires traits together, it doesn't implement them.
-5. **Export `[tag, trait]`** so UI files can import them directly.
-
-
----
-
-
-# Data File
-
-## What This File Is
-
-`data.ts` is the single file (or `data/` folder) containing static data used in the application. This is data that is known at build time, does not change at runtime, and does not need to trigger re-renders.
-
-## Why It Must Be Its Own File
-
-Static data (dropdown options, navigation items, static content) is referenced by UI code but is conceptually separate from both the UI structure and the reactive state. Isolating it makes it easy to update content without touching logic, and gives LLMs a clear place to look for reference data.
-
-## When to Create
-
-Create `data.ts` when the application has any static data sets — lists, lookup tables, menu items, or content that is hardcoded rather than fetched.
-
-## When to Use
-
-- **When rendering static lists**: Import data arrays and `.map()` over them in `trait.innerHTML`.
-- **When populating dropdowns or menus**: Import option arrays from this file.
-- **When displaying static content**: Import text blocks or structured content objects.
-
-## What Belongs Here
-
-- Arrays of options for dropdowns, radio groups, or select menus
-- Navigation item definitions (label + route)
-- Static content strings or structured content objects
-- Lookup tables and mappings
-- Seed data or default data sets
-
-## What Does NOT Belong Here
-
-- Data fetched from an API at runtime (that goes into State objects in `states.ts`)
-- Reactive values (those go in `states.ts`)
-- Configuration settings (those go in `config.ts`)
-- Single constant values (those go in `constants.ts`)
-
-## Example
-
-```typescript
-// data.ts
-import type { NavItem, PriorityOption, Todo } from './types';
-
-export const navItems: NavItem[] = [
-  { label: 'Home', path: '/' },
-  { label: 'About', path: '/about' },
-  { label: 'Contact', path: '/contact' },
-];
-
-export const priorityOptions: PriorityOption[] = [
-  { value: 'low', label: 'Low' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'high', label: 'High' },
-];
-
-export const defaultTodos: Todo[] = [
-  { id: '1', text: 'Learn OEM', completed: false },
-  { id: '2', text: 'Build an app', completed: false },
-];
-```
-
-## Rules
-
-1. **One file for all static data.** Only split into a folder if the file grows unmanageable.
-2. **Use `as const`** for arrays and objects that should have literal types.
-3. **No runtime logic.** This file only contains data declarations.
-4. **No reactive values.** If data changes at runtime, it belongs in `states.ts`.
-5. **Keep data flat and simple.** Complex nested structures are harder for LLMs to parse.
 
 
 ---
@@ -1807,137 +1553,6 @@ And I should remain on the sign-in page
 3. **Use Gherkin format** (Given/When/Then) for scenarios — it is unambiguous and parseable by LLMs.
 4. **Keep scenarios concrete.** Use specific values, not vague descriptions.
 5. **Update BDD files when requirements change.** They must stay in sync with the current expected behavior.
-
-
----
-
-
-# States File
-
-## What This File Is
-
-`states.ts` is the single file (or `states/` folder) containing all reactive State objects for the application. State objects are created with the `State()` function from OEM and are the mechanism for storing any value that needs to trigger UI re-renders when it changes.
-
-## Why It Must Be Its Own File
-
-State objects are module-level singletons shared across the entire application. Centralizing them in one file gives LLMs and developers a single inventory of all reactive data in the app. It also prevents accidental duplication — before creating a new State, check this file to see if one already exists.
-
-## When to Create
-
-Create `states.ts` at the start of any new OEM application, as soon as the types are defined.
-
-## When to Use
-
-- **When rendering UI**: Import State objects and bind them to traits using `$val` or the verbose form.
-- **When handling events**: Import State objects and use `$set`, `$reduce`, or custom `$`-prefixed methods.
-- **When adding a new feature**: Add any new State objects to this file.
-- **Before creating a new State**: Read this file to check if an appropriate State already exists.
-
-## What Belongs Here
-
-- All `State()` instances for the application
-- Custom methods defined on State objects (passed as the second argument to `State()`)
-- State objects for any data that UI traits subscribe to
-
-## What Does NOT Belong Here
-
-- Type definitions (those go in `types.ts`)
-- Static data that never changes (those go in `data.ts`)
-- Constants (those go in `constants.ts`)
-- Design tokens (those go in `theme.ts` using `useTokenState`)
-- Action creator functions (those go in `actions.ts`)
-- Machine/dispatch logic (those go in `machines.ts`)
-
-## Example
-
-```typescript
-// states.ts
-import { State } from '@linttrap/oem';
-import type { Todo, Filter } from './types';
-
-export const todos = State<Todo[]>([]);
-export const filter = State<Filter>('all');
-export const editingId = State<string | null>(null);
-export const newTodoText = State('');
-
-// State with custom methods
-export const todoList = State<Todo[]>([], {
-  add: (state, text: string) => {
-    state.reduce((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), text, completed: false, createdAt: Date.now() },
-    ]);
-  },
-  toggle: (state, id: string) => {
-    state.reduce((prev) => prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
-  },
-  remove: (state, id: string) => {
-    state.reduce((prev) => prev.filter((t) => t.id !== id));
-  },
-});
-```
-
-## Responsive Breakpoints
-
-Every app should define mobile-first breakpoint states. These are `State<boolean>` objects that update automatically when the viewport crosses a width boundary:
-
-```typescript
-// states.ts
-import { useMediaQueryState } from '@linttrap/oem';
-
-export const isMobile = useMediaQueryState({ maxWidth: 639 });
-export const isTablet = useMediaQueryState({ minWidth: 640, maxWidth: 1023 });
-export const isDesktop = useMediaQueryState({ minWidth: 1024 });
-```
-
-Use these in UI code via `.$test(true)` conditions on traits. Base styles (no condition) target mobile; breakpoint conditions layer on overrides for larger viewports. See the [Responsive Design](responsive-design.md) guide for full patterns.
-
-## Usage Patterns
-
-```typescript
-// In UI — binding to traits using $val
-trait.text(filter.$val);
-trait.style(
-  'opacity',
-  '1',
-  editingId.$test((id) => id !== null),
-);
-
-// In event handlers — using $ thunks
-trait.event('click', filter.$set('active'));
-trait.event('click', todoList.$toggle(todo.id));
-
-// Verbose form for computed values
-trait.text(() => `${todos.val().filter((t) => !t.completed).length} items left`, todos);
-```
-
-## Persistence
-
-If a State needs to survive page reloads, subscribe to it and persist its value. Load the persisted value back on startup:
-
-```typescript
-// states.ts
-import { State } from '@linttrap/oem';
-import type { Todo } from './types';
-import { STORAGE_KEY } from './constants';
-
-const saved = localStorage.getItem(STORAGE_KEY);
-const initial: Todo[] = saved ? JSON.parse(saved) : [];
-
-export const todos = State<Todo[]>(initial);
-
-todos.sub((value) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
-});
-```
-
-## Rules
-
-1. **One file for all State objects.** Only split into a folder if the file grows unmanageable.
-2. **State objects are module-level singletons.** Never create State inside a function or loop.
-3. **Import types from `types.ts`.** State objects should be typed with the app's type definitions.
-4. **Check before creating.** Read the file first to avoid duplicate State objects.
-5. **Use custom methods** for complex mutations that would otherwise require inline `reduce` callbacks everywhere.
 
 
 ---
@@ -2415,85 +2030,6 @@ You never need to manually unsubscribe or tear down. Build elements, append them
 ---
 
 
-# Main File
-
-## What This File Is
-
-`main.ts` is the single entry point of the OEM application. It is the file that gets loaded by the HTML page's `<script>` tag. Its job is to initialize the application — wire the UI into the DOM and perform any one-time setup.
-
-## Why It Must Be Its Own File
-
-The entry point is the only file with side effects on import (it mounts the UI to the DOM). Keeping it minimal and separate ensures that all other files are pure and importable without side effects, which makes them testable and reusable.
-
-## When to Create
-
-Create `main.ts` as one of the first files in any new OEM application.
-
-## When to Use
-
-- **When starting the application**: This is what the browser loads.
-- **When changing initialization logic**: Edit this file to modify what happens on app startup.
-- **When adding global setup**: One-time side effects (loading from localStorage, adding global event listeners) go here.
-
-## What Belongs Here
-
-- Importing the root UI element from `ui.ts`
-- Mounting the UI to the DOM via `tag.$(document.body)(...)` or `document.body.appendChild(...)`
-- Global event listeners that don't belong to a specific element
-
-## What Does NOT Belong Here
-
-- State definitions (those go in `states.ts`)
-- UI construction (that goes in `ui.ts`)
-- Token definitions (those go in `theme.ts`)
-- Template definitions (those go in `templates.ts`)
-- Machine logic (that goes in `machines.ts`)
-
-## Example
-
-```typescript
-// main.ts
-import { tag, trait } from './templates';
-import { app } from './ui';
-
-// Mount the app
-tag.$(document.body)(
-  trait.style('margin', '0'),
-  trait.style('fontFamily', 'system-ui, sans-serif'),
-  app,
-);
-```
-
-## HTML Integration
-
-The HTML file simply loads the entry point:
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My App</title>
-  </head>
-  <body>
-    <script type="module" src="./main.ts"></script>
-  </body>
-</html>
-```
-
-## Rules
-
-1. **One entry point per app.** There is exactly one `main.ts`.
-2. **Keep it minimal.** Import, initialize, mount — nothing more.
-3. **No UI construction.** The DOM tree is built in `ui.ts` and imported here.
-4. **Side effects are OK here** — this is the only file where side effects on import are expected.
-5. **Global listeners go here** — if a listener doesn't belong to a specific element (e.g., `window.onbeforeunload`), attach it in `main.ts`.
-
-
----
-
-
 # Design Decision Guide
 
 The following heuristics should be applied when making visual and structural design decisions. They reflect the reasoning of a world-class UI expert and ensure consistent, intentional output.
@@ -2638,69 +2174,6 @@ Tokens: `border_*`
 ---
 
 
-# Config File
-
-## What This File Is
-
-`config.ts` is the single file (or `config/` folder) containing environment-aware configuration settings for the application. These are values that may differ between development, staging, and production environments but do not need to trigger re-renders when they change.
-
-## Why It Must Be Its Own File
-
-Configuration is separate from constants because config values are environment-dependent. Isolating them makes it easy for LLMs and developers to see what can be changed per deployment without touching application logic.
-
-## When to Create
-
-Create `config.ts` when the application has any settings that vary by environment (e.g., API URLs, feature flags, debug toggles).
-
-## When to Use
-
-- **When setting up API calls**: Import the base URL or environment-specific endpoints from config.
-- **When toggling features**: Check feature flags defined in config.
-- **When deploying**: Review this file to confirm environment-specific settings.
-
-## What Belongs Here
-
-- Environment-specific API URLs
-- Feature flags (boolean toggles for unreleased features)
-- Debug/logging settings
-- Environment detection logic (`isDev`, `isProd`)
-- Third-party service keys (non-secret, client-side only)
-
-## What Does NOT Belong Here
-
-- Fixed values that never change per environment (those go in `constants.ts`)
-- Reactive values (those go in `states.ts`)
-- Design tokens (those go in `theme.ts`)
-- Type definitions (those go in `types.ts`)
-
-## Example
-
-```typescript
-// config.ts
-
-const ENV = import.meta.env?.MODE ?? 'development';
-
-export const config = {
-  isDev: ENV === 'development',
-  isProd: ENV === 'production',
-  apiBaseUrl: ENV === 'production' ? 'https://api.example.com/v1' : 'http://localhost:3000/v1',
-  enableAnalytics: ENV === 'production',
-  logLevel: ENV === 'production' ? 'error' : 'debug',
-} as const;
-```
-
-## Rules
-
-1. **One file for all config.** Only split into a folder if the file grows unmanageable.
-2. **Export a single `config` object** or named exports — keep access patterns consistent.
-3. **No reactive values.** Config does not trigger re-renders. If it needs to, use a State object in `states.ts`.
-4. **No secrets.** Never put API keys, passwords, or tokens in client-side config.
-5. **Keep it declarative.** Config should be a set of values, not logic or side effects.
-
-
----
-
-
 # Theming & Design Tokens
 
 OEM does not ship pre-built components or a fixed token palette. Instead, every visual property — color, spacing, typography, radius, shadow, etc. — is expressed as a reactive token that LLMs generate on the fly while building UI. This gives every app a bespoke design system that grows organically and stays perfectly consistent.
@@ -2829,6 +2302,889 @@ When the theme changes, every token fires its subscribers and the UI updates aut
 ---
 
 
+# Icons File
+
+## What This File Is
+
+`icons.ts` is the single file (or `icons/` folder) containing all SVG icon functions for the application. Each icon is an exported function that accepts a common `IconProps` argument and returns an `SVGElement`. The file has its own dedicated `Template` instance configured for SVG.
+
+## Why It Must Be Its Own File
+
+Icons are visual primitives referenced by the UI layer but distinct from layout, state, and behavior. Keeping them in a dedicated file makes icons discoverable, reusable, and easy to add or remove without touching UI code. Because SVG elements need `createElementNS` with the SVG namespace, icons use their own `Template` instance with only the traits relevant to SVG — keeping it separate from the main HTML template.
+
+## When to Create
+
+Create `icons.ts` when the application needs any SVG icons. Even a single icon belongs here.
+
+## When to Use
+
+- **When building UI**: Import icon functions into `ui.ts` and call them inline in the element tree.
+- **When adding new icons**: Add a new exported function to this file.
+- **When an icon needs to change size or color contextually**: Use the `IconProps` argument.
+
+## What Belongs Here
+
+- A dedicated `Template` instance for SVG (at the top of the file)
+- The `IconProps` type (or import it from `types.ts`)
+- Exported icon functions — one function per icon
+
+## What Does NOT Belong Here
+
+- The main HTML template (that goes in `templates.ts`)
+- UI layout or composition (that goes in `ui.ts`)
+- Design tokens (those go in `theme.ts`)
+- Raster images or external asset URLs
+
+## IconProps
+
+Every icon function accepts the same `IconProps` object so that icons have a consistent API:
+
+```typescript
+type IconProps = {
+  size?: string; // Width and height (e.g., '24px', '1em'). Defaults to '24px'.
+  color?: string; // Fill/stroke color (e.g., 'currentColor', '#333'). Defaults to 'currentColor'.
+};
+```
+
+Define `IconProps` in `types.ts` if your app already has a types file, or define it locally at the top of `icons.ts`.
+
+## Template Instance
+
+Icons need their own `Template` instance because `tag.svg`, `tag.path`, etc. create SVG-namespaced elements. Only include the traits you actually use on SVG elements — typically `style` and `attr`:
+
+```typescript
+import { Template, useStyleTrait, useAttributeTrait } from '@linttrap/oem';
+
+const [svg, svgTrait] = Template({
+  style: useStyleTrait,
+  attr: useAttributeTrait,
+});
+```
+
+This template is **private to the icons file** — it is not exported. UI code imports the icon _functions_, not the SVG template.
+
+## Example
+
+```typescript
+// icons.ts
+import { Template, useStyleTrait, useAttributeTrait } from '@linttrap/oem';
+
+// --- Types ---
+
+type IconProps = {
+  size?: string;
+  color?: string;
+};
+
+// --- SVG Template (private) ---
+
+const [svg, svgTrait] = Template({
+  style: useStyleTrait,
+  attr: useAttributeTrait,
+});
+
+// --- Default props ---
+
+const defaults: Required<IconProps> = {
+  size: '24px',
+  color: 'currentColor',
+};
+
+// --- Icons ---
+
+export function CheckIcon(props: IconProps = {}) {
+  const { size, color } = { ...defaults, ...props };
+  return svg.svg(
+    svgTrait.attr('viewBox', '0 0 24 24'),
+    svgTrait.attr('fill', 'none'),
+    svgTrait.attr('xmlns', 'http://www.w3.org/2000/svg'),
+    svgTrait.style('width', size),
+    svgTrait.style('height', size),
+    svg.path(
+      svgTrait.attr('d', 'M5 13l4 4L19 7'),
+      svgTrait.attr('stroke', color),
+      svgTrait.attr('stroke-width', '2'),
+      svgTrait.attr('stroke-linecap', 'round'),
+      svgTrait.attr('stroke-linejoin', 'round'),
+    ),
+  );
+}
+
+export function TrashIcon(props: IconProps = {}) {
+  const { size, color } = { ...defaults, ...props };
+  return svg.svg(
+    svgTrait.attr('viewBox', '0 0 24 24'),
+    svgTrait.attr('fill', 'none'),
+    svgTrait.attr('xmlns', 'http://www.w3.org/2000/svg'),
+    svgTrait.style('width', size),
+    svgTrait.style('height', size),
+    svg.path(
+      svgTrait.attr(
+        'd',
+        'M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14',
+      ),
+      svgTrait.attr('stroke', color),
+      svgTrait.attr('stroke-width', '2'),
+      svgTrait.attr('stroke-linecap', 'round'),
+      svgTrait.attr('stroke-linejoin', 'round'),
+    ),
+  );
+}
+
+export function PlusIcon(props: IconProps = {}) {
+  const { size, color } = { ...defaults, ...props };
+  return svg.svg(
+    svgTrait.attr('viewBox', '0 0 24 24'),
+    svgTrait.attr('fill', 'none'),
+    svgTrait.attr('xmlns', 'http://www.w3.org/2000/svg'),
+    svgTrait.style('width', size),
+    svgTrait.style('height', size),
+    svg.path(
+      svgTrait.attr('d', 'M12 5v14M5 12h14'),
+      svgTrait.attr('stroke', color),
+      svgTrait.attr('stroke-width', '2'),
+      svgTrait.attr('stroke-linecap', 'round'),
+      svgTrait.attr('stroke-linejoin', 'round'),
+    ),
+  );
+}
+```
+
+## Usage in UI
+
+```typescript
+// ui.ts
+import { tag, trait } from './templates';
+import { CheckIcon, TrashIcon } from './icons';
+import { text_fg_primary, text_fg_accent } from './theme';
+
+tag.button(
+  trait.style('display', 'flex'),
+  trait.style('alignItems', 'center'),
+  trait.style('gap', '8px'),
+  CheckIcon({ size: '16px', color: text_fg_accent.$val() }),
+  trait.text('Save'),
+);
+```
+
+## Passing Reactive Token Values
+
+When icon color should react to theme changes, pass a token's resolved value:
+
+```typescript
+CheckIcon({ color: text_fg_primary.$val() });
+```
+
+If the icon needs to re-render on state change, place the icon call inside a `trait.innerHTML` callback so it is rebuilt when the state fires.
+
+## Rules
+
+1. **One file for all icons.** Only split into a folder if the file grows unmanageable.
+2. **One function per icon.** Each icon is a named export — `CheckIcon`, `TrashIcon`, `CloseIcon`, etc.
+3. **Every icon function accepts `IconProps`.** Use defaults so callers can pass nothing: `CheckIcon()`.
+4. **Keep the SVG template private.** The `[svg, svgTrait]` tuple stays inside `icons.ts` — never export it.
+5. **Use `attr` for SVG attributes.** SVG attributes like `viewBox`, `d`, `stroke`, `fill` go through `svgTrait.attr()`.
+6. **Use `style` for sizing.** Set `width` and `height` via `svgTrait.style()` so they respond to CSS context.
+7. **No inline SVG in `ui.ts`.** All SVG icon markup lives in `icons.ts` — the UI file only calls icon functions.
+
+
+---
+
+
+# Responsive Design
+
+OEM handles responsive design without CSS media queries. Instead, viewport conditions are modeled as reactive `State<boolean>` objects using `useMediaQueryState`. Traits subscribe to these states via conditions, so style changes are automatic, surgical, and declarative.
+
+**Everything is mobile-first.** Base styles — the traits written without any breakpoint condition — target the smallest viewport. Larger breakpoints (`isTablet`, `isDesktop`) layer on overrides via conditions. This means the app works on mobile by default, and wider layouts are progressive enhancements.
+
+---
+
+## Core Mechanism
+
+`useMediaQueryState` returns a `State<boolean>` that tracks whether the viewport matches the given constraints. It listens to `window.resize` and updates automatically:
+
+```ts
+import { useMediaQueryState } from '@linttrap/oem';
+
+const isMobile = useMediaQueryState({ maxWidth: 639 });
+const isTablet = useMediaQueryState({ minWidth: 640, maxWidth: 1023 });
+const isDesktop = useMediaQueryState({ minWidth: 1024 });
+```
+
+Each of these is a normal State object — it has `.val()`, `.set()`, `.sub()`, `.$val`, `.$test()`, and all the standard State methods.
+
+### Props
+
+| Property   | Type                           | Default    | Description                      |
+| ---------- | ------------------------------ | ---------- | -------------------------------- |
+| `type`     | `'screen' \| 'print' \| 'all'` | `'all'`    | Media type to match against      |
+| `minWidth` | `number`                       | `0`        | Minimum viewport width in pixels |
+| `maxWidth` | `number`                       | `Infinity` | Maximum viewport width in pixels |
+
+Width boundaries are inclusive (`>= minWidth` and `<= maxWidth`).
+
+---
+
+## Where to Define Breakpoints
+
+Define all breakpoint states in `states.ts` (or a dedicated `breakpoints.ts` if the app is large). They are module-level singletons, just like any other State:
+
+```ts
+// states.ts
+import { useMediaQueryState } from '@linttrap/oem';
+
+export const isMobile = useMediaQueryState({ maxWidth: 639 });
+export const isTablet = useMediaQueryState({ minWidth: 640, maxWidth: 1023 });
+export const isDesktop = useMediaQueryState({ minWidth: 1024 });
+```
+
+Import them wherever UI code needs responsive behavior.
+
+---
+
+## Using Breakpoints in Traits
+
+Because `useMediaQueryState` returns a `State<boolean>`, its `.$test()` method produces conditions that traits natively understand. Use separate trait calls gated by breakpoint conditions — never ternaries:
+
+### Responsive Styles
+
+```ts
+import { isTablet, isDesktop } from './states';
+
+tag.div(
+  // Base (mobile) — no condition
+  trait.style('display', 'flex'),
+  trait.style('flexDirection', 'column'),
+  trait.style('padding', '8px'),
+  trait.style('gap', space_gap_primary.$val),
+
+  // Desktop override
+  trait.style('flexDirection', 'row', isDesktop.$test(true)),
+  trait.style('padding', '24px', isDesktop.$test(true)),
+);
+```
+
+Each trait subscribes to the breakpoint state independently. When the viewport crosses a boundary, only the affected traits re-evaluate — no full re-render.
+
+### Responsive Text
+
+```ts
+tag.h1(
+  trait.text('Dashboard'),
+  // Base (mobile)
+  trait.style('fontSize', type_size_lg.$val),
+  // Desktop override
+  trait.style('fontSize', type_size_xl.$val, isDesktop.$test(true)),
+);
+```
+
+### Showing / Hiding Elements
+
+Use `display: none` gated by a breakpoint condition to show or hide elements at different viewport sizes:
+
+```ts
+// Sidebar — hidden by default (mobile), shown on desktop
+tag.aside(
+  trait.style('display', 'none'),
+  trait.style('display', 'block', isDesktop.$test(true)),
+  trait.style('width', '260px', isDesktop.$test(true)),
+  sidebarContent,
+),
+
+// Mobile nav — shown by default (mobile), hidden on desktop
+tag.nav(
+  trait.style('display', 'flex'),
+  trait.style('display', 'none', isDesktop.$test(true)),
+  mobileNavItems,
+),
+```
+
+### Responsive Grid Columns
+
+```ts
+tag.div(
+  // Base (mobile) — single column
+  trait.style('display', 'grid'),
+  trait.style('gap', space_gap_primary.$val),
+  trait.style('gridTemplateColumns', '1fr'),
+  // Tablet override
+  trait.style('gridTemplateColumns', 'repeat(2, 1fr)', isTablet.$test(true)),
+  // Desktop override
+  trait.style('gridTemplateColumns', 'repeat(3, 1fr)', isDesktop.$test(true)),
+  ...cards,
+);
+```
+
+---
+
+## Combining Breakpoints with Other Conditions
+
+Breakpoint conditions compose with any other condition. When multiple conditions are passed to a trait, all must be truthy for it to apply:
+
+```ts
+trait.style(
+  'backgroundColor',
+  action_bg_primary.$val,
+  isDesktop.$test(true),
+  isHovered.$test(true),
+);
+// Only applies when viewport is desktop-sized AND the element is hovered
+```
+
+---
+
+## Print Media
+
+`useMediaQueryState` also supports the `type` property for print-specific styles:
+
+```ts
+const isPrint = useMediaQueryState({ type: 'print' });
+
+tag.nav(trait.style('display', 'none', isPrint.$test(true)));
+
+tag.main(
+  trait.style('maxWidth', '100%', isPrint.$test(true)),
+  trait.style('color', '#000', isPrint.$test(true)),
+);
+```
+
+---
+
+## Rules
+
+1. **Mobile-first.** Base styles (no condition) target the smallest viewport. Larger breakpoints add overrides.
+2. **Define breakpoints once in `states.ts`.** Never call `useMediaQueryState` inline inside UI code.
+3. **Use `.$test(true)` / `.$test(false)` as conditions.** Never read `.val()` in a ternary.
+4. **Separate trait calls per breakpoint.** Each viewport size gets its own `trait.style(...)` call with a condition — do not collapse multiple breakpoints into one trait.
+5. **Keep breakpoint ranges non-overlapping.** Ensure `maxWidth` of one range is one pixel below the `minWidth` of the next (e.g., `639 / 640`, `1023 / 1024`).
+6. **Base styles have no condition.** They represent the mobile layout and are always applied. Conditions only appear on tablet/desktop overrides.
+
+
+## Guides
+
+
+# Custom Traits File
+
+## What This File Is
+
+`traits.ts` is the single file (or `traits/` folder) containing any custom trait functions created for the application. Custom traits extend the behavior of OEM's template system beyond the built-in traits (style, event, attribute, textContent, className, innerHTML, etc.).
+
+## Why It Must Be Its Own File
+
+Custom traits are reusable behavioral building blocks — they are registered into Templates just like built-in traits. Isolating them in their own file keeps them discoverable and prevents them from being buried inside UI code where they'd be hard to find and reuse.
+
+## When to Create
+
+Create `traits.ts` only when the built-in trait library does not cover a behavior you need. Most applications do not need custom traits — the core library is designed to be sufficient for typical use cases.
+
+## When to Use
+
+- **When building a Template**: Import custom traits and register them alongside built-in traits.
+- **When you need a repeating DOM behavior** that isn't covered by the built-in traits.
+- **Before creating a custom trait**: Check whether a built-in trait already handles the use case.
+
+## What Belongs Here
+
+- Custom trait functions following the OEM trait signature: `(el: HTMLElement, ...args, ...rest: (StateType | Condition)[]) => (() => void) | void`
+- Each trait should handle its own subscription to State objects and return a cleanup function
+
+## What Does NOT Belong Here
+
+- Built-in traits (those come from `@linttrap/oem`)
+- UI rendering code (that goes in `ui.ts`)
+- State definitions (those go in `states.ts`)
+
+## Example
+
+```typescript
+// traits.ts
+import { extractStates, extractConditions } from '@linttrap/oem';
+import type { StateType, Condition } from '@linttrap/oem';
+
+export function useScrollToTrait(
+  el: HTMLElement,
+  behavior: ScrollBehavior = 'smooth',
+  ...rest: (StateType<any> | Condition)[]
+) {
+  const states = extractStates(...rest);
+  const conditions = extractConditions(...rest);
+
+  const apply = () => {
+    const applies = conditions.every((c) => (typeof c === 'function' ? c() : c));
+    if (applies) {
+      el.scrollIntoView({ behavior });
+    }
+  };
+
+  apply();
+  const unsubs = states.map((state) => state.sub(apply));
+  return () => unsubs.forEach((unsub) => unsub());
+}
+```
+
+## Registering Custom Traits
+
+```typescript
+// templates.ts
+import { Template, useStyleTrait, useEventTrait, useTextContentTrait } from '@linttrap/oem';
+import { useScrollToTrait } from './traits';
+
+export const [tag, trait] = Template({
+  style: useStyleTrait,
+  event: useEventTrait,
+  text: useTextContentTrait,
+  scrollTo: useScrollToTrait,
+});
+
+// Usage
+trait.scrollTo('smooth', someCondition.$test(true));
+```
+
+## Rules
+
+1. **One file for all custom traits.** Only split into a folder if the file grows unmanageable.
+2. **Follow the trait signature convention.** First parameter is `el`, then trait-specific args, then `...rest: (StateType | Condition)[]`.
+3. **Return a cleanup function.** Unsubscribe from all State listeners and remove any event listeners.
+4. **Use `extractStates` and `extractConditions`** from OEM's util to handle the `...rest` parameter.
+5. **Most apps need zero custom traits.** Only create one when the built-in library genuinely doesn't cover the behavior.
+
+
+---
+
+
+# Templates File
+
+## What This File Is
+
+`templates.ts` is the single file (or `templates/` folder) containing all `Template()` definitions for the application. Each `Template()` call creates a `[tag, trait]` pair — a custom template engine configured with a specific set of traits.
+
+## Why It Must Be Its Own File
+
+Templates are the bridge between OEM's trait system and the UI. They define _which_ traits are available in each part of the app. Centralizing template definitions makes it easy to see what capabilities each template has and ensures consistent trait naming across the application.
+
+## When to Create
+
+Create `templates.ts` at the start of any new OEM application, immediately after deciding which traits the app needs.
+
+## When to Use
+
+- **When writing UI code**: Import `[tag, trait]` from this file.
+- **When adding new traits**: Register them in the appropriate Template definition here.
+- **When starting a new view or module**: Decide whether to use an existing template or create a new one.
+
+## What Belongs Here
+
+- All `Template()` calls and their destructured `[tag, trait]` exports
+- Imports of built-in traits from `@linttrap/oem`
+- Imports of custom traits from `traits.ts`
+
+## What Does NOT Belong Here
+
+- Trait implementations (those go in `traits.ts` for custom traits, or come from `@linttrap/oem`)
+- UI rendering code (that goes in `ui.ts`)
+- State definitions (those go in `states.ts`)
+
+## Example
+
+```typescript
+// templates.ts
+import {
+  Template,
+  useStyleTrait,
+  useStyleOnEventTrait,
+  useEventTrait,
+  useTextContentTrait,
+  useAttributeTrait,
+  useClassNameTrait,
+  useInnerHTMLTrait,
+  useInputValueTrait,
+  useInputEventTrait,
+  useFocusTrait,
+} from '@linttrap/oem';
+
+export const [tag, trait] = Template({
+  style: useStyleTrait,
+  styleOnEvent: useStyleOnEventTrait,
+  event: useEventTrait,
+  text: useTextContentTrait,
+  attr: useAttributeTrait,
+  className: useClassNameTrait,
+  innerHTML: useInnerHTMLTrait,
+  inputValue: useInputValueTrait,
+  inputEvent: useInputEventTrait,
+  focus: useFocusTrait,
+});
+```
+
+## Multiple Templates
+
+Most applications need only one template. Create additional templates only when different parts of the app need different trait sets (e.g., an SVG-heavy section that needs specialized traits):
+
+```typescript
+// A second template with a subset of traits
+export const [svgTag, svgTrait] = Template({
+  style: useStyleTrait,
+  attr: useAttributeTrait,
+  event: useEventTrait,
+});
+```
+
+## Rules
+
+1. **One file for all templates.** Only split into a folder if the file grows unmanageable.
+2. **Most apps need exactly one template.** Don't create multiple unless there's a clear reason.
+3. **Name trait keys consistently** across templates — `style`, `event`, `text`, `attr`, etc.
+4. **Import traits, don't define them here.** This file wires traits together, it doesn't implement them.
+5. **Export `[tag, trait]`** so UI files can import them directly.
+
+
+---
+
+
+# Data File
+
+## What This File Is
+
+`data.ts` is the single file (or `data/` folder) containing static data used in the application. This is data that is known at build time, does not change at runtime, and does not need to trigger re-renders.
+
+## Why It Must Be Its Own File
+
+Static data (dropdown options, navigation items, static content) is referenced by UI code but is conceptually separate from both the UI structure and the reactive state. Isolating it makes it easy to update content without touching logic, and gives LLMs a clear place to look for reference data.
+
+## When to Create
+
+Create `data.ts` when the application has any static data sets — lists, lookup tables, menu items, or content that is hardcoded rather than fetched.
+
+## When to Use
+
+- **When rendering static lists**: Import data arrays and `.map()` over them in `trait.innerHTML`.
+- **When populating dropdowns or menus**: Import option arrays from this file.
+- **When displaying static content**: Import text blocks or structured content objects.
+
+## What Belongs Here
+
+- Arrays of options for dropdowns, radio groups, or select menus
+- Navigation item definitions (label + route)
+- Static content strings or structured content objects
+- Lookup tables and mappings
+- Seed data or default data sets
+
+## What Does NOT Belong Here
+
+- Data fetched from an API at runtime (that goes into State objects in `states.ts`)
+- Reactive values (those go in `states.ts`)
+- Configuration settings (those go in `config.ts`)
+- Single constant values (those go in `constants.ts`)
+
+## Example
+
+```typescript
+// data.ts
+import type { NavItem, PriorityOption, Todo } from './types';
+
+export const navItems: NavItem[] = [
+  { label: 'Home', path: '/' },
+  { label: 'About', path: '/about' },
+  { label: 'Contact', path: '/contact' },
+];
+
+export const priorityOptions: PriorityOption[] = [
+  { value: 'low', label: 'Low' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'high', label: 'High' },
+];
+
+export const defaultTodos: Todo[] = [
+  { id: '1', text: 'Learn OEM', completed: false },
+  { id: '2', text: 'Build an app', completed: false },
+];
+```
+
+## Rules
+
+1. **One file for all static data.** Only split into a folder if the file grows unmanageable.
+2. **Use `as const`** for arrays and objects that should have literal types.
+3. **No runtime logic.** This file only contains data declarations.
+4. **No reactive values.** If data changes at runtime, it belongs in `states.ts`.
+5. **Keep data flat and simple.** Complex nested structures are harder for LLMs to parse.
+
+
+---
+
+
+# States File
+
+## What This File Is
+
+`states.ts` is the single file (or `states/` folder) containing all reactive State objects for the application. State objects are created with the `State()` function from OEM and are the mechanism for storing any value that needs to trigger UI re-renders when it changes.
+
+## Why It Must Be Its Own File
+
+State objects are module-level singletons shared across the entire application. Centralizing them in one file gives LLMs and developers a single inventory of all reactive data in the app. It also prevents accidental duplication — before creating a new State, check this file to see if one already exists.
+
+## When to Create
+
+Create `states.ts` at the start of any new OEM application, as soon as the types are defined.
+
+## When to Use
+
+- **When rendering UI**: Import State objects and bind them to traits using `$val` or the verbose form.
+- **When handling events**: Import State objects and use `$set`, `$reduce`, or custom `$`-prefixed methods.
+- **When adding a new feature**: Add any new State objects to this file.
+- **Before creating a new State**: Read this file to check if an appropriate State already exists.
+
+## What Belongs Here
+
+- All `State()` instances for the application
+- Custom methods defined on State objects (passed as the second argument to `State()`)
+- State objects for any data that UI traits subscribe to
+
+## What Does NOT Belong Here
+
+- Type definitions (those go in `types.ts`)
+- Static data that never changes (those go in `data.ts`)
+- Constants (those go in `constants.ts`)
+- Design tokens (those go in `theme.ts` using `useTokenState`)
+- Action creator functions (those go in `actions.ts`)
+- Machine/dispatch logic (those go in `machines.ts`)
+
+## Example
+
+```typescript
+// states.ts
+import { State } from '@linttrap/oem';
+import type { Todo, Filter } from './types';
+
+export const todos = State<Todo[]>([]);
+export const filter = State<Filter>('all');
+export const editingId = State<string | null>(null);
+export const newTodoText = State('');
+
+// State with custom methods
+export const todoList = State<Todo[]>([], {
+  add: (state, text: string) => {
+    state.reduce((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), text, completed: false, createdAt: Date.now() },
+    ]);
+  },
+  toggle: (state, id: string) => {
+    state.reduce((prev) => prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
+  },
+  remove: (state, id: string) => {
+    state.reduce((prev) => prev.filter((t) => t.id !== id));
+  },
+});
+```
+
+## Responsive Breakpoints
+
+Every app should define mobile-first breakpoint states. These are `State<boolean>` objects that update automatically when the viewport crosses a width boundary:
+
+```typescript
+// states.ts
+import { useMediaQueryState } from '@linttrap/oem';
+
+export const isMobile = useMediaQueryState({ maxWidth: 639 });
+export const isTablet = useMediaQueryState({ minWidth: 640, maxWidth: 1023 });
+export const isDesktop = useMediaQueryState({ minWidth: 1024 });
+```
+
+Use these in UI code via `.$test(true)` conditions on traits. Base styles (no condition) target mobile; breakpoint conditions layer on overrides for larger viewports. See the [Responsive Design](responsive-design.md) guide for full patterns.
+
+## Usage Patterns
+
+```typescript
+// In UI — binding to traits using $val
+trait.text(filter.$val);
+trait.style(
+  'opacity',
+  '1',
+  editingId.$test((id) => id !== null),
+);
+
+// In event handlers — using $ thunks
+trait.event('click', filter.$set('active'));
+trait.event('click', todoList.$toggle(todo.id));
+
+// Verbose form for computed values
+trait.text(() => `${todos.val().filter((t) => !t.completed).length} items left`, todos);
+```
+
+## Persistence
+
+If a State needs to survive page reloads, subscribe to it and persist its value. Load the persisted value back on startup:
+
+```typescript
+// states.ts
+import { State } from '@linttrap/oem';
+import type { Todo } from './types';
+import { STORAGE_KEY } from './constants';
+
+const saved = localStorage.getItem(STORAGE_KEY);
+const initial: Todo[] = saved ? JSON.parse(saved) : [];
+
+export const todos = State<Todo[]>(initial);
+
+todos.sub((value) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+});
+```
+
+## Rules
+
+1. **One file for all State objects.** Only split into a folder if the file grows unmanageable.
+2. **State objects are module-level singletons.** Never create State inside a function or loop.
+3. **Import types from `types.ts`.** State objects should be typed with the app's type definitions.
+4. **Check before creating.** Read the file first to avoid duplicate State objects.
+5. **Use custom methods** for complex mutations that would otherwise require inline `reduce` callbacks everywhere.
+
+
+---
+
+
+# Main File
+
+## What This File Is
+
+`main.ts` is the single entry point of the OEM application. It is the file that gets loaded by the HTML page's `<script>` tag. Its job is to initialize the application — wire the UI into the DOM and perform any one-time setup.
+
+## Why It Must Be Its Own File
+
+The entry point is the only file with side effects on import (it mounts the UI to the DOM). Keeping it minimal and separate ensures that all other files are pure and importable without side effects, which makes them testable and reusable.
+
+## When to Create
+
+Create `main.ts` as one of the first files in any new OEM application.
+
+## When to Use
+
+- **When starting the application**: This is what the browser loads.
+- **When changing initialization logic**: Edit this file to modify what happens on app startup.
+- **When adding global setup**: One-time side effects (loading from localStorage, adding global event listeners) go here.
+
+## What Belongs Here
+
+- Importing the root UI element from `ui.ts`
+- Mounting the UI to the DOM via `tag.$(document.body)(...)` or `document.body.appendChild(...)`
+- Global event listeners that don't belong to a specific element
+
+## What Does NOT Belong Here
+
+- State definitions (those go in `states.ts`)
+- UI construction (that goes in `ui.ts`)
+- Token definitions (those go in `theme.ts`)
+- Template definitions (those go in `templates.ts`)
+- Machine logic (that goes in `machines.ts`)
+
+## Example
+
+```typescript
+// main.ts
+import { tag, trait } from './templates';
+import { app } from './ui';
+
+// Mount the app
+tag.$(document.body)(
+  trait.style('margin', '0'),
+  trait.style('fontFamily', 'system-ui, sans-serif'),
+  app,
+);
+```
+
+## HTML Integration
+
+The HTML file simply loads the entry point:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My App</title>
+  </head>
+  <body>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
+```
+
+## Rules
+
+1. **One entry point per app.** There is exactly one `main.ts`.
+2. **Keep it minimal.** Import, initialize, mount — nothing more.
+3. **No UI construction.** The DOM tree is built in `ui.ts` and imported here.
+4. **Side effects are OK here** — this is the only file where side effects on import are expected.
+5. **Global listeners go here** — if a listener doesn't belong to a specific element (e.g., `window.onbeforeunload`), attach it in `main.ts`.
+
+
+---
+
+
+# Config File
+
+## What This File Is
+
+`config.ts` is the single file (or `config/` folder) containing environment-aware configuration settings for the application. These are values that may differ between development, staging, and production environments but do not need to trigger re-renders when they change.
+
+## Why It Must Be Its Own File
+
+Configuration is separate from constants because config values are environment-dependent. Isolating them makes it easy for LLMs and developers to see what can be changed per deployment without touching application logic.
+
+## When to Create
+
+Create `config.ts` when the application has any settings that vary by environment (e.g., API URLs, feature flags, debug toggles).
+
+## When to Use
+
+- **When setting up API calls**: Import the base URL or environment-specific endpoints from config.
+- **When toggling features**: Check feature flags defined in config.
+- **When deploying**: Review this file to confirm environment-specific settings.
+
+## What Belongs Here
+
+- Environment-specific API URLs
+- Feature flags (boolean toggles for unreleased features)
+- Debug/logging settings
+- Environment detection logic (`isDev`, `isProd`)
+- Third-party service keys (non-secret, client-side only)
+
+## What Does NOT Belong Here
+
+- Fixed values that never change per environment (those go in `constants.ts`)
+- Reactive values (those go in `states.ts`)
+- Design tokens (those go in `theme.ts`)
+- Type definitions (those go in `types.ts`)
+
+## Example
+
+```typescript
+// config.ts
+
+const ENV = import.meta.env?.MODE ?? 'development';
+
+export const config = {
+  isDev: ENV === 'development',
+  isProd: ENV === 'production',
+  apiBaseUrl: ENV === 'production' ? 'https://api.example.com/v1' : 'http://localhost:3000/v1',
+  enableAnalytics: ENV === 'production',
+  logLevel: ENV === 'production' ? 'error' : 'debug',
+} as const;
+```
+
+## Rules
+
+1. **One file for all config.** Only split into a folder if the file grows unmanageable.
+2. **Export a single `config` object** or named exports — keep access patterns consistent.
+3. **No reactive values.** Config does not trigger re-renders. If it needs to, use a State object in `states.ts`.
+4. **No secrets.** Never put API keys, passwords, or tokens in client-side config.
+5. **Keep it declarative.** Config should be a set of values, not logic or side effects.
+
+
+---
+
+
 # Theme File
 
 ## What This File Is
@@ -2920,14 +3276,6 @@ Token names follow the pattern `<category>_<property>_<variant>`:
 5. **Search before creating.** Read the existing tokens before adding a new one — reuse over reinvent.
 6. **Follow the naming convention.** `<category>_<property>_<variant>` — no exceptions.
 7. **Tokens work with responsive design.** Bind tokens to traits using `$val` — they compose naturally with breakpoint conditions. Base (mobile) styles use tokens directly; desktop overrides use the same tokens gated by `isDesktop.$test(true)`.
-
-
----
-
-
-# Git
-
-TBD
 
 
 ---
@@ -3162,195 +3510,6 @@ export type Action =
 ---
 
 
-# Icons File
-
-## What This File Is
-
-`icons.ts` is the single file (or `icons/` folder) containing all SVG icon functions for the application. Each icon is an exported function that accepts a common `IconProps` argument and returns an `SVGElement`. The file has its own dedicated `Template` instance configured for SVG.
-
-## Why It Must Be Its Own File
-
-Icons are visual primitives referenced by the UI layer but distinct from layout, state, and behavior. Keeping them in a dedicated file makes icons discoverable, reusable, and easy to add or remove without touching UI code. Because SVG elements need `createElementNS` with the SVG namespace, icons use their own `Template` instance with only the traits relevant to SVG — keeping it separate from the main HTML template.
-
-## When to Create
-
-Create `icons.ts` when the application needs any SVG icons. Even a single icon belongs here.
-
-## When to Use
-
-- **When building UI**: Import icon functions into `ui.ts` and call them inline in the element tree.
-- **When adding new icons**: Add a new exported function to this file.
-- **When an icon needs to change size or color contextually**: Use the `IconProps` argument.
-
-## What Belongs Here
-
-- A dedicated `Template` instance for SVG (at the top of the file)
-- The `IconProps` type (or import it from `types.ts`)
-- Exported icon functions — one function per icon
-
-## What Does NOT Belong Here
-
-- The main HTML template (that goes in `templates.ts`)
-- UI layout or composition (that goes in `ui.ts`)
-- Design tokens (those go in `theme.ts`)
-- Raster images or external asset URLs
-
-## IconProps
-
-Every icon function accepts the same `IconProps` object so that icons have a consistent API:
-
-```typescript
-type IconProps = {
-  size?: string; // Width and height (e.g., '24px', '1em'). Defaults to '24px'.
-  color?: string; // Fill/stroke color (e.g., 'currentColor', '#333'). Defaults to 'currentColor'.
-};
-```
-
-Define `IconProps` in `types.ts` if your app already has a types file, or define it locally at the top of `icons.ts`.
-
-## Template Instance
-
-Icons need their own `Template` instance because `tag.svg`, `tag.path`, etc. create SVG-namespaced elements. Only include the traits you actually use on SVG elements — typically `style` and `attr`:
-
-```typescript
-import { Template, useStyleTrait, useAttributeTrait } from '@linttrap/oem';
-
-const [svg, svgTrait] = Template({
-  style: useStyleTrait,
-  attr: useAttributeTrait,
-});
-```
-
-This template is **private to the icons file** — it is not exported. UI code imports the icon _functions_, not the SVG template.
-
-## Example
-
-```typescript
-// icons.ts
-import { Template, useStyleTrait, useAttributeTrait } from '@linttrap/oem';
-
-// --- Types ---
-
-type IconProps = {
-  size?: string;
-  color?: string;
-};
-
-// --- SVG Template (private) ---
-
-const [svg, svgTrait] = Template({
-  style: useStyleTrait,
-  attr: useAttributeTrait,
-});
-
-// --- Default props ---
-
-const defaults: Required<IconProps> = {
-  size: '24px',
-  color: 'currentColor',
-};
-
-// --- Icons ---
-
-export function CheckIcon(props: IconProps = {}) {
-  const { size, color } = { ...defaults, ...props };
-  return svg.svg(
-    svgTrait.attr('viewBox', '0 0 24 24'),
-    svgTrait.attr('fill', 'none'),
-    svgTrait.attr('xmlns', 'http://www.w3.org/2000/svg'),
-    svgTrait.style('width', size),
-    svgTrait.style('height', size),
-    svg.path(
-      svgTrait.attr('d', 'M5 13l4 4L19 7'),
-      svgTrait.attr('stroke', color),
-      svgTrait.attr('stroke-width', '2'),
-      svgTrait.attr('stroke-linecap', 'round'),
-      svgTrait.attr('stroke-linejoin', 'round'),
-    ),
-  );
-}
-
-export function TrashIcon(props: IconProps = {}) {
-  const { size, color } = { ...defaults, ...props };
-  return svg.svg(
-    svgTrait.attr('viewBox', '0 0 24 24'),
-    svgTrait.attr('fill', 'none'),
-    svgTrait.attr('xmlns', 'http://www.w3.org/2000/svg'),
-    svgTrait.style('width', size),
-    svgTrait.style('height', size),
-    svg.path(
-      svgTrait.attr(
-        'd',
-        'M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14',
-      ),
-      svgTrait.attr('stroke', color),
-      svgTrait.attr('stroke-width', '2'),
-      svgTrait.attr('stroke-linecap', 'round'),
-      svgTrait.attr('stroke-linejoin', 'round'),
-    ),
-  );
-}
-
-export function PlusIcon(props: IconProps = {}) {
-  const { size, color } = { ...defaults, ...props };
-  return svg.svg(
-    svgTrait.attr('viewBox', '0 0 24 24'),
-    svgTrait.attr('fill', 'none'),
-    svgTrait.attr('xmlns', 'http://www.w3.org/2000/svg'),
-    svgTrait.style('width', size),
-    svgTrait.style('height', size),
-    svg.path(
-      svgTrait.attr('d', 'M12 5v14M5 12h14'),
-      svgTrait.attr('stroke', color),
-      svgTrait.attr('stroke-width', '2'),
-      svgTrait.attr('stroke-linecap', 'round'),
-      svgTrait.attr('stroke-linejoin', 'round'),
-    ),
-  );
-}
-```
-
-## Usage in UI
-
-```typescript
-// ui.ts
-import { tag, trait } from './templates';
-import { CheckIcon, TrashIcon } from './icons';
-import { text_fg_primary, text_fg_accent } from './theme';
-
-tag.button(
-  trait.style('display', 'flex'),
-  trait.style('alignItems', 'center'),
-  trait.style('gap', '8px'),
-  CheckIcon({ size: '16px', color: text_fg_accent.$val() }),
-  trait.text('Save'),
-);
-```
-
-## Passing Reactive Token Values
-
-When icon color should react to theme changes, pass a token's resolved value:
-
-```typescript
-CheckIcon({ color: text_fg_primary.$val() });
-```
-
-If the icon needs to re-render on state change, place the icon call inside a `trait.innerHTML` callback so it is rebuilt when the state fires.
-
-## Rules
-
-1. **One file for all icons.** Only split into a folder if the file grows unmanageable.
-2. **One function per icon.** Each icon is a named export — `CheckIcon`, `TrashIcon`, `CloseIcon`, etc.
-3. **Every icon function accepts `IconProps`.** Use defaults so callers can pass nothing: `CheckIcon()`.
-4. **Keep the SVG template private.** The `[svg, svgTrait]` tuple stays inside `icons.ts` — never export it.
-5. **Use `attr` for SVG attributes.** SVG attributes like `viewBox`, `d`, `stroke`, `fill` go through `svgTrait.attr()`.
-6. **Use `style` for sizing.** Set `width` and `height` via `svgTrait.style()` so they respond to CSS context.
-7. **No inline SVG in `ui.ts`.** All SVG icon markup lives in `icons.ts` — the UI file only calls icon functions.
-
-
----
-
-
 # Machines File
 
 ## What This File Is
@@ -3457,178 +3616,6 @@ trait.event('click', () => dispatch(addTodo(newTodoText.val()))),
 4. **Machines are synchronous.** If you need async operations, trigger them from the machine case but resolve the state mutation synchronously.
 5. **Keep cases focused.** Each case should be a few lines. If a case grows complex, extract the logic into a helper function within the same file.
 6. **Export `$dispatch` alongside `dispatch`.** `$dispatch(action)` returns `() => dispatch(action)` — use it in `trait.event()` calls where the action payload is already known. Use `dispatch` directly only when the payload must be read at event time.
-
-
----
-
-
-# Responsive Design
-
-OEM handles responsive design without CSS media queries. Instead, viewport conditions are modeled as reactive `State<boolean>` objects using `useMediaQueryState`. Traits subscribe to these states via conditions, so style changes are automatic, surgical, and declarative.
-
-**Everything is mobile-first.** Base styles — the traits written without any breakpoint condition — target the smallest viewport. Larger breakpoints (`isTablet`, `isDesktop`) layer on overrides via conditions. This means the app works on mobile by default, and wider layouts are progressive enhancements.
-
----
-
-## Core Mechanism
-
-`useMediaQueryState` returns a `State<boolean>` that tracks whether the viewport matches the given constraints. It listens to `window.resize` and updates automatically:
-
-```ts
-import { useMediaQueryState } from '@linttrap/oem';
-
-const isMobile = useMediaQueryState({ maxWidth: 639 });
-const isTablet = useMediaQueryState({ minWidth: 640, maxWidth: 1023 });
-const isDesktop = useMediaQueryState({ minWidth: 1024 });
-```
-
-Each of these is a normal State object — it has `.val()`, `.set()`, `.sub()`, `.$val`, `.$test()`, and all the standard State methods.
-
-### Props
-
-| Property   | Type                           | Default    | Description                      |
-| ---------- | ------------------------------ | ---------- | -------------------------------- |
-| `type`     | `'screen' \| 'print' \| 'all'` | `'all'`    | Media type to match against      |
-| `minWidth` | `number`                       | `0`        | Minimum viewport width in pixels |
-| `maxWidth` | `number`                       | `Infinity` | Maximum viewport width in pixels |
-
-Width boundaries are inclusive (`>= minWidth` and `<= maxWidth`).
-
----
-
-## Where to Define Breakpoints
-
-Define all breakpoint states in `states.ts` (or a dedicated `breakpoints.ts` if the app is large). They are module-level singletons, just like any other State:
-
-```ts
-// states.ts
-import { useMediaQueryState } from '@linttrap/oem';
-
-export const isMobile = useMediaQueryState({ maxWidth: 639 });
-export const isTablet = useMediaQueryState({ minWidth: 640, maxWidth: 1023 });
-export const isDesktop = useMediaQueryState({ minWidth: 1024 });
-```
-
-Import them wherever UI code needs responsive behavior.
-
----
-
-## Using Breakpoints in Traits
-
-Because `useMediaQueryState` returns a `State<boolean>`, its `.$test()` method produces conditions that traits natively understand. Use separate trait calls gated by breakpoint conditions — never ternaries:
-
-### Responsive Styles
-
-```ts
-import { isTablet, isDesktop } from './states';
-
-tag.div(
-  // Base (mobile) — no condition
-  trait.style('display', 'flex'),
-  trait.style('flexDirection', 'column'),
-  trait.style('padding', '8px'),
-  trait.style('gap', space_gap_primary.$val),
-
-  // Desktop override
-  trait.style('flexDirection', 'row', isDesktop.$test(true)),
-  trait.style('padding', '24px', isDesktop.$test(true)),
-);
-```
-
-Each trait subscribes to the breakpoint state independently. When the viewport crosses a boundary, only the affected traits re-evaluate — no full re-render.
-
-### Responsive Text
-
-```ts
-tag.h1(
-  trait.text('Dashboard'),
-  // Base (mobile)
-  trait.style('fontSize', type_size_lg.$val),
-  // Desktop override
-  trait.style('fontSize', type_size_xl.$val, isDesktop.$test(true)),
-);
-```
-
-### Showing / Hiding Elements
-
-Use `display: none` gated by a breakpoint condition to show or hide elements at different viewport sizes:
-
-```ts
-// Sidebar — hidden by default (mobile), shown on desktop
-tag.aside(
-  trait.style('display', 'none'),
-  trait.style('display', 'block', isDesktop.$test(true)),
-  trait.style('width', '260px', isDesktop.$test(true)),
-  sidebarContent,
-),
-
-// Mobile nav — shown by default (mobile), hidden on desktop
-tag.nav(
-  trait.style('display', 'flex'),
-  trait.style('display', 'none', isDesktop.$test(true)),
-  mobileNavItems,
-),
-```
-
-### Responsive Grid Columns
-
-```ts
-tag.div(
-  // Base (mobile) — single column
-  trait.style('display', 'grid'),
-  trait.style('gap', space_gap_primary.$val),
-  trait.style('gridTemplateColumns', '1fr'),
-  // Tablet override
-  trait.style('gridTemplateColumns', 'repeat(2, 1fr)', isTablet.$test(true)),
-  // Desktop override
-  trait.style('gridTemplateColumns', 'repeat(3, 1fr)', isDesktop.$test(true)),
-  ...cards,
-);
-```
-
----
-
-## Combining Breakpoints with Other Conditions
-
-Breakpoint conditions compose with any other condition. When multiple conditions are passed to a trait, all must be truthy for it to apply:
-
-```ts
-trait.style(
-  'backgroundColor',
-  action_bg_primary.$val,
-  isDesktop.$test(true),
-  isHovered.$test(true),
-);
-// Only applies when viewport is desktop-sized AND the element is hovered
-```
-
----
-
-## Print Media
-
-`useMediaQueryState` also supports the `type` property for print-specific styles:
-
-```ts
-const isPrint = useMediaQueryState({ type: 'print' });
-
-tag.nav(trait.style('display', 'none', isPrint.$test(true)));
-
-tag.main(
-  trait.style('maxWidth', '100%', isPrint.$test(true)),
-  trait.style('color', '#000', isPrint.$test(true)),
-);
-```
-
----
-
-## Rules
-
-1. **Mobile-first.** Base styles (no condition) target the smallest viewport. Larger breakpoints add overrides.
-2. **Define breakpoints once in `states.ts`.** Never call `useMediaQueryState` inline inside UI code.
-3. **Use `.$test(true)` / `.$test(false)` as conditions.** Never read `.val()` in a ternary.
-4. **Separate trait calls per breakpoint.** Each viewport size gets its own `trait.style(...)` call with a condition — do not collapse multiple breakpoints into one trait.
-5. **Keep breakpoint ranges non-overlapping.** Ensure `maxWidth` of one range is one pixel below the `minWidth` of the next (e.g., `639 / 640`, `1023 / 1024`).
-6. **Base styles have no condition.** They represent the mobile layout and are always applied. Conditions only appear on tablet/desktop overrides.
 
 
 ---

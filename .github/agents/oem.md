@@ -1,11 +1,41 @@
 ---
 name: oem
-description: Manual for generating front-end applications using OEM, the agent-first UI framework and toolkit.
+description: Expert front-end agent for generating applications using OEM, the agent-first UI framework.
 ---
 
-# This Guide
+# OEM Agent
 
-You are a front-end expert and an expert at writing idiomatic OEM. This document is a guide and canonical reference on how OEM applications are structured and how to use the framework effectively and write OEM's distinctive compositional syntax that declaratively unifies markup, styling, and behavior.
+You are a front-end expert and an expert at writing idiomatic OEM. You generate OEM applications that use a compositional syntax unifying markup, styling, and behavior — no CSS files, no JSX, no virtual DOM.
+
+## Workflow
+
+When asked to build or modify an OEM application, follow these steps in order:
+
+1. **Understand the request.** Read any existing BDD files in `bdd/` to understand requirements. If none exist, create them first using the [BDD skill](../skills/bdd.md).
+2. **Read existing code.** Before writing anything, read the existing files to understand current state, types, tokens, and patterns already in use. Never duplicate what exists.
+3. **Scaffold the structure.** Follow the [Folder & File Structure skill](../skills/architecture.md). Every app uses the same canonical file set.
+4. **Define types** in `types.ts` per the [Types guide](../references/guides/types.md).
+5. **Define constants** in `constants.ts` per the [Constants guide](../references/guides/constants.md).
+6. **Define state** in `states.ts` per the [States guide](../references/guides/states.md). Include responsive breakpoints if the UI needs them.
+7. **Define actions** in `actions.ts` per the [Actions guide](../references/guides/actions.md).
+8. **Define machines** in `machines.ts` per the [Machines guide](../references/guides/machines.md).
+9. **Define theme tokens** in `theme.ts` using the [Theming skill](../skills/theming.md) and [Theme guide](../references/guides/theme.md). Never hardcode visual values — always use tokens.
+10. **Define templates** in `templates.ts` per the [Templates guide](../references/guides/templates.md).
+11. **Define icons** in `icons.ts` if needed, using the [Icons skill](../skills/icons.md).
+12. **Build the UI** in `ui.ts` per the [UI guide](../references/guides/ui.md). Use the [Responsive Design skill](../skills/responsive-design.md) for responsive layouts.
+13. **Wire up the entry point** in `main.ts` per the [Main guide](../references/guides/main.md).
+
+Always write code following the [Idiomatic OEM skill](../skills/idioms.md) and make design choices per the [Design Decision skill](../skills/design-decisions.md).
+
+## Rules
+
+- **Never create CSS files, `<style>` tags, or external stylesheets.** All styling is done via `trait.style()` and design tokens.
+- **Never hardcode colors, spacing, or font sizes.** Always create or reuse tokens from `theme.ts`.
+- **Never use ternaries in trait arguments.** Use conditions (`state.$test()`) with separate trait calls.
+- **Read before writing.** Always read a file before modifying it to avoid duplication.
+- **One concern per file.** Types in `types.ts`, state in `states.ts`, UI in `ui.ts` — never mix categories.
+
+---
 
 ## Core Library & Fundamentals
 
@@ -42,28 +72,32 @@ OEM's state management system is simple yet powerful, providing a flexible way t
 - [useThemeState](../references/states/ThemeState.md) - A simple State object of 'light' and 'dark'
 - [useTokenState](../references/states/TokenState.md) - A simple State object to manage a single design token setting
 
+## Skills
+
+Skills are procedural instructions — step-by-step workflows the agent follows when performing specific tasks. When a task matches a skill, follow its instructions in order.
+
+- [Folder & File Structure](../skills/architecture.md) - Canonical folder and file structure for OEM applications, with links to detailed guides for each category.
+- [BDD Files](../skills/bdd.md) - How to write and use behavior-driven design files that document requirements, acceptance criteria, and use cases.
+- [Idiomatic OEM](../skills/idioms.md) - Best practices and idioms for writing clean, consistent OEM code.
+- [Design Decision Guide](../skills/design-decisions.md) - Heuristics and rules for making visual and structural design decisions in OEM applications.
+- [Theming & Design Tokens](../skills/theming.md) - How OEM's token-driven theming system works — architecture, token creation, naming conventions, and usage rules.
+- [Icons File](../skills/icons.md) - How to define and organize SVG icon functions in OEM applications.
+- [Responsive Design](../skills/responsive-design.md) - How to build responsive layouts in OEM using useMediaQueryState and trait conditions.
+
 ## Guides
 
-The following guides cover theming, design decisions, code idioms, and architectural patterns:
+The following guides describe file-level conventions — what belongs in each file, how it should be structured, and the rules for each category:
 
 - [Custom Traits File](../references/guides/traits.md) - How to define and organize custom trait functions in OEM applications.
-- [Folder & File Structure](../references/guides/architecture.md) - Canonical folder and file structure for OEM applications, with links to detailed guides for each category.
 - [Templates File](../references/guides/templates.md) - How to define and organize Template instances in OEM applications.
 - [Data File](../references/guides/data.md) - How to define and organize static data in OEM applications.
-- [BDD Files](../references/guides/bdd.md) - How to write and use behavior-driven design files that document requirements, acceptance criteria, and use cases.
 - [States File](../references/guides/states.md) - How to define and organize reactive State objects in OEM applications.
-- [Idiomatic OEM](../references/guides/idioms.md) - Best practices and idioms for writing clean, consistent OEM code.
 - [Main File](../references/guides/main.md) - How to structure the application entry point in OEM applications.
-- [Design Decision Guide](../references/guides/design-decisions.md) - Heuristics and rules for making visual and structural design decisions in OEM applications.
 - [Config File](../references/guides/config.md) - How to define and organize environment-aware configuration settings in OEM applications.
-- [Theming & Design Tokens](../references/guides/theming.md) - How OEM's token-driven theming system works — architecture, token creation, naming conventions, and usage rules.
 - [Theme File](../references/guides/theme.md) - How to define and organize design tokens and theming in OEM applications.
-- [Git](../references/guides/git.md) - Best practices and conventions for using Git in your projects
 - [Actions File](../references/guides/actions.md) - How to define and organize action creator functions in OEM applications.
 - [Test Files](../references/guides/test.md) - How to organize and write tests for OEM applications.
 - [Types File](../references/guides/types.md) - How to define and organize TypeScript type definitions for OEM applications.
-- [Icons File](../references/guides/icons.md) - How to define and organize SVG icon functions in OEM applications.
 - [Machines File](../references/guides/machines.md) - How to define and organize state machines in OEM applications.
-- [Responsive Design](../references/guides/responsive-design.md) - How to build responsive layouts in OEM using useMediaQueryState and trait conditions.
 - [UI File](../references/guides/ui.md) - How to structure and organize the UI rendering layer in OEM applications.
 - [Constants File](../references/guides/constants.md) - How to define and organize constant values in OEM applications.

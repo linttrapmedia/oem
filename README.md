@@ -17,7 +17,7 @@ npm install @linttrap/oem   # or pnpm / yarn / bun
 OEM ships agent specs in the package. Copy them into whatever "config" folder applies to your setup. For Claude, this would be:
 
 ```bash
-cp -r node_modules/@linttrap/oem/specs/ .claude/
+cp -r node_modules/@linttrap/oem/.github/ <your-agent-folder>
 ```
 
 Now use the agent, in claude this would be:

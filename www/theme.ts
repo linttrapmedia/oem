@@ -1,8 +1,8 @@
 // theme.ts
 import { useThemeState, useTokenState } from '../src/registry';
 
-// Single source of truth for current theme
-export const theme = useThemeState('dark');
+// Single source of truth for current theme — defaults to light
+export const theme = useThemeState('light');
 
 // ═══════════════════════════════════════════════
 // SURFACES
@@ -11,34 +11,34 @@ export const theme = useThemeState('dark');
 // — Surface: primary background
 // USE: main page background, body
 // AVOID: cards, panels
-export const surface_bg_primary = useTokenState('#f0f0f0', '#111113', theme);
+export const surface_bg_primary = useTokenState('#c7c7c7', '#222222', theme);
 
 // — Surface: secondary background (elevated panels)
 // USE: cards, panels, main containers
 // AVOID: full-page backgrounds
-export const surface_bg_secondary = useTokenState('#fafafa', '#1a1a1c', theme);
+export const surface_bg_secondary = useTokenState('#b8b8b8', '#2a2a2a', theme);
 
 // — Surface: tertiary background (hover, nested sections)
 // USE: hover rows, nested sections, code blocks
 // AVOID: primary content areas
-export const surface_bg_tertiary = useTokenState('#ececec', '#222224', theme);
+export const surface_bg_tertiary = useTokenState('#ababab', '#333333', theme);
 
 // — Surface: code block background
 // USE: code examples, pre blocks
 // AVOID: regular content
-export const surface_bg_code = useTokenState('#1e1e20', '#0d0d0f', theme);
+export const surface_bg_code = useTokenState('#383838', '#282828', theme);
 
 // — Surface: nav background
 // USE: navigation header, sticky bar
 // AVOID: content sections
-export const surface_bg_nav = useTokenState('rgba(240,240,240,0.92)', 'rgba(17,17,19,0.92)', theme);
+export const surface_bg_nav = useTokenState('rgba(199,199,199,0.92)', 'rgba(34,34,34,0.92)', theme);
 
 // — Surface: card glow overlay
 // USE: feature card backgrounds with glow
 // AVOID: standard sections
 export const surface_bg_card = useTokenState(
-  'rgba(120,120,130,0.04)',
-  'rgba(120,120,130,0.06)',
+  'rgba(160,160,160,0.08)',
+  'rgba(60,60,60,0.08)',
   theme,
 );
 
@@ -49,27 +49,27 @@ export const surface_bg_card = useTokenState(
 // — Accent: muted pink-gray (primary CTA)
 // USE: primary buttons, hero emphasis, links
 // AVOID: body text, muted elements
-export const accent_neon_pink = useTokenState('#8a7580', '#a08a92', theme);
+export const accent_neon_pink = useTokenState('#555555', '#999999', theme);
 
 // — Accent: muted cyan-gray (secondary accent)
 // USE: secondary highlights, code keywords, borders
 // AVOID: primary CTAs
-export const accent_neon_cyan = useTokenState('#6a7d80', '#8a9a9c', theme);
+export const accent_neon_cyan = useTokenState('#444444', '#aaaaaa', theme);
 
 // — Accent: muted purple-gray (tertiary accent)
 // USE: gradient stops, glow effects, feature icons
 // AVOID: readable text
-export const accent_neon_purple = useTokenState('#6a6078', '#9088a0', theme);
+export const accent_neon_purple = useTokenState('#666666', '#888888', theme);
 
 // — Accent: muted blue-gray (links, interactive)
 // USE: links, active nav items
 // AVOID: non-interactive elements
-export const accent_electric_blue = useTokenState('#5a6070', '#706880', theme);
+export const accent_electric_blue = useTokenState('#505050', '#999999', theme);
 
 // — Accent: muted warm gray (warning / attention)
 // USE: badges, callouts
 // AVOID: primary actions
-export const accent_warm_orange = useTokenState('#8a7a6e', '#a09080', theme);
+export const accent_warm_orange = useTokenState('#606060', '#909090', theme);
 
 // ═══════════════════════════════════════════════
 // TEXT
@@ -78,32 +78,32 @@ export const accent_warm_orange = useTokenState('#8a7a6e', '#a09080', theme);
 // — Text: primary foreground
 // USE: body copy, headings
 // AVOID: muted or placeholder text
-export const text_fg_primary = useTokenState('#1a1a1e', '#d8d8dc', theme);
+export const text_fg_primary = useTokenState('#222222', '#c7c7c7', theme);
 
 // — Text: secondary foreground
 // USE: labels, descriptions, secondary info
 // AVOID: headings
-export const text_fg_secondary = useTokenState('#4a4a50', '#8a8a8e', theme);
+export const text_fg_secondary = useTokenState('#444444', '#999999', theme);
 
 // — Text: muted foreground
 // USE: placeholders, disabled text, metadata
 // AVOID: readable body text
-export const text_fg_muted = useTokenState('#909094', '#505054', theme);
+export const text_fg_muted = useTokenState('#888888', '#555555', theme);
 
 // — Text: code / mono foreground
 // USE: inline code, code blocks
 // AVOID: body text
-export const text_fg_code = useTokenState('#8a7580', '#a08a92', theme);
+export const text_fg_code = useTokenState('#c7c7c7', '#aaaaaa', theme);
 
 // — Text: hero gradient (display text)
 // USE: hero title gradient
 // AVOID: body copy
-export const text_gradient_hero = useTokenState('black', 'white', theme);
+export const text_gradient_hero = useTokenState('#222222', '#c7c7c7', theme);
 
 // — Text: section heading gradient
 // USE: section titles
 // AVOID: body text
-export const text_gradient_heading = useTokenState('transparent', 'transparent', theme);
+export const text_gradient_heading = useTokenState('#222222', '#c7c7c7', theme);
 
 // ═══════════════════════════════════════════════
 // BORDERS
@@ -113,8 +113,8 @@ export const text_gradient_heading = useTokenState('transparent', 'transparent',
 // USE: card borders, section dividers
 // AVOID: emphasis borders
 export const border_color_primary = useTokenState(
-  'rgba(120,120,130,0.12)',
-  'rgba(120,120,130,0.18)',
+  'rgba(80,80,80,0.15)',
+  'rgba(150,150,150,0.15)',
   theme,
 );
 
@@ -122,8 +122,8 @@ export const border_color_primary = useTokenState(
 // USE: focused elements, active cards
 // AVOID: standard dividers
 export const border_color_accent = useTokenState(
-  'rgba(138,117,128,0.25)',
-  'rgba(160,138,146,0.25)',
+  'rgba(60,60,60,0.25)',
+  'rgba(170,170,170,0.20)',
   theme,
 );
 
@@ -131,8 +131,8 @@ export const border_color_accent = useTokenState(
 // USE: code blocks, active nav
 // AVOID: standard dividers
 export const border_color_cyan = useTokenState(
-  'rgba(106,125,128,0.25)',
-  'rgba(138,154,156,0.18)',
+  'rgba(60,60,60,0.20)',
+  'rgba(150,150,150,0.15)',
   theme,
 );
 
@@ -143,17 +143,17 @@ export const border_color_cyan = useTokenState(
 // — Nav: active link color
 // USE: active navigation item
 // AVOID: inactive items
-export const nav_fg_active = useTokenState('#8a7580', '#a08a92', theme);
+export const nav_fg_active = useTokenState('#222222', '#c7c7c7', theme);
 
 // — Nav: default link color
 // USE: inactive nav items
 // AVOID: active items
-export const nav_fg_default = useTokenState('#4a4a50', '#8a8a8e', theme);
+export const nav_fg_default = useTokenState('#555555', '#888888', theme);
 
 // — Nav: hover link color
 // USE: hovered nav items
 // AVOID: default/active items
-export const nav_fg_hover = useTokenState('#6a6078', '#9088a0', theme);
+export const nav_fg_hover = useTokenState('#333333', '#aaaaaa', theme);
 
 // ═══════════════════════════════════════════════
 // SPACING (8pt grid)
@@ -240,32 +240,32 @@ export const shadow_box_md = useTokenState(
 // — Shadow: muted pink glow
 // USE: primary CTA buttons, hero emphasis
 export const shadow_glow_pink = useTokenState(
-  '0 0 20px rgba(138,117,128,0.08)',
-  '0 0 30px rgba(160,138,146,0.12)',
+  '0 0 20px rgba(80,80,80,0.06)',
+  '0 0 30px rgba(100,100,100,0.10)',
   theme,
 );
 
 // — Shadow: muted cyan glow
 // USE: code blocks, secondary elements
 export const shadow_glow_cyan = useTokenState(
-  '0 0 20px rgba(106,125,128,0.06)',
-  '0 0 30px rgba(138,154,156,0.08)',
+  '0 0 20px rgba(80,80,80,0.05)',
+  '0 0 30px rgba(100,100,100,0.08)',
   theme,
 );
 
 // — Shadow: muted purple glow
 // USE: feature cards, highlighted sections
 export const shadow_glow_purple = useTokenState(
-  '0 0 20px rgba(106,96,120,0.06)',
-  '0 0 30px rgba(144,136,160,0.08)',
+  '0 0 20px rgba(80,80,80,0.05)',
+  '0 0 30px rgba(100,100,100,0.08)',
   theme,
 );
 
 // — Shadow: large card glow
 // USE: hero container, major feature cards
 export const shadow_glow_lg = useTokenState(
-  '0 8px 32px rgba(106,96,120,0.05), 0 0 1px rgba(0,0,0,0.05)',
-  '0 8px 32px rgba(120,120,130,0.08), 0 0 60px rgba(160,138,146,0.03)',
+  '0 8px 32px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.05)',
+  '0 8px 32px rgba(0,0,0,0.12), 0 0 60px rgba(100,100,100,0.03)',
   theme,
 );
 
@@ -338,23 +338,23 @@ export const transition_color = useTokenState('color 0.3s ease', 'color 0.3s eas
 // — Gradient: hero section background
 // USE: hero section
 export const gradient_hero = useTokenState(
-  'radial-gradient(ellipse at 50% 0%, rgba(106,96,120,0.04) 0%, transparent 70%)',
-  'radial-gradient(ellipse at 50% 0%, rgba(120,120,130,0.08) 0%, transparent 70%)',
+  'radial-gradient(ellipse at 50% 0%, rgba(100,100,100,0.04) 0%, transparent 70%)',
+  'radial-gradient(ellipse at 50% 0%, rgba(100,100,100,0.08) 0%, transparent 70%)',
   theme,
 );
 
 // — Gradient: horizon line
 // USE: decorative horizon effect
 export const gradient_horizon = useTokenState(
-  'linear-gradient(0deg, rgba(138,117,128,0.04) 0%, transparent 40%)',
-  'linear-gradient(0deg, rgba(160,138,146,0.06) 0%, transparent 40%)',
+  'linear-gradient(0deg, rgba(100,100,100,0.04) 0%, transparent 40%)',
+  'linear-gradient(0deg, rgba(100,100,100,0.06) 0%, transparent 40%)',
   theme,
 );
 
 // — Gradient: card shine
 // USE: subtle card overlay effect
 export const gradient_card = useTokenState(
-  'linear-gradient(135deg, rgba(106,96,120,0.02) 0%, rgba(138,117,128,0.02) 100%)',
-  'linear-gradient(135deg, rgba(120,120,130,0.03) 0%, rgba(160,138,146,0.02) 100%)',
+  'linear-gradient(135deg, rgba(100,100,100,0.02) 0%, rgba(120,120,120,0.02) 100%)',
+  'linear-gradient(135deg, rgba(100,100,100,0.03) 0%, rgba(120,120,120,0.02) 100%)',
   theme,
 );

@@ -89,7 +89,7 @@ const app = tag.div(
   tag.h1(
     trait.text('Hello, OEM'),
     trait.style('fontSize', '48px'),
-    trait.style('background', 'linear-gradient(135deg, #a08a92, #8a9a9c)'),
+    trait.style('background', 'linear-gradient(135deg, #555555, #444444)'),
     trait.style('WebkitBackgroundClip', 'text'),
     trait.style('WebkitTextFillColor', 'transparent'),
   ),
@@ -106,7 +106,7 @@ const [tag, trait] = Template({ style: useStyleTrait });
 
 // Any HTML or SVG tag, called like a function
 tag.div(
-  tag.h1(trait.style('color', '#a08a92')),
+  tag.h1(trait.style('color', '#555555')),
   tag.p(trait.style('opacity', '0.8')),
   tag.svg(tag.circle()),
 );
@@ -128,8 +128,8 @@ const [tag, trait] = Template({
 tag.button(
   trait.text('Click me'),
   trait.style('padding', '12px 24px'),
-  trait.style('backgroundColor', '#706880'),
-  trait.style('color', '#ffffff'),
+  trait.style('backgroundColor', '#555555'),
+  trait.style('color', '#c7c7c7'),
   trait.style('border', 'none'),
   trait.style('borderRadius', '8px'),
   trait.style('cursor', 'pointer'),
@@ -149,8 +149,8 @@ trait.text(count.$val);
 trait.event('click', count.$reduce(prev => prev + 1));
 
 // $test — reactive condition
-trait.style('color', '#8a9a9c', count.$test(v => v > 0));
-trait.style('color', '#484f58', count.$test(0));
+trait.style('color', '#444444', count.$test(v => v > 0));
+trait.style('color', '#888888', count.$test(0));
 
 // Custom methods auto-generate $ twins
 const todos = State([], {
@@ -184,7 +184,7 @@ const counter = tag.div(
     trait.text(count.$val),
     trait.style('fontSize', '48px'),
     trait.style('fontWeight', '700'),
-    trait.style('color', '#a08a92'),
+    trait.style('color', '#555555'),
   ),
   tag.button(
     trait.text('+'),
@@ -233,10 +233,10 @@ const list = tag.div(
     language: 'typescript',
     code: `import { useThemeState, useTokenState } from '@linttrap/oem';
 
-const theme = useThemeState('dark');
-const bg = useTokenState('#fafafa', '#111113', theme);
-const fg = useTokenState('#1a1a1e', '#d8d8dc', theme);
-const accent = useTokenState('#706880', '#9088a0', theme);
+const theme = useThemeState('light');
+const bg = useTokenState('#c7c7c7', '#222222', theme);
+const fg = useTokenState('#222222', '#c7c7c7', theme);
+const accent = useTokenState('#555555', '#999999', theme);
 
 const app = tag.div(
   trait.style('backgroundColor', bg.$val),
@@ -268,15 +268,15 @@ tag.div(
   trait.style('transition', 'all 0.2s ease'),
 
   // Conditional branches — never ternaries
-  trait.style('backgroundColor', '#706880',
+  trait.style('backgroundColor', '#555555',
     isActive.$test(true)),
-  trait.style('backgroundColor', '#1a1a1e',
+  trait.style('backgroundColor', '#c7c7c7',
     isActive.$test(false)),
-  trait.style('color', '#ffffff',
+  trait.style('color', '#c7c7c7',
     isActive.$test(true)),
-  trait.style('color', '#8a8a8e',
+  trait.style('color', '#888888',
     isActive.$test(false)),
-  trait.style('boxShadow', '0 0 20px rgba(112,104,128,0.3)',
+  trait.style('boxShadow', '0 0 20px rgba(80,80,80,0.3)',
     isActive.$test(true)),
   trait.style('boxShadow', 'none',
     isActive.$test(false)),

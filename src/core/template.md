@@ -58,7 +58,7 @@ const button = tag.button(
 ##### Element Creation Function
 
 - **Signature**: `(...traits: Trait[]) => HTMLElement | SVGElement`
-- **Parameters**: Variable number of traits (strings, numbers, functions, elements, or trait appliers)
+- **Parameters**: Variable number of traits (TemplateTraitAppliers)
 - **Returns**: The created element
 
 #### Trait Proxy (Second element of tuple)

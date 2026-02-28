@@ -147,9 +147,3 @@ The `$test` function returns a closure with:
 - `extractConditions` returns `Condition[]`
 - Both functions use `any` types internally for flexibility with mixed arrays
 - Type information should be managed at the call site when possible
-
-### Related Modules
-
-- [state.ts](src/core/state.ts) - Defines the StateType interface that extractStates detects
-- [types.ts](src/core/types.ts) - Defines the Condition type used throughout this module
-- [template.ts](src/core/template.ts) - May use these utilities for processing mixed trait arrays

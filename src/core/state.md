@@ -187,7 +187,6 @@ The state module uses a closure-based approach to maintain private state:
 - Internal value is stored in `_internalVal`
 - Subscribers are stored in a `Set<(atom: T) => any>`
 - When state changes via `set()` or `reduce()`, all subscribers are notified synchronously
-- The boxed type system allows calling methods like `toUpperCase()` on string states
 
 ### Gotchas
 

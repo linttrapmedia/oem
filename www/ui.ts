@@ -68,11 +68,9 @@ import {
   surface_bg_primary,
   surface_bg_secondary,
   surface_bg_tertiary,
-  text_fg_code,
   text_fg_muted,
   text_fg_primary,
   text_fg_secondary,
-  text_gradient_heading,
   text_gradient_hero,
   theme,
   transition_color,
@@ -127,9 +125,9 @@ function fadeIn(el: HTMLElement, delay = 0) {
 function glowPulse(el: HTMLElement) {
   el.animate(
     [
-      { boxShadow: '0 0 20px rgba(255,45,149,0.15), 0 0 60px rgba(123,47,247,0.05)' },
-      { boxShadow: '0 0 30px rgba(255,45,149,0.25), 0 0 80px rgba(123,47,247,0.1)' },
-      { boxShadow: '0 0 20px rgba(255,45,149,0.15), 0 0 60px rgba(123,47,247,0.05)' },
+      { boxShadow: '0 0 20px rgba(80,80,80,0.10), 0 0 60px rgba(60,60,60,0.05)' },
+      { boxShadow: '0 0 30px rgba(80,80,80,0.18), 0 0 80px rgba(60,60,60,0.08)' },
+      { boxShadow: '0 0 20px rgba(80,80,80,0.10), 0 0 60px rgba(60,60,60,0.05)' },
     ],
     { duration: 3000, iterations: Infinity, easing: 'ease-in-out' },
   );
@@ -222,7 +220,7 @@ function SectionTitle(text: string) {
     trait.style('fontWeight', type_weight_bold.$val),
     trait.style('letterSpacing', '-0.02em'),
     trait.style('marginBottom', space_padding_lg.$val),
-    trait.style('background', text_gradient_heading.$val),
+    trait.style('color', text_fg_primary.$val),
     onMount((el) => fadeInUp(el)),
   );
 }
@@ -258,7 +256,7 @@ function CodeBlock(code: string, language = 'typescript') {
         navigator.clipboard.writeText(code);
         const btn = e?.currentTarget as HTMLElement;
         if (btn) {
-          btn.style.color = '#8a9a9c';
+          btn.style.color = '#666666';
           setTimeout(() => (btn.style.color = ''), 1000);
         }
       }),
@@ -270,6 +268,7 @@ function CodeBlock(code: string, language = 'typescript') {
       trait.style('margin', '0'),
       trait.style('padding', space_padding_md.$val),
       trait.style('backgroundColor', surface_bg_code.$val),
+      trait.style('color', '#c7c7c7'),
       trait.style('overflow', 'auto'),
       trait.style('fontSize', type_size_sm.$val),
       trait.style('lineHeight', '1.65'),
@@ -506,12 +505,15 @@ const HeroSection = SectionContainer(
     tag.div(
       trait.style('marginBottom', space_padding_lg.$val),
       onMount((el) => fadeIn(el, 100)),
-      Pill('UI, On Your Command', '#a08a92'),
+      Pill('Agentic UI', '#555555'),
     ),
 
     // Main heading
     tag.h1(
+      trait.style('display', 'flex'),
+      trait.style('flexDirection', 'column'),
       trait.style('margin', '0'),
+      trait.style('gap', space_gap_sm.$val),
       trait.style('fontSize', type_size_2xl.$val),
       trait.style('fontSize', type_size_3xl.$val, isDesktop.$test(true)),
       trait.style('fontWeight', type_weight_thin.$val),
@@ -522,14 +524,7 @@ const HeroSection = SectionContainer(
       onMount((el) => fadeInUp(el, 200)),
 
       tag.span(
-        trait.text('Agentic UI'),
-        trait.style('display', 'block'),
-        trait.style('color', text_fg_primary.$val),
-        trait.style('fontFamily', FONT_MONO),
-        trait.style('textTransform', 'uppercase'),
-      ),
-      tag.span(
-        trait.text('/oem build something cool'),
+        trait.text('/oem <At Your Command>'),
         trait.style('display', 'block'),
         trait.style('color', text_gradient_hero.$val),
         trait.style('fontSize', type_size_2xl.$val),
@@ -539,7 +534,7 @@ const HeroSection = SectionContainer(
     // Subtitle
     tag.p(
       trait.text(
-        'Element. Trait. State. — No virtual DOM, no compiler, no dependencies. Just surgical reactivity wired directly to the real DOM.',
+        'The ultimate human-AI collaboration toolkit for building front-end web applications with natural language. Welcome to OEM.',
       ),
       trait.style('fontSize', type_size_md.$val),
       trait.style('color', text_fg_secondary.$val),
@@ -572,7 +567,7 @@ const HeroSection = SectionContainer(
           accent_neon_pink,
           accent_neon_purple,
         ),
-        trait.style('color', '#ffffff'),
+        trait.style('color', '#c7c7c7'),
         trait.style('border', 'none'),
         trait.style('borderRadius', radius_size_full.$val),
         trait.style('fontSize', type_size_base.$val),
@@ -585,7 +580,7 @@ const HeroSection = SectionContainer(
         onMount((el) => glowPulse(el)),
         trait.event('click', $dispatch(navigate('setup'))),
         trait.text('Get Started'),
-        ArrowRightIcon({ size: '18', color: '#ffffff' }),
+        ArrowRightIcon({ size: '18', color: '#c7c7c7' }),
       ),
 
       // Secondary CTA
@@ -630,8 +625,8 @@ const HeroSection = SectionContainer(
         trait.style('fontFamily', FONT_MONO),
         trait.style('fontSize', type_size_sm.$val),
 
-        tag.span(trait.text('$'), trait.style('color', text_fg_muted.$val)),
-        tag.span(trait.text('bun add @linttrap/oem'), trait.style('color', accent_neon_cyan.$val)),
+        tag.span(trait.text('$'), trait.style('color', '#888888')),
+        tag.span(trait.text('bun add @linttrap/oem'), trait.style('color', '#c7c7c7')),
         tag.button(
           trait.style('background', 'none'),
           trait.style('border', 'none'),
@@ -762,7 +757,7 @@ const FeaturesGrid = tag.div(
           accent_neon_purple,
           accent_neon_pink,
         ),
-        ICON_MAP[feature.icon]?.({ size: '22', color: '#9088a0' }) || tag.span(trait.text('•')),
+        ICON_MAP[feature.icon]?.({ size: '22', color: '#666666' }) || tag.span(trait.text('•')),
       ),
 
       // Text
@@ -890,7 +885,7 @@ const PrimitivesSection = SectionContainer(
       trait.style('alignItems', 'center'),
       trait.style('gap', space_gap_md.$val),
       trait.style('marginBottom', space_padding_md.$val),
-      Pill('Element', '#a08a92'),
+      Pill('Element', '#555555'),
       tag.span(
         trait.text('— The tag proxy creates real DOM nodes'),
         trait.style('color', text_fg_secondary.$val),
@@ -910,7 +905,7 @@ const PrimitivesSection = SectionContainer(
       trait.style('alignItems', 'center'),
       trait.style('gap', space_gap_md.$val),
       trait.style('marginBottom', space_padding_md.$val),
-      Pill('Trait', '#8a9a9c'),
+      Pill('Trait', '#444444'),
       tag.span(
         trait.text('— Behaviors applied to elements'),
         trait.style('color', text_fg_secondary.$val),
@@ -929,7 +924,7 @@ const PrimitivesSection = SectionContainer(
       trait.style('alignItems', 'center'),
       trait.style('gap', space_gap_md.$val),
       trait.style('marginBottom', space_padding_md.$val),
-      Pill('State', '#9088a0'),
+      Pill('State', '#666666'),
       tag.span(
         trait.text('— Reactive containers with push-based updates'),
         trait.style('color', text_fg_secondary.$val),
@@ -983,7 +978,10 @@ function ExampleCard(example: typeof EXAMPLES[number], index: number) {
     ),
 
     // Code
-    tag.div(trait.style('padding', '0'), CodeBlock(example.code, example.language)),
+    tag.div(
+      trait.style('padding', space_padding_sm.$val),
+      CodeBlock(example.code, example.language),
+    ),
   );
 }
 
@@ -1215,7 +1213,7 @@ trait.text(count.$val);                    // reactive text binding
 trait.style('opacity', count.$val);        // reactive style binding
 
 // $test — reactive condition AND subscribable
-trait.style('color', '#a08a92', count.$test(v => v > 0));`),
+trait.style('color', '#555555', count.$test(v => v > 0));`),
   ),
 );
 
@@ -1246,17 +1244,17 @@ const ThemingSection = SectionContainer(
 
     CodeBlock(`// Architecture Overview
 //
-// useThemeState('dark')              ← single source of truth
+// useThemeState('light')              ← single source of truth
 //         │
-//         ├─▸ useTokenState('#fff', '#111113', theme)   ← light/dark pair
-//         ├─▸ useTokenState('#1a1a1e', '#d8d8dc', theme)
+//         ├─▸ useTokenState('#c7c7c7', '#222222', theme)   ← light/dark pair
+//         ├─▸ useTokenState('#222222', '#c7c7c7', theme)
 //         └─▸ ...hundreds of tokens
 //
 // Tokens are State objects — traits subscribe automatically via $val
 
-const theme = useThemeState('dark');
-const bg = useTokenState('#fafafa', '#111113', theme);
-const fg = useTokenState('#1a1a1e', '#d8d8dc', theme);
+const theme = useThemeState('light');
+const bg = useTokenState('#c7c7c7', '#222222', theme);
+const fg = useTokenState('#222222', '#c7c7c7', theme);
 
 // Use in traits — reactive, automatic, zero flicker
 trait.style('backgroundColor', bg.$val);
@@ -1313,13 +1311,13 @@ trait.style('color', fg.$val);`),
             trait.text(item.token),
             trait.style('fontFamily', FONT_MONO),
             trait.style('fontSize', type_size_xs.$val),
-            trait.style('color', text_fg_code.$val),
+            trait.style('color', '#c7c7c7'),
             trait.style('marginBottom', '2px'),
           ),
           tag.div(
             trait.text(item.desc),
             trait.style('fontSize', type_size_xs.$val),
-            trait.style('color', text_fg_muted.$val),
+            trait.style('color', '#888888'),
           ),
         ),
       ),
@@ -1393,8 +1391,8 @@ const ArchitectureSection = SectionContainer(
           trait.text(file.name),
           trait.style('fontFamily', FONT_MONO),
           trait.style('fontSize', type_size_sm.$val),
-          trait.style('color', accent_neon_cyan.$val),
-          trait.style('fontWeight', type_weight_medium.$val),
+          trait.style('color', text_fg_primary.$val),
+          trait.style('fontWeight', type_weight_bold.$val),
           trait.style('minWidth', '120px'),
         ),
         tag.span(
@@ -1472,7 +1470,7 @@ const Footer = tag.footer(
       trait.style('fontSize', type_size_xs.$val),
       trait.style('color', text_fg_muted.$val),
       trait.style('margin', '0'),
-      trait.text('Built with OEM — UI, On Command'),
+      trait.text('Built with OEM — UI, At Your Command'),
     ),
   ),
 );

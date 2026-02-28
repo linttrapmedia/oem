@@ -1,5 +1,5 @@
 ---
-description: Use OEM to generate front-end UI applications and components
+description: Use the oem agent to generate front-end UI applications and components
 allowed-tools: Task
 argument-hint: <your UI request>
 ---

@@ -5,12 +5,13 @@ import { resolve } from 'node:path';
 import { extractFrontMatter, stripFrontMatter } from 'scripts/helpers';
 
 const projectRoot = resolve(import.meta.dir, '..');
-const agentsDir = resolve(projectRoot, '.agents');
+const agentsDir = resolve(projectRoot, '.github');
 const wwwDir = resolve(projectRoot, 'www');
 
-// delete the specs directory if it exists, then recreate it with the necessary subdirectories
-if (await Bun.file(agentsDir).exists()) {
-  await Bun.file(agentsDir).unlink();
+// delete the agents directory if it exists, then recreate it with the necessary subdirectories
+import { existsSync, rmSync } from 'node:fs';
+if (existsSync(agentsDir)) {
+  rmSync(agentsDir, { recursive: true });
 }
 
 // copy core files to specs/references/core
@@ -73,17 +74,59 @@ for await (const file of new Glob('src/guides/*.md').scan('.')) {
   guideFiles.push([`../references/guides/${fileName}`, frontMatter, content]);
 }
 
-// Create an empty Skill.md (overwrite if exists)
+const skillFiles = [];
+for await (const file of new Glob('src/skills/*.md').scan('.')) {
+  const filePath = resolve(projectRoot, file);
+  const content = await Bun.file(file).text();
+  const fileName = file.split('/').pop()!;
+  const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
+  // copy to skills/
+  const skillPath = `${agentsDir}/skills/${fileName}`;
+  await Bun.write(skillPath, content);
+  skillFiles.push([`../skills/${fileName}`, frontMatter, content]);
+}
+
+// Generate .github/agents/oem.md — the agent definition
 await Bun.write(
   `${agentsDir}/agents/oem.md`,
   `---
 name: oem
-description: Manual for generating front-end applications using OEM, the agent-first UI framework and toolkit.
+description: Expert front-end agent for generating applications using OEM, the agent-first UI framework.
 ---
 
-# This Guide
+# OEM Agent
 
-You are a front-end expert and an expert at writing idiomatic OEM. This document is a guide and canonical reference on how OEM applications are structured and how to use the framework effectively and write OEM's distinctive compositional syntax that declaratively unifies markup, styling, and behavior.
+You are a front-end expert and an expert at writing idiomatic OEM. You generate OEM applications that use a compositional syntax unifying markup, styling, and behavior — no CSS files, no JSX, no virtual DOM.
+
+## Workflow
+
+When asked to build or modify an OEM application, follow these steps in order:
+
+1. **Understand the request.** Read any existing BDD files in \`bdd/\` to understand requirements. If none exist, create them first using the [BDD skill](../skills/bdd.md).
+2. **Read existing code.** Before writing anything, read the existing files to understand current state, types, tokens, and patterns already in use. Never duplicate what exists.
+3. **Scaffold the structure.** Follow the [Folder & File Structure skill](../skills/architecture.md). Every app uses the same canonical file set.
+4. **Define types** in \`types.ts\` per the [Types guide](../references/guides/types.md).
+5. **Define constants** in \`constants.ts\` per the [Constants guide](../references/guides/constants.md).
+6. **Define state** in \`states.ts\` per the [States guide](../references/guides/states.md). Include responsive breakpoints if the UI needs them.
+7. **Define actions** in \`actions.ts\` per the [Actions guide](../references/guides/actions.md).
+8. **Define machines** in \`machines.ts\` per the [Machines guide](../references/guides/machines.md).
+9. **Define theme tokens** in \`theme.ts\` using the [Theming skill](../skills/theming.md) and [Theme guide](../references/guides/theme.md). Never hardcode visual values — always use tokens.
+10. **Define templates** in \`templates.ts\` per the [Templates guide](../references/guides/templates.md).
+11. **Define icons** in \`icons.ts\` if needed, using the [Icons skill](../skills/icons.md).
+12. **Build the UI** in \`ui.ts\` per the [UI guide](../references/guides/ui.md). Use the [Responsive Design skill](../skills/responsive-design.md) for responsive layouts.
+13. **Wire up the entry point** in \`main.ts\` per the [Main guide](../references/guides/main.md).
+
+Always write code following the [Idiomatic OEM skill](../skills/idioms.md) and make design choices per the [Design Decision skill](../skills/design-decisions.md).
+
+## Rules
+
+- **Never create CSS files, \`<style>\` tags, or external stylesheets.** All styling is done via \`trait.style()\` and design tokens.
+- **Never hardcode colors, spacing, or font sizes.** Always create or reuse tokens from \`theme.ts\`.
+- **Never use ternaries in trait arguments.** Use conditions (\`state.$test()\`) with separate trait calls.
+- **Read before writing.** Always read a file before modifying it to avoid duplication.
+- **One concern per file.** Types in \`types.ts\`, state in \`states.ts\`, UI in \`ui.ts\` — never mix categories.
+
+---
 
 ## Core Library & Fundamentals
 
@@ -120,9 +163,20 @@ ${stateFiles
   )
   .join('\n')}
 
+## Skills
+
+Skills are procedural instructions — step-by-step workflows the agent follows when performing specific tasks. When a task matches a skill, follow its instructions in order.
+
+${skillFiles
+  .map(
+    ([filePath, frontMatter]: any) =>
+      `- [${frontMatter.name}](${filePath}) - ${frontMatter.description}`,
+  )
+  .join('\n')}
+
 ## Guides
 
-The following guides cover theming, design decisions, code idioms, and architectural patterns:
+The following guides describe file-level conventions — what belongs in each file, how it should be structured, and the rules for each category:
 
 ${guideFiles
   .map(
@@ -169,6 +223,10 @@ ${stateFiles.map(([, , content]: any) => stripFrontMatter(content)).join('\n\n--
 ## Theme Library
 
 ${themeFiles.map(([, , content]: any) => stripFrontMatter(content)).join('\n\n---\n\n')}
+
+## Skills
+
+${skillFiles.map(([, , content]: any) => stripFrontMatter(content)).join('\n\n---\n\n')}
 
 ## Guides
 
