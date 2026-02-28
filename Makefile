@@ -66,7 +66,7 @@ agents: ## Generate agents files
 
 test: ## Run tests
 	@echo $(STATUS) Testing...
-	@bun ./test/unit.html
+	@bun --port 3001 ./test/unit.html
 
 
 

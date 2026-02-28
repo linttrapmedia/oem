@@ -11,6 +11,8 @@ export type Section =
   | 'theming'
   | 'architecture';
 
+export type PrimitiveTab = 'element' | 'trait' | 'state';
+
 export type NavItem = {
   id: Section;
   label: string;
@@ -45,4 +47,10 @@ export type Action =
   | { type: 'NAVIGATE'; payload: { section: Section } }
   | { type: 'TOGGLE_THEME' }
   | { type: 'TOGGLE_NAV' }
-  | { type: 'CLOSE_NAV' };
+  | { type: 'CLOSE_NAV' }
+  | { type: 'SET_PRIMITIVE_TAB'; payload: { tab: PrimitiveTab } }
+  | { type: 'TOGGLE_EXAMPLE'; payload: { index: number } }
+  | { type: 'SHOW_TOAST'; payload: { message: string } }
+  | { type: 'HIDE_TOAST' }
+  | { type: 'OPEN_DIALOG' }
+  | { type: 'CLOSE_DIALOG' };

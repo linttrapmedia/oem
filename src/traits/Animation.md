@@ -30,12 +30,12 @@ useAnimationTrait(
 
 ## Parameters
 
-| Parameter   | Type                                                                                                     | Description                                                                                                                                                  |
-| ----------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `el`        | `HTMLElement`                                                                                            | The target element                                                                                                                                           |
-| `keyframes` | `Keyframe[] \| PropertyIndexedKeyframes \| (() => Keyframe[] \| PropertyIndexedKeyframes)`               | The animation keyframes. Pass an array of `Keyframe` objects, a `PropertyIndexedKeyframes` object, or a function that returns either for reactive evaluation. |
-| `options`   | `number \| KeyframeAnimationOptions \| (() => number \| KeyframeAnimationOptions)`                       | Animation timing. Pass a duration in ms, a full `KeyframeAnimationOptions` object, or a function for reactive evaluation.                                    |
-| `...rest`   | `(StateType<any> \| Condition)[]`                                                                        | Optional State objects and/or Conditions. The animation plays only when all Conditions are truthy.                                                           |
+| Parameter   | Type                                                                                       | Description                                                                                                                                                   |
+| ----------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `el`        | `HTMLElement`                                                                              | The target element                                                                                                                                            |
+| `keyframes` | `Keyframe[] \| PropertyIndexedKeyframes \| (() => Keyframe[] \| PropertyIndexedKeyframes)` | The animation keyframes. Pass an array of `Keyframe` objects, a `PropertyIndexedKeyframes` object, or a function that returns either for reactive evaluation. |
+| `options`   | `number \| KeyframeAnimationOptions \| (() => number \| KeyframeAnimationOptions)`         | Animation timing. Pass a duration in ms, a full `KeyframeAnimationOptions` object, or a function for reactive evaluation.                                     |
+| `...rest`   | `(StateType<any> \| Condition)[]`                                                          | Optional State objects and/or Conditions. The animation plays only when all Conditions are truthy.                                                            |
 
 ## Behavior
 
@@ -55,10 +55,11 @@ A cleanup function that cancels the running animation and unsubscribes from all 
 ### Fade-in on creation
 
 ```ts
-trait.animation(
-  [{ opacity: '0' }, { opacity: '1' }],
-  { duration: 200, easing: 'ease-out', fill: 'forwards' },
-);
+trait.animation([{ opacity: '0' }, { opacity: '1' }], {
+  duration: 200,
+  easing: 'ease-out',
+  fill: 'forwards',
+});
 ```
 
 ### Slide-in from below
@@ -80,7 +81,10 @@ const mode = State<'enter' | 'exit'>('enter');
 
 // Enter animation — plays when mode is 'enter'
 trait.animation(
-  [{ opacity: '0', transform: 'scale(0.95)' }, { opacity: '1', transform: 'scale(1)' }],
+  [
+    { opacity: '0', transform: 'scale(0.95)' },
+    { opacity: '1', transform: 'scale(1)' },
+  ],
   { duration: 200, easing: 'ease-out', fill: 'forwards' },
   mode.$test('enter'),
   mode,
@@ -88,7 +92,10 @@ trait.animation(
 
 // Exit animation — plays when mode is 'exit'
 trait.animation(
-  [{ opacity: '1', transform: 'scale(1)' }, { opacity: '0', transform: 'scale(0.95)' }],
+  [
+    { opacity: '1', transform: 'scale(1)' },
+    { opacity: '0', transform: 'scale(0.95)' },
+  ],
   { duration: 150, easing: 'ease-in', fill: 'forwards' },
   mode.$test('exit'),
   mode,
@@ -98,10 +105,11 @@ trait.animation(
 ### Infinite spinner
 
 ```ts
-trait.animation(
-  [{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }],
-  { duration: 800, iterations: Infinity, easing: 'linear' },
-);
+trait.animation([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], {
+  duration: 800,
+  iterations: Infinity,
+  easing: 'linear',
+});
 ```
 
 ### Reactive duration from state
@@ -133,11 +141,7 @@ trait.animation(
 
 ```ts
 trait.animation(
-  [
-    { transform: 'scale(1)' },
-    { transform: 'scale(1.05)' },
-    { transform: 'scale(1)' },
-  ],
+  [{ transform: 'scale(1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }],
   { duration: 600, easing: 'ease-in-out', iterations: 2 },
 );
 ```

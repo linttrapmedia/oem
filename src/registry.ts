@@ -23,6 +23,7 @@ export { useUrlState } from './states/UrlState';
 export { useWindowSizeState } from './states/WindowSizeState';
 
 // Traits
+export { useAnimationTrait } from './traits/Animation';
 export { useAriaTrait } from './traits/Aria';
 export { useAttributeTrait } from './traits/Attribute';
 export { useClassNameTrait } from './traits/ClassName';
@@ -36,4 +37,3 @@ export { useScrollIntoViewTrait } from './traits/ScrollIntoView';
 export { useStyleTrait } from './traits/Style';
 export { useStyleOnEventTrait } from './traits/StyleOnEvent';
 export { useTextContentTrait } from './traits/TextContent';
-

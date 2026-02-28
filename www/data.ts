@@ -294,15 +294,32 @@ tag.div(
 
 export const TRAIT_DOCS: TraitDoc[] = [
   {
-    name: 'useStyleTrait',
-    signature: '(el, prop, val, ...rest)',
+    name: 'useAnimationTrait',
+    signature: '(el, keyframes, options, ...rest)',
     description:
-      'Sets a single CSS style property. Supports camelCase and custom properties. Reactive via $val.',
+      'Plays Web Animations API keyframe animations reactively. Supports conditional gating and state-driven re-triggering.',
   },
   {
-    name: 'useTextContentTrait',
-    signature: '(el, text, ...rest)',
-    description: 'Sets text content reactively. Accepts strings, arrays, or getter functions.',
+    name: 'useAriaTrait',
+    signature: '(el, prop, val, ...rest)',
+    description:
+      'Sets ARIA attributes and role reactively. Removes attributes when value is undefined or conditions are falsy.',
+  },
+  {
+    name: 'useAttributeTrait',
+    signature: '(el, prop, val, ...rest)',
+    description: 'Sets or removes HTML attributes. Undefined value removes the attribute.',
+  },
+  {
+    name: 'useClassNameTrait',
+    signature: '(el, className, ...rest)',
+    description: 'Sets the entire class attribute. Reserved for third-party library integration.',
+  },
+  {
+    name: 'useDataAttributeTrait',
+    signature: '(el, name, val, ...rest)',
+    description:
+      'Sets or removes data-* attributes via the dataset API. Accepts bare or prefixed names.',
   },
   {
     name: 'useEventTrait',
@@ -311,14 +328,36 @@ export const TRAIT_DOCS: TraitDoc[] = [
       'Attaches DOM event listeners. Auto-cleaned on element removal. Gated by conditions.',
   },
   {
-    name: 'useAttributeTrait',
-    signature: '(el, prop, val, ...rest)',
-    description: 'Sets or removes HTML attributes. Undefined value removes the attribute.',
+    name: 'useFocusTrait',
+    signature: '(el, ...rest)',
+    description: 'Programmatically focuses an element when reactive conditions are met.',
   },
   {
     name: 'useInnerHTMLTrait',
     signature: '(el, children, ...rest)',
     description: 'Clears and re-appends children on state change. Used for dynamic lists.',
+  },
+  {
+    name: 'useInputEventTrait',
+    signature: '(el, evt, setter, ...rest)',
+    description: 'Attaches input events that extract e.target.value and pipe to a setter.',
+  },
+  {
+    name: 'useInputValueTrait',
+    signature: '(el, value, ...rest)',
+    description: 'Binds a value to input/textarea elements reactively.',
+  },
+  {
+    name: 'useScrollIntoViewTrait',
+    signature: '(el, options?, ...rest)',
+    description:
+      'Scrolls an element into view when conditions are met. Accepts ScrollIntoViewOptions.',
+  },
+  {
+    name: 'useStyleTrait',
+    signature: '(el, prop, val, ...rest)',
+    description:
+      'Sets a single CSS style property. Supports camelCase and custom properties. Reactive via $val.',
   },
   {
     name: 'useStyleOnEventTrait',
@@ -327,24 +366,9 @@ export const TRAIT_DOCS: TraitDoc[] = [
       'Applies a CSS style when a specific DOM event fires. Perfect for hover/focus patterns.',
   },
   {
-    name: 'useClassNameTrait',
-    signature: '(el, className, ...rest)',
-    description: 'Sets the entire class attribute. Reserved for third-party library integration.',
-  },
-  {
-    name: 'useInputValueTrait',
-    signature: '(el, value, ...rest)',
-    description: 'Binds a value to input/textarea elements reactively.',
-  },
-  {
-    name: 'useInputEventTrait',
-    signature: '(el, evt, setter, ...rest)',
-    description: 'Attaches input events that extract e.target.value and pipe to a setter.',
-  },
-  {
-    name: 'useFocusTrait',
-    signature: '(el, conditions?, states?)',
-    description: 'Programmatically focuses an element based on reactive conditions.',
+    name: 'useTextContentTrait',
+    signature: '(el, text, ...rest)',
+    description: 'Sets text content reactively. Accepts strings, arrays, or getter functions.',
   },
 ] as const;
 
@@ -360,9 +384,38 @@ export const STATE_DOCS: StateDoc[] = [
       'Core reactive container. Holds a value, notifies subscribers on change. Custom methods auto-generate $-prefixed deferred twins.',
   },
   {
+    name: 'useFormState',
+    signature: 'useFormState(initialValues, validators?)',
+    description:
+      'Reactive form state with validation, dirty tracking, touched fields, and field-level control.',
+  },
+  {
+    name: 'useIntersectionObserverState',
+    signature: 'useIntersectionObserverState(el, options?)',
+    description:
+      'Tracks element visibility within the viewport using the Intersection Observer API.',
+  },
+  {
+    name: 'useMediaQueryState',
+    signature: 'useMediaQueryState({ minWidth?, maxWidth? })',
+    description:
+      'Reactive state tracking viewport size. Returns State<boolean>. Use $test for responsive conditions.',
+  },
+  {
+    name: 'useOnlineState',
+    signature: 'useOnlineState()',
+    description: 'Tracks browser online/offline connectivity. Returns State<boolean>.',
+  },
+  {
     name: 'useThemeState',
     signature: "useThemeState('light' | 'dark')",
     description: 'Single source of truth for current theme. Returns a State<Theme> object.',
+  },
+  {
+    name: 'useTimerState',
+    signature: 'useTimerState(intervalMs, options?)',
+    description:
+      'Interval-driven counter with start, stop, and reset controls. Auto-start optional.',
   },
   {
     name: 'useTokenState',
@@ -371,10 +424,15 @@ export const STATE_DOCS: StateDoc[] = [
       'Derived state that selects between light/dark values based on themeState. Updates automatically on theme change.',
   },
   {
-    name: 'useMediaQueryState',
-    signature: 'useMediaQueryState({ minWidth?, maxWidth? })',
+    name: 'useUrlState',
+    signature: 'useUrlState(routes)',
     description:
-      'Reactive state tracking viewport size. Returns State<boolean>. Use $test for responsive conditions.',
+      'Tracks the current URL, matching against defined routes and extracting params, query, and hash.',
+  },
+  {
+    name: 'useWindowSizeState',
+    signature: 'useWindowSizeState()',
+    description: 'Tracks viewport width and height in real-time. Returns State<{ width, height }>.',
   },
 ] as const;
 

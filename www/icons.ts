@@ -201,6 +201,51 @@ export function ArrowRightIcon({ size = '24', color = 'currentColor' }: IconProp
   );
 }
 
+// --- Chevron down icon ---
+export function ChevronDownIcon({ size = '24', color = 'currentColor' }: IconProps = {}) {
+  return svg.svg(
+    svgTrait.attr('viewBox', '0 0 24 24'),
+    svgTrait.attr('fill', 'none'),
+    svgTrait.attr('stroke', color),
+    svgTrait.attr('stroke-width', '2'),
+    svgTrait.style('width', size + 'px'),
+    svgTrait.style('height', size + 'px'),
+    svgTrait.style('transition', 'transform 0.2s ease'),
+    svg.path(svgTrait.attr('d', 'M6 9l6 6 6-6')),
+  );
+}
+
+// --- Command icon ---
+export function CommandIcon({ size = '24', color = 'currentColor' }: IconProps = {}) {
+  return svg.svg(
+    svgTrait.attr('viewBox', '0 0 24 24'),
+    svgTrait.attr('fill', 'none'),
+    svgTrait.attr('stroke', color),
+    svgTrait.attr('stroke-width', '1.5'),
+    svgTrait.style('width', size + 'px'),
+    svgTrait.style('height', size + 'px'),
+    svg.path(
+      svgTrait.attr(
+        'd',
+        'M18 3a3 3 0 00-3 3v12a3 3 0 003 3 3 3 0 003-3 3 3 0 00-3-3H6a3 3 0 00-3 3 3 3 0 003 3 3 3 0 003-3V6a3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3h12a3 3 0 003-3 3 3 0 00-3-3z',
+      ),
+    ),
+  );
+}
+
+// --- Check icon ---
+export function CheckIcon({ size = '24', color = 'currentColor' }: IconProps = {}) {
+  return svg.svg(
+    svgTrait.attr('viewBox', '0 0 24 24'),
+    svgTrait.attr('fill', 'none'),
+    svgTrait.attr('stroke', color),
+    svgTrait.attr('stroke-width', '2'),
+    svgTrait.style('width', size + 'px'),
+    svgTrait.style('height', size + 'px'),
+    svg.path(svgTrait.attr('d', 'M20 6L9 17l-5-5')),
+  );
+}
+
 // --- Copy icon ---
 export function CopyIcon({ size = '24', color = 'currentColor' }: IconProps = {}) {
   return svg.svg(
@@ -261,4 +306,7 @@ export const ICON_MAP: Record<string, (props?: IconProps) => SVGElement> = {
   brain: BrainIcon,
   palette: PaletteIcon,
   sparkle: SparkleIcon,
+  chevron: ChevronDownIcon,
+  command: CommandIcon,
+  check: CheckIcon,
 };

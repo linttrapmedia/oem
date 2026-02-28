@@ -1,7 +1,633 @@
-(()=>{var yE=[{id:"hero",label:"Home"},{id:"philosophy",label:"Philosophy"},{id:"setup",label:"Setup"},{id:"primitives",label:"Primitives"},{id:"examples",label:"Examples"},{id:"traits",label:"Traits"},{id:"states",label:"States"},{id:"theming",label:"Theming"},{id:"architecture",label:"Architecture"}],AC=yE.map((L)=>L.id);var OE=400;var M="'Fira Code', 'JetBrains Mono', 'SF Mono', 'Cascadia Code', Consolas, monospace",HE="'Fira Code', 'JetBrains Mono', 'SF Mono', 'Cascadia Code', Consolas, 'Courier New', monospace",gE="Splash";var D=(...L)=>{return L.filter((C)=>C&&Object.hasOwn(C,"sub"))},n=(...L)=>{return L.filter((C)=>C&&C.type==="$test")};function O(L,C){let W=L,J=new Set,Q=(y)=>{W=y,J.forEach((h)=>h(y))},K=(y)=>()=>Q(y),j=(y)=>Q(y(W)),V=(y)=>()=>Q(y(fE())),X=(y)=>{return J.add(y),()=>J.delete(y)},q=(y,h=!0)=>{if(y instanceof RegExp){let z=y.test(W);return h?z:!z}else if(typeof y==="function"&&y instanceof Function){let z=y(W);return h?z:!z}else{let sE=W===y;return h?sE:!sE}},R=(y,h=!0)=>{let z=()=>q(y,h);return z.sub=X,z.type="$test",z},fE=()=>W,UE=()=>W;UE.sub=X,UE.type="$val";let qE={$reduce:V,$set:K,$test:R,$val:UE,reduce:j,set:Q,sub:X,test:q,val:fE,_subs:J};if(C)for(let y in C)qE[y]=(...h)=>C[y](qE,...h),qE[`$${y}`]=(...h)=>()=>C[y](qE,...h);return qE}var BE=new WeakMap;new MutationObserver((L)=>{for(let{type:C,removedNodes:W}of L){if(C!=="childList")continue;W.forEach((J)=>{if(!(J instanceof HTMLElement||J instanceof SVGElement))return;BE.get(J)?.forEach((Q)=>Q()),BE.delete(J)})}}).observe(document.documentElement,{childList:!0,subtree:!0});var uL=new Set("svg,g,rect,circle,ellipse,line,polyline,polygon,path,text,defs,use,mask,clipPath".split(","));function KE(L){let C=new Proxy({},{get:(J,Q)=>{if(Q==="$")return(K)=>(...j)=>{return j.forEach((V)=>{if(V instanceof HTMLElement||V instanceof SVGElement)K.appendChild(V);else V(K)}),K};return(...K)=>{let j=uL.has(Q)?document.createElementNS("http://www.w3.org/2000/svg",Q):document.createElement(Q);return K.forEach((V)=>{if(V instanceof HTMLElement||V instanceof SVGElement)j.appendChild(V);else V(j)}),j}}}),W=new Proxy({},{get:(J,Q)=>(...K)=>(j)=>{let V=L[Q](j,...K);if(V){let X=BE.get(j)||[];X.push(V),BE.set(j,X)}}});return[C,W]}var RE=(L)=>{let{type:C="all",minWidth:W=0,maxWidth:J=1/0}=L,Q=O(!1),K=()=>{let j=window.innerWidth,V=j>=W&&j<=J,X=C==="all"||window.matchMedia(C).matches;Q.set(V&&X)};return K(),window.addEventListener("resize",K),Q};var IE=(L)=>{return O(L)};var G=(L,C,W)=>{let J=()=>W.val()==="light"?L:C,Q=O(J());return W.sub((K)=>Q.set(J())),Q};var QE=(L,C,W,...J)=>{let Q=D(W,...J),K=n(...J),j=()=>{let X=typeof W==="function"?W():W;if(K.every((R)=>typeof R==="function"?R():R))if(X===void 0)L.removeAttribute(C);else L.setAttribute(C,String(X));else L.removeAttribute(C)};j();let V=Q.map((X)=>X.sub(j));return()=>V.forEach((X)=>X())};function bE(L,C,...W){let J=D(C,...W),Q=n(...W),K=()=>{let V=typeof C==="function"?C():C;if(Q.every((q)=>typeof q==="function"?q():q))L.setAttribute("class",String(V))};K();let j=J.map((V)=>V.sub(K));return()=>j.forEach((V)=>V())}function uE(L,C,W,...J){let Q=D(...J),K=n(...J),j=!1,V=()=>{if(K.every((R)=>typeof R==="function"?R():R)&&!j)L.addEventListener(C,W),j=!0;else L.removeEventListener(C,W),j=!1};V();let X=Q.map((q)=>q.sub(V));return()=>{L.removeEventListener(C,W),X.forEach((q)=>q())}}var SE=(L,C=[],W=[])=>{let J=()=>{if(C.every((j)=>typeof j==="function"?j():j))L.focus()};J();let Q=W.map((K)=>K.sub(J));return()=>Q.forEach((K)=>K())};function hE(L,C,...W){let J=D(C,...W),Q=n(...W),K=()=>{let V=typeof C==="function"?C():C;if(Q.every((q)=>typeof q==="function"?q():q)){if(L.innerHTML="",V!==void 0)if(Array.isArray(V))V.filter((q)=>q).forEach((q)=>{if(q instanceof HTMLElement||q instanceof SVGElement)L.appendChild(q);else L.appendChild(document.createTextNode(String(q)))});else if(V instanceof HTMLElement||V instanceof SVGElement)L.appendChild(V);else L.innerHTML=String(V)}};K();let j=J.map((V)=>V.sub(K));return()=>j.forEach((V)=>V())}function kE(L,C,W,...J){let Q=D(...J),K=n(...J),j=(R)=>W(R.target.value),V=!1,X=()=>{if(K.every((fE)=>typeof fE==="function"?fE():fE)&&!V)L.addEventListener(C,j),V=!0;else L.removeEventListener(C,j),V=!1};X();let q=Q.map((R)=>R.sub(X));return()=>{L.removeEventListener(C,j),q.forEach((R)=>R())}}function TE(L,C,...W){let J=D(C,...W),Q=n(...W),K=()=>{let V=typeof C==="function"?C():C;if(Q.every((q)=>typeof q==="function"?q():q))L.value=V};K();let j=J.map((V)=>V.sub(K));return()=>j.forEach((V)=>V())}function ZE(L,C,W,...J){let Q=D(W,...J),K=n(...J),j=()=>{let X=typeof W==="function"?W():W;if(K.every((R)=>typeof R==="function"?R():R))C.startsWith("--")?L.style.setProperty(C,X):L.style[C]=X};j();let V=Q.map((X)=>X.sub(j));return()=>V.forEach((X)=>X())}function mE(L,C,W,J,...Q){let K=n(...Q),j=()=>{let V=typeof J==="function"?J():J;if(K.every((q)=>typeof q==="function"?q():q))W.startsWith("--")?L.style.setProperty(W,V):L.style[W]=V};return L.addEventListener(C,j),()=>L.removeEventListener(C,j)}function oE(L,C,...W){let J=D(C,...W),Q=n(...W),K=()=>{let V=typeof C==="function"?C():C;if(Q.every((q)=>typeof q==="function"?q():q)){if(L.textContent="",V!==void 0)if(Array.isArray(V))V.filter((q)=>q!==void 0).forEach((q)=>{L.appendChild(document.createTextNode(String(q)))});else L.textContent=String(V)}};K();let j=J.map((V)=>V.sub(K));return()=>j.forEach((V)=>V())}var[f,E]=KE({style:ZE,styleOnEvent:mE,event:uE,text:oE,attr:QE,className:bE,innerHTML:hE,inputValue:TE,inputEvent:kE,focus:SE});var A=IE("light"),XE=G("#c7c7c7","#222222",A),c=G("#b8b8b8","#2a2a2a",A),eE=G("#ababab","#333333",A),AE=G("#383838","#282828",A),_E=G("rgba(199,199,199,0.92)","rgba(34,34,34,0.92)",A),rE=G("rgba(160,160,160,0.08)","rgba(60,60,60,0.08)",A),v=G("#555555","#999999",A),g=G("#444444","#aaaaaa",A),GE=G("#666666","#888888",A),Bf=G("#505050","#999999",A),Rf=G("#606060","#909090",A),U=G("#222222","#c7c7c7",A),F=G("#444444","#999999",A),p=G("#888888","#555555",A),nf=G("#c7c7c7","#aaaaaa",A),iE=G("#222222","#c7c7c7",A),wf=G("#222222","#c7c7c7",A),B=G("rgba(80,80,80,0.15)","rgba(150,150,150,0.15)",A),nE=G("rgba(60,60,60,0.25)","rgba(170,170,170,0.20)",A),l=G("rgba(60,60,60,0.20)","rgba(150,150,150,0.15)",A),wE=G("#222222","#c7c7c7",A),NE=G("#555555","#888888",A),aE=G("#333333","#aaaaaa",A),WE=G("4px","4px",A),e=G("8px","8px",A),P=G("16px","16px",A),I=G("24px","24px",A),_=G("32px","32px",A),w=G("48px","48px",A),tE=G("64px","64px",A),zE=G("96px","96px",A),b=G("8px","8px",A),k=G("16px","16px",A),VE=G("24px","24px",A),EL=G("32px","32px",A),Nf=G("48px","48px",A),LE=G("6px","6px",A),YE=G("12px","12px",A),$E=G("16px","16px",A),Pf=G("24px","24px",A),FE=G("9999px","9999px",A),Df=G("0 2px 8px rgba(0,0,0,0.06)","0 2px 8px rgba(0,0,0,0.3)",A),xf=G("0 4px 16px rgba(0,0,0,0.08)","0 4px 16px rgba(0,0,0,0.4)",A),LL=G("0 0 20px rgba(80,80,80,0.06)","0 0 30px rgba(100,100,100,0.10)",A),CL=G("0 0 20px rgba(80,80,80,0.05)","0 0 30px rgba(100,100,100,0.08)",A),fL=G("0 0 20px rgba(80,80,80,0.05)","0 0 30px rgba(100,100,100,0.08)",A),Mf=G("0 8px 32px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.05)","0 8px 32px rgba(0,0,0,0.12), 0 0 60px rgba(100,100,100,0.03)",A),r=G("10px","10px",A),x=G("12px","12px",A),u=G("13px","13px",A),T=G("14px","14px",A),CE=G("16px","16px",A),vE=G("20px","20px",A),PE=G("24px","24px",A),pE=G("30px","30px",A),JE=G("700","700",A),m=G("600","600",A),DE=G("500","500",A),Uf=G("400","400",A),HL=G("300","300",A),AL=G("200","200",A),i=G("all 0.15s ease","all 0.15s ease",A),S=G("all 0.3s ease","all 0.3s ease",A),Of=G("all 0.5s ease","all 0.5s ease",A),lE=G("color 0.3s ease","color 0.3s ease",A),GL=G("radial-gradient(ellipse at 50% 0%, rgba(100,100,100,0.04) 0%, transparent 70%)","radial-gradient(ellipse at 50% 0%, rgba(100,100,100,0.08) 0%, transparent 70%)",A),WL=G("linear-gradient(0deg, rgba(100,100,100,0.04) 0%, transparent 40%)","linear-gradient(0deg, rgba(100,100,100,0.06) 0%, transparent 40%)",A),xE=G("linear-gradient(135deg, rgba(100,100,100,0.02) 0%, rgba(120,120,120,0.02) 100%)","linear-gradient(135deg, rgba(100,100,100,0.03) 0%, rgba(120,120,120,0.02) 100%)",A);var VL={name:"@linttrap/oem",version:"3.0.0",author:"@linttrapmedia",repository:{type:"git",url:"git+https://github.com/linttrapmedia/oem.git"},main:"./src/registry.ts",module:"./src/registry.ts",devDependencies:{"@types/bun":"latest",prettier:"2.7.1"},peerDependencies:{typescript:"^5"},exports:{".":"./src/registry.ts"},bugs:{url:"https://github.com/linttrapmedia/oem/issues"},description:"A novel UI library for writing reactive html with vanilla javascript",homepage:"https://oem.js.org",license:"MIT",private:!1,title:"oem",type:"module",dependencies:{"@linttrap/oem":"^1.0.2"}};var jE=(L)=>({type:"NAVIGATE",payload:{section:L}}),JL=()=>({type:"TOGGLE_THEME"}),jL=()=>({type:"TOGGLE_NAV"});var qL=[{title:"Zero Dependencies",description:"OEM ships nothing but itself. No virtual DOM, no compiler, no build step required. Pure TypeScript that runs in any browser.",icon:"cube"},{title:"Three Primitives",description:"Element, Trait, and State — that's it. Three concepts compose into any UI. No components, no hooks, no lifecycle soup.",icon:"triangle"},{title:"Surgical Reactivity",description:"Push-based subscriptions update only what changed. No diffing, no reconciliation, no tree walks. O(1) updates.",icon:"bolt"},{title:"Agent-First Design",description:"Flat, predictable patterns that LLMs can read, write, and reason about. Built for the age of AI-assisted development.",icon:"brain"},{title:"Token-Driven Theming",description:"Every visual value is a reactive token. Light/dark themes switch instantly. No CSS variables, no class toggling.",icon:"palette"},{title:"Automatic Cleanup",description:"WeakMap + MutationObserver handles all teardown. Remove an element, subscriptions vanish. Zero memory leaks.",icon:"sparkle"}],KL=[{title:"Composition Over Abstraction",body:"OEM has no component model. Instead, plain functions return real DOM nodes. Traits attach behaviors. State objects broadcast changes. You compose these three primitives into any UI — no classes, no JSX, no framework ceremony."},{title:"Declarative DNA",body:"A single nested expression declares structure, style, content, and reactivity in one place. What you write is what the browser builds — there is no intermediate representation, no compilation step, no hidden transforms."},{title:"Explicitness Over Magic",body:'Every subscription is visible. Every style is inline on its element. Every event handler is wired where you can see it. OEM trades "convenience" features for total transparency.'},{title:"Built for Machines",body:"Flat file architecture, predictable patterns, and a tiny API surface make OEM uniquely well-suited for LLM-driven development. Agents can read, write, and reason about OEM code without special training."}],QL=`# Install with your preferred package manager
+(() => {
+  // www/constants.ts
+  var NAV_ITEMS = [
+    { id: "hero", label: "Home" },
+    { id: "philosophy", label: "Philosophy" },
+    { id: "setup", label: "Setup" },
+    { id: "primitives", label: "Primitives" },
+    { id: "examples", label: "Examples" },
+    { id: "traits", label: "Traits" },
+    { id: "states", label: "States" },
+    { id: "theming", label: "Theming" },
+    { id: "architecture", label: "Architecture" }
+  ];
+  var SECTION_IDS = NAV_ITEMS.map((n) => n.id);
+  var ANIM_DURATION_MEDIUM = 400;
+  var FONT_MONO = "'Fira Code', 'JetBrains Mono', 'SF Mono', 'Cascadia Code', Consolas, monospace";
+  var FONT_DISPLAY = "'Fira Code', 'JetBrains Mono', 'SF Mono', 'Cascadia Code', Consolas, 'Courier New', monospace";
+  var FONT_LOGO = "Splash";
+
+  // src/core/util.ts
+  var extractStates = (...rest) => {
+    return rest.filter((i) => i && Object.hasOwn(i, "sub"));
+  };
+  var extractConditions = (...rest) => {
+    return rest.filter((i) => i && i.type === "$test");
+  };
+  // src/core/state.ts
+  function State(param, customMethods) {
+    let _internalVal = param;
+    const _subs = new Set;
+    const _set = (atom) => {
+      _internalVal = atom;
+      _subs.forEach((i) => i(atom));
+    };
+    const $set = (atom) => () => _set(atom);
+    const _reduce = (cb) => _set(cb(_internalVal));
+    const $reduce = (cb) => () => _set(cb(_val()));
+    const _sub = (cb) => {
+      _subs.add(cb);
+      return () => _subs.delete(cb);
+    };
+    const test = (predicate, truthCheck = true) => {
+      if (predicate instanceof RegExp) {
+        const result = predicate.test(_internalVal);
+        return truthCheck ? result : !result;
+      } else if (typeof predicate === "function" && predicate instanceof Function) {
+        const result = predicate(_internalVal);
+        return truthCheck ? result : !result;
+      } else {
+        const string_comparison = predicate;
+        const result = _internalVal === string_comparison;
+        return truthCheck ? result : !result;
+      }
+    };
+    const $test = (predicate, truthCheck = true) => {
+      const closure = () => test(predicate, truthCheck);
+      closure.sub = _sub;
+      closure.type = "$test";
+      return closure;
+    };
+    const _val = () => _internalVal;
+    const $val = () => _internalVal;
+    $val.sub = _sub;
+    $val.type = "$val";
+    const methods = {
+      $reduce,
+      $set,
+      $test,
+      $val,
+      reduce: _reduce,
+      set: _set,
+      sub: _sub,
+      test,
+      val: _val,
+      _subs
+    };
+    if (customMethods) {
+      for (const key in customMethods) {
+        methods[key] = (...args) => customMethods[key](methods, ...args);
+        methods[`$${key}`] = (...args) => () => customMethods[key](methods, ...args);
+      }
+    }
+    return methods;
+  }
+  // src/core/template.ts
+  var cleanups = new WeakMap;
+  new MutationObserver((mutations) => {
+    for (const { type, removedNodes } of mutations) {
+      if (type !== "childList")
+        continue;
+      removedNodes.forEach((node) => {
+        if (!(node instanceof HTMLElement || node instanceof SVGElement))
+          return;
+        cleanups.get(node)?.forEach((fn) => fn());
+        cleanups.delete(node);
+      });
+    }
+  }).observe(document.documentElement, { childList: true, subtree: true });
+  var SVG_TAGS = new Set("svg,g,rect,circle,ellipse,line,polyline,polygon,path,text,defs,use,mask,clipPath".split(","));
+  function Template(config) {
+    const tags = new Proxy({}, {
+      get: (_, tag) => {
+        if (tag === "$") {
+          return (el) => (...children) => {
+            children.forEach((c) => {
+              if (c instanceof HTMLElement || c instanceof SVGElement)
+                el.appendChild(c);
+              else
+                c(el);
+            });
+            return el;
+          };
+        }
+        return (...children) => {
+          const el = SVG_TAGS.has(tag) ? document.createElementNS("http://www.w3.org/2000/svg", tag) : document.createElement(tag);
+          children.forEach((c) => {
+            if (c instanceof HTMLElement || c instanceof SVGElement)
+              el.appendChild(c);
+            else
+              c(el);
+          });
+          return el;
+        };
+      }
+    });
+    const traits = new Proxy({}, {
+      get: (_, name) => (...args) => (el) => {
+        const unsub = config[name](el, ...args);
+        if (unsub) {
+          const list = cleanups.get(el) || [];
+          list.push(unsub);
+          cleanups.set(el, list);
+        }
+      }
+    });
+    return [tags, traits];
+  }
+  // src/states/MediaQueryState.ts
+  var useMediaQueryState = (props) => {
+    const { type = "all", minWidth = 0, maxWidth = Infinity } = props;
+    const state = State(false);
+    const apply = () => {
+      const width = window.innerWidth;
+      const mediaMatches = width >= minWidth && width <= maxWidth;
+      const typeMatches = type === "all" || window.matchMedia(type).matches;
+      state.set(mediaMatches && typeMatches);
+    };
+    apply();
+    window.addEventListener("resize", apply);
+    return state;
+  };
+  // src/states/ThemeState.ts
+  var useThemeState = (theme) => {
+    const state = State(theme);
+    return state;
+  };
+  // src/states/TokenState.ts
+  var useTokenState = (lightVal, darkVal, themeState) => {
+    const getVal = () => themeState.val() === "light" ? lightVal : darkVal;
+    const state = State(getVal());
+    themeState.sub((t) => state.set(getVal()));
+    return state;
+  };
+  // src/traits/Animation.ts
+  function useAnimationTrait(el, keyframes, options, ...rest) {
+    const states = extractStates(...rest);
+    const conditions = extractConditions(...rest);
+    let current = null;
+    const apply = () => {
+      const _keyframes = typeof keyframes === "function" ? keyframes() : keyframes;
+      const _options = typeof options === "function" ? options() : options;
+      const applies = conditions.every((i) => typeof i === "function" ? i() : i);
+      if (applies) {
+        if (current)
+          current.cancel();
+        current = el.animate(_keyframes, _options);
+      }
+    };
+    apply();
+    const unsubs = states.map((state) => state.sub(apply));
+    return () => {
+      if (current)
+        current.cancel();
+      unsubs.forEach((unsub) => unsub());
+    };
+  }
+  // src/traits/Aria.ts
+  var useAriaTrait = (el, prop, val, ...rest) => {
+    const states = extractStates(val, ...rest);
+    const conditions = extractConditions(...rest);
+    const apply = () => {
+      const _val = typeof val === "function" ? val() : val;
+      const applies = conditions.every((i) => typeof i === "function" ? i() : i);
+      if (applies) {
+        if (_val === undefined) {
+          el.removeAttribute(prop);
+        } else {
+          el.setAttribute(prop, String(_val));
+        }
+      } else {
+        el.removeAttribute(prop);
+      }
+    };
+    apply();
+    const unsubs = states.map((state) => state.sub(apply));
+    return () => unsubs.forEach((unsub) => unsub());
+  };
+  // src/traits/Attribute.ts
+  var useAttributeTrait = (el, prop, val, ...rest) => {
+    const states = extractStates(val, ...rest);
+    const conditions = extractConditions(...rest);
+    const apply = () => {
+      const _val = typeof val === "function" ? val() : val;
+      const applies = conditions.every((i) => typeof i === "function" ? i() : i);
+      if (applies) {
+        if (_val === undefined) {
+          el.removeAttribute(prop);
+        } else {
+          el.setAttribute(prop, String(_val));
+        }
+      } else {
+        el.removeAttribute(prop);
+      }
+    };
+    apply();
+    const unsubs = states.map((state) => state.sub(apply));
+    return () => unsubs.forEach((unsub) => unsub());
+  };
+  // src/traits/ClassName.ts
+  function useClassNameTrait(el, className, ...rest) {
+    const states = extractStates(className, ...rest);
+    const conditions = extractConditions(...rest);
+    const apply = () => {
+      const _className = typeof className === "function" ? className() : className;
+      const applies = conditions.every((i) => typeof i === "function" ? i() : i);
+      if (applies)
+        el.setAttribute("class", String(_className));
+    };
+    apply();
+    const unsubs = states.map((state) => state.sub(apply));
+    return () => unsubs.forEach((unsub) => unsub());
+  }
+  // src/traits/DataAttribute.ts
+  var useDataAttributeTrait = (el, name, val, ...rest) => {
+    const states = extractStates(val, ...rest);
+    const conditions = extractConditions(...rest);
+    const attr = name.startsWith("data-") ? name : `data-${name}`;
+    const key = attr.replace(/^data-/, "").replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+    const apply = () => {
+      const _val = typeof val === "function" ? val() : val;
+      const applies = conditions.every((i) => typeof i === "function" ? i() : i);
+      if (applies) {
+        if (_val === undefined) {
+          delete el.dataset[key];
+        } else {
+          el.dataset[key] = String(_val);
+        }
+      } else {
+        delete el.dataset[key];
+      }
+    };
+    apply();
+    const unsubs = states.map((state) => state.sub(apply));
+    return () => unsubs.forEach((unsub) => unsub());
+  };
+  // src/traits/Event.ts
+  function useEventTrait(el, evt, cb, ...rest) {
+    const states = extractStates(...rest);
+    const conditions = extractConditions(...rest);
+    let listenerAttached = false;
+    const apply = () => {
+      const applies = conditions.every((i) => typeof i === "function" ? i() : i);
+      if (applies && !listenerAttached) {
+        el.addEventListener(evt, cb);
+        listenerAttached = true;
+      } else {
+        el.removeEventListener(evt, cb);
+        listenerAttached = false;
+      }
+    };
+    apply();
+    const unsubs = states.map((state) => state.sub(apply));
+    return () => {
+      el.removeEventListener(evt, cb);
+      unsubs.forEach((unsub) => unsub());
+    };
+  }
+  // src/traits/Focus.ts
+  var useFocusTrait = (el, conditions = [], states = []) => {
+    const apply = () => {
+      const applies = conditions.every((i) => typeof i === "function" ? i() : i);
+      if (applies)
+        el.focus();
+    };
+    apply();
+    const unsubs = states.map((state) => state.sub(apply));
+    return () => unsubs.forEach((unsub) => unsub());
+  };
+  // src/traits/InnerHTML.ts
+  function useInnerHTMLTrait(el, children, ...rest) {
+    const states = extractStates(children, ...rest);
+    const conditions = extractConditions(...rest);
+    const apply = () => {
+      const _children = typeof children === "function" ? children() : children;
+      const applies = conditions.every((i) => typeof i === "function" ? i() : i);
+      if (applies) {
+        el.innerHTML = "";
+        if (_children !== undefined) {
+          if (Array.isArray(_children)) {
+            _children.filter((c) => c).forEach((c) => {
+              if (c instanceof HTMLElement || c instanceof SVGElement)
+                el.appendChild(c);
+              else
+                el.appendChild(document.createTextNode(String(c)));
+            });
+          } else if (_children instanceof HTMLElement || _children instanceof SVGElement) {
+            el.appendChild(_children);
+          } else {
+            el.innerHTML = String(_children);
+          }
+        }
+      }
+    };
+    apply();
+    const unsubs = states.map((state) => state.sub(apply));
+    return () => unsubs.forEach((unsub) => unsub());
+  }
+  // src/traits/InputEvent.ts
+  function useInputEventTrait(el, evt, setter, ...rest) {
+    const states = extractStates(...rest);
+    const conditions = extractConditions(...rest);
+    const handler = (e) => setter(e.target.value);
+    let listenerAttached = false;
+    const apply = () => {
+      const applies = conditions.every((i) => typeof i === "function" ? i() : i);
+      if (applies && !listenerAttached) {
+        el.addEventListener(evt, handler);
+        listenerAttached = true;
+      } else {
+        el.removeEventListener(evt, handler);
+        listenerAttached = false;
+      }
+    };
+    apply();
+    const unsubs = states.map((state) => state.sub(apply));
+    return () => {
+      el.removeEventListener(evt, handler);
+      unsubs.forEach((unsub) => unsub());
+    };
+  }
+  // src/traits/InputValue.ts
+  function useInputValueTrait(el, value, ...rest) {
+    const states = extractStates(value, ...rest);
+    const conditions = extractConditions(...rest);
+    const apply = () => {
+      const _val = typeof value === "function" ? value() : value;
+      const applies = conditions.every((i) => typeof i === "function" ? i() : i);
+      if (applies)
+        el.value = _val;
+    };
+    apply();
+    const unsubs = states.map((state) => state.sub(apply));
+    return () => unsubs.forEach((unsub) => unsub());
+  }
+  // src/traits/ScrollIntoView.ts
+  var useScrollIntoViewTrait = (el, options, ...rest) => {
+    const states = extractStates(...rest);
+    const conditions = extractConditions(...rest);
+    const apply = () => {
+      const applies = conditions.every((i) => typeof i === "function" ? i() : i);
+      if (applies)
+        el.scrollIntoView(options);
+    };
+    apply();
+    const unsubs = states.map((state) => state.sub(apply));
+    return () => unsubs.forEach((unsub) => unsub());
+  };
+  // src/traits/Style.ts
+  function useStyleTrait(el, prop, val, ...rest) {
+    const states = extractStates(val, ...rest);
+    const conditions = extractConditions(...rest);
+    const apply = () => {
+      const _val = typeof val === "function" ? val() : val;
+      const applies = conditions.every((i) => typeof i === "function" ? i() : i);
+      if (applies) {
+        prop.startsWith("--") ? el.style.setProperty(prop, _val) : el.style[prop] = _val;
+      }
+    };
+    apply();
+    const unsubs = states.map((state) => state.sub(apply));
+    return () => unsubs.forEach((unsub) => unsub());
+  }
+  // src/traits/StyleOnEvent.ts
+  function useStyleOnEventTrait(el, evt, prop, val, ...rest) {
+    const conditions = extractConditions(...rest);
+    const apply = () => {
+      const _val = typeof val === "function" ? val() : val;
+      const applies = conditions.every((i) => typeof i === "function" ? i() : i);
+      if (applies) {
+        prop.startsWith("--") ? el.style.setProperty(prop, _val) : el.style[prop] = _val;
+      }
+    };
+    el.addEventListener(evt, apply);
+    return () => el.removeEventListener(evt, apply);
+  }
+  // src/traits/TextContent.ts
+  function useTextContentTrait(el, text, ...rest) {
+    const states = extractStates(text, ...rest);
+    const conditions = extractConditions(...rest);
+    const apply = () => {
+      const _text = typeof text === "function" ? text() : text;
+      const applies = conditions.every((i) => typeof i === "function" ? i() : i);
+      if (applies) {
+        el.textContent = "";
+        if (_text !== undefined) {
+          if (Array.isArray(_text)) {
+            _text.filter((t) => t !== undefined).forEach((t) => {
+              el.appendChild(document.createTextNode(String(t)));
+            });
+          } else {
+            el.textContent = String(_text);
+          }
+        }
+      }
+    };
+    apply();
+    const unsubs = states.map((state) => state.sub(apply));
+    return () => unsubs.forEach((unsub) => unsub());
+  }
+  // www/templates.ts
+  var [tag, trait] = Template({
+    animate: useAnimationTrait,
+    aria: useAriaTrait,
+    attr: useAttributeTrait,
+    className: useClassNameTrait,
+    data: useDataAttributeTrait,
+    event: useEventTrait,
+    focus: useFocusTrait,
+    innerHTML: useInnerHTMLTrait,
+    inputEvent: useInputEventTrait,
+    inputValue: useInputValueTrait,
+    scrollIntoView: useScrollIntoViewTrait,
+    style: useStyleTrait,
+    styleOnEvent: useStyleOnEventTrait,
+    text: useTextContentTrait
+  });
+
+  // www/theme.ts
+  var theme = useThemeState("light");
+  var surface_bg_primary = useTokenState("#c7c7c7", "#222222", theme);
+  var surface_bg_secondary = useTokenState("#b8b8b8", "#2a2a2a", theme);
+  var surface_bg_tertiary = useTokenState("#ababab", "#333333", theme);
+  var surface_bg_code = useTokenState("#383838", "#282828", theme);
+  var surface_bg_nav = useTokenState("rgba(199,199,199,0.92)", "rgba(34,34,34,0.92)", theme);
+  var surface_bg_card = useTokenState("rgba(160,160,160,0.08)", "rgba(60,60,60,0.08)", theme);
+  var accent_neon_pink = useTokenState("#555555", "#999999", theme);
+  var accent_neon_cyan = useTokenState("#444444", "#aaaaaa", theme);
+  var accent_neon_purple = useTokenState("#666666", "#888888", theme);
+  var accent_electric_blue = useTokenState("#505050", "#999999", theme);
+  var accent_warm_orange = useTokenState("#606060", "#909090", theme);
+  var text_fg_primary = useTokenState("#222222", "#c7c7c7", theme);
+  var text_fg_secondary = useTokenState("#444444", "#999999", theme);
+  var text_fg_muted = useTokenState("#888888", "#555555", theme);
+  var text_fg_code = useTokenState("#c7c7c7", "#aaaaaa", theme);
+  var text_gradient_hero = useTokenState("#222222", "#c7c7c7", theme);
+  var text_gradient_heading = useTokenState("#222222", "#c7c7c7", theme);
+  var border_color_primary = useTokenState("rgba(80,80,80,0.15)", "rgba(150,150,150,0.15)", theme);
+  var border_color_accent = useTokenState("rgba(60,60,60,0.25)", "rgba(170,170,170,0.20)", theme);
+  var border_color_cyan = useTokenState("rgba(60,60,60,0.20)", "rgba(150,150,150,0.15)", theme);
+  var nav_fg_active = useTokenState("#222222", "#c7c7c7", theme);
+  var nav_fg_default = useTokenState("#555555", "#888888", theme);
+  var nav_fg_hover = useTokenState("#333333", "#aaaaaa", theme);
+  var space_padding_xs = useTokenState("4px", "4px", theme);
+  var space_padding_sm = useTokenState("8px", "8px", theme);
+  var space_padding_md = useTokenState("16px", "16px", theme);
+  var space_padding_lg = useTokenState("24px", "24px", theme);
+  var space_padding_xl = useTokenState("32px", "32px", theme);
+  var space_padding_2xl = useTokenState("48px", "48px", theme);
+  var space_padding_3xl = useTokenState("64px", "64px", theme);
+  var space_padding_4xl = useTokenState("96px", "96px", theme);
+  var space_gap_sm = useTokenState("8px", "8px", theme);
+  var space_gap_md = useTokenState("16px", "16px", theme);
+  var space_gap_lg = useTokenState("24px", "24px", theme);
+  var space_gap_xl = useTokenState("32px", "32px", theme);
+  var space_gap_2xl = useTokenState("48px", "48px", theme);
+  var radius_size_sm = useTokenState("6px", "6px", theme);
+  var radius_size_md = useTokenState("12px", "12px", theme);
+  var radius_size_lg = useTokenState("16px", "16px", theme);
+  var radius_size_xl = useTokenState("24px", "24px", theme);
+  var radius_size_full = useTokenState("9999px", "9999px", theme);
+  var shadow_box_sm = useTokenState("0 2px 8px rgba(0,0,0,0.06)", "0 2px 8px rgba(0,0,0,0.3)", theme);
+  var shadow_box_md = useTokenState("0 4px 16px rgba(0,0,0,0.08)", "0 4px 16px rgba(0,0,0,0.4)", theme);
+  var shadow_glow_pink = useTokenState("0 0 20px rgba(80,80,80,0.06)", "0 0 30px rgba(100,100,100,0.10)", theme);
+  var shadow_glow_cyan = useTokenState("0 0 20px rgba(80,80,80,0.05)", "0 0 30px rgba(100,100,100,0.08)", theme);
+  var shadow_glow_purple = useTokenState("0 0 20px rgba(80,80,80,0.05)", "0 0 30px rgba(100,100,100,0.08)", theme);
+  var shadow_glow_lg = useTokenState("0 8px 32px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.05)", "0 8px 32px rgba(0,0,0,0.12), 0 0 60px rgba(100,100,100,0.03)", theme);
+  var type_size_xs = useTokenState("10px", "10px", theme);
+  var type_size_sm = useTokenState("12px", "12px", theme);
+  var type_size_base = useTokenState("13px", "13px", theme);
+  var type_size_md = useTokenState("14px", "14px", theme);
+  var type_size_lg = useTokenState("16px", "16px", theme);
+  var type_size_xl = useTokenState("20px", "20px", theme);
+  var type_size_2xl = useTokenState("24px", "24px", theme);
+  var type_size_3xl = useTokenState("30px", "30px", theme);
+  var type_weight_bold = useTokenState("700", "700", theme);
+  var type_weight_semibold = useTokenState("600", "600", theme);
+  var type_weight_medium = useTokenState("500", "500", theme);
+  var type_weight_regular = useTokenState("400", "400", theme);
+  var type_weight_light = useTokenState("300", "300", theme);
+  var type_weight_thin = useTokenState("200", "200", theme);
+  var transition_fast = useTokenState("all 0.15s ease", "all 0.15s ease", theme);
+  var transition_medium = useTokenState("all 0.3s ease", "all 0.3s ease", theme);
+  var transition_slow = useTokenState("all 0.5s ease", "all 0.5s ease", theme);
+  var transition_color = useTokenState("color 0.3s ease", "color 0.3s ease", theme);
+  var gradient_hero = useTokenState("radial-gradient(ellipse at 50% 0%, rgba(100,100,100,0.04) 0%, transparent 70%)", "radial-gradient(ellipse at 50% 0%, rgba(100,100,100,0.08) 0%, transparent 70%)", theme);
+  var gradient_horizon = useTokenState("linear-gradient(0deg, rgba(100,100,100,0.04) 0%, transparent 40%)", "linear-gradient(0deg, rgba(100,100,100,0.06) 0%, transparent 40%)", theme);
+  var gradient_card = useTokenState("linear-gradient(135deg, rgba(100,100,100,0.02) 0%, rgba(120,120,120,0.02) 100%)", "linear-gradient(135deg, rgba(100,100,100,0.03) 0%, rgba(120,120,120,0.02) 100%)", theme);
+  // package.json
+  var package_default = {
+    name: "@linttrap/oem",
+    version: "3.0.0",
+    author: "@linttrapmedia",
+    repository: {
+      type: "git",
+      url: "git+https://github.com/linttrapmedia/oem.git"
+    },
+    main: "./src/registry.ts",
+    module: "./src/registry.ts",
+    devDependencies: {
+      "@types/bun": "latest",
+      prettier: "2.7.1"
+    },
+    peerDependencies: {
+      typescript: "^5"
+    },
+    exports: {
+      ".": "./src/registry.ts"
+    },
+    bugs: {
+      url: "https://github.com/linttrapmedia/oem/issues"
+    },
+    description: "A novel UI library for writing reactive html with vanilla javascript",
+    homepage: "https://oem.js.org",
+    license: "MIT",
+    private: false,
+    title: "oem",
+    type: "module",
+    dependencies: {
+      "@linttrap/oem": "^1.0.2"
+    }
+  };
+
+  // www/actions.ts
+  var navigate = (section) => ({
+    type: "NAVIGATE",
+    payload: { section }
+  });
+  var toggleTheme = () => ({ type: "TOGGLE_THEME" });
+  var toggleNav = () => ({ type: "TOGGLE_NAV" });
+  var setPrimitiveTab = (tab) => ({
+    type: "SET_PRIMITIVE_TAB",
+    payload: { tab }
+  });
+  var toggleExample = (index) => ({
+    type: "TOGGLE_EXAMPLE",
+    payload: { index }
+  });
+  var showToast = (message) => ({
+    type: "SHOW_TOAST",
+    payload: { message }
+  });
+  var openDialog = () => ({ type: "OPEN_DIALOG" });
+  var closeDialog = () => ({ type: "CLOSE_DIALOG" });
+
+  // www/data.ts
+  var FEATURES = [
+    {
+      title: "Zero Dependencies",
+      description: "OEM ships nothing but itself. No virtual DOM, no compiler, no build step required. Pure TypeScript that runs in any browser.",
+      icon: "cube"
+    },
+    {
+      title: "Three Primitives",
+      description: "Element, Trait, and State — that's it. Three concepts compose into any UI. No components, no hooks, no lifecycle soup.",
+      icon: "triangle"
+    },
+    {
+      title: "Surgical Reactivity",
+      description: "Push-based subscriptions update only what changed. No diffing, no reconciliation, no tree walks. O(1) updates.",
+      icon: "bolt"
+    },
+    {
+      title: "Agent-First Design",
+      description: "Flat, predictable patterns that LLMs can read, write, and reason about. Built for the age of AI-assisted development.",
+      icon: "brain"
+    },
+    {
+      title: "Token-Driven Theming",
+      description: "Every visual value is a reactive token. Light/dark themes switch instantly. No CSS variables, no class toggling.",
+      icon: "palette"
+    },
+    {
+      title: "Automatic Cleanup",
+      description: "WeakMap + MutationObserver handles all teardown. Remove an element, subscriptions vanish. Zero memory leaks.",
+      icon: "sparkle"
+    }
+  ];
+  var PHILOSOPHY_POINTS = [
+    {
+      title: "Composition Over Abstraction",
+      body: "OEM has no component model. Instead, plain functions return real DOM nodes. Traits attach behaviors. State objects broadcast changes. You compose these three primitives into any UI — no classes, no JSX, no framework ceremony."
+    },
+    {
+      title: "Declarative DNA",
+      body: "A single nested expression declares structure, style, content, and reactivity in one place. What you write is what the browser builds — there is no intermediate representation, no compilation step, no hidden transforms."
+    },
+    {
+      title: "Explicitness Over Magic",
+      body: 'Every subscription is visible. Every style is inline on its element. Every event handler is wired where you can see it. OEM trades "convenience" features for total transparency.'
+    },
+    {
+      title: "Built for Machines",
+      body: "Flat file architecture, predictable patterns, and a tiny API surface make OEM uniquely well-suited for LLM-driven development. Agents can read, write, and reason about OEM code without special training."
+    }
+  ];
+  var SETUP_CODE = `# Install with your preferred package manager
 bun add @linttrap/oem
 npm install @linttrap/oem
-yarn add @linttrap/oem`,ZL=`import { Template, useStyleTrait, useTextContentTrait } from '@linttrap/oem';
+yarn add @linttrap/oem`;
+  var HELLO_WORLD_CODE = `import { Template, useStyleTrait, useTextContentTrait } from '@linttrap/oem';
 
 const [tag, trait] = Template({
   style: useStyleTrait,
@@ -20,7 +646,8 @@ const app = tag.div(
   ),
 );
 
-tag.$(document.body)(app);`,XL=`// Element — the tag proxy creates real DOM nodes
+tag.$(document.body)(app);`;
+  var PRIMITIVE_ELEMENT_CODE = `// Element — the tag proxy creates real DOM nodes
 const [tag, trait] = Template({ style: useStyleTrait });
 
 // Any HTML or SVG tag, called like a function
@@ -34,7 +661,8 @@ tag.div(
 tag.$(document.body)(
   trait.style('margin', '0'),
   myApp,
-);`,YL=`// Trait — behaviors applied to elements
+);`;
+  var PRIMITIVE_TRAIT_CODE = `// Trait — behaviors applied to elements
 const [tag, trait] = Template({
   style: useStyleTrait,
   text: useTextContentTrait,
@@ -52,7 +680,8 @@ tag.button(
   trait.style('cursor', 'pointer'),
   trait.event('click', () => alert('Clicked!')),
   trait.attr('data-action', 'primary'),
-);`,$L=`import { State } from '@linttrap/oem';
+);`;
+  var PRIMITIVE_STATE_CODE = `import { State } from '@linttrap/oem';
 
 // Create reactive state
 const count = State(0);
@@ -73,7 +702,13 @@ const todos = State([], {
     state.reduce(prev => [...prev, { text, done: false }]),
 });
 
-trait.event('click', todos.$add('New todo'));`,FL=[{title:"Reactive Counter",description:"State, traits, and events in 15 lines.",language:"typescript",code:`const count = State(0);
+trait.event('click', todos.$add('New todo'));`;
+  var EXAMPLES = [
+    {
+      title: "Reactive Counter",
+      description: "State, traits, and events in 15 lines.",
+      language: "typescript",
+      code: `const count = State(0);
 
 const counter = tag.div(
   trait.style('display', 'flex'),
@@ -95,7 +730,13 @@ const counter = tag.div(
     trait.event('click', count.$reduce(n => n + 1)),
     trait.style('fontSize', '24px'),
   ),
-);`},{title:"Dynamic List",description:"innerHTML trait for reactive collections.",language:"typescript",code:`const items = State<string[]>([]);
+);`
+    },
+    {
+      title: "Dynamic List",
+      description: "innerHTML trait for reactive collections.",
+      language: "typescript",
+      code: `const items = State<string[]>([]);
 const input = State('');
 
 const list = tag.div(
@@ -123,7 +764,13 @@ const list = tag.div(
       items,
     ),
   ),
-);`},{title:"Theme Toggle",description:"Token-driven light/dark switching.",language:"typescript",code:`import { useThemeState, useTokenState } from '@linttrap/oem';
+);`
+    },
+    {
+      title: "Theme Toggle",
+      description: "Token-driven light/dark switching.",
+      language: "typescript",
+      code: `import { useThemeState, useTokenState } from '@linttrap/oem';
 
 const theme = useThemeState('light');
 const bg = useTokenState('#c7c7c7', '#222222', theme);
@@ -144,7 +791,13 @@ const app = tag.div(
     ),
     trait.style('color', accent.$val),
   ),
-);`},{title:"Conditional Styles",description:"Conditions replace ternaries for clean branching.",language:"typescript",code:`const isActive = State(false);
+);`
+    },
+    {
+      title: "Conditional Styles",
+      description: "Conditions replace ternaries for clean branching.",
+      language: "typescript",
+      code: `const isActive = State(false);
 
 tag.div(
   // Base styles — always applied
@@ -170,7 +823,148 @@ tag.div(
   trait.text(() =>
     isActive.val() ? 'Active' : 'Inactive', isActive),
   trait.event('click', isActive.$reduce(v => !v)),
-);`}],yL=[{name:"useStyleTrait",signature:"(el, prop, val, ...rest)",description:"Sets a single CSS style property. Supports camelCase and custom properties. Reactive via $val."},{name:"useTextContentTrait",signature:"(el, text, ...rest)",description:"Sets text content reactively. Accepts strings, arrays, or getter functions."},{name:"useEventTrait",signature:"(el, evt, cb, ...rest)",description:"Attaches DOM event listeners. Auto-cleaned on element removal. Gated by conditions."},{name:"useAttributeTrait",signature:"(el, prop, val, ...rest)",description:"Sets or removes HTML attributes. Undefined value removes the attribute."},{name:"useInnerHTMLTrait",signature:"(el, children, ...rest)",description:"Clears and re-appends children on state change. Used for dynamic lists."},{name:"useStyleOnEventTrait",signature:"(el, evt, prop, val, ...rest)",description:"Applies a CSS style when a specific DOM event fires. Perfect for hover/focus patterns."},{name:"useClassNameTrait",signature:"(el, className, ...rest)",description:"Sets the entire class attribute. Reserved for third-party library integration."},{name:"useInputValueTrait",signature:"(el, value, ...rest)",description:"Binds a value to input/textarea elements reactively."},{name:"useInputEventTrait",signature:"(el, evt, setter, ...rest)",description:"Attaches input events that extract e.target.value and pipe to a setter."},{name:"useFocusTrait",signature:"(el, conditions?, states?)",description:"Programmatically focuses an element based on reactive conditions."}],BL=[{name:"State",signature:"State<T, M>(initial, methods?)",description:"Core reactive container. Holds a value, notifies subscribers on change. Custom methods auto-generate $-prefixed deferred twins."},{name:"useThemeState",signature:"useThemeState('light' | 'dark')",description:"Single source of truth for current theme. Returns a State<Theme> object."},{name:"useTokenState",signature:"useTokenState(lightVal, darkVal, themeState)",description:"Derived state that selects between light/dark values based on themeState. Updates automatically on theme change."},{name:"useMediaQueryState",signature:"useMediaQueryState({ minWidth?, maxWidth? })",description:"Reactive state tracking viewport size. Returns State<boolean>. Use $test for responsive conditions."}],RL=[{name:"types.ts",purpose:"TypeScript type definitions. No runtime code."},{name:"constants.ts",purpose:"UPPER_SNAKE_CASE values. Immutable, no reactivity."},{name:"data.ts",purpose:"Static data known at build time. Arrays, objects, content."},{name:"states.ts",purpose:"All State() instances. Module-level singletons."},{name:"actions.ts",purpose:"Pure functions returning { type, payload } objects."},{name:"machines.ts",purpose:"Switch statements dispatching actions to state mutations."},{name:"traits.ts",purpose:"Custom trait functions. Most apps need zero."},{name:"templates.ts",purpose:"Template() calls creating [tag, trait] pairs."},{name:"theme.ts",purpose:"useThemeState + all useTokenState tokens."},{name:"icons.ts",purpose:"SVG icon functions with private Template."},{name:"ui.ts",purpose:"All DOM construction. Imports everything, defines nothing."},{name:"main.ts",purpose:"Entry point. Import UI, mount to body. Side effects OK here."}],nL=`// The dependency flow — every arrow points down
+);`
+    }
+  ];
+  var TRAIT_DOCS = [
+    {
+      name: "useAnimationTrait",
+      signature: "(el, keyframes, options, ...rest)",
+      description: "Plays Web Animations API keyframe animations reactively. Supports conditional gating and state-driven re-triggering."
+    },
+    {
+      name: "useAriaTrait",
+      signature: "(el, prop, val, ...rest)",
+      description: "Sets ARIA attributes and role reactively. Removes attributes when value is undefined or conditions are falsy."
+    },
+    {
+      name: "useAttributeTrait",
+      signature: "(el, prop, val, ...rest)",
+      description: "Sets or removes HTML attributes. Undefined value removes the attribute."
+    },
+    {
+      name: "useClassNameTrait",
+      signature: "(el, className, ...rest)",
+      description: "Sets the entire class attribute. Reserved for third-party library integration."
+    },
+    {
+      name: "useDataAttributeTrait",
+      signature: "(el, name, val, ...rest)",
+      description: "Sets or removes data-* attributes via the dataset API. Accepts bare or prefixed names."
+    },
+    {
+      name: "useEventTrait",
+      signature: "(el, evt, cb, ...rest)",
+      description: "Attaches DOM event listeners. Auto-cleaned on element removal. Gated by conditions."
+    },
+    {
+      name: "useFocusTrait",
+      signature: "(el, ...rest)",
+      description: "Programmatically focuses an element when reactive conditions are met."
+    },
+    {
+      name: "useInnerHTMLTrait",
+      signature: "(el, children, ...rest)",
+      description: "Clears and re-appends children on state change. Used for dynamic lists."
+    },
+    {
+      name: "useInputEventTrait",
+      signature: "(el, evt, setter, ...rest)",
+      description: "Attaches input events that extract e.target.value and pipe to a setter."
+    },
+    {
+      name: "useInputValueTrait",
+      signature: "(el, value, ...rest)",
+      description: "Binds a value to input/textarea elements reactively."
+    },
+    {
+      name: "useScrollIntoViewTrait",
+      signature: "(el, options?, ...rest)",
+      description: "Scrolls an element into view when conditions are met. Accepts ScrollIntoViewOptions."
+    },
+    {
+      name: "useStyleTrait",
+      signature: "(el, prop, val, ...rest)",
+      description: "Sets a single CSS style property. Supports camelCase and custom properties. Reactive via $val."
+    },
+    {
+      name: "useStyleOnEventTrait",
+      signature: "(el, evt, prop, val, ...rest)",
+      description: "Applies a CSS style when a specific DOM event fires. Perfect for hover/focus patterns."
+    },
+    {
+      name: "useTextContentTrait",
+      signature: "(el, text, ...rest)",
+      description: "Sets text content reactively. Accepts strings, arrays, or getter functions."
+    }
+  ];
+  var STATE_DOCS = [
+    {
+      name: "State",
+      signature: "State<T, M>(initial, methods?)",
+      description: "Core reactive container. Holds a value, notifies subscribers on change. Custom methods auto-generate $-prefixed deferred twins."
+    },
+    {
+      name: "useFormState",
+      signature: "useFormState(initialValues, validators?)",
+      description: "Reactive form state with validation, dirty tracking, touched fields, and field-level control."
+    },
+    {
+      name: "useIntersectionObserverState",
+      signature: "useIntersectionObserverState(el, options?)",
+      description: "Tracks element visibility within the viewport using the Intersection Observer API."
+    },
+    {
+      name: "useMediaQueryState",
+      signature: "useMediaQueryState({ minWidth?, maxWidth? })",
+      description: "Reactive state tracking viewport size. Returns State<boolean>. Use $test for responsive conditions."
+    },
+    {
+      name: "useOnlineState",
+      signature: "useOnlineState()",
+      description: "Tracks browser online/offline connectivity. Returns State<boolean>."
+    },
+    {
+      name: "useThemeState",
+      signature: "useThemeState('light' | 'dark')",
+      description: "Single source of truth for current theme. Returns a State<Theme> object."
+    },
+    {
+      name: "useTimerState",
+      signature: "useTimerState(intervalMs, options?)",
+      description: "Interval-driven counter with start, stop, and reset controls. Auto-start optional."
+    },
+    {
+      name: "useTokenState",
+      signature: "useTokenState(lightVal, darkVal, themeState)",
+      description: "Derived state that selects between light/dark values based on themeState. Updates automatically on theme change."
+    },
+    {
+      name: "useUrlState",
+      signature: "useUrlState(routes)",
+      description: "Tracks the current URL, matching against defined routes and extracting params, query, and hash."
+    },
+    {
+      name: "useWindowSizeState",
+      signature: "useWindowSizeState()",
+      description: "Tracks viewport width and height in real-time. Returns State<{ width, height }>."
+    }
+  ];
+  var ARCH_FILES = [
+    { name: "types.ts", purpose: "TypeScript type definitions. No runtime code." },
+    { name: "constants.ts", purpose: "UPPER_SNAKE_CASE values. Immutable, no reactivity." },
+    { name: "data.ts", purpose: "Static data known at build time. Arrays, objects, content." },
+    { name: "states.ts", purpose: "All State() instances. Module-level singletons." },
+    { name: "actions.ts", purpose: "Pure functions returning { type, payload } objects." },
+    { name: "machines.ts", purpose: "Switch statements dispatching actions to state mutations." },
+    { name: "traits.ts", purpose: "Custom trait functions. Most apps need zero." },
+    { name: "templates.ts", purpose: "Template() calls creating [tag, trait] pairs." },
+    { name: "theme.ts", purpose: "useThemeState + all useTokenState tokens." },
+    { name: "icons.ts", purpose: "SVG icon functions with private Template." },
+    { name: "ui.ts", purpose: "All DOM construction. Imports everything, defines nothing." },
+    { name: "main.ts", purpose: "Entry point. Import UI, mount to body. Side effects OK here." }
+  ];
+  var ARCH_DIAGRAM_CODE = `// The dependency flow — every arrow points down
 //
 //   types.ts
 //      ↓
@@ -184,7 +978,183 @@ tag.div(
 //      ↓               ↓            ↓            ↓
 //      └───────── ui.ts ────────────┘────────────┘
 //                   ↓
-//               main.ts`;var[Z,H]=KE({attr:QE,style:ZE});function hL({size:L="24",color:C="currentColor"}={}){return Z.svg(H.attr("viewBox","0 0 24 24"),H.attr("fill","none"),H.attr("stroke",C),H.attr("stroke-width","1.5"),H.style("width",L+"px"),H.style("height",L+"px"),Z.path(H.attr("d","M21 16.5v-9l-9-5.25L3 7.5v9l9 5.25 9-5.25zM3 7.5l9 5.25M12 22.5V12.75M21 7.5l-9 5.25")))}function kL({size:L="24",color:C="currentColor"}={}){return Z.svg(H.attr("viewBox","0 0 24 24"),H.attr("fill","none"),H.attr("stroke",C),H.attr("stroke-width","1.5"),H.style("width",L+"px"),H.style("height",L+"px"),Z.path(H.attr("d","M12 3L2 21h20L12 3z")))}function TL({size:L="24",color:C="currentColor"}={}){return Z.svg(H.attr("viewBox","0 0 24 24"),H.attr("fill","none"),H.attr("stroke",C),H.attr("stroke-width","1.5"),H.style("width",L+"px"),H.style("height",L+"px"),Z.path(H.attr("d","M13 2L3 14h9l-1 8 10-12h-9l1-8z")))}function mL({size:L="24",color:C="currentColor"}={}){return Z.svg(H.attr("viewBox","0 0 24 24"),H.attr("fill","none"),H.attr("stroke",C),H.attr("stroke-width","1.5"),H.style("width",L+"px"),H.style("height",L+"px"),Z.path(H.attr("d","M12 2a7 7 0 00-5.2 2.3A5 5 0 003 9c0 1.7.8 3.2 2 4.2V20a1 1 0 001 1h4v-3h4v3h4a1 1 0 001-1v-6.8A5 5 0 0021 9a5 5 0 00-3.8-4.7A7 7 0 0012 2z")),Z.path(H.attr("d","M9 10h.01M15 10h.01M9.5 15a3.5 3.5 0 005 0")))}function oL({size:L="24",color:C="currentColor"}={}){return Z.svg(H.attr("viewBox","0 0 24 24"),H.attr("fill","none"),H.attr("stroke",C),H.attr("stroke-width","1.5"),H.style("width",L+"px"),H.style("height",L+"px"),Z.path(H.attr("d","M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.7-.8 1.7-1.7 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.8-1.7 1.7-1.7H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.6-10-9.6z")),Z.circle(H.attr("cx","6.5"),H.attr("cy","11.5"),H.attr("r","1.5"),H.attr("fill",C)),Z.circle(H.attr("cx","10"),H.attr("cy","7.5"),H.attr("r","1.5"),H.attr("fill",C)),Z.circle(H.attr("cx","14"),H.attr("cy","7.5"),H.attr("r","1.5"),H.attr("fill",C)),Z.circle(H.attr("cx","17.5"),H.attr("cy","11.5"),H.attr("r","1.5"),H.attr("fill",C)))}function zL({size:L="24",color:C="currentColor"}={}){return Z.svg(H.attr("viewBox","0 0 24 24"),H.attr("fill","none"),H.attr("stroke",C),H.attr("stroke-width","1.5"),H.style("width",L+"px"),H.style("height",L+"px"),Z.path(H.attr("d","M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8L12 2z")))}function wL({size:L="24",color:C="currentColor"}={}){return Z.svg(H.attr("viewBox","0 0 24 24"),H.attr("fill","none"),H.attr("stroke",C),H.attr("stroke-width","2"),H.style("width",L+"px"),H.style("height",L+"px"),Z.path(H.attr("d","M3 6h18M3 12h18M3 18h18")))}function NL({size:L="24",color:C="currentColor"}={}){return Z.svg(H.attr("viewBox","0 0 24 24"),H.attr("fill","none"),H.attr("stroke",C),H.attr("stroke-width","2"),H.style("width",L+"px"),H.style("height",L+"px"),Z.path(H.attr("d","M18 6L6 18M6 6l12 12")))}function PL({size:L="24",color:C="currentColor"}={}){return Z.svg(H.attr("viewBox","0 0 24 24"),H.attr("fill","none"),H.attr("stroke",C),H.attr("stroke-width","1.5"),H.style("width",L+"px"),H.style("height",L+"px"),Z.circle(H.attr("cx","12"),H.attr("cy","12"),H.attr("r","5")),Z.path(H.attr("d","M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42")))}function DL({size:L="24",color:C="currentColor"}={}){return Z.svg(H.attr("viewBox","0 0 24 24"),H.attr("fill","none"),H.attr("stroke",C),H.attr("stroke-width","1.5"),H.style("width",L+"px"),H.style("height",L+"px"),Z.path(H.attr("d","M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z")))}function xL({size:L="24",color:C="currentColor"}={}){return Z.svg(H.attr("viewBox","0 0 24 24"),H.attr("fill","none"),H.attr("stroke",C),H.attr("stroke-width","2"),H.style("width",L+"px"),H.style("height",L+"px"),Z.path(H.attr("d","M5 12h14M12 5l7 7-7 7")))}function cE({size:L="24",color:C="currentColor"}={}){return Z.svg(H.attr("viewBox","0 0 24 24"),H.attr("fill","none"),H.attr("stroke",C),H.attr("stroke-width","1.5"),H.style("width",L+"px"),H.style("height",L+"px"),Z.rect(H.attr("x","9"),H.attr("y","9"),H.attr("width","13"),H.attr("height","13"),H.attr("rx","2")),Z.path(H.attr("d","M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1")))}function dE({size:L="24",color:C="currentColor"}={}){return Z.svg(H.attr("viewBox","0 0 24 24"),H.attr("fill",C),H.style("width",L+"px"),H.style("height",L+"px"),Z.path(H.attr("d","M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z")))}function ML({size:L="24",color:C="currentColor"}={}){return Z.svg(H.attr("viewBox","0 0 24 24"),H.attr("fill",C),H.style("width",L+"px"),H.style("height",L+"px"),Z.path(H.attr("d","M0 7.334v8h6.666v1.332H12v-1.332h12v-8H0zm6.666 6.664H5.334v-4H3.999v4H1.335V8.667h5.331v5.331zm4 0v1.336H8.001V8.667h5.334v5.332h-2.669v-.001zm12.001 0h-1.33v-4h-1.336v4h-1.335v-4h-1.33v4h-2.671V8.667h8.002v5.331z")))}var UL={cube:hL,triangle:kL,bolt:TL,brain:mL,palette:oL,sparkle:zL};var a=O("hero"),o=O(!1),mf=RE({minWidth:768,maxWidth:1023}),N=RE({minWidth:1024}),of=O(!1),zf=O(null);function vL(L){switch(L.type){case"NAVIGATE":{a.set(L.payload.section),o.set(!1);let C=document.getElementById(L.payload.section);if(C)C.scrollIntoView({behavior:"smooth"});break}case"TOGGLE_THEME":{A.reduce((C)=>C==="dark"?"light":"dark");break}case"TOGGLE_NAV":{o.reduce((C)=>!C);break}case"CLOSE_NAV":{o.set(!1);break}}}var t=(L)=>()=>vL(L);function $(L,C=0){L.style.opacity="0",L.animate([{opacity:0,transform:"translateY(24px)"},{opacity:1,transform:"translateY(0)"}],{duration:OE,delay:C,easing:"cubic-bezier(0.16, 1, 0.3, 1)",fill:"forwards"})}function pL(L,C=0){L.style.opacity="0",L.animate([{opacity:0},{opacity:1}],{duration:OE,delay:C,easing:"ease-out",fill:"forwards"})}function lL(L){L.animate([{boxShadow:"0 0 20px rgba(80,80,80,0.10), 0 0 60px rgba(60,60,60,0.05)"},{boxShadow:"0 0 30px rgba(80,80,80,0.18), 0 0 80px rgba(60,60,60,0.08)"},{boxShadow:"0 0 20px rgba(80,80,80,0.10), 0 0 60px rgba(60,60,60,0.05)"}],{duration:3000,iterations:1/0,easing:"ease-in-out"})}function Y(L){return(C)=>{requestAnimationFrame(()=>L(C))}}function OL(L){return(C)=>{C.style.setProperty("-webkit-backdrop-filter",L)}}var IL=new CSSStyleSheet;IL.replaceSync(`
+//               main.ts`;
+
+  // www/icons.ts
+  var [svg, svgTrait] = Template({
+    attr: useAttributeTrait,
+    style: useStyleTrait
+  });
+  function CubeIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", "none"), svgTrait.attr("stroke", color), svgTrait.attr("stroke-width", "1.5"), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.path(svgTrait.attr("d", "M21 16.5v-9l-9-5.25L3 7.5v9l9 5.25 9-5.25zM3 7.5l9 5.25M12 22.5V12.75M21 7.5l-9 5.25")));
+  }
+  function TriangleIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", "none"), svgTrait.attr("stroke", color), svgTrait.attr("stroke-width", "1.5"), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.path(svgTrait.attr("d", "M12 3L2 21h20L12 3z")));
+  }
+  function BoltIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", "none"), svgTrait.attr("stroke", color), svgTrait.attr("stroke-width", "1.5"), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.path(svgTrait.attr("d", "M13 2L3 14h9l-1 8 10-12h-9l1-8z")));
+  }
+  function BrainIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", "none"), svgTrait.attr("stroke", color), svgTrait.attr("stroke-width", "1.5"), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.path(svgTrait.attr("d", "M12 2a7 7 0 00-5.2 2.3A5 5 0 003 9c0 1.7.8 3.2 2 4.2V20a1 1 0 001 1h4v-3h4v3h4a1 1 0 001-1v-6.8A5 5 0 0021 9a5 5 0 00-3.8-4.7A7 7 0 0012 2z")), svg.path(svgTrait.attr("d", "M9 10h.01M15 10h.01M9.5 15a3.5 3.5 0 005 0")));
+  }
+  function PaletteIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", "none"), svgTrait.attr("stroke", color), svgTrait.attr("stroke-width", "1.5"), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.path(svgTrait.attr("d", "M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.7-.8 1.7-1.7 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.8-1.7 1.7-1.7H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.6-10-9.6z")), svg.circle(svgTrait.attr("cx", "6.5"), svgTrait.attr("cy", "11.5"), svgTrait.attr("r", "1.5"), svgTrait.attr("fill", color)), svg.circle(svgTrait.attr("cx", "10"), svgTrait.attr("cy", "7.5"), svgTrait.attr("r", "1.5"), svgTrait.attr("fill", color)), svg.circle(svgTrait.attr("cx", "14"), svgTrait.attr("cy", "7.5"), svgTrait.attr("r", "1.5"), svgTrait.attr("fill", color)), svg.circle(svgTrait.attr("cx", "17.5"), svgTrait.attr("cy", "11.5"), svgTrait.attr("r", "1.5"), svgTrait.attr("fill", color)));
+  }
+  function SparkleIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", "none"), svgTrait.attr("stroke", color), svgTrait.attr("stroke-width", "1.5"), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.path(svgTrait.attr("d", "M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8L12 2z")));
+  }
+  function MenuIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", "none"), svgTrait.attr("stroke", color), svgTrait.attr("stroke-width", "2"), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.path(svgTrait.attr("d", "M3 6h18M3 12h18M3 18h18")));
+  }
+  function CloseIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", "none"), svgTrait.attr("stroke", color), svgTrait.attr("stroke-width", "2"), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.path(svgTrait.attr("d", "M18 6L6 18M6 6l12 12")));
+  }
+  function SunIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", "none"), svgTrait.attr("stroke", color), svgTrait.attr("stroke-width", "1.5"), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.circle(svgTrait.attr("cx", "12"), svgTrait.attr("cy", "12"), svgTrait.attr("r", "5")), svg.path(svgTrait.attr("d", "M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42")));
+  }
+  function MoonIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", "none"), svgTrait.attr("stroke", color), svgTrait.attr("stroke-width", "1.5"), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.path(svgTrait.attr("d", "M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z")));
+  }
+  function ArrowRightIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", "none"), svgTrait.attr("stroke", color), svgTrait.attr("stroke-width", "2"), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.path(svgTrait.attr("d", "M5 12h14M12 5l7 7-7 7")));
+  }
+  function ChevronDownIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", "none"), svgTrait.attr("stroke", color), svgTrait.attr("stroke-width", "2"), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svgTrait.style("transition", "transform 0.2s ease"), svg.path(svgTrait.attr("d", "M6 9l6 6 6-6")));
+  }
+  function CommandIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", "none"), svgTrait.attr("stroke", color), svgTrait.attr("stroke-width", "1.5"), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.path(svgTrait.attr("d", "M18 3a3 3 0 00-3 3v12a3 3 0 003 3 3 3 0 003-3 3 3 0 00-3-3H6a3 3 0 00-3 3 3 3 0 003 3 3 3 0 003-3V6a3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3h12a3 3 0 003-3 3 3 0 00-3-3z")));
+  }
+  function CheckIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", "none"), svgTrait.attr("stroke", color), svgTrait.attr("stroke-width", "2"), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.path(svgTrait.attr("d", "M20 6L9 17l-5-5")));
+  }
+  function CopyIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", "none"), svgTrait.attr("stroke", color), svgTrait.attr("stroke-width", "1.5"), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.rect(svgTrait.attr("x", "9"), svgTrait.attr("y", "9"), svgTrait.attr("width", "13"), svgTrait.attr("height", "13"), svgTrait.attr("rx", "2")), svg.path(svgTrait.attr("d", "M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1")));
+  }
+  function GitHubIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", color), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.path(svgTrait.attr("d", "M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z")));
+  }
+  function NpmIcon({ size = "24", color = "currentColor" } = {}) {
+    return svg.svg(svgTrait.attr("viewBox", "0 0 24 24"), svgTrait.attr("fill", color), svgTrait.style("width", size + "px"), svgTrait.style("height", size + "px"), svg.path(svgTrait.attr("d", "M0 7.334v8h6.666v1.332H12v-1.332h12v-8H0zm6.666 6.664H5.334v-4H3.999v4H1.335V8.667h5.331v5.331zm4 0v1.336H8.001V8.667h5.334v5.332h-2.669v-.001zm12.001 0h-1.33v-4h-1.336v4h-1.335v-4h-1.33v4h-2.671V8.667h8.002v5.331z")));
+  }
+  var ICON_MAP = {
+    cube: CubeIcon,
+    triangle: TriangleIcon,
+    bolt: BoltIcon,
+    brain: BrainIcon,
+    palette: PaletteIcon,
+    sparkle: SparkleIcon,
+    chevron: ChevronDownIcon,
+    command: CommandIcon,
+    check: CheckIcon
+  };
+
+  // www/states.ts
+  var activeSection = State("hero");
+  var navOpen = State(false);
+  var isTablet = useMediaQueryState({ minWidth: 768, maxWidth: 1023 });
+  var isDesktop = useMediaQueryState({ minWidth: 1024 });
+  var scrolled = State(false);
+  var primitiveTab = State("element");
+  var expandedExample = State(null);
+  var toastVisible = State(false);
+  var toastMessage = State("");
+  var dialogOpen = State(false);
+
+  // www/machines.ts
+  var toastTimer = null;
+  function dispatch(action) {
+    switch (action.type) {
+      case "NAVIGATE": {
+        activeSection.set(action.payload.section);
+        navOpen.set(false);
+        const el = document.getElementById(action.payload.section);
+        if (el)
+          el.scrollIntoView({ behavior: "smooth" });
+        break;
+      }
+      case "TOGGLE_THEME": {
+        theme.reduce((t) => t === "dark" ? "light" : "dark");
+        break;
+      }
+      case "TOGGLE_NAV": {
+        navOpen.reduce((v) => !v);
+        break;
+      }
+      case "CLOSE_NAV": {
+        navOpen.set(false);
+        break;
+      }
+      case "SET_PRIMITIVE_TAB": {
+        primitiveTab.set(action.payload.tab);
+        break;
+      }
+      case "TOGGLE_EXAMPLE": {
+        expandedExample.reduce((v) => v === action.payload.index ? null : action.payload.index);
+        break;
+      }
+      case "SHOW_TOAST": {
+        if (toastTimer)
+          clearTimeout(toastTimer);
+        toastMessage.set(action.payload.message);
+        toastVisible.set(true);
+        toastTimer = setTimeout(() => {
+          toastVisible.set(false);
+          toastTimer = null;
+        }, 2000);
+        break;
+      }
+      case "HIDE_TOAST": {
+        if (toastTimer)
+          clearTimeout(toastTimer);
+        toastVisible.set(false);
+        break;
+      }
+      case "OPEN_DIALOG": {
+        dialogOpen.set(true);
+        break;
+      }
+      case "CLOSE_DIALOG": {
+        dialogOpen.set(false);
+        break;
+      }
+    }
+  }
+  var $dispatch = (action) => () => dispatch(action);
+
+  // www/ui.ts
+  function fadeInUp(el, delay = 0) {
+    el.style.opacity = "0";
+    el.animate([
+      { opacity: 0, transform: "translateY(16px)" },
+      { opacity: 1, transform: "translateY(0)" }
+    ], {
+      duration: ANIM_DURATION_MEDIUM,
+      delay,
+      easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+      fill: "forwards"
+    });
+  }
+  function fadeIn(el, delay = 0) {
+    el.style.opacity = "0";
+    el.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: ANIM_DURATION_MEDIUM,
+      delay,
+      easing: "ease-out",
+      fill: "forwards"
+    });
+  }
+  function onMount(fn) {
+    return (el) => {
+      requestAnimationFrame(() => fn(el));
+    };
+  }
+  function webkitBackdrop(val) {
+    return (el) => {
+      el.style.setProperty("-webkit-backdrop-filter", val);
+    };
+  }
+  var sheet = new CSSStyleSheet;
+  sheet.replaceSync(`
   @font-face {
     font-family: 'Splash';
     src: url('assets/Splash.woff2') format('woff2');
@@ -192,53 +1162,114 @@ tag.div(
     font-style: normal;
     font-display: swap;
   }
-  @keyframes gridScroll {
-    0% { background-position: 0 0, 0 0; }
-    100% { background-position: 0 40px, 40px 0; }
-  }
   @keyframes float {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
+    50% { transform: translateY(-6px); }
   }
-  @keyframes scanline {
-    0% { transform: translateY(-100%); }
-    100% { transform: translateY(100vh); }
+`);
+  document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+  function highlightCode(el) {
+    if (typeof window.Prism !== "undefined") {
+      window.Prism.highlightAllUnder(el);
+    }
   }
-`);document.adoptedStyleSheets=[...document.adoptedStyleSheets,IL];function cL(L){if(typeof window.Prism<"u")window.Prism.highlightAllUnder(L)}function s(L,...C){return f.section(E.attr("id",L),E.style("position","relative"),E.style("padding",tE.$val),E.style("padding",zE.$val,N.$test(!0)),E.style("maxWidth","1200px"),E.style("margin","0 auto"),E.style("paddingLeft",P.$val),E.style("paddingRight",P.$val),E.style("paddingLeft",_.$val,N.$test(!0)),E.style("paddingRight",_.$val,N.$test(!0)),...C)}function EE(L){return f.h2(E.text(L),E.style("margin","0"),E.style("fontSize",vE.$val),E.style("fontSize",PE.$val,N.$test(!0)),E.style("fontWeight",JE.$val),E.style("letterSpacing","-0.02em"),E.style("marginBottom",I.$val),E.style("color",U.$val),Y((C)=>$(C)))}function d(L,C="typescript"){return f.div(E.style("position","relative"),E.style("borderRadius",YE.$val),E.style("overflow","hidden"),E.style("border",()=>`1px solid ${l.val()}`,l),E.style("boxShadow",CL.$val),E.style("marginBottom",P.$val),f.button(E.style("position","absolute"),E.style("top","8px"),E.style("right","8px"),E.style("background","rgba(255,255,255,0.05)"),E.style("border","1px solid rgba(255,255,255,0.1)"),E.style("borderRadius",LE.$val),E.style("padding","6px"),E.style("cursor","pointer"),E.style("color",p.$val),E.style("display","flex"),E.style("alignItems","center"),E.style("justifyContent","center"),E.style("zIndex","2"),E.style("transition",i.$val),E.styleOnEvent("mouseenter","color",()=>g.val()),E.styleOnEvent("mouseleave","color",()=>p.val()),E.event("click",(W)=>{navigator.clipboard.writeText(L);let J=W?.currentTarget;if(J)J.style.color="#666666",setTimeout(()=>J.style.color="",1000)}),cE({size:"14"})),f.pre(E.style("margin","0"),E.style("padding",P.$val),E.style("backgroundColor",AE.$val),E.style("color","#c7c7c7"),E.style("overflow","auto"),E.style("fontSize",x.$val),E.style("lineHeight","1.65"),E.style("fontFamily",M),f.code(E.className(`language-${C}`),E.text(L))),Y((W)=>cL(W)))}function ME(L,C){return f.span(E.text(L),E.style("display","inline-block"),E.style("padding","4px 12px"),E.style("borderRadius",FE.$val),E.style("fontSize",r.$val),E.style("fontWeight",DE.$val),E.style("letterSpacing","0.05em"),E.style("textTransform","uppercase"),E.style("color",C),E.style("border",`1px solid ${C}33`),E.style("backgroundColor",`${C}11`))}var dL=f.header(E.style("position","fixed"),E.style("top","0"),E.style("left","0"),E.style("right","0"),E.style("zIndex","100"),E.style("padding",`${e.val()} ${P.val()}`),E.style("padding",`${e.val()} ${_.val()}`,N.$test(!0)),E.style("display","flex"),E.style("alignItems","center"),E.style("justifyContent","space-between"),E.style("backgroundColor",_E.$val),E.style("backdropFilter","blur(16px)"),OL("blur(16px)"),E.style("borderBottom",()=>`1px solid ${B.val()}`,B),E.style("transition",S.$val),f.div(E.style("display","flex"),E.style("alignItems","center"),E.style("gap",b.$val),E.style("cursor","pointer"),E.event("click",t(jE("hero"))),f.span(E.text("oem"),E.style("fontSize",pE.$val),E.style("fontWeight",JE.$val),E.style("fontFamily",gE)),f.span(E.text(`v${VL.version}`),E.style("fontSize",r.$val),E.style("color",p.$val),E.style("fontFamily",M))),f.nav(E.style("display","none"),E.style("display","flex",N.$test(!0)),E.style("alignItems","center"),E.style("gap",VE.$val),...yE.filter((L)=>L.id!=="hero").map((L)=>f.a(E.text(L.label),E.style("fontSize",x.$val),E.style("fontWeight",DE.$val),E.style("textDecoration","none"),E.style("cursor","pointer"),E.style("transition",lE.$val),E.style("color",NE.$val,a.$test((C)=>C!==L.id)),E.style("color",wE.$val,a.$test(L.id)),E.styleOnEvent("mouseenter","color",()=>aE.val()),E.styleOnEvent("mouseleave","color",()=>a.val()===L.id?wE.val():NE.val()),E.event("click",t(jE(L.id)))))),f.div(E.style("display","flex"),E.style("alignItems","center"),E.style("gap",k.$val),f.a(E.attr("href","https://github.com/linttrapmedia/oem"),E.attr("target","_blank"),E.attr("rel","noopener"),E.style("color",F.$val),E.style("transition",i.$val),E.style("display","flex"),E.styleOnEvent("mouseenter","color",()=>v.val()),E.styleOnEvent("mouseleave","color",()=>F.val()),dE({size:"20"})),f.button(E.style("background","none"),E.style("border","none"),E.style("cursor","pointer"),E.style("color",F.$val),E.style("display","flex"),E.style("padding",WE.$val),E.style("transition",i.$val),E.styleOnEvent("mouseenter","color",()=>g.val()),E.styleOnEvent("mouseleave","color",()=>F.val()),E.event("click",t(JL())),E.innerHTML(()=>[A.val()==="dark"?PL({size:"20"}):DL({size:"20"})],A)),f.button(E.style("background","none"),E.style("border","none"),E.style("cursor","pointer"),E.style("color",U.$val),E.style("padding",WE.$val),E.style("display","flex"),E.style("display","none",N.$test(!0)),E.event("click",t(jL())),E.innerHTML(()=>[o.val()?NL({size:"24"}):wL({size:"24"})],o)))),sL=f.div(E.style("position","fixed"),E.style("top","0"),E.style("left","0"),E.style("right","0"),E.style("bottom","0"),E.style("backgroundColor",()=>`${XE.val()}f0`,XE),E.style("backdropFilter","blur(20px)"),OL("blur(20px)"),E.style("zIndex","99"),E.style("display","flex"),E.style("flexDirection","column"),E.style("alignItems","center"),E.style("justifyContent","center"),E.style("gap",EL.$val),E.style("transition",S.$val),E.style("opacity","0",o.$test(!1)),E.style("opacity","1",o.$test(!0)),E.style("pointerEvents","none",o.$test(!1)),E.style("pointerEvents","auto",o.$test(!0)),...yE.map((L)=>f.a(E.text(L.label),E.style("fontSize",vE.$val),E.style("fontWeight",HL.$val),E.style("textDecoration","none"),E.style("cursor","pointer"),E.style("transition",lE.$val),E.style("color",NE.$val,a.$test((C)=>C!==L.id)),E.style("color",wE.$val,a.$test(L.id)),E.event("click",t(jE(L.id)))))),gL=s("hero",f.div(E.style("position","absolute"),E.style("inset","0"),E.style("animation","gridScroll 4s linear infinite"),E.style("opacity","0.6"),E.style("pointerEvents","none")),f.div(E.style("position","absolute"),E.style("inset","0"),E.style("backgroundImage",WL.$val),E.style("pointerEvents","none")),f.div(E.style("position","relative"),E.style("textAlign","center"),E.style("paddingTop",zE.$val),E.style("paddingBottom",w.$val),f.div(E.style("marginBottom",I.$val),Y((L)=>pL(L,100)),ME("Agentic UI","#555555")),f.h1(E.style("display","flex"),E.style("flexDirection","column"),E.style("margin","0"),E.style("gap",b.$val),E.style("fontSize",PE.$val),E.style("fontSize",pE.$val,N.$test(!0)),E.style("fontWeight",AL.$val),E.style("lineHeight","1.1"),E.style("letterSpacing","-0.03em"),E.style("marginBottom",I.$val),E.style("fontFamily",HE),Y((L)=>$(L,200)),f.span(E.text("/oem <At Your Command>"),E.style("display","block"),E.style("color",iE.$val),E.style("fontSize",PE.$val))),f.p(E.text("Element. Trait. State. — No virtual DOM, no compiler, no dependencies. Just surgical reactivity wired directly to the real DOM."),E.style("fontSize",T.$val),E.style("color",F.$val),E.style("maxWidth","640px"),E.style("margin","0 auto"),E.style("lineHeight","1.7"),E.style("marginBottom",_.$val),Y((L)=>$(L,350))),f.div(E.style("display","flex"),E.style("flexDirection","column"),E.style("flexDirection","row",N.$test(!0)),E.style("gap",k.$val),E.style("justifyContent","center"),E.style("alignItems","center"),Y((L)=>$(L,500)),f.button(E.style("display","flex"),E.style("alignItems","center"),E.style("gap",b.$val),E.style("padding","14px 32px"),E.style("background",()=>`linear-gradient(135deg, ${v.val()}, ${GE.val()})`,v,GE),E.style("color","#c7c7c7"),E.style("border","none"),E.style("borderRadius",FE.$val),E.style("fontSize",u.$val),E.style("fontWeight",m.$val),E.style("cursor","pointer"),E.style("transition",S.$val),E.style("fontFamily",HE),E.styleOnEvent("mouseenter","transform",()=>"translateY(-2px)"),E.styleOnEvent("mouseleave","transform",()=>"translateY(0)"),Y((L)=>lL(L)),E.event("click",t(jE("setup"))),E.text("Get Started"),xL({size:"18",color:"#c7c7c7"})),f.button(E.style("display","flex"),E.style("alignItems","center"),E.style("gap",b.$val),E.style("padding","14px 32px"),E.style("background","transparent"),E.style("color",g.$val),E.style("border",()=>`1px solid ${l.val()}`,l),E.style("borderRadius",FE.$val),E.style("fontSize",u.$val),E.style("fontWeight",DE.$val),E.style("cursor","pointer"),E.style("transition",S.$val),E.style("fontFamily",HE),E.styleOnEvent("mouseenter","transform",()=>"translateY(-2px)"),E.styleOnEvent("mouseleave","transform",()=>"translateY(0)"),E.styleOnEvent("mouseenter","backgroundColor",()=>`${g.val()}11`),E.styleOnEvent("mouseleave","backgroundColor",()=>"transparent"),E.event("click",t(jE("examples"))),E.text("View Examples"))),f.div(E.style("marginTop",w.$val),E.style("display","flex"),E.style("justifyContent","center"),Y((L)=>$(L,650)),f.div(E.style("display","inline-flex"),E.style("alignItems","center"),E.style("gap",b.$val),E.style("padding","10px 20px"),E.style("backgroundColor",AE.$val),E.style("borderRadius",FE.$val),E.style("border",()=>`1px solid ${l.val()}`,l),E.style("fontFamily",M),E.style("fontSize",x.$val),f.span(E.text("$"),E.style("color","#888888")),f.span(E.text("bun add @linttrap/oem"),E.style("color","#c7c7c7")),f.button(E.style("background","none"),E.style("border","none"),E.style("cursor","pointer"),E.style("color",p.$val),E.style("display","flex"),E.style("padding","2px"),E.style("transition",i.$val),E.styleOnEvent("mouseenter","color",()=>g.val()),E.styleOnEvent("mouseleave","color",()=>p.val()),E.event("click",()=>navigator.clipboard.writeText("bun add @linttrap/oem")),cE({size:"14"})))))),eL=s("philosophy",EE("Philosophy"),f.p(E.text("OEM is a radically simple approach to building user interfaces. No virtual DOM. No compiler. No dependency tree. Just three composable primitives and a philosophy of total transparency."),E.style("fontSize",T.$val),E.style("color",F.$val),E.style("lineHeight","1.7"),E.style("maxWidth","720px"),E.style("marginBottom",w.$val),Y((L)=>$(L,100))),f.div(E.style("display","grid"),E.style("gridTemplateColumns","1fr"),E.style("gridTemplateColumns","repeat(2, 1fr)",N.$test(!0)),E.style("gap",VE.$val),...KL.map((L,C)=>f.div(E.style("padding",I.$val),E.style("borderRadius",$E.$val),E.style("backgroundColor",c.$val),E.style("border",()=>`1px solid ${B.val()}`,B),E.style("backgroundImage",xE.$val),E.style("transition",S.$val),E.styleOnEvent("mouseenter","transform",()=>"translateY(-4px)"),E.styleOnEvent("mouseleave","transform",()=>"translateY(0)"),E.styleOnEvent("mouseenter","boxShadow",()=>fL.val()),E.styleOnEvent("mouseleave","boxShadow",()=>"none"),Y((W)=>$(W,C*100)),f.h3(E.text(L.title),E.style("margin","0"),E.style("fontSize",CE.$val),E.style("fontWeight",m.$val),E.style("color",U.$val),E.style("marginBottom",e.$val)),f.p(E.text(L.body),E.style("fontSize",u.$val),E.style("color",F.$val),E.style("lineHeight","1.65"),E.style("margin","0")))))),_L=f.div(E.style("maxWidth","1200px"),E.style("margin","0 auto"),E.style("paddingLeft",P.$val),E.style("paddingRight",P.$val),E.style("paddingLeft",_.$val,N.$test(!0)),E.style("paddingRight",_.$val,N.$test(!0)),E.style("display","grid"),E.style("gridTemplateColumns","1fr"),E.style("gridTemplateColumns","repeat(2, 1fr)",N.$test(!0)),E.style("gap",VE.$val),E.style("marginTop",w.$val),...qL.map((L,C)=>f.div(E.style("display","flex"),E.style("gap",k.$val),E.style("padding",I.$val),E.style("borderRadius",YE.$val),E.style("backgroundColor",rE.$val),E.style("border",()=>`1px solid ${B.val()}`,B),E.style("transition",S.$val),E.styleOnEvent("mouseenter","borderColor",()=>nE.val()),E.styleOnEvent("mouseleave","borderColor",()=>B.val()),Y((W)=>$(W,100+C*80)),f.div(E.style("flexShrink","0"),E.style("width","40px"),E.style("height","40px"),E.style("display","flex"),E.style("alignItems","center"),E.style("justifyContent","center"),E.style("borderRadius",LE.$val),E.style("background",()=>`linear-gradient(135deg, ${GE.val()}22, ${v.val()}22)`,GE,v),UL[L.icon]?.({size:"22",color:"#666666"})||f.span(E.text("•"))),f.div(f.h4(E.text(L.title),E.style("margin","0"),E.style("fontSize",u.$val),E.style("fontWeight",m.$val),E.style("color",U.$val),E.style("marginBottom",WE.$val)),f.p(E.text(L.description),E.style("fontSize",x.$val),E.style("color",F.$val),E.style("lineHeight","1.6"),E.style("margin","0")))))),rL=s("setup",EE("Getting Started"),f.p(E.text("Install OEM with your preferred package manager and start building reactive UIs in seconds."),E.style("fontSize",T.$val),E.style("color",F.$val),E.style("lineHeight","1.7"),E.style("marginBottom",_.$val),Y((L)=>$(L,100))),f.div(E.style("marginBottom",w.$val),Y((L)=>$(L,200)),f.div(E.style("display","flex"),E.style("alignItems","center"),E.style("gap",b.$val),E.style("marginBottom",P.$val),f.span(E.text("01"),E.style("fontFamily",M),E.style("fontSize",x.$val),E.style("color",v.$val),E.style("fontWeight",JE.$val)),f.span(E.text("Install"),E.style("fontSize",CE.$val),E.style("fontWeight",m.$val),E.style("color",U.$val))),d(QL,"bash")),f.div(Y((L)=>$(L,350)),f.div(E.style("display","flex"),E.style("alignItems","center"),E.style("gap",b.$val),E.style("marginBottom",P.$val),f.span(E.text("02"),E.style("fontFamily",M),E.style("fontSize",x.$val),E.style("color",v.$val),E.style("fontWeight",JE.$val)),f.span(E.text("Hello World"),E.style("fontSize",CE.$val),E.style("fontWeight",m.$val),E.style("color",U.$val))),d(ZL))),iL=s("primitives",EE("The Three Primitives"),f.p(E.text("Everything in OEM is built from three concepts: Elements, Traits, and State. No components, no hooks, no lifecycle methods — just composable building blocks."),E.style("fontSize",T.$val),E.style("color",F.$val),E.style("lineHeight","1.7"),E.style("maxWidth","720px"),E.style("marginBottom",w.$val),Y((L)=>$(L,100))),f.div(E.style("marginBottom",w.$val),Y((L)=>$(L,200)),f.div(E.style("display","flex"),E.style("alignItems","center"),E.style("gap",k.$val),E.style("marginBottom",P.$val),ME("Element","#555555"),f.span(E.text("— The tag proxy creates real DOM nodes"),E.style("color",F.$val),E.style("fontSize",u.$val))),d(XL)),f.div(E.style("marginBottom",w.$val),Y((L)=>$(L,350)),f.div(E.style("display","flex"),E.style("alignItems","center"),E.style("gap",k.$val),E.style("marginBottom",P.$val),ME("Trait","#444444"),f.span(E.text("— Behaviors applied to elements"),E.style("color",F.$val),E.style("fontSize",u.$val))),d(YL)),f.div(Y((L)=>$(L,500)),f.div(E.style("display","flex"),E.style("alignItems","center"),E.style("gap",k.$val),E.style("marginBottom",P.$val),ME("State","#666666"),f.span(E.text("— Reactive containers with push-based updates"),E.style("color",F.$val),E.style("fontSize",u.$val))),d($L)));function aL(L,C){return f.div(E.style("borderRadius",$E.$val),E.style("border",()=>`1px solid ${B.val()}`,B),E.style("backgroundColor",c.$val),E.style("overflow","hidden"),E.style("transition",S.$val),E.styleOnEvent("mouseenter","borderColor",()=>nE.val()),E.styleOnEvent("mouseleave","borderColor",()=>B.val()),E.styleOnEvent("mouseenter","boxShadow",()=>LL.val()),E.styleOnEvent("mouseleave","boxShadow",()=>"none"),Y((W)=>$(W,C*120)),f.div(E.style("padding",I.$val),E.style("borderBottom",()=>`1px solid ${B.val()}`,B),f.h3(E.text(L.title),E.style("margin","0"),E.style("fontSize",CE.$val),E.style("fontWeight",m.$val),E.style("color",U.$val),E.style("marginBottom",WE.$val)),f.p(E.text(L.description),E.style("fontSize",x.$val),E.style("color",F.$val),E.style("margin","0"))),f.div(E.style("padding","0"),d(L.code,L.language)))}var tL=s("examples",EE("Examples"),f.p(E.text("Real patterns. Real code. See how OEM's three primitives compose into interactive applications."),E.style("fontSize",T.$val),E.style("color",F.$val),E.style("lineHeight","1.7"),E.style("maxWidth","720px"),E.style("marginBottom",w.$val),Y((L)=>$(L,100))),f.div(E.style("display","grid"),E.style("gridTemplateColumns","1fr"),E.style("gridTemplateColumns","repeat(2, 1fr)",N.$test(!0)),E.style("gap",VE.$val),...FL.map((L,C)=>aL(L,C)))),EC=s("traits",EE("Built-in Traits"),f.p(E.text("Traits are reusable behaviors that give elements their abilities. OEM ships 10 built-in traits that cover styling, events, content, and more."),E.style("fontSize",T.$val),E.style("color",F.$val),E.style("lineHeight","1.7"),E.style("maxWidth","720px"),E.style("marginBottom",w.$val),Y((L)=>$(L,100))),f.div(E.style("display","grid"),E.style("gridTemplateColumns","1fr"),E.style("gridTemplateColumns","repeat(2, 1fr)",N.$test(!0)),E.style("gap",k.$val),...yL.map((L,C)=>f.div(E.style("padding",I.$val),E.style("borderRadius",YE.$val),E.style("backgroundColor",c.$val),E.style("border",()=>`1px solid ${B.val()}`,B),E.style("transition",S.$val),E.styleOnEvent("mouseenter","borderColor",()=>l.val()),E.styleOnEvent("mouseleave","borderColor",()=>B.val()),Y((W)=>$(W,C*60)),f.div(E.style("display","flex"),E.style("alignItems","center"),E.style("gap",b.$val),E.style("marginBottom",e.$val),f.span(E.text(L.name),E.style("fontSize",u.$val),E.style("fontWeight",m.$val),E.style("color",g.$val),E.style("fontFamily",M))),f.div(E.style("fontFamily",M),E.style("fontSize",r.$val),E.style("color",p.$val),E.style("marginBottom",e.$val),E.style("padding","4px 8px"),E.style("backgroundColor",AE.$val),E.style("borderRadius",LE.$val),E.style("display","inline-block"),E.text(L.signature)),f.p(E.text(L.description),E.style("fontSize",x.$val),E.style("color",F.$val),E.style("lineHeight","1.6"),E.style("margin","0")))))),LC=s("states",EE("State Management"),f.p(E.text("State objects are module-level singletons with push-based reactivity. No prop drilling, no context providers, no stores. Any trait can subscribe to any state."),E.style("fontSize",T.$val),E.style("color",F.$val),E.style("lineHeight","1.7"),E.style("maxWidth","720px"),E.style("marginBottom",w.$val),Y((L)=>$(L,100))),f.div(E.style("display","grid"),E.style("gridTemplateColumns","1fr"),E.style("gridTemplateColumns","repeat(2, 1fr)",N.$test(!0)),E.style("gap",k.$val),E.style("marginBottom",w.$val),...BL.map((L,C)=>f.div(E.style("padding",I.$val),E.style("borderRadius",YE.$val),E.style("backgroundColor",c.$val),E.style("border",()=>`1px solid ${B.val()}`,B),E.style("transition",S.$val),E.styleOnEvent("mouseenter","borderColor",()=>nE.val()),E.styleOnEvent("mouseleave","borderColor",()=>B.val()),Y((W)=>$(W,C*100)),f.h4(E.text(L.name),E.style("margin","0"),E.style("fontSize",u.$val),E.style("fontWeight",m.$val),E.style("color",GE.$val),E.style("fontFamily",M),E.style("marginBottom",WE.$val)),f.div(E.text(L.signature),E.style("fontFamily",M),E.style("fontSize",r.$val),E.style("color",p.$val),E.style("padding","4px 8px"),E.style("backgroundColor",AE.$val),E.style("borderRadius",LE.$val),E.style("display","inline-block"),E.style("marginBottom",e.$val)),f.p(E.text(L.description),E.style("fontSize",x.$val),E.style("color",F.$val),E.style("lineHeight","1.6"),E.style("margin","0"))))),f.div(E.style("padding",I.$val),E.style("borderRadius",$E.$val),E.style("backgroundColor",c.$val),E.style("border",()=>`1px solid ${l.val()}`,l),E.style("backgroundImage",xE.$val),Y((L)=>$(L,400)),f.h4(E.text("The $ Convention"),E.style("margin","0"),E.style("fontSize",CE.$val),E.style("fontWeight",m.$val),E.style("color",U.$val),E.style("marginBottom",P.$val)),f.p(E.text("Every State method has a $-prefixed twin that returns a closure instead of executing immediately. $val is both a getter and a subscribable. $set and $reduce are thunks perfect for event wiring. $test creates reactive conditions."),E.style("fontSize",u.$val),E.style("color",F.$val),E.style("lineHeight","1.7"),E.style("marginBottom",P.$val)),d(`const count = State(0);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && dialogOpen.val()) {
+      dispatch(closeDialog());
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault();
+      dialogOpen.val() ? dispatch(closeDialog()) : dispatch(openDialog());
+    }
+  });
+  function copyCode(code) {
+    navigator.clipboard.writeText(code);
+    dispatch(showToast("Copied to clipboard"));
+  }
+  function SectionContainer(id, ...children) {
+    return tag.section(trait.attr("id", id), trait.style("position", "relative"), trait.style("padding", `${space_padding_2xl.val()} ${space_padding_md.val()}`), trait.style("padding", `${space_padding_3xl.val()} ${space_padding_xl.val()}`, isDesktop.$test(true)), trait.style("maxWidth", "1100px"), trait.style("margin", "0 auto"), ...children);
+  }
+  function SectionTitle(text) {
+    return tag.h2(trait.text(text), trait.style("margin", "0"), trait.style("fontSize", type_size_xl.$val), trait.style("fontSize", type_size_2xl.$val, isDesktop.$test(true)), trait.style("fontWeight", type_weight_bold.$val), trait.style("letterSpacing", "-0.02em"), trait.style("marginBottom", space_padding_md.$val), trait.style("color", text_fg_primary.$val), onMount((el) => fadeInUp(el)));
+  }
+  function SectionSubtitle(text) {
+    return tag.p(trait.text(text), trait.style("fontSize", type_size_base.$val), trait.style("color", text_fg_secondary.$val), trait.style("lineHeight", "1.6"), trait.style("maxWidth", "640px"), trait.style("marginBottom", space_padding_lg.$val), trait.style("marginTop", "0"), onMount((el) => fadeInUp(el, 80)));
+  }
+  function CodeBlock(code, language = "typescript") {
+    return tag.div(trait.style("position", "relative"), trait.style("borderRadius", radius_size_md.$val), trait.style("overflow", "hidden"), trait.style("border", () => `1px solid ${border_color_cyan.val()}`, border_color_cyan), trait.style("boxShadow", shadow_glow_cyan.$val), tag.button(trait.style("position", "absolute"), trait.style("top", "6px"), trait.style("right", "6px"), trait.style("background", "rgba(255,255,255,0.05)"), trait.style("border", "1px solid rgba(255,255,255,0.1)"), trait.style("borderRadius", radius_size_sm.$val), trait.style("padding", "4px"), trait.style("cursor", "pointer"), trait.style("color", text_fg_muted.$val), trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("justifyContent", "center"), trait.style("zIndex", "2"), trait.style("transition", transition_fast.$val), trait.styleOnEvent("mouseenter", "color", () => accent_neon_cyan.val()), trait.styleOnEvent("mouseleave", "color", () => text_fg_muted.val()), trait.event("click", () => copyCode(code)), CopyIcon({ size: "12" })), tag.pre(trait.style("margin", "0"), trait.style("padding", space_padding_md.$val), trait.style("backgroundColor", surface_bg_code.$val), trait.style("color", "#c7c7c7"), trait.style("overflow", "auto"), trait.style("fontSize", type_size_xs.$val), trait.style("lineHeight", "1.6"), trait.style("fontFamily", FONT_MONO), tag.code(trait.className(`language-${language}`), trait.text(code))), onMount((el) => highlightCode(el)));
+  }
+  function Pill(text, color) {
+    return tag.span(trait.text(text), trait.style("display", "inline-block"), trait.style("padding", "3px 10px"), trait.style("borderRadius", radius_size_full.$val), trait.style("fontSize", type_size_xs.$val), trait.style("fontWeight", type_weight_medium.$val), trait.style("letterSpacing", "0.05em"), trait.style("textTransform", "uppercase"), trait.style("color", color), trait.style("border", `1px solid ${color}33`), trait.style("backgroundColor", `${color}11`));
+  }
+  var Toast = tag.div(trait.style("position", "fixed"), trait.style("bottom", "24px"), trait.style("left", "50%"), trait.style("zIndex", "1000"), trait.style("padding", "10px 20px"), trait.style("borderRadius", radius_size_full.$val), trait.style("backgroundColor", surface_bg_code.$val), trait.style("color", "#c7c7c7"), trait.style("fontSize", type_size_sm.$val), trait.style("fontFamily", FONT_MONO), trait.style("boxShadow", "0 4px 24px rgba(0,0,0,0.3)"), trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", space_gap_sm.$val), trait.style("pointerEvents", "none"), trait.style("transition", "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)"), trait.style("opacity", "0", toastVisible.$test(false)), trait.style("transform", "translateX(-50%) translateY(8px)", toastVisible.$test(false)), trait.style("opacity", "1", toastVisible.$test(true)), trait.style("transform", "translateX(-50%) translateY(0)", toastVisible.$test(true)), CheckIcon({ size: "14", color: "#888888" }), tag.span(trait.text(toastMessage.$val)));
+  var Dialog = tag.div(trait.style("position", "fixed"), trait.style("inset", "0"), trait.style("zIndex", "200"), trait.style("display", "flex"), trait.style("alignItems", "flex-start"), trait.style("justifyContent", "center"), trait.style("paddingTop", "10vh"), trait.style("transition", "opacity 0.2s ease"), trait.style("opacity", "0", dialogOpen.$test(false)), trait.style("pointerEvents", "none", dialogOpen.$test(false)), trait.style("opacity", "1", dialogOpen.$test(true)), trait.style("pointerEvents", "auto", dialogOpen.$test(true)), tag.div(trait.style("position", "absolute"), trait.style("inset", "0"), trait.style("backgroundColor", "rgba(0,0,0,0.5)"), trait.style("backdropFilter", "blur(8px)"), webkitBackdrop("blur(8px)"), trait.event("click", $dispatch(closeDialog()))), tag.div(trait.style("position", "relative"), trait.style("width", "90%"), trait.style("maxWidth", "680px"), trait.style("maxHeight", "70vh"), trait.style("overflow", "auto"), trait.style("backgroundColor", surface_bg_secondary.$val), trait.style("borderRadius", radius_size_lg.$val), trait.style("border", () => `1px solid ${border_color_primary.val()}`, border_color_primary), trait.style("padding", space_padding_lg.$val), trait.style("boxShadow", "0 24px 80px rgba(0,0,0,0.4)"), tag.div(trait.style("display", "flex"), trait.style("justifyContent", "space-between"), trait.style("alignItems", "center"), trait.style("marginBottom", space_padding_md.$val), tag.h3(trait.text("API Quick Reference"), trait.style("margin", "0"), trait.style("fontSize", type_size_lg.$val), trait.style("fontWeight", type_weight_bold.$val), trait.style("color", text_fg_primary.$val)), tag.div(trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", space_gap_sm.$val), tag.span(trait.text("ESC"), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_muted.$val), trait.style("padding", "2px 6px"), trait.style("borderRadius", "4px"), trait.style("border", () => `1px solid ${border_color_primary.val()}`, border_color_primary)), tag.button(trait.style("background", "none"), trait.style("border", "none"), trait.style("cursor", "pointer"), trait.style("color", text_fg_muted.$val), trait.style("display", "flex"), trait.style("padding", "2px"), trait.event("click", $dispatch(closeDialog())), CloseIcon({ size: "18" })))), tag.div(trait.style("marginBottom", space_padding_md.$val), tag.div(trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", space_gap_sm.$val), trait.style("marginBottom", space_padding_sm.$val), tag.span(trait.text("Traits"), trait.style("fontSize", type_size_sm.$val), trait.style("fontWeight", type_weight_bold.$val), trait.style("color", accent_neon_cyan.$val), trait.style("textTransform", "uppercase"), trait.style("letterSpacing", "0.08em")), tag.span(trait.text(`${TRAIT_DOCS.length}`), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_muted.$val), trait.style("padding", "1px 6px"), trait.style("borderRadius", radius_size_full.$val), trait.style("backgroundColor", surface_bg_tertiary.$val))), ...TRAIT_DOCS.map((t) => tag.div(trait.style("display", "flex"), trait.style("alignItems", "baseline"), trait.style("gap", space_gap_sm.$val), trait.style("padding", "3px 0"), trait.style("borderBottom", () => `1px solid ${border_color_primary.val()}08`, border_color_primary), tag.span(trait.text(t.name), trait.style("fontFamily", FONT_MONO), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_primary.$val), trait.style("fontWeight", type_weight_medium.$val), trait.style("minWidth", "175px"), trait.style("flexShrink", "0")), tag.span(trait.text(t.signature), trait.style("fontFamily", FONT_MONO), trait.style("fontSize", "9px"), trait.style("color", text_fg_muted.$val), trait.style("minWidth", "150px"), trait.style("flexShrink", "0"), trait.style("display", "none"), trait.style("display", "inline", isDesktop.$test(true))), tag.span(trait.text(t.description), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_secondary.$val), trait.style("display", "none"), trait.style("display", "inline", isDesktop.$test(true)))))), tag.div(tag.div(trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", space_gap_sm.$val), trait.style("marginBottom", space_padding_sm.$val), tag.span(trait.text("States"), trait.style("fontSize", type_size_sm.$val), trait.style("fontWeight", type_weight_bold.$val), trait.style("color", accent_neon_purple.$val), trait.style("textTransform", "uppercase"), trait.style("letterSpacing", "0.08em")), tag.span(trait.text(`${STATE_DOCS.length}`), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_muted.$val), trait.style("padding", "1px 6px"), trait.style("borderRadius", radius_size_full.$val), trait.style("backgroundColor", surface_bg_tertiary.$val))), ...STATE_DOCS.map((s) => tag.div(trait.style("display", "flex"), trait.style("alignItems", "baseline"), trait.style("gap", space_gap_sm.$val), trait.style("padding", "3px 0"), trait.style("borderBottom", () => `1px solid ${border_color_primary.val()}08`, border_color_primary), tag.span(trait.text(s.name), trait.style("fontFamily", FONT_MONO), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_primary.$val), trait.style("fontWeight", type_weight_medium.$val), trait.style("minWidth", "175px"), trait.style("flexShrink", "0")), tag.span(trait.text(s.signature), trait.style("fontFamily", FONT_MONO), trait.style("fontSize", "9px"), trait.style("color", text_fg_muted.$val), trait.style("minWidth", "150px"), trait.style("flexShrink", "0"), trait.style("display", "none"), trait.style("display", "inline", isDesktop.$test(true))), tag.span(trait.text(s.description), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_secondary.$val), trait.style("display", "none"), trait.style("display", "inline", isDesktop.$test(true))))))));
+  var NavBar = tag.header(trait.style("position", "fixed"), trait.style("top", "0"), trait.style("left", "0"), trait.style("right", "0"), trait.style("zIndex", "100"), trait.style("padding", `${space_padding_sm.val()} ${space_padding_md.val()}`), trait.style("padding", `${space_padding_sm.val()} ${space_padding_xl.val()}`, isDesktop.$test(true)), trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("justifyContent", "space-between"), trait.style("backgroundColor", surface_bg_nav.$val), trait.style("backdropFilter", "blur(16px)"), webkitBackdrop("blur(16px)"), trait.style("borderBottom", () => `1px solid ${border_color_primary.val()}`, border_color_primary), trait.style("transition", transition_medium.$val), tag.div(trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", space_gap_sm.$val), trait.style("cursor", "pointer"), trait.event("click", $dispatch(navigate("hero"))), tag.span(trait.text("oem"), trait.style("fontSize", type_size_2xl.$val), trait.style("fontWeight", type_weight_bold.$val), trait.style("fontFamily", FONT_LOGO)), tag.span(trait.text(`v${package_default.version}`), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_muted.$val), trait.style("fontFamily", FONT_MONO))), tag.nav(trait.style("display", "none"), trait.style("display", "flex", isDesktop.$test(true)), trait.style("alignItems", "center"), trait.style("gap", space_gap_md.$val), ...NAV_ITEMS.filter((n) => n.id !== "hero").map((item) => tag.a(trait.text(item.label), trait.style("fontSize", type_size_xs.$val), trait.style("fontWeight", type_weight_medium.$val), trait.style("textDecoration", "none"), trait.style("cursor", "pointer"), trait.style("transition", transition_color.$val), trait.style("color", nav_fg_default.$val, activeSection.$test((v) => v !== item.id)), trait.style("color", nav_fg_active.$val, activeSection.$test(item.id)), trait.styleOnEvent("mouseenter", "color", () => nav_fg_hover.val()), trait.styleOnEvent("mouseleave", "color", () => activeSection.val() === item.id ? nav_fg_active.val() : nav_fg_default.val()), trait.event("click", $dispatch(navigate(item.id)))))), tag.div(trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", space_gap_sm.$val), tag.button(trait.style("display", "none"), trait.style("display", "flex", isDesktop.$test(true)), trait.style("alignItems", "center"), trait.style("gap", "4px"), trait.style("padding", "4px 10px"), trait.style("background", "none"), trait.style("border", () => `1px solid ${border_color_primary.val()}`, border_color_primary), trait.style("borderRadius", radius_size_sm.$val), trait.style("cursor", "pointer"), trait.style("color", text_fg_muted.$val), trait.style("fontSize", type_size_xs.$val), trait.style("fontFamily", FONT_MONO), trait.style("transition", transition_fast.$val), trait.styleOnEvent("mouseenter", "borderColor", () => border_color_accent.val()), trait.styleOnEvent("mouseleave", "borderColor", () => border_color_primary.val()), trait.event("click", $dispatch(openDialog())), CommandIcon({ size: "12" }), tag.span(trait.text("K"))), tag.a(trait.attr("href", "https://github.com/linttrapmedia/oem"), trait.attr("target", "_blank"), trait.attr("rel", "noopener"), trait.style("color", text_fg_secondary.$val), trait.style("transition", transition_fast.$val), trait.style("display", "flex"), trait.styleOnEvent("mouseenter", "color", () => accent_neon_pink.val()), trait.styleOnEvent("mouseleave", "color", () => text_fg_secondary.val()), GitHubIcon({ size: "18" })), tag.button(trait.style("background", "none"), trait.style("border", "none"), trait.style("cursor", "pointer"), trait.style("color", text_fg_secondary.$val), trait.style("display", "flex"), trait.style("padding", space_padding_xs.$val), trait.style("transition", transition_fast.$val), trait.styleOnEvent("mouseenter", "color", () => accent_neon_cyan.val()), trait.styleOnEvent("mouseleave", "color", () => text_fg_secondary.val()), trait.event("click", $dispatch(toggleTheme())), trait.innerHTML(() => [theme.val() === "dark" ? SunIcon({ size: "18" }) : MoonIcon({ size: "18" })], theme)), tag.button(trait.style("background", "none"), trait.style("border", "none"), trait.style("cursor", "pointer"), trait.style("color", text_fg_primary.$val), trait.style("padding", space_padding_xs.$val), trait.style("display", "flex"), trait.style("display", "none", isDesktop.$test(true)), trait.event("click", $dispatch(toggleNav())), trait.innerHTML(() => [navOpen.val() ? CloseIcon({ size: "22" }) : MenuIcon({ size: "22" })], navOpen))));
+  var MobileNav = tag.div(trait.style("position", "fixed"), trait.style("top", "0"), trait.style("right", "0"), trait.style("bottom", "0"), trait.style("width", "280px"), trait.style("backgroundColor", surface_bg_secondary.$val), trait.style("backdropFilter", "blur(20px)"), webkitBackdrop("blur(20px)"), trait.style("zIndex", "99"), trait.style("display", "flex"), trait.style("flexDirection", "column"), trait.style("padding", `${space_padding_4xl.val()} ${space_padding_lg.val()} ${space_padding_lg.val()}`), trait.style("gap", space_gap_md.$val), trait.style("transition", "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)"), trait.style("borderLeft", () => `1px solid ${border_color_primary.val()}`, border_color_primary), trait.style("boxShadow", "-8px 0 32px rgba(0,0,0,0.2)"), trait.style("transform", "translateX(100%)", navOpen.$test(false)), trait.style("transform", "translateX(0)", navOpen.$test(true)), ...NAV_ITEMS.map((item) => tag.a(trait.text(item.label), trait.style("fontSize", type_size_lg.$val), trait.style("fontWeight", type_weight_light.$val), trait.style("textDecoration", "none"), trait.style("cursor", "pointer"), trait.style("transition", transition_color.$val), trait.style("color", nav_fg_default.$val, activeSection.$test((v) => v !== item.id)), trait.style("color", nav_fg_active.$val, activeSection.$test(item.id)), trait.event("click", $dispatch(navigate(item.id))))), tag.button(trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", space_gap_sm.$val), trait.style("padding", "10px 0"), trait.style("background", "none"), trait.style("border", "none"), trait.style("cursor", "pointer"), trait.style("color", accent_neon_cyan.$val), trait.style("fontSize", type_size_base.$val), trait.style("fontFamily", FONT_MONO), trait.event("click", () => {
+    navOpen.set(false);
+    dispatch(openDialog());
+  }), CommandIcon({ size: "14" }), tag.span(trait.text("API Reference"))));
+  var MobileNavBackdrop = tag.div(trait.style("position", "fixed"), trait.style("inset", "0"), trait.style("zIndex", "98"), trait.style("backgroundColor", "rgba(0,0,0,0.3)"), trait.style("transition", "opacity 0.3s ease"), trait.style("opacity", "0", navOpen.$test(false)), trait.style("pointerEvents", "none", navOpen.$test(false)), trait.style("opacity", "1", navOpen.$test(true)), trait.style("pointerEvents", "auto", navOpen.$test(true)), trait.event("click", $dispatch(toggleNav())));
+  var HeroSection = SectionContainer("hero", tag.div(trait.style("position", "absolute"), trait.style("inset", "0"), trait.style("backgroundImage", gradient_horizon.$val), trait.style("pointerEvents", "none")), tag.div(trait.style("position", "relative"), trait.style("textAlign", "center"), trait.style("paddingTop", space_padding_3xl.$val), trait.style("paddingBottom", space_padding_lg.$val), tag.div(trait.style("marginBottom", space_padding_md.$val), onMount((el) => fadeIn(el, 100)), Pill("Agentic UI", "#555555")), tag.h1(trait.style("display", "flex"), trait.style("flexDirection", "column"), trait.style("margin", "0"), trait.style("gap", "4px"), trait.style("fontSize", type_size_2xl.$val), trait.style("fontSize", type_size_3xl.$val, isDesktop.$test(true)), trait.style("fontWeight", type_weight_thin.$val), trait.style("lineHeight", "1.1"), trait.style("letterSpacing", "-0.03em"), trait.style("marginBottom", space_padding_md.$val), trait.style("fontFamily", FONT_DISPLAY), onMount((el) => fadeInUp(el, 150)), tag.span(trait.text("/oem <prompt>"), trait.style("color", text_gradient_hero.$val), trait.style("fontSize", type_size_3xl.$val))), tag.p(trait.text("The human-AI collaboration toolkit for building front-end web applications with natural language."), trait.style("fontSize", type_size_base.$val), trait.style("color", text_fg_secondary.$val), trait.style("maxWidth", "540px"), trait.style("margin", "0 auto"), trait.style("lineHeight", "1.6"), trait.style("marginBottom", space_padding_lg.$val), onMount((el) => fadeInUp(el, 250))), tag.div(trait.style("display", "flex"), trait.style("flexDirection", "column"), trait.style("flexDirection", "row", isDesktop.$test(true)), trait.style("gap", space_gap_sm.$val), trait.style("justifyContent", "center"), trait.style("alignItems", "center"), onMount((el) => fadeInUp(el, 350)), tag.button(trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", space_gap_sm.$val), trait.style("padding", "10px 24px"), trait.style("background", () => `linear-gradient(135deg, ${accent_neon_pink.val()}, ${accent_neon_purple.val()})`, accent_neon_pink, accent_neon_purple), trait.style("color", "#c7c7c7"), trait.style("border", "none"), trait.style("borderRadius", radius_size_full.$val), trait.style("fontSize", type_size_sm.$val), trait.style("fontWeight", type_weight_semibold.$val), trait.style("cursor", "pointer"), trait.style("transition", transition_medium.$val), trait.style("fontFamily", FONT_DISPLAY), trait.styleOnEvent("mouseenter", "transform", () => "translateY(-2px)"), trait.styleOnEvent("mouseleave", "transform", () => "translateY(0)"), trait.event("click", $dispatch(navigate("setup"))), trait.text("Get Started"), ArrowRightIcon({ size: "14", color: "#c7c7c7" })), tag.button(trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", space_gap_sm.$val), trait.style("padding", "10px 24px"), trait.style("background", "transparent"), trait.style("color", accent_neon_cyan.$val), trait.style("border", () => `1px solid ${border_color_cyan.val()}`, border_color_cyan), trait.style("borderRadius", radius_size_full.$val), trait.style("fontSize", type_size_sm.$val), trait.style("fontWeight", type_weight_medium.$val), trait.style("cursor", "pointer"), trait.style("transition", transition_medium.$val), trait.style("fontFamily", FONT_DISPLAY), trait.styleOnEvent("mouseenter", "transform", () => "translateY(-2px)"), trait.styleOnEvent("mouseleave", "transform", () => "translateY(0)"), trait.event("click", $dispatch(navigate("examples"))), trait.text("View Examples"))), tag.div(trait.style("marginTop", space_padding_lg.$val), trait.style("display", "flex"), trait.style("justifyContent", "center"), onMount((el) => fadeInUp(el, 450)), tag.div(trait.style("display", "inline-flex"), trait.style("alignItems", "center"), trait.style("gap", space_gap_sm.$val), trait.style("padding", "8px 16px"), trait.style("backgroundColor", surface_bg_code.$val), trait.style("borderRadius", radius_size_full.$val), trait.style("border", () => `1px solid ${border_color_cyan.val()}`, border_color_cyan), trait.style("fontFamily", FONT_MONO), trait.style("fontSize", type_size_xs.$val), tag.span(trait.text("$"), trait.style("color", "#888888")), tag.span(trait.text("bun add @linttrap/oem"), trait.style("color", "#c7c7c7")), tag.button(trait.style("background", "none"), trait.style("border", "none"), trait.style("cursor", "pointer"), trait.style("color", text_fg_muted.$val), trait.style("display", "flex"), trait.style("padding", "2px"), trait.style("transition", transition_fast.$val), trait.styleOnEvent("mouseenter", "color", () => accent_neon_cyan.val()), trait.styleOnEvent("mouseleave", "color", () => text_fg_muted.val()), trait.event("click", () => copyCode("bun add @linttrap/oem")), CopyIcon({ size: "12" }))))));
+  var FeaturesGrid = tag.div(trait.style("maxWidth", "1100px"), trait.style("margin", "0 auto"), trait.style("paddingLeft", space_padding_md.$val), trait.style("paddingRight", space_padding_md.$val), trait.style("display", "grid"), trait.style("gridTemplateColumns", "1fr"), trait.style("gridTemplateColumns", "repeat(2, 1fr)", isDesktop.$test(true)), trait.style("gap", space_gap_sm.$val), ...FEATURES.map((feature, i) => tag.div(trait.style("display", "flex"), trait.style("gap", space_gap_sm.$val), trait.style("padding", space_padding_md.$val), trait.style("borderRadius", radius_size_sm.$val), trait.style("backgroundColor", surface_bg_card.$val), trait.style("border", () => `1px solid ${border_color_primary.val()}`, border_color_primary), trait.style("transition", transition_fast.$val), trait.styleOnEvent("mouseenter", "borderColor", () => border_color_accent.val()), trait.styleOnEvent("mouseleave", "borderColor", () => border_color_primary.val()), onMount((el) => fadeInUp(el, 80 + i * 60)), tag.div(trait.style("flexShrink", "0"), trait.style("width", "32px"), trait.style("height", "32px"), trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("justifyContent", "center"), trait.style("borderRadius", radius_size_sm.$val), trait.style("background", () => `linear-gradient(135deg, ${accent_neon_purple.val()}22, ${accent_neon_pink.val()}22)`, accent_neon_purple, accent_neon_pink), ICON_MAP[feature.icon]?.({ size: "18", color: "#666666" }) || tag.span(trait.text("•"))), tag.div(tag.h4(trait.text(feature.title), trait.style("margin", "0"), trait.style("fontSize", type_size_sm.$val), trait.style("fontWeight", type_weight_semibold.$val), trait.style("color", text_fg_primary.$val), trait.style("marginBottom", "2px")), tag.p(trait.text(feature.description), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_secondary.$val), trait.style("lineHeight", "1.5"), trait.style("margin", "0"))))));
+  var PhilosophySection = SectionContainer("philosophy", SectionTitle("Philosophy"), SectionSubtitle("Three composable primitives. Total transparency. Built for the age of AI."), tag.div(trait.style("display", "grid"), trait.style("gridTemplateColumns", "1fr"), trait.style("gridTemplateColumns", "repeat(2, 1fr)", isDesktop.$test(true)), trait.style("gap", space_gap_sm.$val), ...PHILOSOPHY_POINTS.map((point, i) => tag.div(trait.style("padding", space_padding_md.$val), trait.style("borderRadius", radius_size_md.$val), trait.style("backgroundColor", surface_bg_secondary.$val), trait.style("border", () => `1px solid ${border_color_primary.val()}`, border_color_primary), trait.style("backgroundImage", gradient_card.$val), trait.style("transition", transition_fast.$val), trait.styleOnEvent("mouseenter", "transform", () => "translateY(-2px)"), trait.styleOnEvent("mouseleave", "transform", () => "translateY(0)"), onMount((el) => fadeInUp(el, i * 80)), tag.h3(trait.text(point.title), trait.style("margin", "0"), trait.style("fontSize", type_size_base.$val), trait.style("fontWeight", type_weight_semibold.$val), trait.style("color", text_fg_primary.$val), trait.style("marginBottom", space_padding_xs.$val)), tag.p(trait.text(point.body), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_secondary.$val), trait.style("lineHeight", "1.55"), trait.style("margin", "0"))))));
+  var SetupSection = SectionContainer("setup", SectionTitle("Getting Started"), SectionSubtitle("Install and start building reactive UIs in seconds."), tag.div(trait.style("display", "grid"), trait.style("gridTemplateColumns", "1fr"), trait.style("gridTemplateColumns", "repeat(2, 1fr)", isDesktop.$test(true)), trait.style("gap", space_gap_lg.$val), trait.style("alignItems", "start"), tag.div(onMount((el) => fadeInUp(el, 100)), tag.div(trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", space_gap_sm.$val), trait.style("marginBottom", space_padding_sm.$val), tag.span(trait.text("01"), trait.style("fontFamily", FONT_MONO), trait.style("fontSize", type_size_xs.$val), trait.style("color", accent_neon_pink.$val), trait.style("fontWeight", type_weight_bold.$val)), tag.span(trait.text("Install"), trait.style("fontSize", type_size_base.$val), trait.style("fontWeight", type_weight_semibold.$val), trait.style("color", text_fg_primary.$val))), CodeBlock(SETUP_CODE, "bash")), tag.div(onMount((el) => fadeInUp(el, 200)), tag.div(trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", space_gap_sm.$val), trait.style("marginBottom", space_padding_sm.$val), tag.span(trait.text("02"), trait.style("fontFamily", FONT_MONO), trait.style("fontSize", type_size_xs.$val), trait.style("color", accent_neon_pink.$val), trait.style("fontWeight", type_weight_bold.$val)), tag.span(trait.text("Hello World"), trait.style("fontSize", type_size_base.$val), trait.style("fontWeight", type_weight_semibold.$val), trait.style("color", text_fg_primary.$val))), CodeBlock(HELLO_WORLD_CODE))));
+  var PRIMITIVE_TABS = [
+    { id: "element", label: "Element", desc: "The tag proxy creates real DOM nodes" },
+    { id: "trait", label: "Trait", desc: "Behaviors applied to elements" },
+    { id: "state", label: "State", desc: "Reactive containers with push-based updates" }
+  ];
+  function getPrimitiveCode(tab) {
+    if (tab === "element")
+      return PRIMITIVE_ELEMENT_CODE;
+    if (tab === "trait")
+      return PRIMITIVE_TRAIT_CODE;
+    return PRIMITIVE_STATE_CODE;
+  }
+  var PrimitivesSection = SectionContainer("primitives", SectionTitle("The Three Primitives"), SectionSubtitle("Everything in OEM is built from Elements, Traits, and State. No components, no hooks, no lifecycle."), tag.div(trait.style("display", "inline-flex"), trait.style("gap", "4px"), trait.style("marginBottom", space_padding_md.$val), trait.style("padding", "3px"), trait.style("backgroundColor", surface_bg_tertiary.$val), trait.style("borderRadius", radius_size_md.$val), onMount((el) => fadeInUp(el, 100)), ...PRIMITIVE_TABS.map((tab) => tag.button(trait.text(tab.label), trait.style("padding", "6px 16px"), trait.style("border", "none"), trait.style("borderRadius", radius_size_sm.$val), trait.style("fontSize", type_size_xs.$val), trait.style("fontWeight", type_weight_medium.$val), trait.style("cursor", "pointer"), trait.style("transition", transition_fast.$val), trait.style("fontFamily", FONT_MONO), trait.style("backgroundColor", surface_bg_secondary.$val, primitiveTab.$test(tab.id)), trait.style("color", text_fg_primary.$val, primitiveTab.$test(tab.id)), trait.style("boxShadow", "0 1px 3px rgba(0,0,0,0.1)", primitiveTab.$test(tab.id)), trait.style("backgroundColor", "transparent", primitiveTab.$test((v) => v !== tab.id)), trait.style("color", text_fg_muted.$val, primitiveTab.$test((v) => v !== tab.id)), trait.style("boxShadow", "none", primitiveTab.$test((v) => v !== tab.id)), trait.event("click", $dispatch(setPrimitiveTab(tab.id))), trait.aria("role", "tab"), trait.aria("aria-selected", () => primitiveTab.val() === tab.id ? "true" : "false", primitiveTab)))), tag.p(trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_muted.$val), trait.style("margin", "0"), trait.style("marginBottom", space_padding_sm.$val), trait.style("fontStyle", "italic"), trait.innerHTML(() => {
+    const tab = PRIMITIVE_TABS.find((t) => t.id === primitiveTab.val());
+    return [tag.span(trait.text(tab?.desc || ""))];
+  }, primitiveTab)), tag.div(trait.innerHTML(() => [CodeBlock(getPrimitiveCode(primitiveTab.val()))], primitiveTab)));
+  var ExamplesSection = SectionContainer("examples", SectionTitle("Examples"), SectionSubtitle("Real patterns. Click to expand the code."), tag.div(trait.style("display", "flex"), trait.style("flexDirection", "column"), trait.style("gap", space_gap_sm.$val), ...EXAMPLES.map((ex, i) => tag.div(trait.style("borderRadius", radius_size_md.$val), trait.style("border", () => `1px solid ${border_color_primary.val()}`, border_color_primary), trait.style("backgroundColor", surface_bg_secondary.$val), trait.style("overflow", "hidden"), trait.style("transition", transition_fast.$val), trait.styleOnEvent("mouseenter", "borderColor", () => border_color_accent.val()), trait.styleOnEvent("mouseleave", "borderColor", () => border_color_primary.val()), onMount((el) => fadeInUp(el, i * 80)), tag.div(trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("justifyContent", "space-between"), trait.style("padding", `${space_padding_sm.val()} ${space_padding_md.val()}`), trait.style("cursor", "pointer"), trait.style("userSelect", "none"), trait.event("click", $dispatch(toggleExample(i))), trait.aria("role", "button"), trait.aria("aria-expanded", () => expandedExample.val() === i ? "true" : "false", expandedExample), tag.div(trait.style("display", "flex"), trait.style("alignItems", "baseline"), trait.style("gap", space_gap_sm.$val), tag.span(trait.text(ex.title), trait.style("fontWeight", type_weight_semibold.$val), trait.style("color", text_fg_primary.$val), trait.style("fontSize", type_size_sm.$val)), tag.span(trait.text(ex.description), trait.style("color", text_fg_muted.$val), trait.style("fontSize", type_size_xs.$val))), tag.div(trait.style("transition", "transform 0.2s ease"), trait.style("transform", "rotate(0deg)", expandedExample.$test((v) => v !== i)), trait.style("transform", "rotate(180deg)", expandedExample.$test(i)), trait.style("color", text_fg_muted.$val), trait.style("display", "flex"), ChevronDownIcon({ size: "16" }))), tag.div(trait.style("overflow", "hidden"), trait.style("transition", "max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1)"), trait.style("maxHeight", "0px", expandedExample.$test((v) => v !== i)), trait.style("maxHeight", "800px", expandedExample.$test(i)), tag.div(trait.style("padding", `0 ${space_padding_sm.val()} ${space_padding_sm.val()}`), CodeBlock(ex.code, ex.language)))))));
+  var TraitsSection = SectionContainer("traits", SectionTitle("Built-in Traits"), SectionSubtitle(`${TRAIT_DOCS.length} reusable behaviors that give elements their abilities.`), tag.div(trait.style("display", "grid"), trait.style("gridTemplateColumns", "1fr"), trait.style("gridTemplateColumns", "repeat(2, 1fr)", isDesktop.$test(true)), trait.style("gap", space_gap_sm.$val), ...TRAIT_DOCS.map((t, i) => tag.div(trait.style("padding", space_padding_sm.$val), trait.style("paddingLeft", space_padding_md.$val), trait.style("borderRadius", radius_size_sm.$val), trait.style("backgroundColor", surface_bg_secondary.$val), trait.style("border", () => `1px solid ${border_color_primary.val()}`, border_color_primary), trait.style("transition", transition_fast.$val), trait.style("borderLeft", () => `3px solid ${accent_neon_cyan.val()}`, accent_neon_cyan), trait.styleOnEvent("mouseenter", "borderColor", () => border_color_cyan.val()), trait.styleOnEvent("mouseleave", "borderColor", () => border_color_primary.val()), onMount((el) => fadeInUp(el, i * 40)), tag.div(trait.style("display", "flex"), trait.style("alignItems", "baseline"), trait.style("gap", space_gap_sm.$val), trait.style("marginBottom", "2px"), tag.span(trait.text(t.name), trait.style("fontSize", type_size_xs.$val), trait.style("fontWeight", type_weight_semibold.$val), trait.style("color", accent_neon_cyan.$val), trait.style("fontFamily", FONT_MONO)), tag.span(trait.text(t.signature), trait.style("fontFamily", FONT_MONO), trait.style("fontSize", "9px"), trait.style("color", text_fg_muted.$val))), tag.p(trait.text(t.description), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_secondary.$val), trait.style("lineHeight", "1.4"), trait.style("margin", "0"))))));
+  var StatesSection = SectionContainer("states", SectionTitle("State Management"), SectionSubtitle(`${STATE_DOCS.length} reactive primitives. No prop drilling, no context, no stores.`), tag.div(trait.style("display", "grid"), trait.style("gridTemplateColumns", "1fr"), trait.style("gridTemplateColumns", "repeat(2, 1fr)", isDesktop.$test(true)), trait.style("gap", space_gap_sm.$val), trait.style("marginBottom", space_padding_lg.$val), ...STATE_DOCS.map((s, i) => tag.div(trait.style("padding", space_padding_sm.$val), trait.style("paddingLeft", space_padding_md.$val), trait.style("borderRadius", radius_size_sm.$val), trait.style("backgroundColor", surface_bg_secondary.$val), trait.style("border", () => `1px solid ${border_color_primary.val()}`, border_color_primary), trait.style("transition", transition_fast.$val), trait.style("borderLeft", () => `3px solid ${accent_neon_purple.val()}`, accent_neon_purple), trait.styleOnEvent("mouseenter", "borderColor", () => border_color_accent.val()), trait.styleOnEvent("mouseleave", "borderColor", () => border_color_primary.val()), onMount((el) => fadeInUp(el, i * 40)), tag.div(trait.style("display", "flex"), trait.style("alignItems", "baseline"), trait.style("gap", space_gap_sm.$val), trait.style("marginBottom", "2px"), tag.span(trait.text(s.name), trait.style("fontSize", type_size_xs.$val), trait.style("fontWeight", type_weight_semibold.$val), trait.style("color", accent_neon_purple.$val), trait.style("fontFamily", FONT_MONO)), tag.span(trait.text(s.signature), trait.style("fontFamily", FONT_MONO), trait.style("fontSize", "9px"), trait.style("color", text_fg_muted.$val))), tag.p(trait.text(s.description), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_secondary.$val), trait.style("lineHeight", "1.4"), trait.style("margin", "0"))))), tag.div(trait.style("padding", space_padding_md.$val), trait.style("borderRadius", radius_size_md.$val), trait.style("backgroundColor", surface_bg_secondary.$val), trait.style("border", () => `1px solid ${border_color_cyan.val()}`, border_color_cyan), trait.style("backgroundImage", gradient_card.$val), onMount((el) => fadeInUp(el, 400)), tag.div(trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", space_gap_sm.$val), trait.style("marginBottom", space_padding_sm.$val), tag.h4(trait.text("The $ Convention"), trait.style("margin", "0"), trait.style("fontSize", type_size_base.$val), trait.style("fontWeight", type_weight_semibold.$val), trait.style("color", text_fg_primary.$val))), tag.p(trait.text("Every State method has a $-prefixed twin that returns a closure instead of executing immediately. $val is both a getter and subscribable. $set/$reduce are thunks for event wiring. $test creates reactive conditions."), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_secondary.$val), trait.style("lineHeight", "1.5"), trait.style("margin", "0"), trait.style("marginBottom", space_padding_sm.$val)), CodeBlock(`const count = State(0);
 
-// Direct execution
-count.set(5);                              // sets immediately
-count.reduce(prev => prev + 1);            // increments immediately
-
-// Thunked (deferred) execution — returns () => void
+// Direct vs deferred execution
+count.set(5);                              // executes immediately
 count.$set(5);                             // returns () => count.set(5)
-count.$reduce(prev => prev + 1);           // returns () => count.reduce(...)
 
-// Wire directly to events — no wrapping lambdas
+// Wire to events — no wrapping lambdas needed
 trait.event('click', count.$reduce(prev => prev + 1));
 
-// $val — simultaneously a getter AND subscribable
+// $val — getter AND subscribable
 trait.text(count.$val);                    // reactive text binding
-trait.style('opacity', count.$val);        // reactive style binding
 
-// $test — reactive condition AND subscribable
-trait.style('color', '#555555', count.$test(v => v > 0));`))),CC=s("theming",EE("Token-Driven Theming"),f.p(E.text("Every visual value — colors, spacing, typography, shadows — lives in a reactive token. No CSS variables, no class toggling. Theme changes propagate instantly through the entire UI."),E.style("fontSize",T.$val),E.style("color",F.$val),E.style("lineHeight","1.7"),E.style("maxWidth","720px"),E.style("marginBottom",w.$val),Y((L)=>$(L,100))),f.div(E.style("marginBottom",w.$val),Y((L)=>$(L,200)),d(`// Architecture Overview
+// $test — reactive condition
+trait.style('color', '#555555', count.$test(v => v > 0));`)));
+  var ThemingSection = SectionContainer("theming", SectionTitle("Token-Driven Theming"), SectionSubtitle("Every visual value is a reactive token. Theme changes propagate instantly."), tag.div(trait.style("marginBottom", space_padding_md.$val), onMount((el) => fadeInUp(el, 100)), CodeBlock(`// Architecture
+// useThemeState('light')   ← single source of truth
+//       │
+//       ├─▸ useTokenState('#c7c7c7', '#222', theme)  ← light/dark pair
+//       └─▸ ...hundreds of tokens
 //
-// useThemeState('light')              ← single source of truth
-//         │
-//         ├─▸ useTokenState('#c7c7c7', '#222222', theme)   ← light/dark pair
-//         ├─▸ useTokenState('#222222', '#c7c7c7', theme)
-//         └─▸ ...hundreds of tokens
-//
-// Tokens are State objects — traits subscribe automatically via $val
+// Tokens are State objects — traits subscribe via $val
 
 const theme = useThemeState('light');
 const bg = useTokenState('#c7c7c7', '#222222', theme);
-const fg = useTokenState('#222222', '#c7c7c7', theme);
+trait.style('backgroundColor', bg.$val);  // reactive, zero flicker`)), tag.div(trait.style("padding", space_padding_md.$val), trait.style("borderRadius", radius_size_md.$val), trait.style("backgroundColor", surface_bg_secondary.$val), trait.style("border", () => `1px solid ${border_color_primary.val()}`, border_color_primary), trait.style("backgroundImage", gradient_card.$val), onMount((el) => fadeInUp(el, 200)), tag.div(trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", space_gap_sm.$val), trait.style("marginBottom", space_padding_sm.$val), tag.span(trait.text("Naming: "), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_muted.$val)), tag.span(trait.text("<category>_<property>_<variant>"), trait.style("fontFamily", FONT_MONO), trait.style("fontSize", type_size_xs.$val), trait.style("color", accent_neon_cyan.$val))), tag.div(trait.style("display", "grid"), trait.style("gridTemplateColumns", "repeat(2, 1fr)"), trait.style("gridTemplateColumns", "repeat(3, 1fr)", isDesktop.$test(true)), trait.style("gap", space_gap_sm.$val), ...[
+    { token: "surface_bg_primary", desc: "Page background" },
+    { token: "text_fg_secondary", desc: "Labels & descriptions" },
+    { token: "border_color_accent", desc: "Focus ring" },
+    { token: "space_padding_lg", desc: "24px padding" },
+    { token: "type_weight_bold", desc: "700 weight" },
+    { token: "transition_fast", desc: "150ms ease" }
+  ].map((item) => tag.div(trait.style("padding", space_padding_xs.$val), trait.style("borderRadius", radius_size_sm.$val), trait.style("backgroundColor", surface_bg_code.$val), tag.div(trait.text(item.token), trait.style("fontFamily", FONT_MONO), trait.style("fontSize", "9px"), trait.style("color", "#c7c7c7"), trait.style("marginBottom", "1px")), tag.div(trait.text(item.desc), trait.style("fontSize", "9px"), trait.style("color", "#888888")))))), tag.p(trait.text("Toggle the theme in the nav bar — every color on this page is a reactive token."), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_muted.$val), trait.style("fontStyle", "italic"), trait.style("marginTop", space_padding_md.$val), trait.style("marginBottom", "0")));
+  var ArchitectureSection = SectionContainer("architecture", SectionTitle("File Architecture"), SectionSubtitle("One file per concern. Strict separation. LLM-friendly."), tag.div(trait.style("display", "grid"), trait.style("gridTemplateColumns", "1fr"), trait.style("gridTemplateColumns", "repeat(2, 1fr)", isDesktop.$test(true)), trait.style("gap", "4px"), trait.style("marginBottom", space_padding_md.$val), ...ARCH_FILES.map((file, i) => tag.div(trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", space_gap_sm.$val), trait.style("padding", `${space_padding_xs.val()} ${space_padding_sm.val()}`), trait.style("borderRadius", radius_size_sm.$val), trait.style("transition", transition_fast.$val), trait.styleOnEvent("mouseenter", "backgroundColor", () => surface_bg_tertiary.val()), trait.styleOnEvent("mouseleave", "backgroundColor", () => "transparent"), onMount((el) => fadeInUp(el, i * 30)), tag.span(trait.text(file.name), trait.style("fontFamily", FONT_MONO), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_primary.$val), trait.style("fontWeight", type_weight_bold.$val), trait.style("minWidth", "100px")), tag.span(trait.text(file.purpose), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_secondary.$val))))), tag.div(onMount((el) => fadeInUp(el, 400)), CodeBlock(ARCH_DIAGRAM_CODE)));
+  var Footer = tag.footer(trait.style("borderTop", () => `1px solid ${border_color_primary.val()}`, border_color_primary), trait.style("padding", space_padding_lg.$val), trait.style("textAlign", "center"), tag.div(trait.style("maxWidth", "1100px"), trait.style("margin", "0 auto"), trait.style("display", "flex"), trait.style("justifyContent", "center"), trait.style("alignItems", "center"), trait.style("gap", space_gap_lg.$val), tag.a(trait.attr("href", "https://github.com/linttrapmedia/oem"), trait.attr("target", "_blank"), trait.attr("rel", "noopener"), trait.style("color", text_fg_secondary.$val), trait.style("textDecoration", "none"), trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", "4px"), trait.style("fontSize", type_size_xs.$val), trait.style("transition", transition_fast.$val), trait.styleOnEvent("mouseenter", "color", () => accent_neon_pink.val()), trait.styleOnEvent("mouseleave", "color", () => text_fg_secondary.val()), GitHubIcon({ size: "14" }), tag.span(trait.text("GitHub"))), tag.a(trait.attr("href", "https://www.npmjs.com/package/@linttrap/oem"), trait.attr("target", "_blank"), trait.attr("rel", "noopener"), trait.style("color", text_fg_secondary.$val), trait.style("textDecoration", "none"), trait.style("display", "flex"), trait.style("alignItems", "center"), trait.style("gap", "4px"), trait.style("fontSize", type_size_xs.$val), trait.style("transition", transition_fast.$val), trait.styleOnEvent("mouseenter", "color", () => accent_neon_pink.val()), trait.styleOnEvent("mouseleave", "color", () => text_fg_secondary.val()), NpmIcon({ size: "14" }), tag.span(trait.text("npm"))), tag.span(trait.text("Built with OEM"), trait.style("fontSize", type_size_xs.$val), trait.style("color", text_fg_muted.$val))));
+  var app = tag.div(trait.style("position", "relative"), trait.style("minHeight", "100vh"), tag.div(trait.style("position", "fixed"), trait.style("inset", "0"), trait.style("backgroundImage", gradient_hero.$val), trait.style("pointerEvents", "none"), trait.style("zIndex", "0")), tag.div(trait.style("position", "relative"), trait.style("zIndex", "1"), NavBar, MobileNavBackdrop, MobileNav, tag.div(trait.style("height", "48px")), HeroSection, FeaturesGrid, PhilosophySection, SetupSection, PrimitivesSection, ExamplesSection, TraitsSection, StatesSection, ThemingSection, ArchitectureSection, Footer), Toast, Dialog);
 
-// Use in traits — reactive, automatic, zero flicker
-trait.style('backgroundColor', bg.$val);
-trait.style('color', fg.$val);`)),f.div(E.style("padding",I.$val),E.style("borderRadius",$E.$val),E.style("backgroundColor",c.$val),E.style("border",()=>`1px solid ${B.val()}`,B),E.style("backgroundImage",xE.$val),Y((L)=>$(L,300)),f.h4(E.text("Naming Convention"),E.style("margin","0"),E.style("fontSize",CE.$val),E.style("fontWeight",m.$val),E.style("color",U.$val),E.style("marginBottom",P.$val)),f.div(E.style("fontFamily",M),E.style("fontSize",T.$val),E.style("color",g.$val),E.style("marginBottom",P.$val),E.text("<category>_<property>_<variant>")),f.div(E.style("display","grid"),E.style("gridTemplateColumns","1fr"),E.style("gridTemplateColumns","repeat(3, 1fr)",N.$test(!0)),E.style("gap",k.$val),...[{token:"surface_bg_primary",desc:"Main page background"},{token:"action_bg_hover",desc:"Button hover state"},{token:"text_fg_secondary",desc:"Labels & descriptions"},{token:"border_color_accent",desc:"Focus ring / active"},{token:"space_padding_lg",desc:"24px section padding"},{token:"type_weight_bold",desc:"700 font weight"}].map((L)=>f.div(E.style("padding",e.$val),E.style("borderRadius",LE.$val),E.style("backgroundColor",AE.$val),f.div(E.text(L.token),E.style("fontFamily",M),E.style("fontSize",r.$val),E.style("color","#c7c7c7"),E.style("marginBottom","2px")),f.div(E.text(L.desc),E.style("fontSize",r.$val),E.style("color","#888888")))))),f.div(E.style("marginTop",w.$val),E.style("textAlign","center"),Y((L)=>$(L,400)),f.p(E.text("Try it — toggle the theme with the button in the nav bar. Every color on this page is a reactive token."),E.style("fontSize",u.$val),E.style("color",p.$val),E.style("fontStyle","italic")))),fC=s("architecture",EE("File Architecture"),f.p(E.text("Every OEM application follows a canonical file structure. One file per concern, strict separation, predictable dependency flow. This is what makes OEM uniquely LLM-friendly."),E.style("fontSize",T.$val),E.style("color",F.$val),E.style("lineHeight","1.7"),E.style("maxWidth","720px"),E.style("marginBottom",w.$val),Y((L)=>$(L,100))),f.div(E.style("display","grid"),E.style("gridTemplateColumns","1fr"),E.style("gridTemplateColumns","repeat(2, 1fr)",N.$test(!0)),E.style("gap",b.$val),E.style("marginBottom",w.$val),...RL.map((L,C)=>f.div(E.style("display","flex"),E.style("alignItems","center"),E.style("gap",k.$val),E.style("padding",P.$val),E.style("borderRadius",LE.$val),E.style("backgroundColor",c.$val),E.style("border",()=>`1px solid ${B.val()}`,B),E.style("transition",i.$val),E.styleOnEvent("mouseenter","backgroundColor",()=>eE.val()),E.styleOnEvent("mouseleave","backgroundColor",()=>c.val()),Y((W)=>$(W,C*50)),f.span(E.text(L.name),E.style("fontFamily",M),E.style("fontSize",x.$val),E.style("color",U.$val),E.style("fontWeight",JE.$val),E.style("minWidth","120px")),f.span(E.text(L.purpose),E.style("fontSize",x.$val),E.style("color",F.$val))))),f.div(Y((L)=>$(L,650)),d(nL))),HC=f.footer(E.style("borderTop",()=>`1px solid ${B.val()}`,B),E.style("padding",w.$val),E.style("textAlign","center"),f.div(E.style("maxWidth","1200px"),E.style("margin","0 auto"),f.div(E.style("display","flex"),E.style("justifyContent","center"),E.style("alignItems","center"),E.style("gap",VE.$val),E.style("marginBottom",I.$val),f.a(E.attr("href","https://github.com/linttrapmedia/oem"),E.attr("target","_blank"),E.attr("rel","noopener"),E.style("color",F.$val),E.style("textDecoration","none"),E.style("display","flex"),E.style("alignItems","center"),E.style("gap",b.$val),E.style("fontSize",x.$val),E.style("transition",i.$val),E.styleOnEvent("mouseenter","color",()=>v.val()),E.styleOnEvent("mouseleave","color",()=>F.val()),dE({size:"16"}),f.span(E.text("GitHub"))),f.a(E.attr("href","https://www.npmjs.com/package/@linttrap/oem"),E.attr("target","_blank"),E.attr("rel","noopener"),E.style("color",F.$val),E.style("textDecoration","none"),E.style("display","flex"),E.style("alignItems","center"),E.style("gap",b.$val),E.style("fontSize",x.$val),E.style("transition",i.$val),E.styleOnEvent("mouseenter","color",()=>v.val()),E.styleOnEvent("mouseleave","color",()=>F.val()),ML({size:"16"}),f.span(E.text("npm")))),f.p(E.style("fontSize",r.$val),E.style("color",p.$val),E.style("margin","0"),E.text("Built with OEM — UI, At Your Command")))),bL=f.div(E.style("position","relative"),E.style("minHeight","100vh"),f.div(E.style("position","fixed"),E.style("inset","0"),E.style("backgroundImage",GL.$val),E.style("pointerEvents","none"),E.style("zIndex","0")),f.div(E.style("position","relative"),E.style("zIndex","1"),dL,sL,f.div(E.style("height","56px")),gL,_L,eL,rL,iL,tL,EC,LC,CC,fC,HC));f.$(document.body)(E.style("margin","0"),E.style("padding","0"),E.style("fontFamily",HE),E.style("backgroundColor",XE.$val),E.style("color",U.$val),E.style("minHeight","100vh"),E.style("height","auto"),E.style("overflow","visible"),E.style("overflowX","hidden"),E.style("display","block"),E.style("transition",S.$val),bL);})();
+  // www/main.ts
+  tag.$(document.body)(trait.style("margin", "0"), trait.style("padding", "0"), trait.style("fontFamily", FONT_DISPLAY), trait.style("backgroundColor", surface_bg_primary.$val), trait.style("color", text_fg_primary.$val), trait.style("minHeight", "100vh"), trait.style("height", "auto"), trait.style("overflow", "visible"), trait.style("overflowX", "hidden"), trait.style("display", "block"), trait.style("transition", transition_medium.$val), app);
+})();
 
-//# debugId=B008D873B834173064756E2164756E21
+//# debugId=76875F2590F0638364756E2164756E21
 //# sourceMappingURL=main.js.map
