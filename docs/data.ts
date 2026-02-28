@@ -97,9 +97,6 @@ const app = tag.div(
   tag.h1(
     trait.text('Hello, OEM'),
     trait.style('fontSize', '48px'),
-    trait.style('background', 'linear-gradient(135deg, #555555, #444444)'),
-    trait.style('WebkitBackgroundClip', 'text'),
-    trait.style('WebkitTextFillColor', 'transparent'),
   ),
 );
 

@@ -9,9 +9,12 @@ export type Section =
   | 'traits'
   | 'states'
   | 'theming'
-  | 'architecture';
+  | 'architecture'
+  | 'wizard';
 
 export type PrimitiveTab = 'element' | 'trait' | 'state';
+
+export type WizardTab = 'basics' | 'style' | 'features';
 
 export type NavItem = {
   id: Section;

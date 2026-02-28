@@ -83,12 +83,14 @@ export const text_fg_primary = useTokenState('#222222', '#c7c7c7', theme);
 // — Text: secondary foreground
 // USE: labels, descriptions, secondary info
 // AVOID: headings
-export const text_fg_secondary = useTokenState('#444444', '#999999', theme);
+// CONTRAST: must meet 4.5:1 against surface_bg_secondary in both themes
+export const text_fg_secondary = useTokenState('#333333', '#aaaaaa', theme);
 
 // — Text: muted foreground
-// USE: placeholders, disabled text, metadata
+// USE: placeholders, metadata, helper text
 // AVOID: readable body text
-export const text_fg_muted = useTokenState('#888888', '#555555', theme);
+// CONTRAST: must meet 4.5:1 against surface_bg_secondary in both themes
+export const text_fg_muted = useTokenState('#555555', '#888888', theme);
 
 // — Text: code / mono foreground
 // USE: inline code, code blocks

@@ -130,3 +130,21 @@ When the theme changes, every token fires its subscribers and the UI updates aut
 - **Always** create or reference a token from `theme.ts`.
 - **Never** invent a token name that doesn't follow the `<category>_<property>_<variant>` convention.
 - When no existing token fits, create a new one with full documentation and add it to `theme.ts`.
+
+## Contrast Rules (CRITICAL)
+
+Every text/foreground token MUST meet WCAG contrast minimums against the surfaces it will appear on, **in both light and dark mode**.
+
+| Content Type | Minimum Contrast Ratio |
+| --- | --- |
+| Body text (< 18px) | 4.5:1 |
+| Large text (≥ 18px bold) | 3:1 |
+| UI components & icons | 3:1 |
+
+**Rules:**
+1. When creating a `text_fg_*` token, check its contrast against every `surface_bg_*` it will sit on — in BOTH themes.
+2. "Muted" does not mean "invisible." `text_fg_muted` must still meet 4.5:1 against its typical background.
+3. When a token is used as text on a colored background (e.g., selected chip text on an accent background), verify contrast for that specific pairing.
+4. Dark mode: avoid pure white (#fff) — use off-white (#c7c7c7–#e5e7eb) to prevent halation.
+5. Light mode: avoid pairing mid-grays as both foreground and background — they collapse into unreadable mush.
+6. Add a `// CONTRAST:` comment to every text token documenting which surface it was verified against.

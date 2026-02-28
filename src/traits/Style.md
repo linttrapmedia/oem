@@ -54,8 +54,8 @@ trait.style('padding', space_padding_md.$val);
 // IMPORTANT: Never use two opposing $test conditions on the same property.
 // Each conditional trait has its own saved-value slot, and opposing conditions
 // will corrupt each other's snapshots, preventing the style from reverting.
-trait.style('opacity', '0');                          // default
-trait.style('opacity', '1', visible.$test(true));     // override when true
+trait.style('opacity', '0'); // default
+trait.style('opacity', '1', visible.$test(true)); // override when true
 
 // Custom CSS property
 trait.style('--header-height', '64px');

@@ -5,6 +5,7 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'hero', label: 'Home' },
   { id: 'philosophy', label: 'Philosophy' },
   { id: 'setup', label: 'Setup' },
+  { id: 'wizard', label: 'Wizard' },
   { id: 'primitives', label: 'Primitives' },
   { id: 'examples', label: 'Examples' },
   { id: 'traits', label: 'Traits' },

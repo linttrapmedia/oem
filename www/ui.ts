@@ -41,7 +41,6 @@ import {
   SunIcon,
 } from './icons';
 import { $dispatch, dispatch } from './machines';
-import type { BddFeature, BddScenario } from './states';
 import {
   activeSection,
   dialogOpen,
@@ -51,19 +50,6 @@ import {
   primitiveTab,
   toastMessage,
   toastVisible,
-  wizardActiveFeature,
-  wizardAesthetic,
-  wizardAppDescription,
-  wizardAppName,
-  wizardColorScheme,
-  wizardExtraInstructions,
-  wizardFeatures,
-  wizardLayout,
-  wizardNewFeatureName,
-  wizardNewGiven,
-  wizardNewThen,
-  wizardNewWhen,
-  wizardTab,
 } from './states';
 import { tag, trait } from './templates';
 import {
@@ -98,10 +84,8 @@ import {
   surface_bg_card,
   surface_bg_code,
   surface_bg_nav,
-  surface_bg_primary,
   surface_bg_secondary,
   surface_bg_tertiary,
-  text_fg_code,
   text_fg_muted,
   text_fg_primary,
   text_fg_secondary,
@@ -123,7 +107,7 @@ import {
   type_weight_semibold,
   type_weight_thin,
 } from './theme';
-import type { PrimitiveTab, Section, WizardTab } from './types';
+import type { PrimitiveTab, Section } from './types';
 
 // ═══════════════════════════════════════════════
 // ANIMATION HELPERS
@@ -1231,23 +1215,25 @@ const PrimitivesSection = SectionContainer(
         trait.style('cursor', 'pointer'),
         trait.style('transition', transition_fast.$val),
         trait.style('fontFamily', FONT_MONO),
+        // Active state
+        trait.style('backgroundColor', surface_bg_secondary.$val, primitiveTab.$test(tab.id)),
+        trait.style('color', text_fg_primary.$val, primitiveTab.$test(tab.id)),
+        trait.style('boxShadow', '0 1px 3px rgba(0,0,0,0.1)', primitiveTab.$test(tab.id)),
+        // Inactive state
         trait.style(
           'backgroundColor',
-          () => (primitiveTab.val() === tab.id ? surface_bg_secondary.val() : 'transparent'),
-          primitiveTab,
-          surface_bg_secondary,
+          'transparent',
+          primitiveTab.$test((v) => v !== tab.id),
         ),
         trait.style(
           'color',
-          () => (primitiveTab.val() === tab.id ? text_fg_primary.val() : text_fg_muted.val()),
-          primitiveTab,
-          text_fg_primary,
-          text_fg_muted,
+          text_fg_muted.$val,
+          primitiveTab.$test((v) => v !== tab.id),
         ),
         trait.style(
           'boxShadow',
-          () => (primitiveTab.val() === tab.id ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'),
-          primitiveTab,
+          'none',
+          primitiveTab.$test((v) => v !== tab.id),
         ),
         trait.event('click', $dispatch(setPrimitiveTab(tab.id))),
         trait.aria('role', 'tab'),
@@ -1671,8 +1657,8 @@ function DependencyFlowSVG() {
   // Colors
   const nodeStroke = () => border_color_cyan.val();
   const nodeFill = () => surface_bg_code.val();
-  const textFill = () => text_fg_code.val();
-  const arrowColor = () => text_fg_code.val();
+  const textFill = () => text_fg_muted.val();
+  const arrowColor = () => text_fg_muted.val();
 
   // Row positions (y center of each row)
   const row0 = 30;
@@ -1716,7 +1702,7 @@ function DependencyFlowSVG() {
         trait.attr('y', String(cy)),
         trait.attr('text-anchor', 'middle'),
         trait.attr('dominant-baseline', 'central'),
-        trait.style('fill', textFill, text_fg_code),
+        trait.style('fill', textFill, text_fg_primary),
         trait.style('fontSize', fontSize),
         trait.style('fontFamily', fontFamily),
         trait.text(label),
@@ -1730,7 +1716,7 @@ function DependencyFlowSVG() {
       trait.attr('y1', String(y1 + boxH / 2)),
       trait.attr('x2', String(x2)),
       trait.attr('y2', String(y2 - boxH / 2)),
-      trait.style('stroke', arrowColor, text_fg_code),
+      trait.style('stroke', arrowColor, text_fg_muted),
       trait.attr('stroke-width', '1'),
       trait.attr('marker-end', 'url(#arrowhead)'),
     );
@@ -1744,13 +1730,13 @@ function DependencyFlowSVG() {
       trait.attr('y1', String(y1)),
       trait.attr('x2', String(toX)),
       trait.attr('y2', String(y2)),
-      trait.style('stroke', arrowColor, text_fg_code),
+      trait.style('stroke', arrowColor, text_fg_muted),
       trait.attr('stroke-width', '1'),
       trait.attr('marker-end', 'url(#arrowhead)'),
     );
   }
 
-  const strokeVal = text_fg_code.val();
+  const strokeVal = text_fg_muted.val();
 
   return tag.div(
     trait.style('padding', space_padding_md.$val),
@@ -1777,7 +1763,7 @@ function DependencyFlowSVG() {
           trait.attr('orient', 'auto'),
           tag.polygon(
             trait.attr('points', '0 0, 10 4, 0 8'),
-            trait.style('fill', arrowColor, text_fg_code),
+            trait.style('fill', arrowColor, text_fg_muted),
           ),
         ),
       ),
@@ -2002,767 +1988,6 @@ const ArchitectureSection = SectionContainer(
 );
 
 // ═══════════════════════════════════════════════
-// PROMPT WIZARD
-// ═══════════════════════════════════════════════
-
-function generateOemPrompt(): string {
-  const name = wizardAppName.val() || 'My App';
-  const desc = wizardAppDescription.val() || 'A web application';
-  const aesthetic = wizardAesthetic.val();
-  const colorScheme = wizardColorScheme.val();
-  const layout = wizardLayout.val();
-  const features = wizardFeatures.val();
-  const extra = wizardExtraInstructions.val();
-
-  let p = '';
-  p += `Build "${name}" — ${desc}\n`;
-  p += `Use the OEM framework (@linttrap/oem) with the OEM agent.\n\n`;
-
-  p += `## Visual Style\n`;
-  p += `- Aesthetic: ${aesthetic}\n`;
-  p += `- Color scheme: ${colorScheme}\n`;
-  p += `- Layout: ${layout}\n\n`;
-
-  if (features.length > 0) {
-    p += `## Features (BDD)\n`;
-    features.forEach((f) => {
-      p += `\nFeature: ${f.name}\n`;
-      f.scenarios.forEach((s) => {
-        p += `  Scenario:\n`;
-        if (s.given) p += `    Given ${s.given}\n`;
-        if (s.when) p += `    When ${s.when}\n`;
-        if (s.then) p += `    Then ${s.then}\n`;
-      });
-    });
-    p += '\n';
-  }
-
-  if (extra) {
-    p += `## Additional Instructions\n${extra}\n`;
-  }
-
-  return p;
-}
-
-function WizardLabel(labelText: string) {
-  return tag.div(
-    trait.text(labelText),
-    trait.style('fontSize', type_size_xs.$val),
-    trait.style('fontWeight', type_weight_semibold.$val),
-    trait.style('color', text_fg_muted.$val),
-    trait.style('textTransform', 'uppercase'),
-    trait.style('letterSpacing', '0.06em'),
-    trait.style('marginBottom', '6px'),
-  );
-}
-
-function WizardChip(label: string, stateRef: any, value: string) {
-  return tag.button(
-    trait.text(label),
-    trait.event('click', stateRef.$set(value)),
-    trait.style('padding', `6px 16px`),
-    trait.style('borderRadius', radius_size_full.$val),
-    trait.style(
-      'border',
-      () =>
-        stateRef.val() === value
-          ? `1px solid ${accent_neon_cyan.val()}`
-          : `1px solid ${border_color_primary.val()}`,
-      stateRef,
-      accent_neon_cyan,
-      border_color_primary,
-    ),
-    trait.style(
-      'backgroundColor',
-      () => (stateRef.val() === value ? accent_neon_cyan.val() : surface_bg_secondary.val()),
-      stateRef,
-      accent_neon_cyan,
-      surface_bg_secondary,
-    ),
-    trait.style(
-      'color',
-      () => (stateRef.val() === value ? surface_bg_primary.val() : text_fg_secondary.val()),
-      stateRef,
-      surface_bg_primary,
-      text_fg_secondary,
-    ),
-    trait.style('fontSize', type_size_xs.$val),
-    trait.style('fontWeight', type_weight_medium.$val),
-    trait.style('cursor', 'pointer'),
-    trait.style('transition', transition_fast.$val),
-    trait.style('outline', 'none'),
-    trait.style('fontFamily', 'inherit'),
-  );
-}
-
-function WizardInputField(placeholder: string, stateRef: any) {
-  return tag.input(
-    trait.attr('type', 'text'),
-    trait.attr('placeholder', placeholder),
-    trait.inputValue(stateRef.$val),
-    trait.inputEvent('input', (val: string) => stateRef.set(val)),
-    trait.style('width', '100%'),
-    trait.style('boxSizing', 'border-box'),
-    trait.style('padding', `8px 12px`),
-    trait.style('borderRadius', radius_size_sm.$val),
-    trait.style('border', () => `1px solid ${border_color_primary.val()}`, border_color_primary),
-    trait.style('backgroundColor', surface_bg_code.$val),
-    trait.style('color', text_fg_code.$val),
-    trait.style('fontFamily', FONT_MONO),
-    trait.style('fontSize', type_size_xs.$val),
-    trait.style('outline', 'none'),
-  );
-}
-
-function WizardTextareaField(placeholder: string, stateRef: any, rows = 3) {
-  return tag.textarea(
-    trait.attr('placeholder', placeholder),
-    trait.attr('rows', String(rows)),
-    trait.inputValue(stateRef.$val),
-    trait.inputEvent('input', (val: string) => stateRef.set(val)),
-    trait.style('width', '100%'),
-    trait.style('boxSizing', 'border-box'),
-    trait.style('padding', `8px 12px`),
-    trait.style('borderRadius', radius_size_sm.$val),
-    trait.style('border', () => `1px solid ${border_color_primary.val()}`, border_color_primary),
-    trait.style('backgroundColor', surface_bg_code.$val),
-    trait.style('color', text_fg_code.$val),
-    trait.style('fontFamily', FONT_MONO),
-    trait.style('fontSize', type_size_xs.$val),
-    trait.style('outline', 'none'),
-    trait.style('resize', 'vertical'),
-    trait.style('lineHeight', '1.5'),
-  );
-}
-
-function WizardCard(...children: any[]) {
-  return tag.div(
-    trait.style('padding', space_padding_md.$val),
-    trait.style('borderRadius', radius_size_md.$val),
-    trait.style('backgroundColor', surface_bg_secondary.$val),
-    trait.style('border', () => `1px solid ${border_color_primary.val()}`, border_color_primary),
-    trait.style('backgroundImage', gradient_card.$val),
-    ...children,
-  );
-}
-
-function WizardSmallButton(label: string, onClick: () => void) {
-  return tag.button(
-    trait.text(label),
-    trait.event('click', () => onClick()),
-    trait.style('padding', '6px 14px'),
-    trait.style('borderRadius', radius_size_sm.$val),
-    trait.style('border', () => `1px solid ${border_color_cyan.val()}`, border_color_cyan),
-    trait.style('backgroundColor', 'transparent'),
-    trait.style('color', accent_neon_cyan.$val),
-    trait.style('fontSize', type_size_xs.$val),
-    trait.style('fontWeight', type_weight_medium.$val),
-    trait.style('cursor', 'pointer'),
-    trait.style('fontFamily', 'inherit'),
-    trait.style('transition', transition_fast.$val),
-    trait.styleOnEvent('mouseenter', 'backgroundColor', () => `${accent_neon_cyan.val()}15`),
-    trait.styleOnEvent('mouseleave', 'backgroundColor', () => 'transparent'),
-  );
-}
-
-const WIZARD_TABS: { id: WizardTab; label: string }[] = [
-  { id: 'basics', label: 'Basics' },
-  { id: 'style', label: 'Style' },
-  { id: 'features', label: 'Features' },
-];
-
-function WizardTabButton(tab: WizardTab, label: string) {
-  return tag.button(
-    trait.text(label),
-    trait.event('click', wizardTab.$set(tab)),
-    trait.style('padding', '8px 20px'),
-    trait.style('border', 'none'),
-    trait.style('borderRadius', `${radius_size_sm.val()} ${radius_size_sm.val()} 0 0`),
-    trait.style('fontSize', type_size_xs.$val),
-    trait.style('fontWeight', type_weight_medium.$val),
-    trait.style('cursor', 'pointer'),
-    trait.style('transition', transition_fast.$val),
-    trait.style('fontFamily', FONT_MONO),
-    trait.style('outline', 'none'),
-    trait.style(
-      'backgroundColor',
-      () => (wizardTab.val() === tab ? surface_bg_secondary.val() : 'transparent'),
-      wizardTab,
-      surface_bg_secondary,
-    ),
-    trait.style(
-      'color',
-      () => (wizardTab.val() === tab ? text_fg_primary.val() : text_fg_muted.val()),
-      wizardTab,
-      text_fg_primary,
-      text_fg_muted,
-    ),
-    trait.style(
-      'borderBottom',
-      () =>
-        wizardTab.val() === tab ? `2px solid ${accent_neon_cyan.val()}` : '2px solid transparent',
-      wizardTab,
-      accent_neon_cyan,
-    ),
-    trait.aria('role', 'tab'),
-    trait.aria('aria-selected', () => (wizardTab.val() === tab ? 'true' : 'false'), wizardTab),
-  );
-}
-
-// ── Tab content panels ──
-
-function WizardBasicsPanel() {
-  return tag.div(
-    trait.style('display', 'flex'),
-    trait.style('flexDirection', 'column'),
-    trait.style('gap', space_gap_md.$val),
-    WizardCard(WizardLabel('App Name'), WizardInputField('e.g. TaskFlow', wizardAppName)),
-    WizardCard(
-      WizardLabel('Description'),
-      WizardTextareaField('Describe your app in a sentence or two…', wizardAppDescription, 2),
-    ),
-    WizardCard(
-      WizardLabel('Extra Instructions'),
-      WizardTextareaField('Any additional requirements…', wizardExtraInstructions, 3),
-    ),
-  );
-}
-
-function WizardStylePanel() {
-  return tag.div(
-    trait.style('display', 'flex'),
-    trait.style('flexDirection', 'column'),
-    trait.style('gap', space_gap_md.$val),
-    WizardCard(
-      WizardLabel('Aesthetic'),
-      tag.div(
-        trait.style('display', 'flex'),
-        trait.style('flexWrap', 'wrap'),
-        trait.style('gap', '6px'),
-        WizardChip('Modern', wizardAesthetic, 'modern'),
-        WizardChip('Hacker', wizardAesthetic, 'hacker'),
-        WizardChip('Minimal', wizardAesthetic, 'minimal'),
-        WizardChip('Brutalist', wizardAesthetic, 'brutalist'),
-        WizardChip('Playful', wizardAesthetic, 'playful'),
-        WizardChip('Corporate', wizardAesthetic, 'corporate'),
-      ),
-    ),
-    WizardCard(
-      WizardLabel('Color Scheme'),
-      tag.div(
-        trait.style('display', 'flex'),
-        trait.style('flexWrap', 'wrap'),
-        trait.style('gap', '6px'),
-        WizardChip('Dark', wizardColorScheme, 'dark'),
-        WizardChip('Light', wizardColorScheme, 'light'),
-        WizardChip('Both', wizardColorScheme, 'both'),
-      ),
-    ),
-    WizardCard(
-      WizardLabel('Layout'),
-      tag.div(
-        trait.style('display', 'flex'),
-        trait.style('flexWrap', 'wrap'),
-        trait.style('gap', '6px'),
-        WizardChip('Single Page', wizardLayout, 'single-page'),
-        WizardChip('Multi Page', wizardLayout, 'multi-page'),
-        WizardChip('Dashboard', wizardLayout, 'dashboard'),
-      ),
-    ),
-  );
-}
-
-function WizardFeaturesPanel() {
-  return tag.div(
-    trait.style('display', 'flex'),
-    trait.style('flexDirection', 'column'),
-    trait.style('gap', space_gap_md.$val),
-    WizardCard(
-      WizardLabel('Features (BDD)'),
-
-      // Feature cards
-      tag.div(
-        trait.style('display', 'flex'),
-        trait.style('flexDirection', 'column'),
-        trait.style('gap', '8px'),
-        trait.style('marginBottom', space_padding_sm.$val),
-        trait.innerHTML(
-          () => {
-            const feats = wizardFeatures.val();
-            if (feats.length === 0)
-              return tag.div(
-                trait.text('No features yet. Add one below.'),
-                trait.style('color', text_fg_muted.$val),
-                trait.style('fontSize', type_size_xs.$val),
-                trait.style('fontStyle', 'italic'),
-                trait.style('padding', '8px 0'),
-              );
-            return feats.map((f: BddFeature, fi: number) =>
-              tag.div(
-                trait.style('padding', '10px'),
-                trait.style('borderRadius', radius_size_sm.$val),
-                trait.style('backgroundColor', surface_bg_code.$val),
-                trait.style(
-                  'border',
-                  () =>
-                    fi === wizardActiveFeature.val()
-                      ? `1px solid ${accent_neon_cyan.val()}`
-                      : `1px solid ${border_color_primary.val()}`,
-                  wizardActiveFeature,
-                  border_color_primary,
-                  accent_neon_cyan,
-                ),
-
-                // Feature header
-                tag.div(
-                  trait.style('display', 'flex'),
-                  trait.style('justifyContent', 'space-between'),
-                  trait.style('alignItems', 'center'),
-                  trait.style('marginBottom', f.scenarios.length > 0 ? '8px' : '0'),
-
-                  tag.span(
-                    trait.text(`Feature: ${f.name}`),
-                    trait.style('fontWeight', type_weight_semibold.$val),
-                    trait.style('color', text_fg_primary.$val),
-                    trait.style('fontSize', type_size_xs.$val),
-                    trait.style('fontFamily', FONT_MONO),
-                  ),
-
-                  tag.div(
-                    trait.style('display', 'flex'),
-                    trait.style('gap', '4px'),
-
-                    tag.button(
-                      trait.text('+'),
-                      trait.event('click', () => wizardActiveFeature.set(fi)),
-                      trait.style('width', '22px'),
-                      trait.style('height', '22px'),
-                      trait.style('borderRadius', '4px'),
-                      trait.style(
-                        'border',
-                        () => `1px solid ${border_color_primary.val()}`,
-                        border_color_primary,
-                      ),
-                      trait.style('backgroundColor', 'transparent'),
-                      trait.style('color', accent_neon_cyan.$val),
-                      trait.style('cursor', 'pointer'),
-                      trait.style('fontSize', '14px'),
-                      trait.style('fontWeight', type_weight_bold.$val),
-                      trait.style('display', 'flex'),
-                      trait.style('alignItems', 'center'),
-                      trait.style('justifyContent', 'center'),
-                      trait.style('fontFamily', 'inherit'),
-                    ),
-
-                    tag.button(
-                      trait.text('×'),
-                      trait.event('click', () => {
-                        wizardFeatures.reduce((prev) => prev.filter((_, i) => i !== fi));
-                        if (wizardActiveFeature.val() >= wizardFeatures.val().length) {
-                          wizardActiveFeature.set(Math.max(0, wizardFeatures.val().length - 1));
-                        }
-                      }),
-                      trait.style('width', '22px'),
-                      trait.style('height', '22px'),
-                      trait.style('borderRadius', '4px'),
-                      trait.style(
-                        'border',
-                        () => `1px solid ${border_color_primary.val()}`,
-                        border_color_primary,
-                      ),
-                      trait.style('backgroundColor', 'transparent'),
-                      trait.style('color', text_fg_muted.$val),
-                      trait.style('cursor', 'pointer'),
-                      trait.style('fontSize', '14px'),
-                      trait.style('display', 'flex'),
-                      trait.style('alignItems', 'center'),
-                      trait.style('justifyContent', 'center'),
-                      trait.style('fontFamily', 'inherit'),
-                    ),
-                  ),
-                ),
-
-                // Scenarios
-                ...f.scenarios.map((s: BddScenario, si: number) =>
-                  tag.div(
-                    trait.style('display', 'flex'),
-                    trait.style('alignItems', 'baseline'),
-                    trait.style('gap', '6px'),
-                    trait.style('paddingLeft', '10px'),
-                    trait.style('marginBottom', '3px'),
-                    trait.style('fontSize', type_size_xs.$val),
-                    trait.style('fontFamily', FONT_MONO),
-                    trait.style('lineHeight', '1.6'),
-
-                    tag.div(
-                      trait.style('flex', '1'),
-                      trait.style('color', text_fg_secondary.$val),
-                      tag.span(trait.text('Given '), trait.style('color', accent_neon_purple.$val)),
-                      tag.span(trait.text(s.given || '…')),
-                      tag.br(),
-                      tag.span(trait.text('When '), trait.style('color', accent_neon_pink.$val)),
-                      tag.span(trait.text(s.when || '…')),
-                      tag.br(),
-                      tag.span(trait.text('Then '), trait.style('color', accent_neon_cyan.$val)),
-                      tag.span(trait.text(s.then || '…')),
-                    ),
-
-                    tag.button(
-                      trait.text('×'),
-                      trait.event('click', () => {
-                        wizardFeatures.reduce((prev) =>
-                          prev.map((feat, i) =>
-                            i === fi
-                              ? { ...feat, scenarios: feat.scenarios.filter((_, j) => j !== si) }
-                              : feat,
-                          ),
-                        );
-                      }),
-                      trait.style('flexShrink', '0'),
-                      trait.style('width', '18px'),
-                      trait.style('height', '18px'),
-                      trait.style('borderRadius', '3px'),
-                      trait.style('border', 'none'),
-                      trait.style('backgroundColor', 'transparent'),
-                      trait.style('color', text_fg_muted.$val),
-                      trait.style('cursor', 'pointer'),
-                      trait.style('fontSize', '12px'),
-                      trait.style('display', 'flex'),
-                      trait.style('alignItems', 'center'),
-                      trait.style('justifyContent', 'center'),
-                      trait.style('fontFamily', 'inherit'),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-          wizardFeatures,
-          wizardActiveFeature,
-        ),
-      ),
-
-      // Add Feature form
-      tag.div(
-        trait.style('display', 'flex'),
-        trait.style('gap', '6px'),
-        trait.style('marginBottom', space_padding_sm.$val),
-
-        tag.input(
-          trait.attr('type', 'text'),
-          trait.attr('placeholder', 'Feature name…'),
-          trait.inputValue(wizardNewFeatureName.$val),
-          trait.inputEvent('input', (val: string) => wizardNewFeatureName.set(val)),
-          trait.style('flex', '1'),
-          trait.style('padding', '6px 10px'),
-          trait.style('borderRadius', radius_size_sm.$val),
-          trait.style(
-            'border',
-            () => `1px solid ${border_color_primary.val()}`,
-            border_color_primary,
-          ),
-          trait.style('backgroundColor', surface_bg_code.$val),
-          trait.style('color', text_fg_code.$val),
-          trait.style('fontFamily', FONT_MONO),
-          trait.style('fontSize', type_size_xs.$val),
-          trait.style('outline', 'none'),
-        ),
-
-        WizardSmallButton('Add Feature', () => {
-          const name = wizardNewFeatureName.val().trim();
-          if (!name) return;
-          wizardFeatures.reduce((prev) => [...prev, { name, scenarios: [] }]);
-          wizardActiveFeature.set(wizardFeatures.val().length - 1);
-          wizardNewFeatureName.set('');
-        }),
-      ),
-
-      // Add Scenario form
-      tag.div(
-        trait.style('display', 'flex'),
-        trait.style('flexDirection', 'column'),
-        trait.style('gap', '4px'),
-
-        tag.div(
-          trait.style('display', 'flex'),
-          trait.style('alignItems', 'center'),
-          trait.style('gap', '6px'),
-          trait.style('marginBottom', '4px'),
-          tag.span(
-            trait.text('Add scenario to: '),
-            trait.style('fontSize', type_size_xs.$val),
-            trait.style('color', text_fg_muted.$val),
-            trait.style('whiteSpace', 'nowrap'),
-          ),
-          tag.div(
-            trait.style('display', 'flex'),
-            trait.style('flexWrap', 'wrap'),
-            trait.style('gap', '4px'),
-            trait.innerHTML(
-              () => {
-                const feats = wizardFeatures.val();
-                if (feats.length === 0)
-                  return tag.span(
-                    trait.text('—'),
-                    trait.style('color', text_fg_muted.$val),
-                    trait.style('fontSize', type_size_xs.$val),
-                  );
-                return feats.map((f: BddFeature, fi: number) =>
-                  tag.button(
-                    trait.text(f.name),
-                    trait.event('click', () => wizardActiveFeature.set(fi)),
-                    trait.style('padding', '3px 10px'),
-                    trait.style('borderRadius', radius_size_full.$val),
-                    trait.style(
-                      'border',
-                      () =>
-                        fi === wizardActiveFeature.val()
-                          ? `1px solid ${accent_neon_cyan.val()}`
-                          : `1px solid ${border_color_primary.val()}`,
-                      wizardActiveFeature,
-                      accent_neon_cyan,
-                      border_color_primary,
-                    ),
-                    trait.style(
-                      'backgroundColor',
-                      () =>
-                        fi === wizardActiveFeature.val()
-                          ? `${accent_neon_cyan.val()}20`
-                          : 'transparent',
-                      wizardActiveFeature,
-                      accent_neon_cyan,
-                    ),
-                    trait.style(
-                      'color',
-                      () =>
-                        fi === wizardActiveFeature.val()
-                          ? accent_neon_cyan.val()
-                          : text_fg_muted.val(),
-                      wizardActiveFeature,
-                      accent_neon_cyan,
-                      text_fg_muted,
-                    ),
-                    trait.style('fontSize', '10px'),
-                    trait.style('fontFamily', FONT_MONO),
-                    trait.style('cursor', 'pointer'),
-                    trait.style('fontWeight', type_weight_medium.$val),
-                  ),
-                );
-              },
-              wizardFeatures,
-              wizardActiveFeature,
-            ),
-          ),
-        ),
-
-        tag.input(
-          trait.attr('type', 'text'),
-          trait.attr('placeholder', 'Given…'),
-          trait.inputValue(wizardNewGiven.$val),
-          trait.inputEvent('input', (val: string) => wizardNewGiven.set(val)),
-          trait.style('padding', '6px 10px'),
-          trait.style('borderRadius', radius_size_sm.$val),
-          trait.style(
-            'border',
-            () => `1px solid ${border_color_primary.val()}`,
-            border_color_primary,
-          ),
-          trait.style('backgroundColor', surface_bg_code.$val),
-          trait.style('color', text_fg_code.$val),
-          trait.style('fontFamily', FONT_MONO),
-          trait.style('fontSize', type_size_xs.$val),
-          trait.style('outline', 'none'),
-        ),
-        tag.input(
-          trait.attr('type', 'text'),
-          trait.attr('placeholder', 'When…'),
-          trait.inputValue(wizardNewWhen.$val),
-          trait.inputEvent('input', (val: string) => wizardNewWhen.set(val)),
-          trait.style('padding', '6px 10px'),
-          trait.style('borderRadius', radius_size_sm.$val),
-          trait.style(
-            'border',
-            () => `1px solid ${border_color_primary.val()}`,
-            border_color_primary,
-          ),
-          trait.style('backgroundColor', surface_bg_code.$val),
-          trait.style('color', text_fg_code.$val),
-          trait.style('fontFamily', FONT_MONO),
-          trait.style('fontSize', type_size_xs.$val),
-          trait.style('outline', 'none'),
-        ),
-        tag.input(
-          trait.attr('type', 'text'),
-          trait.attr('placeholder', 'Then…'),
-          trait.inputValue(wizardNewThen.$val),
-          trait.inputEvent('input', (val: string) => wizardNewThen.set(val)),
-          trait.style('padding', '6px 10px'),
-          trait.style('borderRadius', radius_size_sm.$val),
-          trait.style(
-            'border',
-            () => `1px solid ${border_color_primary.val()}`,
-            border_color_primary,
-          ),
-          trait.style('backgroundColor', surface_bg_code.$val),
-          trait.style('color', text_fg_code.$val),
-          trait.style('fontFamily', FONT_MONO),
-          trait.style('fontSize', type_size_xs.$val),
-          trait.style('outline', 'none'),
-        ),
-
-        tag.div(
-          trait.style('display', 'flex'),
-          trait.style('justifyContent', 'flex-end'),
-          trait.style('marginTop', '4px'),
-          WizardSmallButton('Add Scenario', () => {
-            const feats = wizardFeatures.val();
-            if (feats.length === 0) return;
-            const idx = Math.min(wizardActiveFeature.val(), feats.length - 1);
-            const g = wizardNewGiven.val().trim();
-            const w = wizardNewWhen.val().trim();
-            const t = wizardNewThen.val().trim();
-            if (!g && !w && !t) return;
-            wizardFeatures.reduce((prev) =>
-              prev.map((feat, i) =>
-                i === idx
-                  ? { ...feat, scenarios: [...feat.scenarios, { given: g, when: w, then: t }] }
-                  : feat,
-              ),
-            );
-            wizardNewGiven.set('');
-            wizardNewWhen.set('');
-            wizardNewThen.set('');
-          }),
-        ),
-      ),
-    ),
-  );
-}
-
-const PromptWizardSection = SectionContainer(
-  'wizard',
-  SectionTitle('Wizard'),
-  SectionSubtitle('Craft an AI-ready prompt that encodes OEM conventions for your app.'),
-
-  tag.div(
-    trait.style('display', 'grid'),
-    trait.style('gridTemplateColumns', '1fr'),
-    trait.style('gridTemplateColumns', '1fr 1fr', isDesktop.$test(true)),
-    trait.style('gap', space_gap_lg.$val),
-    trait.style('alignItems', 'start'),
-
-    // ── LEFT COLUMN: TABBED FORM ──
-    tag.div(
-      trait.style('display', 'flex'),
-      trait.style('flexDirection', 'column'),
-
-      // Tab bar
-      tag.div(
-        trait.style('display', 'flex'),
-        trait.style('gap', '2px'),
-        trait.style(
-          'borderBottom',
-          () => `1px solid ${border_color_primary.val()}`,
-          border_color_primary,
-        ),
-        trait.style('marginBottom', space_gap_md.$val),
-        ...WIZARD_TABS.map((tab) => WizardTabButton(tab.id, tab.label)),
-      ),
-
-      // Tab content (reactive)
-      tag.div(
-        trait.innerHTML(() => {
-          const active = wizardTab.val();
-          if (active === 'basics') return WizardBasicsPanel();
-          if (active === 'style') return WizardStylePanel();
-          return WizardFeaturesPanel();
-        }, wizardTab),
-      ),
-    ),
-
-    // ── RIGHT COLUMN: PROMPT PREVIEW ──
-    tag.div(
-      trait.style('position', 'sticky'),
-      trait.style('position', 'relative', isDesktop.$test(false)),
-      trait.style('top', '64px'),
-      trait.style('display', 'flex'),
-      trait.style('flexDirection', 'column'),
-      trait.style('gap', space_gap_sm.$val),
-
-      // Preview header
-      tag.div(
-        trait.style('display', 'flex'),
-        trait.style('justifyContent', 'space-between'),
-        trait.style('alignItems', 'center'),
-
-        tag.span(
-          trait.text('Generated Prompt'),
-          trait.style('fontSize', type_size_xs.$val),
-          trait.style('fontWeight', type_weight_semibold.$val),
-          trait.style('color', text_fg_muted.$val),
-          trait.style('textTransform', 'uppercase'),
-          trait.style('letterSpacing', '0.06em'),
-        ),
-
-        tag.button(
-          trait.style('display', 'flex'),
-          trait.style('alignItems', 'center'),
-          trait.style('gap', '6px'),
-          trait.style('padding', '6px 14px'),
-          trait.style('borderRadius', radius_size_sm.$val),
-          trait.style('border', () => `1px solid ${border_color_cyan.val()}`, border_color_cyan),
-          trait.style('backgroundColor', 'transparent'),
-          trait.style('color', accent_neon_cyan.$val),
-          trait.style('fontSize', type_size_xs.$val),
-          trait.style('fontWeight', type_weight_medium.$val),
-          trait.style('cursor', 'pointer'),
-          trait.style('fontFamily', 'inherit'),
-          trait.style('transition', transition_fast.$val),
-          trait.styleOnEvent('mouseenter', 'backgroundColor', () => `${accent_neon_cyan.val()}15`),
-          trait.styleOnEvent('mouseleave', 'backgroundColor', () => 'transparent'),
-          trait.event('click', () => {
-            navigator.clipboard.writeText(generateOemPrompt());
-            dispatch(showToast('Prompt copied to clipboard'));
-          }),
-          CopyIcon({ size: '12' }),
-          tag.span(trait.text('Copy')),
-        ),
-      ),
-
-      // Prompt preview area (read-only)
-      tag.div(
-        trait.style('borderRadius', radius_size_md.$val),
-        trait.style('border', () => `1px solid ${border_color_cyan.val()}`, border_color_cyan),
-        trait.style('backgroundColor', surface_bg_code.$val),
-        trait.style('maxHeight', '70vh'),
-        trait.style('overflow', 'auto'),
-
-        tag.pre(
-          trait.style('margin', '0'),
-          trait.style('padding', space_padding_md.$val),
-          trait.style('fontSize', '11px'),
-          trait.style('lineHeight', '1.6'),
-          trait.style('fontFamily', FONT_MONO),
-          trait.style('color', '#c7c7c7'),
-          trait.style('whiteSpace', 'pre-wrap'),
-          trait.style('wordBreak', 'break-word'),
-          trait.text(
-            () => generateOemPrompt(),
-            wizardAppName,
-            wizardAppDescription,
-            wizardAesthetic,
-            wizardColorScheme,
-            wizardLayout,
-            wizardFeatures,
-            wizardExtraInstructions,
-          ),
-        ),
-      ),
-    ),
-  ),
-);
-
-// ═══════════════════════════════════════════════
 // FOOTER (MINIMAL)
 // ═══════════════════════════════════════════════
 
@@ -2854,7 +2079,6 @@ export const app = tag.div(
     FeaturesGrid,
     PhilosophySection,
     SetupSection,
-    PromptWizardSection,
     PrimitivesSection,
     ExamplesSection,
     TraitsSection,
