@@ -50,7 +50,7 @@ build: ## Build www
 
 examples: ## Dev todo example
 	@echo $(STATUS) Building examples...
-	@bun ./examples/index.html --watch
+	@bun --port 3002 ./examples/index.html --watch
 
 install: ## Install the project
 	@echo $(STATUS) Installing...
