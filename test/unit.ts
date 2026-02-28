@@ -36,6 +36,22 @@ import {
   CanSwitchTheme,
 } from '@/states/ThemeState.test';
 import { CanMatchUrlWithVariables } from '@/states/UrlState.test';
+import {
+  CanApplyAnimationWithFunctionKeyframes,
+  CanApplyAnimationWithFunctionOptions,
+  CanApplyAnimationWithKeyframeOptions,
+  CanApplyAnimationWithNumericDuration,
+  CanApplyAnimationWithPropertyIndexedKeyframes,
+  CanApplyAnimationWithStateCondition,
+  CanApplyBasicAnimation,
+  CanApplyInfiniteAnimation,
+  CanApplyMultipleAnimationsToSameElement,
+  CanCancelPreviousAnimationOnRetrigger,
+  CanCleanupAnimation,
+  CanConditionallyApplyAnimation,
+  CanPreventAnimationWithFalseCondition,
+  CanReactivelyTriggerAnimationOnStateChange,
+} from '@/traits/Animation.test';
 import { CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg } from '@/traits/Attribute.test';
 import { CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg } from '@/traits/ClassName.test';
 import {
@@ -122,6 +138,23 @@ window.addEventListener('DOMContentLoaded', async () => {
       CanApplyCssVarOnEvent,
       CanApplyNumericStyleOnEvent,
       CanApplyMultipleStylesOnEvent,
+    ],
+    [
+      '@/traits/Animation',
+      CanApplyBasicAnimation,
+      CanApplyAnimationWithNumericDuration,
+      CanApplyAnimationWithKeyframeOptions,
+      CanApplyAnimationWithPropertyIndexedKeyframes,
+      CanApplyAnimationWithFunctionKeyframes,
+      CanApplyAnimationWithFunctionOptions,
+      CanConditionallyApplyAnimation,
+      CanPreventAnimationWithFalseCondition,
+      CanReactivelyTriggerAnimationOnStateChange,
+      CanCancelPreviousAnimationOnRetrigger,
+      CanCleanupAnimation,
+      CanApplyInfiniteAnimation,
+      CanApplyMultipleAnimationsToSameElement,
+      CanApplyAnimationWithStateCondition,
     ],
     ['@/traits/TextContent', CanApplyTextContentTraitToHtml, CanApplyTextContentTraitToSvg],
     ['@/states/MediaQueryState', CanKeepTrackOfMediaQueryState],
