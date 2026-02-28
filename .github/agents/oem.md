@@ -79,7 +79,7 @@ Skills are procedural instructions — step-by-step workflows the agent follows 
 - [Folder & File Structure](../skills/architecture.md) - Canonical folder and file structure for OEM applications, with links to detailed guides for each category.
 - [BDD Files](../skills/bdd.md) - How to write and use behavior-driven design files that document requirements, acceptance criteria, and use cases.
 - [Idiomatic OEM](../skills/idioms.md) - Best practices and idioms for writing clean, consistent OEM code.
-- [Design Decision Guide](../skills/design-decisions.md) - Heuristics and rules for making visual and structural design decisions in OEM applications.
+- [Design Decision Guide](../skills/design-decisions.md) - Heuristics, principles, and CSS-aware rules for making visual and structural design decisions in OEM applications.
 - [Theming & Design Tokens](../skills/theming.md) - How OEM's token-driven theming system works — architecture, token creation, naming conventions, and usage rules.
 - [Icons File](../skills/icons.md) - How to define and organize SVG icon functions in OEM applications.
 - [Responsive Design](../skills/responsive-design.md) - How to build responsive layouts in OEM using useMediaQueryState and trait conditions.
