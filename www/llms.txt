@@ -2206,6 +2206,97 @@ Tokens are State objects — they react to theme changes automatically. Tokens a
 
 ---
 
+## No CSS Files — All Styles via OEM Syntax
+
+OEM applications **never** use CSS files, `<style>` tags, or external stylesheets. Every visual property — layout, color, spacing, typography, transitions, hover states — is expressed inline through `trait.style()`, `trait.styleOnEvent()`, and design tokens. This is a core architectural rule, not a preference.
+
+```ts
+// ✅ Idiomatic: all styling via traits
+trait.style('display', 'flex'),
+trait.style('gap', space_gap_md.$val),
+trait.style('transition', transition_fast.$val),
+trait.styleOnEvent('mouseenter', 'backgroundColor', () => surface_bg_tertiary.val()),
+trait.styleOnEvent('mouseleave', 'backgroundColor', 'transparent'),
+
+// ❌ Forbidden: CSS files, <style> tags, class-based styling
+// Do NOT create .css files
+// Do NOT add <style> blocks to HTML
+// Do NOT use className for visual styling (className is reserved for third-party integration only)
+```
+
+### Animations and Advanced CSS Features
+
+When you need CSS features like keyframe animations, scroll-driven effects, or other capabilities typically expressed with `@keyframes` or `@media`, **always use the equivalent JavaScript APIs** — never inject CSS strings or create stylesheet rules.
+
+#### Web Animations API (for keyframe animations)
+
+Use `Element.animate()` from the [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API):
+
+```ts
+// ✅ Idiomatic: JS-native animation
+const fadeIn = (el: HTMLElement) => {
+  el.animate(
+    [
+      { opacity: 0, transform: 'translateY(10px)' },
+      { opacity: 1, transform: 'translateY(0)' },
+    ],
+    { duration: 300, easing: 'ease-out', fill: 'forwards' },
+  );
+};
+
+// Use in a trait or event handler
+tag.div(
+  trait.event('mount', (e) => fadeIn(e.target as HTMLElement)),
+  trait.text('I fade in'),
+);
+
+// Or trigger programmatically after appending
+const el = tag.div(trait.text('Hello'));
+document.body.appendChild(el);
+fadeIn(el);
+```
+
+#### CSSStyleSheet API (when absolutely necessary)
+
+If you must create dynamic rules (e.g., a global `@keyframes` definition needed by a third-party library), use the `CSSStyleSheet` constructor API — never a `<style>` tag or `.css` file:
+
+```ts
+// ✅ Acceptable: programmatic stylesheet via JS API
+const sheet = new CSSStyleSheet();
+sheet.replaceSync(`
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+`);
+document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+
+// Then reference the animation name via trait
+trait.style('animation', 'pulse 2s infinite');
+```
+
+#### matchMedia (for programmatic media queries)
+
+OEM provides `useMediaQueryState` for responsive design, but if you need direct access, use `window.matchMedia()`:
+
+```ts
+// ✅ Idiomatic: OEM's built-in responsive state
+import { useMediaQueryState } from '@linttrap/oem';
+const isDesktop = useMediaQueryState({ minWidth: 1024 });
+
+trait.style('flexDirection', 'row', isDesktop.$test(true)),
+trait.style('flexDirection', 'column', isDesktop.$test(false)),
+```
+
+### Why No CSS Files?
+
+1. **Single source of truth.** Styles live next to the elements they affect — no hunting across files.
+2. **Reactive by default.** Trait-based styles are wired to State objects and update automatically on theme or state changes.
+3. **No specificity wars.** There is no cascade to fight — every style is a direct property assignment on the element.
+4. **LLM-friendly.** A flat, predictable styling model is trivial for agents to generate and modify without parsing CSS selectors or worrying about class collisions.
+
+---
+
 ## Composition Patterns
 
 ### Apply traits directly and inline
@@ -2310,6 +2401,7 @@ You never need to manually unsubscribe or tear down. Build elements, append them
 | Never use ternaries in trait args            | Conditions keep branches explicit and reactive                       |
 | Prefer `state.$test()` for conditions        | Self-subscribing — auto-detected as both Condition and State         |
 | Never hardcode visual values                 | Tokens ensure consistency and automatic theming                      |
+| Never create CSS files or `<style>` tags     | All styles are expressed via traits; use JS APIs for animations      |
 | Reuse tokens, not trait arrays               | Tokens are the reusable visual primitives, not shared trait groups   |
 | Apply traits directly and inline             | Traits belong to their element; do not store or share them           |
 | Design mobile-first                          | Base styles have no condition; breakpoint overrides layer on top     |

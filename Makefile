@@ -40,12 +40,12 @@ deploy: ## Deploy the project to GitHub Pages/oem.js.org
 
 build: ## Build www
 	@echo $(STATUS) Building www...
-	@bun build ./www/app.ts \
+	@bun build ./www/main.ts \
 		--sourcemap \
 		--minify \
 		--bundle \
 		--format=iife \
-		--outfile=./www/app.js \
+		--outfile=./www/main.js \
 		--target=browser \
 
 examples: ## Dev todo example
