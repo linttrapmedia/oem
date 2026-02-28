@@ -2,7 +2,7 @@
 import {
   activeSection,
   dialogOpen,
-  expandedExample,
+  expandedExamples,
   navOpen,
   primitiveTab,
   toastMessage,
@@ -39,7 +39,11 @@ export function dispatch(action: Action): void {
       break;
     }
     case 'TOGGLE_EXAMPLE': {
-      expandedExample.reduce((v) => (v === action.payload.index ? null : action.payload.index));
+      expandedExamples.reduce((v) => {
+        const next = new Set(v);
+        next.has(action.payload.index) ? next.delete(action.payload.index) : next.add(action.payload.index);
+        return next;
+      });
       break;
     }
     case 'SHOW_TOAST': {

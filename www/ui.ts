@@ -12,7 +12,8 @@ import {
 } from './actions';
 import { ANIM_DURATION_MEDIUM, FONT_DISPLAY, FONT_LOGO, FONT_MONO, NAV_ITEMS } from './constants';
 import {
-  ARCH_DIAGRAM_CODE,
+  AGENT_SETUP_CODE,
+  AGENT_SETUP_NOTE,
   ARCH_FILES,
   EXAMPLES,
   FEATURES,
@@ -39,11 +40,11 @@ import {
   NpmIcon,
   SunIcon,
 } from './icons';
-import { dispatch, $dispatch } from './machines';
+import { $dispatch, dispatch } from './machines';
 import {
   activeSection,
   dialogOpen,
-  expandedExample,
+  expandedExamples,
   isDesktop,
   navOpen,
   primitiveTab,
@@ -69,12 +70,9 @@ import {
   radius_size_md,
   radius_size_sm,
   shadow_glow_cyan,
-  shadow_glow_pink,
-  shadow_glow_purple,
   space_gap_lg,
   space_gap_md,
   space_gap_sm,
-  space_gap_xl,
   space_padding_2xl,
   space_padding_3xl,
   space_padding_4xl,
@@ -86,7 +84,6 @@ import {
   surface_bg_card,
   surface_bg_code,
   surface_bg_nav,
-  surface_bg_primary,
   surface_bg_secondary,
   surface_bg_tertiary,
   text_fg_muted,
@@ -101,7 +98,6 @@ import {
   type_size_3xl,
   type_size_base,
   type_size_lg,
-  type_size_md,
   type_size_sm,
   type_size_xl,
   type_size_xs,
@@ -345,10 +341,8 @@ const Toast = tag.div(
   trait.style('gap', space_gap_sm.$val),
   trait.style('pointerEvents', 'none'),
   trait.style('transition', 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'),
-  // hidden
-  trait.style('opacity', '0', toastVisible.$test(false)),
-  trait.style('transform', 'translateX(-50%) translateY(8px)', toastVisible.$test(false)),
-  // visible
+  trait.style('opacity', '0'),
+  trait.style('transform', 'translateX(-50%) translateY(8px)'),
   trait.style('opacity', '1', toastVisible.$test(true)),
   trait.style('transform', 'translateX(-50%) translateY(0)', toastVisible.$test(true)),
   CheckIcon({ size: '14', color: '#888888' }),
@@ -368,10 +362,8 @@ const Dialog = tag.div(
   trait.style('justifyContent', 'center'),
   trait.style('paddingTop', '10vh'),
   trait.style('transition', 'opacity 0.2s ease'),
-  // hidden
-  trait.style('opacity', '0', dialogOpen.$test(false)),
-  trait.style('pointerEvents', 'none', dialogOpen.$test(false)),
-  // visible
+  trait.style('opacity', '0'),
+  trait.style('pointerEvents', 'none'),
   trait.style('opacity', '1', dialogOpen.$test(true)),
   trait.style('pointerEvents', 'auto', dialogOpen.$test(true)),
 
@@ -469,9 +461,9 @@ const Dialog = tag.div(
       ...TRAIT_DOCS.map((t) =>
         tag.div(
           trait.style('display', 'flex'),
-          trait.style('alignItems', 'baseline'),
-          trait.style('gap', space_gap_sm.$val),
-          trait.style('padding', '3px 0'),
+          trait.style('flexDirection', 'column'),
+          trait.style('gap', '4px'),
+          trait.style('padding', `${space_padding_sm.val()} 0`),
           trait.style(
             'borderBottom',
             () => `1px solid ${border_color_primary.val()}08`,
@@ -483,25 +475,17 @@ const Dialog = tag.div(
             trait.style('fontSize', type_size_xs.$val),
             trait.style('color', text_fg_primary.$val),
             trait.style('fontWeight', type_weight_medium.$val),
-            trait.style('minWidth', '175px'),
-            trait.style('flexShrink', '0'),
           ),
           tag.span(
             trait.text(t.signature),
             trait.style('fontFamily', FONT_MONO),
             trait.style('fontSize', '10px'),
             trait.style('color', text_fg_muted.$val),
-            trait.style('minWidth', '150px'),
-            trait.style('flexShrink', '0'),
-            trait.style('display', 'none'),
-            trait.style('display', 'inline', isDesktop.$test(true)),
           ),
           tag.span(
             trait.text(t.description),
             trait.style('fontSize', type_size_xs.$val),
             trait.style('color', text_fg_secondary.$val),
-            trait.style('display', 'none'),
-            trait.style('display', 'inline', isDesktop.$test(true)),
           ),
         ),
       ),
@@ -534,9 +518,9 @@ const Dialog = tag.div(
       ...STATE_DOCS.map((s) =>
         tag.div(
           trait.style('display', 'flex'),
-          trait.style('alignItems', 'baseline'),
-          trait.style('gap', space_gap_sm.$val),
-          trait.style('padding', '3px 0'),
+          trait.style('flexDirection', 'column'),
+          trait.style('gap', '4px'),
+          trait.style('padding', `${space_padding_sm.val()} 0`),
           trait.style(
             'borderBottom',
             () => `1px solid ${border_color_primary.val()}08`,
@@ -548,25 +532,17 @@ const Dialog = tag.div(
             trait.style('fontSize', type_size_xs.$val),
             trait.style('color', text_fg_primary.$val),
             trait.style('fontWeight', type_weight_medium.$val),
-            trait.style('minWidth', '175px'),
-            trait.style('flexShrink', '0'),
           ),
           tag.span(
             trait.text(s.signature),
             trait.style('fontFamily', FONT_MONO),
             trait.style('fontSize', '10px'),
             trait.style('color', text_fg_muted.$val),
-            trait.style('minWidth', '150px'),
-            trait.style('flexShrink', '0'),
-            trait.style('display', 'none'),
-            trait.style('display', 'inline', isDesktop.$test(true)),
           ),
           tag.span(
             trait.text(s.description),
             trait.style('fontSize', type_size_xs.$val),
             trait.style('color', text_fg_secondary.$val),
-            trait.style('display', 'none'),
-            trait.style('display', 'inline', isDesktop.$test(true)),
           ),
         ),
       ),
@@ -667,11 +643,7 @@ const NavBar = tag.header(
       trait.style('gap', '4px'),
       trait.style('padding', '4px 10px'),
       trait.style('background', 'none'),
-      trait.style(
-        'border',
-        () => `1px solid ${border_color_primary.val()}`,
-        border_color_primary,
-      ),
+      trait.style('border', () => `1px solid ${border_color_primary.val()}`, border_color_primary),
       trait.style('borderRadius', radius_size_sm.$val),
       trait.style('cursor', 'pointer'),
       trait.style('color', text_fg_muted.$val),
@@ -753,13 +725,9 @@ const MobileNav = tag.div(
   ),
   trait.style('gap', space_gap_md.$val),
   trait.style('transition', 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'),
-  trait.style(
-    'borderLeft',
-    () => `1px solid ${border_color_primary.val()}`,
-    border_color_primary,
-  ),
+  trait.style('borderLeft', () => `1px solid ${border_color_primary.val()}`, border_color_primary),
   trait.style('boxShadow', '-8px 0 32px rgba(0,0,0,0.2)'),
-  trait.style('transform', 'translateX(100%)', navOpen.$test(false)),
+  trait.style('transform', 'translateX(100%)'),
   trait.style('transform', 'translateX(0)', navOpen.$test(true)),
 
   ...NAV_ITEMS.map((item) =>
@@ -808,8 +776,8 @@ const MobileNavBackdrop = tag.div(
   trait.style('zIndex', '98'),
   trait.style('backgroundColor', 'rgba(0,0,0,0.3)'),
   trait.style('transition', 'opacity 0.3s ease'),
-  trait.style('opacity', '0', navOpen.$test(false)),
-  trait.style('pointerEvents', 'none', navOpen.$test(false)),
+  trait.style('opacity', '0'),
+  trait.style('pointerEvents', 'none'),
   trait.style('opacity', '1', navOpen.$test(true)),
   trait.style('pointerEvents', 'auto', navOpen.$test(true)),
   trait.event('click', $dispatch(toggleNav())),
@@ -897,8 +865,7 @@ const HeroSection = SectionContainer(
         trait.style('padding', '10px 24px'),
         trait.style(
           'background',
-          () =>
-            `linear-gradient(135deg, ${accent_neon_pink.val()}, ${accent_neon_purple.val()})`,
+          () => `linear-gradient(135deg, ${accent_neon_pink.val()}, ${accent_neon_purple.val()})`,
           accent_neon_pink,
           accent_neon_purple,
         ),
@@ -997,11 +964,7 @@ const FeaturesGrid = tag.div(
       trait.style('padding', space_padding_md.$val),
       trait.style('borderRadius', radius_size_sm.$val),
       trait.style('backgroundColor', surface_bg_card.$val),
-      trait.style(
-        'border',
-        () => `1px solid ${border_color_primary.val()}`,
-        border_color_primary,
-      ),
+      trait.style('border', () => `1px solid ${border_color_primary.val()}`, border_color_primary),
       trait.style('transition', transition_fast.$val),
       trait.styleOnEvent('mouseenter', 'borderColor', () => border_color_accent.val()),
       trait.styleOnEvent('mouseleave', 'borderColor', () => border_color_primary.val()),
@@ -1023,8 +986,7 @@ const FeaturesGrid = tag.div(
           accent_neon_purple,
           accent_neon_pink,
         ),
-        ICON_MAP[feature.icon]?.({ size: '18', color: '#666666' }) ||
-          tag.span(trait.text('•')),
+        ICON_MAP[feature.icon]?.({ size: '18', color: '#666666' }) || tag.span(trait.text('•')),
       ),
 
       tag.div(
@@ -1055,9 +1017,7 @@ const FeaturesGrid = tag.div(
 const PhilosophySection = SectionContainer(
   'philosophy',
   SectionTitle('Philosophy'),
-  SectionSubtitle(
-    'Three composable primitives. Total transparency. Built for the age of AI.',
-  ),
+  SectionSubtitle('Three composable primitives. Total transparency. Built for the age of AI.'),
 
   tag.div(
     trait.style('display', 'grid'),
@@ -1167,6 +1127,48 @@ const SetupSection = SectionContainer(
       CodeBlock(HELLO_WORLD_CODE),
     ),
   ),
+
+  // Agent setup
+  tag.div(
+    trait.style('marginTop', space_padding_lg.$val),
+    trait.style('padding', space_padding_md.$val),
+    trait.style('borderRadius', radius_size_md.$val),
+    trait.style('backgroundColor', surface_bg_secondary.$val),
+    trait.style('border', () => `1px solid ${border_color_primary.val()}`, border_color_primary),
+    trait.style('backgroundImage', gradient_card.$val),
+    onMount((el) => fadeInUp(el, 300)),
+
+    tag.div(
+      trait.style('display', 'flex'),
+      trait.style('alignItems', 'center'),
+      trait.style('gap', space_gap_sm.$val),
+      trait.style('marginBottom', space_padding_sm.$val),
+      tag.span(
+        trait.text('03'),
+        trait.style('fontFamily', FONT_MONO),
+        trait.style('fontSize', type_size_xs.$val),
+        trait.style('color', accent_neon_cyan.$val),
+        trait.style('fontWeight', type_weight_bold.$val),
+      ),
+      tag.span(
+        trait.text('Set Up the Agent'),
+        trait.style('fontSize', type_size_base.$val),
+        trait.style('fontWeight', type_weight_semibold.$val),
+        trait.style('color', text_fg_primary.$val),
+      ),
+    ),
+
+    CodeBlock(AGENT_SETUP_CODE, 'bash'),
+
+    tag.p(
+      trait.text(AGENT_SETUP_NOTE),
+      trait.style('fontSize', type_size_xs.$val),
+      trait.style('color', text_fg_secondary.$val),
+      trait.style('lineHeight', '1.6'),
+      trait.style('marginTop', space_padding_sm.$val),
+      trait.style('marginBottom', '0'),
+    ),
+  ),
 );
 
 // ═══════════════════════════════════════════════
@@ -1214,25 +1216,25 @@ const PrimitivesSection = SectionContainer(
         trait.style('transition', transition_fast.$val),
         trait.style('fontFamily', FONT_MONO),
         // Active state
-        trait.style(
-          'backgroundColor',
-          surface_bg_secondary.$val,
-          primitiveTab.$test(tab.id),
-        ),
+        trait.style('backgroundColor', surface_bg_secondary.$val, primitiveTab.$test(tab.id)),
         trait.style('color', text_fg_primary.$val, primitiveTab.$test(tab.id)),
-        trait.style(
-          'boxShadow',
-          '0 1px 3px rgba(0,0,0,0.1)',
-          primitiveTab.$test(tab.id),
-        ),
+        trait.style('boxShadow', '0 1px 3px rgba(0,0,0,0.1)', primitiveTab.$test(tab.id)),
         // Inactive state
         trait.style(
           'backgroundColor',
           'transparent',
           primitiveTab.$test((v) => v !== tab.id),
         ),
-        trait.style('color', text_fg_muted.$val, primitiveTab.$test((v) => v !== tab.id)),
-        trait.style('boxShadow', 'none', primitiveTab.$test((v) => v !== tab.id)),
+        trait.style(
+          'color',
+          text_fg_muted.$val,
+          primitiveTab.$test((v) => v !== tab.id),
+        ),
+        trait.style(
+          'boxShadow',
+          'none',
+          primitiveTab.$test((v) => v !== tab.id),
+        ),
         trait.event('click', $dispatch(setPrimitiveTab(tab.id))),
         trait.aria('role', 'tab'),
         trait.aria(
@@ -1251,22 +1253,14 @@ const PrimitivesSection = SectionContainer(
     trait.style('margin', '0'),
     trait.style('marginBottom', space_padding_sm.$val),
     trait.style('fontStyle', 'italic'),
-    trait.innerHTML(
-      () => {
-        const tab = PRIMITIVE_TABS.find((t) => t.id === primitiveTab.val());
-        return [tag.span(trait.text(tab?.desc || ''))];
-      },
-      primitiveTab,
-    ),
+    trait.innerHTML(() => {
+      const tab = PRIMITIVE_TABS.find((t) => t.id === primitiveTab.val());
+      return [tag.span(trait.text(tab?.desc || ''))];
+    }, primitiveTab),
   ),
 
   // Tab content — reactive code block
-  tag.div(
-    trait.innerHTML(
-      () => [CodeBlock(getPrimitiveCode(primitiveTab.val()))],
-      primitiveTab,
-    ),
-  ),
+  tag.div(trait.innerHTML(() => [CodeBlock(getPrimitiveCode(primitiveTab.val()))], primitiveTab)),
 );
 
 // ═══════════════════════════════════════════════
@@ -1310,8 +1304,8 @@ const ExamplesSection = SectionContainer(
           trait.aria('role', 'button'),
           trait.aria(
             'aria-expanded',
-            () => (expandedExample.val() === i ? 'true' : 'false'),
-            expandedExample,
+            () => (expandedExamples.val().has(i) ? 'true' : 'false'),
+            expandedExamples,
           ),
 
           tag.div(
@@ -1334,12 +1328,8 @@ const ExamplesSection = SectionContainer(
           // Chevron
           tag.div(
             trait.style('transition', 'transform 0.2s ease'),
-            trait.style(
-              'transform',
-              'rotate(0deg)',
-              expandedExample.$test((v) => v !== i),
-            ),
-            trait.style('transform', 'rotate(180deg)', expandedExample.$test(i)),
+            trait.style('transform', 'rotate(0deg)'),
+            trait.style('transform', 'rotate(180deg)', expandedExamples.$test((v) => v.has(i))),
             trait.style('color', text_fg_muted.$val),
             trait.style('display', 'flex'),
             ChevronDownIcon({ size: '16' }),
@@ -1350,12 +1340,8 @@ const ExamplesSection = SectionContainer(
         tag.div(
           trait.style('overflow', 'hidden'),
           trait.style('transition', 'max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1)'),
-          trait.style(
-            'maxHeight',
-            '0px',
-            expandedExample.$test((v) => v !== i),
-          ),
-          trait.style('maxHeight', '800px', expandedExample.$test(i)),
+          trait.style('maxHeight', '0px'),
+          trait.style('maxHeight', '800px', expandedExamples.$test((v) => v.has(i))),
 
           tag.div(
             trait.style('padding', `0 ${space_padding_sm.val()} ${space_padding_sm.val()}`),
@@ -1374,9 +1360,7 @@ const ExamplesSection = SectionContainer(
 const TraitsSection = SectionContainer(
   'traits',
   SectionTitle('Built-in Traits'),
-  SectionSubtitle(
-    `${TRAIT_DOCS.length} reusable behaviors that give elements their abilities.`,
-  ),
+  SectionSubtitle(`${TRAIT_DOCS.length} reusable behaviors that give elements their abilities.`),
 
   tag.div(
     trait.style('display', 'grid'),
@@ -1396,11 +1380,7 @@ const TraitsSection = SectionContainer(
           border_color_primary,
         ),
         trait.style('transition', transition_fast.$val),
-        trait.style(
-          'borderLeft',
-          () => `3px solid ${accent_neon_cyan.val()}`,
-          accent_neon_cyan,
-        ),
+        trait.style('borderLeft', () => `3px solid ${accent_neon_cyan.val()}`, accent_neon_cyan),
         trait.styleOnEvent('mouseenter', 'borderColor', () => border_color_cyan.val()),
         trait.styleOnEvent('mouseleave', 'borderColor', () => border_color_primary.val()),
         onMount((el) => fadeInUp(el, i * 40)),
@@ -1562,9 +1542,7 @@ trait.style('color', '#555555', count.$test(v => v > 0));`),
 const ThemingSection = SectionContainer(
   'theming',
   SectionTitle('Token-Driven Theming'),
-  SectionSubtitle(
-    'Every visual value is a reactive token. Theme changes propagate instantly.',
-  ),
+  SectionSubtitle('Every visual value is a reactive token. Theme changes propagate instantly.'),
 
   // Architecture diagram
   tag.div(
@@ -1588,11 +1566,7 @@ trait.style('backgroundColor', bg.$val);  // reactive, zero flicker`),
     trait.style('padding', space_padding_md.$val),
     trait.style('borderRadius', radius_size_md.$val),
     trait.style('backgroundColor', surface_bg_secondary.$val),
-    trait.style(
-      'border',
-      () => `1px solid ${border_color_primary.val()}`,
-      border_color_primary,
-    ),
+    trait.style('border', () => `1px solid ${border_color_primary.val()}`, border_color_primary),
     trait.style('backgroundImage', gradient_card.$val),
     onMount((el) => fadeInUp(el, 200)),
 
@@ -1650,9 +1624,7 @@ trait.style('backgroundColor', bg.$val);  // reactive, zero flicker`),
 
   // Live theme note
   tag.p(
-    trait.text(
-      'Toggle the theme in the nav bar — every color on this page is a reactive token.',
-    ),
+    trait.text('Toggle the theme in the nav bar — every color on this page is a reactive token.'),
     trait.style('fontSize', type_size_xs.$val),
     trait.style('color', text_fg_muted.$val),
     trait.style('fontStyle', 'italic'),
@@ -1662,6 +1634,195 @@ trait.style('backgroundColor', bg.$val);  // reactive, zero flicker`),
 );
 
 // ═══════════════════════════════════════════════
+// DEPENDENCY FLOW SVG — drawn with OEM!
+// ═══════════════════════════════════════════════
+
+function DependencyFlowSVG() {
+  // Layout constants
+  const boxW = 100;
+  const boxH = 28;
+  const gapX = 20;
+  const gapY = 52;
+  const fontSize = '9';
+  const fontFamily = FONT_MONO;
+
+  // Colors
+  const nodeStroke = () => border_color_cyan.val();
+  const nodeFill = () => surface_bg_code.val();
+  const textFill = () => text_fg_muted.val();
+  const arrowColor = () => text_fg_muted.val();
+
+  // Row positions (y center of each row)
+  const row0 = 30;
+  const row1 = row0 + gapY;
+  const row2 = row1 + gapY;
+  const row3 = row2 + gapY;
+  const row4 = row3 + gapY;
+  const row5 = row4 + gapY;
+  const row6 = row5 + gapY;
+
+  // Column centers
+  const svgW = 560;
+  const colCenter = svgW / 2;
+  const colLeft = colCenter - boxW / 2 - gapX / 2 - boxW / 2;
+  const colRight = colCenter + boxW / 2 + gapX / 2 + boxW / 2;
+
+  // Row 4 has 4 items — center-to-center span is 3 gaps
+  const r3Span = 3 * (boxW + gapX);
+  const r3Start = (svgW - r3Span) / 2;
+  const r3c0 = r3Start;
+  const r3c1 = r3Start + boxW + gapX;
+  const r3c2 = r3Start + 2 * (boxW + gapX);
+  const r3c3 = r3Start + 3 * (boxW + gapX);
+
+  const svgH = row6 + boxH / 2 + 16;
+
+  function nodeBox(cx: number, cy: number, label: string, color: string) {
+    return [
+      tag.rect(
+        trait.attr('x', String(cx - boxW / 2)),
+        trait.attr('y', String(cy - boxH / 2)),
+        trait.attr('width', String(boxW)),
+        trait.attr('height', String(boxH)),
+        trait.attr('rx', '2'),
+        trait.style('fill', nodeFill, surface_bg_code),
+        trait.style('stroke', () => color, border_color_cyan),
+        trait.attr('stroke-width', '1'),
+      ),
+      tag.text(
+        trait.attr('x', String(cx)),
+        trait.attr('y', String(cy)),
+        trait.attr('text-anchor', 'middle'),
+        trait.attr('dominant-baseline', 'central'),
+        trait.style('fill', textFill, text_fg_primary),
+        trait.style('fontSize', fontSize),
+        trait.style('fontFamily', fontFamily),
+        trait.text(label),
+      ),
+    ];
+  }
+
+  function arrow(x1: number, y1: number, x2: number, y2: number) {
+    return tag.line(
+      trait.attr('x1', String(x1)),
+      trait.attr('y1', String(y1 + boxH / 2)),
+      trait.attr('x2', String(x2)),
+      trait.attr('y2', String(y2 - boxH / 2)),
+      trait.style('stroke', arrowColor, text_fg_muted),
+      trait.attr('stroke-width', '1'),
+      trait.attr('marker-end', 'url(#arrowhead)'),
+    );
+  }
+
+  function arrowHorizontal(x1: number, y1: number, x2: number, y2: number) {
+    const fromX = x1 > x2 ? x1 - boxW / 2 : x1 + boxW / 2;
+    const toX = x1 > x2 ? x2 + boxW / 2 : x2 - boxW / 2;
+    return tag.line(
+      trait.attr('x1', String(fromX)),
+      trait.attr('y1', String(y1)),
+      trait.attr('x2', String(toX)),
+      trait.attr('y2', String(y2)),
+      trait.style('stroke', arrowColor, text_fg_muted),
+      trait.attr('stroke-width', '1'),
+      trait.attr('marker-end', 'url(#arrowhead)'),
+    );
+  }
+
+  const strokeVal = text_fg_muted.val();
+
+  return tag.div(
+    trait.style('padding', space_padding_md.$val),
+    trait.style('borderRadius', radius_size_md.$val),
+    trait.style('backgroundColor', surface_bg_code.$val),
+    trait.style('border', () => `1px solid ${border_color_cyan.val()}`, border_color_cyan),
+    trait.style('boxShadow', shadow_glow_cyan.$val),
+    trait.style('overflow', 'auto'),
+
+    tag.svg(
+      trait.attr('viewBox', `0 0 ${svgW} ${svgH}`),
+      trait.style('width', '100%'),
+      trait.style('height', 'auto'),
+      trait.style('display', 'block'),
+
+      // Arrow marker definition
+      tag.defs(
+        tag.marker(
+          trait.attr('id', 'arrowhead'),
+          trait.attr('markerWidth', '10'),
+          trait.attr('markerHeight', '8'),
+          trait.attr('refX', '10'),
+          trait.attr('refY', '4'),
+          trait.attr('orient', 'auto'),
+          tag.polygon(
+            trait.attr('points', '0 0, 10 4, 0 8'),
+            trait.style('fill', arrowColor, text_fg_muted),
+          ),
+        ),
+      ),
+
+      // Row 0: types.ts
+      ...nodeBox(colCenter, row0, 'types.ts', strokeVal),
+
+      // Row 1: constants.ts, config.ts
+      ...nodeBox(colLeft, row1, 'constants.ts', strokeVal),
+      ...nodeBox(colRight, row1, 'config.ts', strokeVal),
+
+      // Row 2: data.ts, states.ts
+      ...nodeBox(colLeft, row2, 'data.ts', strokeVal),
+      ...nodeBox(colRight, row2, 'states.ts', strokeVal),
+
+      // Row 3: actions.ts, machines.ts
+      ...nodeBox(colLeft, row3, 'actions.ts', strokeVal),
+      ...nodeBox(colRight, row3, 'machines.ts', strokeVal),
+
+      // Row 4: theme.ts, templates.ts, traits.ts, icons.ts
+      ...nodeBox(r3c0, row4, 'theme.ts', strokeVal),
+      ...nodeBox(r3c1, row4, 'templates.ts', strokeVal),
+      ...nodeBox(r3c2, row4, 'traits.ts', strokeVal),
+      ...nodeBox(r3c3, row4, 'icons.ts', strokeVal),
+
+      // Row 5: ui.ts
+      ...nodeBox(colCenter, row5, 'ui.ts', strokeVal),
+
+      // Row 6: main.ts
+      ...nodeBox(colCenter, row6, 'main.ts', strokeVal),
+
+      // Arrows: types.ts → constants.ts, types.ts → config.ts
+      arrow(colCenter, row0, colLeft, row1),
+      arrow(colCenter, row0, colRight, row1),
+
+      // constants.ts → data.ts, config.ts → states.ts
+      arrow(colLeft, row1, colLeft, row2),
+      arrow(colRight, row1, colRight, row2),
+
+      // data.ts → actions.ts, states.ts → machines.ts
+      arrow(colLeft, row2, colLeft, row3),
+      arrow(colRight, row2, colRight, row3),
+
+      // machines.ts → actions.ts (horizontal)
+      arrowHorizontal(colRight, row3, colLeft, row3),
+
+      // actions.ts → theme.ts
+      arrow(colLeft, row3, r3c0, row4),
+      // machines.ts → templates.ts
+      arrow(colRight, row3, r3c1, row4),
+      // machines.ts → traits.ts
+      arrow(colRight, row3, r3c2, row4),
+      // machines.ts → icons.ts (not really, but the row below feeds into ui.ts)
+
+      // Row 4 all → ui.ts
+      arrow(r3c0, row4, colCenter, row5),
+      arrow(r3c1, row4, colCenter, row5),
+      arrow(r3c2, row4, colCenter, row5),
+      arrow(r3c3, row4, colCenter, row5),
+
+      // ui.ts → main.ts
+      arrow(colCenter, row5, colCenter, row6),
+    ),
+  );
+}
+
+// ═══════════════════════════════════════════════
 // ARCHITECTURE SECTION
 // ═══════════════════════════════════════════════
 
@@ -1669,16 +1830,12 @@ const ARCH_LAYERS: { label: string; color: string; files: typeof ARCH_FILES[numb
   {
     label: 'Foundation',
     color: '#888888',
-    files: ARCH_FILES.filter((f) =>
-      ['types.ts', 'constants.ts', 'data.ts'].includes(f.name),
-    ),
+    files: ARCH_FILES.filter((f) => ['types.ts', 'constants.ts', 'data.ts'].includes(f.name)),
   },
   {
     label: 'State & Logic',
     color: accent_neon_purple.val(),
-    files: ARCH_FILES.filter((f) =>
-      ['states.ts', 'actions.ts', 'machines.ts'].includes(f.name),
-    ),
+    files: ARCH_FILES.filter((f) => ['states.ts', 'actions.ts', 'machines.ts'].includes(f.name)),
   },
   {
     label: 'Presentation',
@@ -1739,7 +1896,11 @@ const ArchitectureSection = SectionContainer(
         tag.div(
           trait.style('display', 'grid'),
           trait.style('gridTemplateColumns', '1fr'),
-          trait.style('gridTemplateColumns', 'repeat(auto-fill, minmax(280px, 1fr))', isDesktop.$test(true)),
+          trait.style(
+            'gridTemplateColumns',
+            'repeat(auto-fill, minmax(280px, 1fr))',
+            isDesktop.$test(true),
+          ),
           trait.style('gap', '6px'),
           trait.style('paddingLeft', '18px'),
           trait.style('borderLeft', `2px solid ${layer.color}22`),
@@ -1752,9 +1913,7 @@ const ArchitectureSection = SectionContainer(
               trait.style('padding', `${space_padding_xs.val()} ${space_padding_sm.val()}`),
               trait.style('borderRadius', radius_size_sm.$val),
               trait.style('transition', transition_fast.$val),
-              trait.styleOnEvent('mouseenter', 'backgroundColor', () =>
-                surface_bg_tertiary.val(),
-              ),
+              trait.styleOnEvent('mouseenter', 'backgroundColor', () => surface_bg_tertiary.val()),
               trait.styleOnEvent('mouseleave', 'backgroundColor', () => 'transparent'),
 
               tag.span(
@@ -1793,7 +1952,7 @@ const ArchitectureSection = SectionContainer(
     ),
   ),
 
-  // Dependency flow (compact code block)
+  // Dependency flow — drawn with OEM! (SVG rendered via tag/trait, no images)
   tag.div(
     onMount((el) => fadeInUp(el, 500)),
     tag.div(
@@ -1809,8 +1968,14 @@ const ArchitectureSection = SectionContainer(
         trait.style('textTransform', 'uppercase'),
         trait.style('letterSpacing', '0.08em'),
       ),
+      tag.span(
+        trait.text('— drawn with OEM!'),
+        trait.style('fontSize', '10px'),
+        trait.style('color', accent_neon_cyan.$val),
+        trait.style('fontStyle', 'italic'),
+      ),
     ),
-    CodeBlock(ARCH_DIAGRAM_CODE),
+    DependencyFlowSVG(),
   ),
 );
 
@@ -1819,11 +1984,7 @@ const ArchitectureSection = SectionContainer(
 // ═══════════════════════════════════════════════
 
 const Footer = tag.footer(
-  trait.style(
-    'borderTop',
-    () => `1px solid ${border_color_primary.val()}`,
-    border_color_primary,
-  ),
+  trait.style('borderTop', () => `1px solid ${border_color_primary.val()}`, border_color_primary),
   trait.style('padding', space_padding_lg.$val),
   trait.style('textAlign', 'center'),
 

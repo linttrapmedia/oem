@@ -174,3 +174,4 @@ tag.main(
 4. **Separate trait calls per breakpoint.** Each viewport size gets its own `trait.style(...)` call with a condition — do not collapse multiple breakpoints into one trait.
 5. **Keep breakpoint ranges non-overlapping.** Ensure `maxWidth` of one range is one pixel below the `minWidth` of the next (e.g., `639 / 640`, `1023 / 1024`).
 6. **Base styles have no condition.** They represent the mobile layout and are always applied. Conditions only appear on tablet/desktop overrides.
+7. **Always pair `$test(true)` with `$test(false)` when toggling values.** If a trait sets a value on `$test(true)` but has no `$test(false)` counterpart, the element retains the old value when the condition flips — the reset never happens. Always provide both branches so every state transition produces a defined result.

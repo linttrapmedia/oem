@@ -76,6 +76,14 @@ bun add @linttrap/oem
 npm install @linttrap/oem
 yarn add @linttrap/oem`;
 
+export const AGENT_SETUP_CODE = `# Copy the agent instructions into your project
+cp -r node_modules/@linttrap/oem/.github/ <your-agent-folder>`;
+
+export const AGENT_SETUP_NOTE =
+  'OEM ships with agent instructions that teach AI assistants how to build OEM apps. ' +
+  'Copy the .github/ folder from the package into your project to enable AI-powered development. ' +
+  "Your agent will understand OEM's architecture, idioms, and design-token system out of the box.";
+
 export const HELLO_WORLD_CODE = `import { Template, useStyleTrait, useTextContentTrait } from '@linttrap/oem';
 
 const [tag, trait] = Template({
@@ -243,10 +251,8 @@ const app = tag.div(
   trait.style('color', fg.$val),
   trait.style('transition', 'all 0.3s ease'),
   tag.button(
-    trait.text(() =>
-      theme.val() === 'dark' ? '☀️ Light' : '🌙 Dark',
-      theme,
-    ),
+    trait.text('☀️ Light', theme.$test('dark')),
+    trait.text('🌙 Dark', theme.$test('light')),
     trait.event('click', () =>
       theme.reduce(t => t === 'dark' ? 'light' : 'dark'),
     ),
@@ -268,21 +274,14 @@ tag.div(
   trait.style('transition', 'all 0.2s ease'),
 
   // Conditional branches — never ternaries
-  trait.style('backgroundColor', '#555555',
-    isActive.$test(true)),
-  trait.style('backgroundColor', '#c7c7c7',
-    isActive.$test(false)),
-  trait.style('color', '#c7c7c7',
-    isActive.$test(true)),
-  trait.style('color', '#888888',
-    isActive.$test(false)),
-  trait.style('boxShadow', '0 0 20px rgba(80,80,80,0.3)',
-    isActive.$test(true)),
-  trait.style('boxShadow', 'none',
-    isActive.$test(false)),
-
-  trait.text(() =>
-    isActive.val() ? 'Active' : 'Inactive', isActive),
+  trait.style('backgroundColor', '#555555', isActive.$test(true)),
+  trait.style('backgroundColor', '#c7c7c7', isActive.$test(false)),
+  trait.style('color', '#c7c7c7', isActive.$test(true)),
+  trait.style('color', '#888888', isActive.$test(false)),
+  trait.style('boxShadow', '0 0 20px rgba(80,80,80,0.3)', isActive.$test(true)),
+  trait.style('boxShadow', 'none', isActive.$test(false)), isActive.$test(false)),
+  trait.text('Active', isActive.$test(true)),
+  trait.text('Inactive', isActive.$test(false)),
   trait.event('click', isActive.$reduce(v => !v)),
 );`,
   },

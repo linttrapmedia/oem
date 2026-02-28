@@ -18,8 +18,8 @@ export const scrolled = State(false);
 // Primitives section tab state
 export const primitiveTab = State<PrimitiveTab>('element');
 
-// Accordion: which example is expanded
-export const expandedExample = State<number | null>(null);
+// Accordion: which examples are expanded (independent toggle)
+export const expandedExamples = State<Set<number>>(new Set());
 
 // Toast notification
 export const toastVisible = State(false);

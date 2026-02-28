@@ -141,6 +141,22 @@ trait.style('opacity', '0.4', enabled.$test(false)),
 trait.style('opacity', enabled ? '1' : '0.4'),
 ```
 
+### Always pair `$test(true)` with `$test(false)`
+
+When using conditions to toggle a style between two values, **always provide both the truth and false branches.** If you only supply the `$test(true)` branch, OEM has no instruction for what value to apply when the condition becomes false — the previous value stays on the element and the UI can appear "stuck."
+
+```ts
+// ✅ Correct: both branches are explicit — reset works as expected
+trait.style('display', 'flex', navOpen.$test(true)),
+trait.style('display', 'none', navOpen.$test(false)),
+
+// ❌ Broken: when navOpen becomes false, display stays 'flex'
+trait.style('display', 'flex', navOpen.$test(true)),
+// (no false branch — nothing resets the value!)
+```
+
+This applies everywhere conditions are used — responsive breakpoints, visibility toggles, theme switches, and all other state-driven style or attribute changes. The rule is simple: **if there is a `$test(true)`, there should be a corresponding `$test(false)` (or vice versa)** so that every state transition produces a defined result.
+
 ### Creating conditions
 
 State objects have `.test()` for immediate evaluation and `.$test()` for reactive conditions. The standalone `$test()` helper from `@linttrap/oem` handles cases where State's built-in `.$test` doesn't apply:
@@ -463,6 +479,7 @@ You never need to manually unsubscribe or tear down. Build elements, append them
 | Destructure `Template` into `[tag, trait]`   | Establishes the two proxies used everywhere                          |
 | Prefer `$val` over verbose `() => val(), st` | Collapses getter + subscription into one reference                   |
 | Never use ternaries in trait args            | Conditions keep branches explicit and reactive                       |
+| Pair `$test(true)` with `$test(false)`       | Ensures reset logic works — unpaired conditions leave stale values   |
 | Prefer `state.$test()` for conditions        | Self-subscribing — auto-detected as both Condition and State         |
 | Never hardcode visual values                 | Tokens ensure consistency and automatic theming                      |
 | Never create CSS files or `<style>` tags     | All styles are expressed via traits; use JS APIs for animations      |

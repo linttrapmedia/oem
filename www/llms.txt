@@ -792,12 +792,12 @@ useAnimationTrait(
 
 ## Parameters
 
-| Parameter   | Type                                                                                                     | Description                                                                                                                                                  |
-| ----------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `el`        | `HTMLElement`                                                                                            | The target element                                                                                                                                           |
-| `keyframes` | `Keyframe[] \| PropertyIndexedKeyframes \| (() => Keyframe[] \| PropertyIndexedKeyframes)`               | The animation keyframes. Pass an array of `Keyframe` objects, a `PropertyIndexedKeyframes` object, or a function that returns either for reactive evaluation. |
-| `options`   | `number \| KeyframeAnimationOptions \| (() => number \| KeyframeAnimationOptions)`                       | Animation timing. Pass a duration in ms, a full `KeyframeAnimationOptions` object, or a function for reactive evaluation.                                    |
-| `...rest`   | `(StateType<any> \| Condition)[]`                                                                        | Optional State objects and/or Conditions. The animation plays only when all Conditions are truthy.                                                           |
+| Parameter   | Type                                                                                       | Description                                                                                                                                                   |
+| ----------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `el`        | `HTMLElement`                                                                              | The target element                                                                                                                                            |
+| `keyframes` | `Keyframe[] \| PropertyIndexedKeyframes \| (() => Keyframe[] \| PropertyIndexedKeyframes)` | The animation keyframes. Pass an array of `Keyframe` objects, a `PropertyIndexedKeyframes` object, or a function that returns either for reactive evaluation. |
+| `options`   | `number \| KeyframeAnimationOptions \| (() => number \| KeyframeAnimationOptions)`         | Animation timing. Pass a duration in ms, a full `KeyframeAnimationOptions` object, or a function for reactive evaluation.                                     |
+| `...rest`   | `(StateType<any> \| Condition)[]`                                                          | Optional State objects and/or Conditions. The animation plays only when all Conditions are truthy.                                                            |
 
 ## Behavior
 
@@ -817,10 +817,11 @@ A cleanup function that cancels the running animation and unsubscribes from all 
 ### Fade-in on creation
 
 ```ts
-trait.animation(
-  [{ opacity: '0' }, { opacity: '1' }],
-  { duration: 200, easing: 'ease-out', fill: 'forwards' },
-);
+trait.animation([{ opacity: '0' }, { opacity: '1' }], {
+  duration: 200,
+  easing: 'ease-out',
+  fill: 'forwards',
+});
 ```
 
 ### Slide-in from below
@@ -842,7 +843,10 @@ const mode = State<'enter' | 'exit'>('enter');
 
 // Enter animation — plays when mode is 'enter'
 trait.animation(
-  [{ opacity: '0', transform: 'scale(0.95)' }, { opacity: '1', transform: 'scale(1)' }],
+  [
+    { opacity: '0', transform: 'scale(0.95)' },
+    { opacity: '1', transform: 'scale(1)' },
+  ],
   { duration: 200, easing: 'ease-out', fill: 'forwards' },
   mode.$test('enter'),
   mode,
@@ -850,7 +854,10 @@ trait.animation(
 
 // Exit animation — plays when mode is 'exit'
 trait.animation(
-  [{ opacity: '1', transform: 'scale(1)' }, { opacity: '0', transform: 'scale(0.95)' }],
+  [
+    { opacity: '1', transform: 'scale(1)' },
+    { opacity: '0', transform: 'scale(0.95)' },
+  ],
   { duration: 150, easing: 'ease-in', fill: 'forwards' },
   mode.$test('exit'),
   mode,
@@ -860,10 +867,11 @@ trait.animation(
 ### Infinite spinner
 
 ```ts
-trait.animation(
-  [{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }],
-  { duration: 800, iterations: Infinity, easing: 'linear' },
-);
+trait.animation([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], {
+  duration: 800,
+  iterations: Infinity,
+  easing: 'linear',
+});
 ```
 
 ### Reactive duration from state
@@ -895,11 +903,7 @@ trait.animation(
 
 ```ts
 trait.animation(
-  [
-    { transform: 'scale(1)' },
-    { transform: 'scale(1.05)' },
-    { transform: 'scale(1)' },
-  ],
+  [{ transform: 'scale(1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }],
   { duration: 600, easing: 'ease-in-out', iterations: 2 },
 );
 ```
@@ -2936,6 +2940,22 @@ trait.style('opacity', '0.4', enabled.$test(false)),
 trait.style('opacity', enabled ? '1' : '0.4'),
 ```
 
+### Always pair `$test(true)` with `$test(false)`
+
+When using conditions to toggle a style between two values, **always provide both the truth and false branches.** If you only supply the `$test(true)` branch, OEM has no instruction for what value to apply when the condition becomes false — the previous value stays on the element and the UI can appear "stuck."
+
+```ts
+// ✅ Correct: both branches are explicit — reset works as expected
+trait.style('display', 'flex', navOpen.$test(true)),
+trait.style('display', 'none', navOpen.$test(false)),
+
+// ❌ Broken: when navOpen becomes false, display stays 'flex'
+trait.style('display', 'flex', navOpen.$test(true)),
+// (no false branch — nothing resets the value!)
+```
+
+This applies everywhere conditions are used — responsive breakpoints, visibility toggles, theme switches, and all other state-driven style or attribute changes. The rule is simple: **if there is a `$test(true)`, there should be a corresponding `$test(false)` (or vice versa)** so that every state transition produces a defined result.
+
 ### Creating conditions
 
 State objects have `.test()` for immediate evaluation and `.$test()` for reactive conditions. The standalone `$test()` helper from `@linttrap/oem` handles cases where State's built-in `.$test` doesn't apply:
@@ -3258,6 +3278,7 @@ You never need to manually unsubscribe or tear down. Build elements, append them
 | Destructure `Template` into `[tag, trait]`   | Establishes the two proxies used everywhere                          |
 | Prefer `$val` over verbose `() => val(), st` | Collapses getter + subscription into one reference                   |
 | Never use ternaries in trait args            | Conditions keep branches explicit and reactive                       |
+| Pair `$test(true)` with `$test(false)`       | Ensures reset logic works — unpaired conditions leave stale values   |
 | Prefer `state.$test()` for conditions        | Self-subscribing — auto-detected as both Condition and State         |
 | Never hardcode visual values                 | Tokens ensure consistency and automatic theming                      |
 | Never create CSS files or `<style>` tags     | All styles are expressed via traits; use JS APIs for animations      |
@@ -4234,6 +4255,7 @@ tag.main(
 4. **Separate trait calls per breakpoint.** Each viewport size gets its own `trait.style(...)` call with a condition — do not collapse multiple breakpoints into one trait.
 5. **Keep breakpoint ranges non-overlapping.** Ensure `maxWidth` of one range is one pixel below the `minWidth` of the next (e.g., `639 / 640`, `1023 / 1024`).
 6. **Base styles have no condition.** They represent the mobile layout and are always applied. Conditions only appear on tablet/desktop overrides.
+7. **Always pair `$test(true)` with `$test(false)` when toggling values.** If a trait sets a value on `$test(true)` but has no `$test(false)` counterpart, the element retains the old value when the condition flips — the reset never happens. Always provide both branches so every state transition produces a defined result.
 
 
 ## Guides
@@ -5307,6 +5329,7 @@ export const app = tag.div(
 - **Apply traits directly.** Traits belong inline on their target element — do not store them in shared arrays.
 - **Use `$val` for reactive bindings.** Prefer `token.$val` over the verbose `() => token.val(), token` form.
 - **Use `$test` for conditions.** Prefer `state.$test(...)` over standalone `$test()` with separate state arguments.
+- **Always pair `$test(true)` with `$test(false)`.** When using conditions to toggle a style between two values, always provide both branches. If only the truth condition is supplied, the element has no instruction for resetting when the condition becomes false — the previous value stays and the UI appears stuck. For example: `trait.style('display', 'flex', navOpen.$test(true))` must be paired with `trait.style('display', 'none', navOpen.$test(false))`.
 - **Design mobile-first.** Base styles (no condition) target mobile. Use `isTablet.$test(true)` and `isDesktop.$test(true)` to layer on overrides for larger viewports. See [Responsive Design](responsive-design.md).
 - **Keep the file readable.** Indentation reflects DOM nesting. Each `tag.*()` call is a visual representation of the DOM tree.
 

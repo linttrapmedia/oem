@@ -117,6 +117,7 @@ export const app = tag.div(
 - **Apply traits directly.** Traits belong inline on their target element — do not store them in shared arrays.
 - **Use `$val` for reactive bindings.** Prefer `token.$val` over the verbose `() => token.val(), token` form.
 - **Use `$test` for conditions.** Prefer `state.$test(...)` over standalone `$test()` with separate state arguments.
+- **Always pair `$test(true)` with `$test(false)`.** When using conditions to toggle a style between two values, always provide both branches. If only the truth condition is supplied, the element has no instruction for resetting when the condition becomes false — the previous value stays and the UI appears stuck. For example: `trait.style('display', 'flex', navOpen.$test(true))` must be paired with `trait.style('display', 'none', navOpen.$test(false))`.
 - **Design mobile-first.** Base styles (no condition) target mobile. Use `isTablet.$test(true)` and `isDesktop.$test(true)` to layer on overrides for larger viewports. See [Responsive Design](responsive-design.md).
 - **Keep the file readable.** Indentation reflects DOM nesting. Each `tag.*()` call is a visual representation of the DOM tree.
 
