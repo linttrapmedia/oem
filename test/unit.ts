@@ -52,8 +52,22 @@ import {
   CanPreventAnimationWithFalseCondition,
   CanReactivelyTriggerAnimationOnStateChange,
 } from '@/traits/Animation.test';
+import {
+  CanApplyAriaTraitReactively,
+  CanApplyAriaTraitToHtml,
+  CanApplyAriaTraitToSvg,
+  CanApplyAriaTraitWithConditions,
+  CanCleanupAriaTrait,
+} from '@/traits/Aria.test';
 import { CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg } from '@/traits/Attribute.test';
 import { CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg } from '@/traits/ClassName.test';
+import {
+  CanApplyDataAttributeReactively,
+  CanApplyDataAttributeTraitToHtml,
+  CanApplyDataAttributeTraitToSvg,
+  CanApplyDataAttributeWithConditions,
+  CanCleanupDataAttributeTrait,
+} from '@/traits/DataAttribute.test';
 import {
   CanApplyEventListenerTraitToHtml,
   CanApplyEventListenerTraitToSvg,
@@ -62,6 +76,12 @@ import {
   CanRemoveEventListenerFromStateObjectWhenElementIsRemoved,
 } from '@/traits/Event.test';
 import { CanApplyInnerHTMLTraitToHtml, CanApplyInnerHTMLTraitToSvg } from '@/traits/InnerHTML.test';
+import {
+  CanApplyScrollIntoViewTrait,
+  CanApplyScrollIntoViewWithStaticCondition,
+  CanCleanupScrollIntoViewTrait,
+  CanConditionallyApplyScrollIntoViewTrait,
+} from '@/traits/ScrollIntoView.test';
 import {
   CanApplyCssVarWithStyleTraitToHtml,
   CanApplyStyleTraitToHtml,
@@ -110,6 +130,14 @@ window.addEventListener('DOMContentLoaded', async () => {
       CanApplyMultipleTraitsToSvg,
       WillCleanupTraitOnElementRemoval,
     ],
+    [
+      '@/traits/Aria',
+      CanApplyAriaTraitToHtml,
+      CanApplyAriaTraitReactively,
+      CanApplyAriaTraitWithConditions,
+      CanApplyAriaTraitToSvg,
+      CanCleanupAriaTrait,
+    ],
     ['@/traits/Attribute', CanApplyAttributeTraitToHtml, CanApplyAttributeTraitToSvg],
     ['@/traits/ClassName', CanApplyClassNameTraitToHtml, CanApplyClassNameTraitToSvg],
     [
@@ -119,6 +147,14 @@ window.addEventListener('DOMContentLoaded', async () => {
       CanConditionallyApplyEventListenerTraitToHtml,
       CanConditionallyApplyEventListenerTraitToSvg,
       CanRemoveEventListenerFromStateObjectWhenElementIsRemoved,
+    ],
+    [
+      '@/traits/DataAttribute',
+      CanApplyDataAttributeTraitToHtml,
+      CanApplyDataAttributeReactively,
+      CanApplyDataAttributeWithConditions,
+      CanApplyDataAttributeTraitToSvg,
+      CanCleanupDataAttributeTrait,
     ],
     ['@/traits/InnerHTML', CanApplyInnerHTMLTraitToHtml, CanApplyInnerHTMLTraitToSvg],
     [
@@ -155,6 +191,13 @@ window.addEventListener('DOMContentLoaded', async () => {
       CanApplyInfiniteAnimation,
       CanApplyMultipleAnimationsToSameElement,
       CanApplyAnimationWithStateCondition,
+    ],
+    [
+      '@/traits/ScrollIntoView',
+      CanApplyScrollIntoViewTrait,
+      CanConditionallyApplyScrollIntoViewTrait,
+      CanCleanupScrollIntoViewTrait,
+      CanApplyScrollIntoViewWithStaticCondition,
     ],
     ['@/traits/TextContent', CanApplyTextContentTraitToHtml, CanApplyTextContentTraitToSvg],
     ['@/states/MediaQueryState', CanKeepTrackOfMediaQueryState],

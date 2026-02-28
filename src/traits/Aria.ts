@@ -1,0 +1,31 @@
+import { Condition, extractConditions, extractStates, StateType } from '@/registry';
+
+type AriaProperty =
+  | 'role'
+  | `aria-${string}`;
+
+export const useAriaTrait = (
+  el: HTMLElement,
+  prop: AriaProperty,
+  val: (() => string | number | boolean | undefined) | (string | number | boolean | undefined),
+  ...rest: (StateType<any> | Condition)[]
+) => {
+  const states = extractStates(val, ...rest);
+  const conditions = extractConditions(...rest);
+  const apply = () => {
+    const _val = typeof val === 'function' ? val() : val;
+    const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));
+    if (applies) {
+      if (_val === undefined) {
+        el.removeAttribute(prop);
+      } else {
+        el.setAttribute(prop, String(_val));
+      }
+    } else {
+      el.removeAttribute(prop);
+    }
+  };
+  apply();
+  const unsubs = states.map((state) => state.sub(apply));
+  return () => unsubs.forEach((unsub) => unsub());
+};

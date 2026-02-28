@@ -662,6 +662,384 @@ The `$test` function returns a closure with:
 ## Trait Library
 
 
+# useScrollIntoViewTrait
+
+Reactively scrolls an element into the visible area of its scrollable ancestor when conditions are met. Supports smooth and instant scrolling via standard `ScrollIntoViewOptions`.
+
+## Signature
+
+```ts
+useScrollIntoViewTrait(
+  el: HTMLElement,
+  options?: ScrollIntoViewOptions,
+  ...rest: (StateType<any> | Condition)[]
+) => () => void
+```
+
+## Parameters
+
+| Parameter  | Type                          | Description                                                                                                                                  |
+| ---------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `el`       | `HTMLElement`                 | The target element to scroll into view                                                                                                       |
+| `options`  | `ScrollIntoViewOptions`       | Standard scroll options: `behavior` (`'smooth'` or `'instant'`), `block` (`'start'`, `'center'`, `'end'`, `'nearest'`), `inline` (same)     |
+| `...rest`  | `(StateType<any> \| Condition)[]` | Optional State objects and/or Conditions. Scrolls when all Conditions are truthy. Re-evaluates on State changes.                          |
+
+## Behavior
+
+1. Checks all Conditions — if all are truthy, calls `el.scrollIntoView(options)`.
+2. Subscribes to every State in `rest` so the trait re-evaluates on state changes.
+3. Scrolls on initialization if conditions are met.
+
+## Returns
+
+A cleanup function that unsubscribes from all State listeners.
+
+## Template Usage
+
+```ts
+// Scroll when an item becomes active
+trait.scrollIntoView(
+  { behavior: 'smooth', block: 'center' },
+  activeItem.$test((id) => id === itemId),
+);
+
+// Scroll to error field on validation failure
+trait.scrollIntoView(
+  { behavior: 'smooth', block: 'start' },
+  form.$test((f) => !!f.errors.email && f.touched.email),
+);
+
+// Always scroll into view on mount (no conditions)
+trait.scrollIntoView({ behavior: 'instant', block: 'start' });
+```
+
+## Common Patterns
+
+### Chat auto-scroll
+
+```ts
+const messages = State<Message[]>([]);
+
+// Scroll the last message into view when messages change
+tag.div(
+  trait.scrollIntoView(
+    { behavior: 'smooth', block: 'end' },
+    messages.$test(() => true),
+  ),
+);
+```
+
+### Anchor navigation
+
+```ts
+const activeSection = State<string>('intro');
+
+// Each section scrolls into view when it becomes active
+['intro', 'features', 'pricing'].forEach((id) => {
+  tag.section(
+    trait.scrollIntoView(
+      { behavior: 'smooth', block: 'start' },
+      activeSection.$test(id),
+    ),
+  );
+});
+```
+
+### Focus first error
+
+```ts
+const form = useFormState({ name: '', email: '' }, validators);
+
+tag.input(
+  trait.scrollIntoView(
+    { behavior: 'smooth', block: 'center' },
+    form.$test((f) => !!f.errors.name && f.touched.name),
+  ),
+);
+```
+
+## Notes
+
+- Uses the standard `Element.scrollIntoView()` API
+- Scrolls every time conditions become truthy after a state change — not just on the first occurrence
+- For one-time scroll (e.g., on mount), pass no states and the scroll will fire only on initialization
+- Consider using `{ behavior: 'smooth' }` for user-visible navigation and `{ behavior: 'instant' }` for programmatic repositioning
+
+
+---
+
+
+# useAnimationTrait
+
+Reactively plays a [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) keyframe animation on an element. Supports conditional gating, state-driven re-triggering, and automatic cleanup.
+
+## Signature
+
+```ts
+useAnimationTrait(
+  el: HTMLElement,
+  keyframes:
+    | Keyframe[]
+    | PropertyIndexedKeyframes
+    | (() => Keyframe[] | PropertyIndexedKeyframes),
+  options:
+    | number
+    | KeyframeAnimationOptions
+    | (() => number | KeyframeAnimationOptions),
+  ...rest: (StateType<any> | Condition)[]
+) => () => void
+```
+
+## Parameters
+
+| Parameter   | Type                                                                                                     | Description                                                                                                                                                  |
+| ----------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `el`        | `HTMLElement`                                                                                            | The target element                                                                                                                                           |
+| `keyframes` | `Keyframe[] \| PropertyIndexedKeyframes \| (() => Keyframe[] \| PropertyIndexedKeyframes)`               | The animation keyframes. Pass an array of `Keyframe` objects, a `PropertyIndexedKeyframes` object, or a function that returns either for reactive evaluation. |
+| `options`   | `number \| KeyframeAnimationOptions \| (() => number \| KeyframeAnimationOptions)`                       | Animation timing. Pass a duration in ms, a full `KeyframeAnimationOptions` object, or a function for reactive evaluation.                                    |
+| `...rest`   | `(StateType<any> \| Condition)[]`                                                                        | Optional State objects and/or Conditions. The animation plays only when all Conditions are truthy.                                                           |
+
+## Behavior
+
+1. Evaluates `keyframes` and `options` (calls them if they are functions).
+2. Checks all Conditions — if all are truthy, plays the animation via `el.animate()`.
+3. If a previous animation from this trait instance is still running, it is cancelled before the new one starts.
+4. Subscribes to every State in `rest` so the animation re-triggers on state changes.
+5. When a condition is false, the animation is not played but any previously running animation is **not** cancelled — the trait only gates new plays.
+6. Cleanup cancels any running animation and unsubscribes from all States.
+
+## Returns
+
+A cleanup function that cancels the running animation and unsubscribes from all State listeners.
+
+## Template Usage
+
+### Fade-in on creation
+
+```ts
+trait.animation(
+  [{ opacity: '0' }, { opacity: '1' }],
+  { duration: 200, easing: 'ease-out', fill: 'forwards' },
+);
+```
+
+### Slide-in from below
+
+```ts
+trait.animation(
+  [
+    { opacity: '0', transform: 'translateY(8px)' },
+    { opacity: '1', transform: 'translateY(0)' },
+  ],
+  { duration: 250, easing: 'ease-out', fill: 'forwards' },
+);
+```
+
+### Enter/exit driven by state
+
+```ts
+const mode = State<'enter' | 'exit'>('enter');
+
+// Enter animation — plays when mode is 'enter'
+trait.animation(
+  [{ opacity: '0', transform: 'scale(0.95)' }, { opacity: '1', transform: 'scale(1)' }],
+  { duration: 200, easing: 'ease-out', fill: 'forwards' },
+  mode.$test('enter'),
+  mode,
+);
+
+// Exit animation — plays when mode is 'exit'
+trait.animation(
+  [{ opacity: '1', transform: 'scale(1)' }, { opacity: '0', transform: 'scale(0.95)' }],
+  { duration: 150, easing: 'ease-in', fill: 'forwards' },
+  mode.$test('exit'),
+  mode,
+);
+```
+
+### Infinite spinner
+
+```ts
+trait.animation(
+  [{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }],
+  { duration: 800, iterations: Infinity, easing: 'linear' },
+);
+```
+
+### Reactive duration from state
+
+```ts
+const speed = State<number>(300);
+
+trait.animation(
+  [{ opacity: '0' }, { opacity: '1' }],
+  () => ({ duration: speed.val(), easing: 'ease-out', fill: 'forwards' as FillMode }),
+  speed,
+);
+```
+
+### Conditional animation (only when visible)
+
+```ts
+const visible = State<boolean>(false);
+
+trait.animation(
+  [{ opacity: '0' }, { opacity: '1' }],
+  { duration: 200, fill: 'forwards' },
+  visible.$test(true),
+  visible,
+);
+```
+
+### Attention pulse
+
+```ts
+trait.animation(
+  [
+    { transform: 'scale(1)' },
+    { transform: 'scale(1.05)' },
+    { transform: 'scale(1)' },
+  ],
+  { duration: 600, easing: 'ease-in-out', iterations: 2 },
+);
+```
+
+## Performance Notes
+
+- The Web Animations API runs animations on the compositor thread when animating `transform` and `opacity`, delivering 60fps performance without layout thrashing.
+- **Never animate layout properties** (`width`, `height`, `top`, `left`, `margin`, `padding`) — they force reflow on every frame. Use `transform: translate/scale` instead.
+- Prefer `fill: 'forwards'` when the element should retain its final animated state.
+- For looping animations, always provide a cleanup path (state condition or element removal) to avoid orphaned infinite loops.
+
+## Accessibility
+
+- Always respect `prefers-reduced-motion`. When the user has reduced motion enabled, either skip the animation entirely (via a condition tied to a media query state) or use `duration: 0` to apply the final state instantly.
+
+```ts
+const reducedMotion = useMediaQueryState('(prefers-reduced-motion: reduce)');
+
+trait.animation(
+  [{ opacity: '0' }, { opacity: '1' }],
+  () => ({ duration: reducedMotion.test(true) ? 0 : 200, fill: 'forwards' as FillMode }),
+  reducedMotion,
+);
+```
+
+
+---
+
+
+# useDataAttributeTrait
+
+Reactively sets or removes `data-*` attributes on an element using the `dataset` API. Accepts either bare names (e.g. `'active'`) or prefixed names (e.g. `'data-active'`). When the value is `undefined` or conditions are falsy, the data attribute is removed.
+
+## Signature
+
+```ts
+useDataAttributeTrait(
+  el: HTMLElement,
+  name: string,
+  val: (() => string | number | boolean | undefined) | (string | number | boolean | undefined),
+  ...rest: (StateType<any> | Condition)[]
+) => () => void
+```
+
+## Parameters
+
+| Parameter | Type                                                                                           | Description                                                                                                                                  |
+| --------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `el`      | `HTMLElement`                                                                                  | The target element                                                                                                                           |
+| `name`    | `string`                                                                                       | The data attribute name. Can be bare (`'active'`) or prefixed (`'data-active'`). Automatically converted to the proper `dataset` key.        |
+| `val`     | `(() => string \| number \| boolean \| undefined) \| string \| number \| boolean \| undefined` | The attribute value. Pass a function for reactive evaluation. `undefined` removes the attribute.                                             |
+| `...rest` | `(StateType<any> \| Condition)[]`                                                              | Optional State objects and/or Conditions. The trait re-evaluates whenever a State publishes and only applies when all Conditions are truthy. |
+
+## Behavior
+
+1. Normalizes the `name` — adds `data-` prefix if missing, converts to camelCase `dataset` key.
+2. Evaluates `val` (calls it if it's a function).
+3. Checks all Conditions — if any are falsy, removes the data attribute.
+4. If all Conditions pass and `val` is `undefined`, removes the data attribute.
+5. Otherwise, sets `el.dataset[key] = String(val)`.
+6. Subscribes to every State in `rest` so the trait re-runs on state changes.
+
+## Returns
+
+A cleanup function that unsubscribes from all State listeners.
+
+## Template Usage
+
+```ts
+// Static data attribute
+trait.data('id', '42');
+// → el.dataset.id = '42' (renders as data-id="42")
+
+// With data- prefix (also works)
+trait.data('data-id', '42');
+// → same result
+
+// Reactive value
+trait.data('active-tab', () => activeTab.val(), activeTab);
+// → el.dataset.activeTab = 'home' (renders as data-active-tab="home")
+
+// Conditional data attribute
+trait.data(
+  'selected',
+  'true',
+  item.$test((i) => i.selected),
+);
+
+// Remove when undefined
+trait.data('tooltip', () => tooltipText.val() || undefined, tooltipText);
+```
+
+## Common Patterns
+
+### Track element state for CSS selectors
+
+```ts
+// Set data-state for CSS-based styling or external queries
+trait.data('state', () => panelState.val(), panelState);
+// → [data-state="open"], [data-state="closed"]
+```
+
+### Wire up delegation targets
+
+```ts
+items.forEach((item) =>
+  tag.li(
+    trait.data('id', item.id),
+    trait.event('click', (e) => {
+      const id = (e.target as HTMLElement).dataset.id;
+      selectItem(id);
+    }),
+  ),
+);
+```
+
+### Flag elements for testing
+
+```ts
+trait.data('testid', 'submit-button');
+```
+
+## Comparison with useAttributeTrait
+
+| Feature       | `useDataAttributeTrait`            | `useAttributeTrait`     |
+| ------------- | ---------------------------------- | ----------------------- |
+| API           | Uses `el.dataset` (camelCase keys) | Uses `el.setAttribute`  |
+| Name handling | Auto-prefixes `data-` if missing   | Requires full attr name |
+| Intended use  | `data-*` attributes only           | Any HTML attribute      |
+
+## Notes
+
+- Names are automatically normalized: `'active-tab'` → `dataset.activeTab` → renders as `data-active-tab`
+- Uses the `dataset` API for setting/removing, which is the idiomatic way to work with data attributes
+- Removal uses `delete el.dataset[key]` which fully removes the attribute from the DOM
+
+
+---
+
+
 # useFocusTrait
 
 Programmatically focuses an HTML element. Unlike most traits, Focus accepts `conditions` and `states` as explicit arrays rather than using the rest-parameter extraction pattern.
@@ -1080,6 +1458,137 @@ tag.ul(
 ---
 
 
+# useAriaTrait
+
+Reactively sets ARIA attributes and the `role` attribute on an element. When the value is `undefined` or conditions evaluate to `false`, the attribute is removed. Provides first-class accessibility support with typed ARIA property names.
+
+## Signature
+
+```ts
+useAriaTrait(
+  el: HTMLElement,
+  prop: 'role' | `aria-${string}`,
+  val: (() => string | number | boolean | undefined) | (string | number | boolean | undefined),
+  ...rest: (StateType<any> | Condition)[]
+) => () => void
+```
+
+## Parameters
+
+| Parameter | Type                                                                                           | Description                                                                                                                                  |
+| --------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `el`      | `HTMLElement`                                                                                  | The target element                                                                                                                           |
+| `prop`    | `'role' \| \`aria-\${string}\``                                                                | The ARIA attribute name (e.g. `'aria-label'`, `'aria-expanded'`, `'role'`)                                                                  |
+| `val`     | `(() => string \| number \| boolean \| undefined) \| string \| number \| boolean \| undefined` | The attribute value. Pass a function for reactive evaluation. `undefined` removes the attribute.                                             |
+| `...rest` | `(StateType<any> \| Condition)[]`                                                              | Optional State objects and/or Conditions. The trait re-evaluates whenever a State publishes and only applies when all Conditions are truthy. |
+
+## Behavior
+
+1. Evaluates `val` (calls it if it's a function).
+2. Checks all Conditions — if any are falsy, removes the attribute.
+3. If all Conditions pass and `val` is `undefined`, removes the attribute.
+4. Otherwise, sets the attribute via `el.setAttribute(prop, String(val))`.
+5. Subscribes to every State in `rest` so the trait re-runs on state changes.
+
+## Returns
+
+A cleanup function that unsubscribes from all State listeners.
+
+## Template Usage
+
+```ts
+// Static ARIA label
+trait.aria('aria-label', 'Close dialog');
+
+// Role assignment
+trait.aria('role', 'navigation');
+
+// Reactive expanded state
+trait.aria(
+  'aria-expanded',
+  () => String(menuOpen.val()),
+  menuOpen,
+);
+
+// Conditional aria-hidden
+trait.aria('aria-hidden', 'true', visible.$test(false));
+trait.aria('aria-hidden', 'false', visible.$test(true));
+
+// Reactive aria-live region
+trait.aria('aria-live', 'polite');
+trait.aria(
+  'aria-label',
+  () => `${notifications.val().length} new notifications`,
+  notifications,
+);
+
+// Aria-current for navigation
+trait.aria(
+  'aria-current',
+  'page',
+  activeRoute.$test((r) => r === '/about'),
+);
+```
+
+## Common ARIA Patterns
+
+### Accessible toggle button
+
+```ts
+const expanded = State<boolean>(false);
+
+tag.button(
+  trait.aria('aria-expanded', () => String(expanded.val()), expanded),
+  trait.aria('aria-controls', 'panel-1'),
+  trait.event('click', expanded.$reduce((v) => !v)),
+  trait.textContent(() => (expanded.val() ? 'Collapse' : 'Expand'), expanded),
+);
+```
+
+### Live region for status updates
+
+```ts
+tag.div(
+  trait.aria('role', 'status'),
+  trait.aria('aria-live', 'polite'),
+  trait.textContent(() => statusMessage.val(), statusMessage),
+);
+```
+
+### Tab panel
+
+```ts
+tag.div(
+  trait.aria('role', 'tabpanel'),
+  trait.aria('aria-labelledby', 'tab-1'),
+  trait.aria(
+    'aria-hidden',
+    () => String(activeTab.val() !== 'tab-1'),
+    activeTab,
+  ),
+);
+```
+
+## Comparison with useAttributeTrait
+
+| Feature         | `useAriaTrait`                 | `useAttributeTrait`        |
+| --------------- | ------------------------------ | -------------------------- |
+| Type safety     | Typed to `role` and `aria-*`   | Accepts any string         |
+| Intended use    | Accessibility attributes       | General HTML attributes    |
+| Behavior        | Identical                      | Identical                  |
+
+`useAriaTrait` is a semantic specialization — it constrains the `prop` parameter to valid ARIA attributes, making intent clearer and preventing accidental misuse.
+
+## Notes
+
+- Follows the same reactive pattern as `useAttributeTrait`
+- Removing the attribute (via `undefined` or failing conditions) is the correct way to "unset" ARIA properties
+- Boolean ARIA attributes like `aria-expanded` must be set as string `"true"` or `"false"` — they are not boolean HTML attributes
+
+
+---
+
+
 # useClassNameTrait
 
 Sets the `class` attribute of an HTML element reactively. Replaces the entire class string — does not toggle individual classes.
@@ -1179,9 +1688,156 @@ trait.styleOnEvent('blur', 'outline', 'none');
 ## State Library
 
 
-## UrlState
+# UrlState
 
-TODO
+A reactive state hook that tracks the current URL, matching it against a set of defined routes and extracting params, query strings, and hash fragments.
+
+## Features
+
+- **Route matching**: Matches the current pathname against Express-style route patterns (e.g. `/user/:id`)
+- **Param extraction**: Automatically extracts named parameters from matched routes
+- **Query & hash parsing**: Parses query string parameters and hash fragments from the URL
+- **Type-safe routes**: Route handler signatures are inferred from the route pattern — routes with `:param` segments require a typed params object
+- **Reactive**: Returns a State object that updates on `popstate` and `hashchange` events
+
+## Usage
+
+```typescript
+import { useUrlState } from '@linttrap/oem';
+
+const url = useUrlState<{
+  '/': any;
+  '/about': any;
+  '/user/:id': any;
+  '/user/:id/post/:postId': any;
+}>({
+  '/': () => '/',
+  '/about': () => '/about',
+  '/user/:id': ({ id }) => `/user/${id}`,
+  '/user/:id/post/:postId': ({ id, postId }) => `/user/${id}/post/${postId}`,
+});
+
+// Read the current URL state
+const { matchedRoute, params, query, hash } = url.val();
+
+// Subscribe to URL changes
+url.sub(({ matchedRoute, params, query, hash }) => {
+  console.log('Route:', matchedRoute);
+  console.log('Params:', params);
+  console.log('Query:', query);
+  console.log('Hash:', hash);
+});
+```
+
+## Signature
+
+```typescript
+function useUrlState<T extends Record<string, any>>(routes: {
+  [K in keyof T]: K extends string ? RouteHandler<K> : never;
+}): StateType<UrlState<typeof routes>, {}>;
+```
+
+## Parameters
+
+| Parameter | Type     | Description                                                                                      |
+| --------- | -------- | ------------------------------------------------------------------------------------------------ |
+| `routes`  | `object` | A map of route patterns to handler functions. Patterns use `:param` syntax for dynamic segments. |
+
+### Route Handler Signatures
+
+Route handlers are type-inferred from the pattern string:
+
+- **Static routes** (no params): `() => string`
+- **Dynamic routes** (with `:param`): `(params: { [K in ExtractRouteParams<Path>]: string }) => string`
+
+## Return Value
+
+Returns a `State<UrlState>` containing:
+
+| Property       | Type                     | Description                                                  |
+| -------------- | ------------------------ | ------------------------------------------------------------ |
+| `matchedRoute` | `string`                 | The route pattern that matched the current pathname, or `''` |
+| `params`       | `Record<string, string>` | Named parameters extracted from the matched route            |
+| `query`        | `Record<string, string>` | Parsed query string parameters                               |
+| `hash`         | `string`                 | The hash fragment (without the leading `#`)                  |
+| `location`     | `Location`               | The raw `document.location` object                           |
+| `routes`       | `Routes`                 | The routes map passed to the hook                            |
+
+## Behavior
+
+- Parses `document.location` on initialization and returns the matched state
+- Listens for `popstate` events (browser back/forward navigation)
+- Listens for `hashchange` events (hash fragment changes)
+- On each event, re-parses the location and updates the state, notifying all subscribers
+- Route matching converts patterns like `/user/:id` to regex and tests against the current pathname
+- If no route matches, `matchedRoute` is an empty string and `params` is an empty object
+
+## Common Patterns
+
+### Route-based rendering
+
+```typescript
+const url = useUrlState<{
+  '/': any;
+  '/about': any;
+  '/contact': any;
+}>({
+  '/': () => '/',
+  '/about': () => '/about',
+  '/contact': () => '/contact',
+});
+
+url.sub(({ matchedRoute }) => {
+  switch (matchedRoute) {
+    case '/':
+      renderHome();
+      break;
+    case '/about':
+      renderAbout();
+      break;
+    case '/contact':
+      renderContact();
+      break;
+  }
+});
+```
+
+### Reading dynamic params
+
+```typescript
+const url = useUrlState<{
+  '/user/:id': any;
+}>({
+  '/user/:id': ({ id }) => `/user/${id}`,
+});
+
+// If current URL is /user/42
+const { params } = url.val();
+console.log(params.id); // "42"
+```
+
+### Using with conditions
+
+```typescript
+const url = useUrlState<{
+  '/': any;
+  '/about': any;
+}>({
+  '/': () => '/',
+  '/about': () => '/about',
+});
+
+// Create a condition to test the matched route
+const isHome = url.$test((s) => s.matchedRoute === '/');
+const isAbout = url.$test((s) => s.matchedRoute === '/about');
+```
+
+## Notes
+
+- Event listeners (`popstate`, `hashchange`) are added globally and remain active for the lifetime of the page
+- Route patterns support alphanumeric characters and hyphens in param values (`[\w-]+`)
+- Query string parsing uses the standard `URLSearchParams` API
+- The `routes` object is included in the state value for programmatic navigation via handler functions
 
 
 ---
@@ -1336,6 +1992,189 @@ Returns a `State<Theme>` representing the current theme.
 ---
 
 
+# OnlineState
+
+A reactive state hook that tracks whether the browser is currently online or offline.
+
+## Features
+
+- **Connectivity tracking**: Automatically updates when the browser goes online or offline
+- **Immediate evaluation**: Initializes to the current `navigator.onLine` value
+- **Reactive**: Returns a State object that updates on `online` and `offline` window events
+
+## Usage
+
+```typescript
+import { useOnlineState } from '@linttrap/oem';
+
+const isOnline = useOnlineState();
+
+// Read current connectivity
+console.log(isOnline.val()); // true or false
+
+// React to connectivity changes
+isOnline.sub((online) => {
+  console.log(online ? 'Back online' : 'Gone offline');
+});
+```
+
+## Signature
+
+```typescript
+function useOnlineState(): StateType<boolean, {}>;
+```
+
+## Parameters
+
+None.
+
+## Return Value
+
+Returns a `State<boolean>` that is `true` when the browser is online and `false` when offline.
+
+## Behavior
+
+- Initializes to `navigator.onLine`
+- Listens for the `online` window event and sets state to `true`
+- Listens for the `offline` window event and sets state to `false`
+- Notifies all subscribers on each change
+
+## Common Patterns
+
+### Conditional UI based on connectivity
+
+```typescript
+const isOnline = useOnlineState();
+
+// Show/hide an offline banner
+trait.style('display', 'none', isOnline.$test(true));
+trait.style('display', 'flex', isOnline.$test(false));
+```
+
+### Gate network actions
+
+```typescript
+const isOnline = useOnlineState();
+
+trait.event(
+  'click',
+  () => fetchData(),
+  isOnline.$test(true),
+);
+```
+
+## Notes
+
+- Event listeners are added globally and remain active for the lifetime of the page
+- Uses the standard `navigator.onLine` API and `online`/`offline` window events
+
+
+---
+
+
+# WindowSizeState
+
+A reactive state hook that tracks the current viewport dimensions.
+
+## Features
+
+- **Viewport tracking**: Reports both width and height as numbers
+- **Immediate evaluation**: Initializes to the current window size
+- **Reactive**: Returns a State object that updates on window resize
+
+## Usage
+
+```typescript
+import { useWindowSizeState } from '@linttrap/oem';
+
+const windowSize = useWindowSizeState();
+
+// Read current dimensions
+const { width, height } = windowSize.val();
+
+// Subscribe to size changes
+windowSize.sub(({ width, height }) => {
+  console.log(`${width}x${height}`);
+});
+```
+
+## Signature
+
+```typescript
+function useWindowSizeState(): StateType<WindowSize, {}>;
+```
+
+## Parameters
+
+None.
+
+## Return Value
+
+Returns a `State<WindowSize>` containing:
+
+| Property | Type     | Description                         |
+| -------- | -------- | ----------------------------------- |
+| `width`  | `number` | Current viewport width in pixels    |
+| `height` | `number` | Current viewport height in pixels   |
+
+## Behavior
+
+- Initializes to `{ width: window.innerWidth, height: window.innerHeight }`
+- Listens for the `resize` window event
+- Updates state with the new dimensions on every resize
+- Notifies all subscribers on each change
+
+## Common Patterns
+
+### Dynamic canvas sizing
+
+```typescript
+const windowSize = useWindowSizeState();
+
+windowSize.sub(({ width, height }) => {
+  canvas.width = width;
+  canvas.height = height;
+});
+```
+
+### Computed column count
+
+```typescript
+const windowSize = useWindowSizeState();
+
+trait.style('gridTemplateColumns', () => {
+  const cols = Math.floor(windowSize.val().width / 300);
+  return `repeat(${cols}, 1fr)`;
+}, windowSize);
+```
+
+### Reactive dimension values
+
+```typescript
+const windowSize = useWindowSizeState();
+
+trait.style('height', () => `${windowSize.val().height - 64}px`, windowSize);
+```
+
+## Comparison with useMediaQueryState
+
+| Feature              | `useWindowSizeState`   | `useMediaQueryState`      |
+| -------------------- | ---------------------- | ------------------------- |
+| Return type          | `{ width, height }`   | `boolean`                 |
+| Use case             | Computed layouts       | Breakpoint conditions     |
+| Condition-friendly   | Requires `$test` fn   | Direct `$test(true/false)` |
+
+Use `useMediaQueryState` for breakpoint-gated trait conditions. Use `useWindowSizeState` when you need raw pixel values for calculations.
+
+## Notes
+
+- The resize listener is added globally and remains active for the lifetime of the page
+- For breakpoint-based boolean conditions, prefer `useMediaQueryState` instead
+
+
+---
+
+
 # TokenState
 
 A derived state hook that selects between two token values based on the current theme.
@@ -1396,6 +2235,411 @@ const bgColor = useTokenState('#fff', '#0b0f1a', theme);
 
 - The subscription remains active as long as `themeState` exists
 - Ensure the `themeState` is shared across tokens to keep updates consistent
+
+
+---
+
+
+# IntersectionObserverState
+
+A reactive state hook that tracks whether an element is visible within the viewport (or a specified root element) using the Intersection Observer API.
+
+## Features
+
+- **Visibility tracking**: Knows when an element enters or leaves the viewport
+- **Intersection ratio**: Reports how much of the element is visible (0 to 1)
+- **Bounding rect**: Exposes the element's bounding client rect on each observation
+- **Configurable thresholds**: Supports all standard `IntersectionObserver` options
+- **Reactive**: Returns a State object that updates on every intersection change
+
+## Usage
+
+```typescript
+import { useIntersectionObserverState } from '@linttrap/oem';
+
+const section = document.getElementById('hero')!;
+const visibility = useIntersectionObserverState(section);
+
+// Check if element is visible
+visibility.sub(({ isIntersecting }) => {
+  console.log(isIntersecting ? 'Visible' : 'Hidden');
+});
+```
+
+## Signature
+
+```typescript
+function useIntersectionObserverState(
+  el: Element,
+  options?: IntersectionObserverInit,
+): StateType<IntersectionObserverStateValue, {}>;
+```
+
+## Parameters
+
+| Parameter | Type                      | Default | Description                                          |
+| --------- | ------------------------- | ------- | ---------------------------------------------------- |
+| `el`      | `Element`                 | —       | The DOM element to observe                           |
+| `options` | `IntersectionObserverInit` | —       | Standard IntersectionObserver options (root, rootMargin, threshold) |
+
+## Return Value
+
+Returns a `State<IntersectionObserverStateValue>` with the following shape:
+
+| Property              | Type                      | Description                                      |
+| --------------------- | ------------------------- | ------------------------------------------------ |
+| `isIntersecting`      | `boolean`                 | Whether the element is currently intersecting     |
+| `intersectionRatio`   | `number`                  | Fraction of the element visible (0 to 1)         |
+| `boundingClientRect`  | `DOMRectReadOnly \| null` | The element's bounding rect at observation time  |
+
+## Behavior
+
+- Creates an `IntersectionObserver` and immediately begins observing the target element
+- Updates state on every intersection change (entry/exit, ratio change at thresholds)
+- Notifies all subscribers with the new intersection data
+
+## Common Patterns
+
+### Lazy loading content
+
+```typescript
+const placeholder = document.getElementById('lazy-section')!;
+const visibility = useIntersectionObserverState(placeholder, {
+  threshold: 0.1,
+});
+
+visibility.sub(({ isIntersecting }) => {
+  if (isIntersecting) loadContent();
+});
+```
+
+### Scroll-spy navigation
+
+```typescript
+const sections = ['intro', 'features', 'pricing'].map((id) => ({
+  id,
+  visibility: useIntersectionObserverState(document.getElementById(id)!, {
+    threshold: 0.5,
+  }),
+}));
+
+sections.forEach(({ id, visibility }) => {
+  visibility.sub(({ isIntersecting }) => {
+    if (isIntersecting) activeSection.set(id);
+  });
+});
+```
+
+### Animate on scroll
+
+```typescript
+const el = document.getElementById('animate-me')!;
+const visibility = useIntersectionObserverState(el, { threshold: 0.2 });
+
+trait.style('opacity', '0');
+trait.style(
+  'opacity',
+  '1',
+  visibility.$test((v) => v.isIntersecting),
+);
+trait.style(
+  'transition',
+  'opacity 0.3s ease',
+);
+```
+
+## Notes
+
+- The observer remains active for the lifetime of the page
+- Use `threshold` option to control when intersection callbacks fire (e.g., `[0, 0.25, 0.5, 0.75, 1]` for granular tracking)
+- Uses the standard `IntersectionObserver` API — supported in all modern browsers
+
+
+---
+
+
+# TimerState
+
+A reactive state hook that increments a counter at a fixed interval. Provides custom methods to start, stop, and reset the timer.
+
+## Features
+
+- **Interval counter**: Increments a numeric value at a configurable interval
+- **Start/stop/reset**: Custom methods for full timer lifecycle control
+- **Auto-start**: Starts automatically by default (configurable)
+- **Deferred methods**: `$start`, `$stop`, `$reset` for use in event handlers
+- **Reactive**: Returns a State object that updates on every tick
+
+## Usage
+
+```typescript
+import { useTimerState } from '@linttrap/oem';
+
+// Tick every second, auto-starts
+const timer = useTimerState(1000);
+
+// Read current tick count
+console.log(timer.val()); // 0, 1, 2, ...
+
+// Control the timer
+timer.stop();
+timer.reset();
+timer.start();
+
+// Subscribe to ticks
+timer.sub((count) => {
+  console.log('Tick:', count);
+});
+```
+
+## Signature
+
+```typescript
+function useTimerState(
+  intervalMs: number,
+  options?: { autoStart?: boolean },
+): StateType<number, { start; stop; reset }>;
+```
+
+## Parameters
+
+| Parameter    | Type                        | Default | Description                                                |
+| ------------ | --------------------------- | ------- | ---------------------------------------------------------- |
+| `intervalMs` | `number`                    | —       | Interval between ticks in milliseconds                     |
+| `options`    | `{ autoStart?: boolean }`   | —       | Configuration. `autoStart` defaults to `true` if omitted.  |
+
+## Return Value
+
+Returns a `State<number>` with these additional custom methods:
+
+| Method    | Signature    | Description                                      |
+| --------- | ------------ | ------------------------------------------------ |
+| `start()` | `() => void` | Starts the interval (no-op if already running)   |
+| `stop()`  | `() => void` | Stops the interval                               |
+| `reset()` | `() => void` | Stops the interval and resets the counter to `0` |
+
+Each method also has a `$`-prefixed deferred version (`$start`, `$stop`, `$reset`) that returns `() => void`.
+
+## Behavior
+
+- Initializes the counter to `0`
+- If `autoStart` is not explicitly `false`, starts the interval immediately
+- Each tick increments the counter by `1` and notifies all subscribers
+- `start()` is a no-op if the timer is already running (prevents double intervals)
+- `stop()` clears the interval; `start()` can resume from the current count
+- `reset()` clears the interval AND sets the counter back to `0`
+
+## Common Patterns
+
+### Auto-save indicator
+
+```typescript
+const timer = useTimerState(30000); // every 30 seconds
+
+timer.sub(() => {
+  saveDocument();
+});
+```
+
+### Countdown display
+
+```typescript
+const DURATION = 60;
+const timer = useTimerState(1000);
+
+trait.textContent(() => `${DURATION - timer.val()}s remaining`);
+```
+
+### Polling with deferred controls
+
+```typescript
+const timer = useTimerState(5000, { autoStart: false });
+
+timer.sub(() => fetchUpdates());
+
+// Wire start/stop to buttons
+trait.event('click', timer.$start());
+trait.event('click', timer.$stop());
+```
+
+### Session timeout
+
+```typescript
+const idle = useTimerState(1000);
+
+idle.sub((seconds) => {
+  if (seconds >= 300) logout();
+});
+
+// Reset on user activity
+document.addEventListener('mousemove', () => idle.reset());
+```
+
+## Notes
+
+- The interval uses `setInterval` under the hood
+- Timer remains active until explicitly stopped or reset
+- The counter is a simple incrementing integer — for elapsed time, multiply by `intervalMs`
+
+
+---
+
+
+# FormState
+
+A reactive state hook for managing form values, validation errors, touched fields, and dirty state.
+
+## Features
+
+- **Field-level control**: Set individual field values with automatic re-validation
+- **Validation**: Optional per-field validators that run on every field change
+- **Touched tracking**: Track which fields have been interacted with
+- **Dirty tracking**: Knows when any field has been modified from initial values
+- **Full validate**: Validate all fields at once (e.g., on submit)
+- **Reset**: Return to initial values and clear all state
+- **Deferred methods**: `$setField`, `$touch`, `$validate`, `$reset` for event wiring
+
+## Usage
+
+```typescript
+import { useFormState } from '@linttrap/oem';
+
+const form = useFormState(
+  { email: '', password: '' },
+  {
+    email: (val) => (!val ? 'Required' : undefined),
+    password: (val) => (val.length < 8 ? 'Min 8 characters' : undefined),
+  },
+);
+
+// Set a field value
+form.setField('email', 'user@example.com');
+
+// Touch a field
+form.touch('email');
+
+// Validate all fields
+const isValid = form.validate();
+
+// Read state
+const { values, errors, touched, dirty, valid } = form.val();
+
+// Reset to initial
+form.reset();
+```
+
+## Signature
+
+```typescript
+function useFormState<T extends Record<string, any>>(
+  initialValues: T,
+  validators?: Partial<Record<keyof T, (value: T[keyof T], values: T) => string | undefined>>,
+): StateType<FormStateValue<T>, { setField; setError; touch; validate; reset }>;
+```
+
+## Parameters
+
+| Parameter        | Type                | Default | Description                                              |
+| ---------------- | ------------------- | ------- | -------------------------------------------------------- |
+| `initialValues`  | `T`                 | —       | The initial form values                                  |
+| `validators`     | `Partial<Record<keyof T, (value, values) => string \| undefined>>` | — | Optional validators per field. Return a string for errors, `undefined` for valid. |
+
+## Return Value
+
+Returns a `State<FormStateValue<T>>` with shape:
+
+| Property  | Type                             | Description                                 |
+| --------- | -------------------------------- | ------------------------------------------- |
+| `values`  | `T`                              | Current field values                        |
+| `errors`  | `Partial<Record<keyof T, string>>` | Validation error messages per field        |
+| `touched` | `Partial<Record<keyof T, boolean>>` | Whether each field has been touched        |
+| `dirty`   | `boolean`                        | `true` if any field has been modified       |
+| `valid`   | `boolean`                        | `true` if there are no validation errors    |
+
+### Custom Methods
+
+| Method                        | Signature                                | Description                                               |
+| ----------------------------- | ---------------------------------------- | --------------------------------------------------------- |
+| `setField(field, value)`      | `(keyof T, T[keyof T]) => void`          | Updates a field value and re-runs validation              |
+| `setError(field, error)`      | `(keyof T, string \| undefined) => void` | Manually set or clear an error on a field                 |
+| `touch(field)`                | `(keyof T) => void`                      | Marks a field as touched                                  |
+| `validate()`                  | `() => boolean`                          | Validates all fields, touches all, returns validity       |
+| `reset()`                     | `() => void`                             | Resets values, errors, touched, dirty, and valid          |
+
+Each method also has a `$`-prefixed deferred version.
+
+## Behavior
+
+- Initializes with the provided `initialValues`, no errors, no touched fields, `dirty: false`, `valid: true`
+- On `setField`: updates the field value, runs all validators, updates `errors` and `valid`, sets `dirty: true`
+- On `touch`: marks the field as touched (useful for showing errors only after interaction)
+- On `validate`: runs all validators, marks all fields as touched, updates state, returns `boolean`
+- On `reset`: returns to the exact initial state
+- Validators receive both the field value and the full values object (for cross-field validation)
+
+## Common Patterns
+
+### Contact form
+
+```typescript
+const form = useFormState(
+  { name: '', email: '', message: '' },
+  {
+    name: (v) => (!v ? 'Name is required' : undefined),
+    email: (v) => (!v.includes('@') ? 'Invalid email' : undefined),
+    message: (v) => (v.length < 10 ? 'Too short' : undefined),
+  },
+);
+```
+
+### Two-way binding with input traits
+
+```typescript
+trait.inputValue(() => form.val().values.email, form);
+trait.inputEvent('input', (val) => form.setField('email', val), form);
+trait.event('blur', form.$touch('email'));
+```
+
+### Show errors only for touched fields
+
+```typescript
+trait.textContent(
+  () => {
+    const { errors, touched } = form.val();
+    return touched.email ? errors.email || '' : '';
+  },
+  form,
+);
+```
+
+### Submit handler
+
+```typescript
+trait.event('click', () => {
+  if (form.validate()) {
+    submitForm(form.val().values);
+  }
+});
+```
+
+### Cross-field validation
+
+```typescript
+const form = useFormState(
+  { password: '', confirmPassword: '' },
+  {
+    confirmPassword: (val, values) =>
+      val !== values.password ? 'Passwords must match' : undefined,
+  },
+);
+```
+
+## Notes
+
+- Validators run synchronously on every `setField` call
+- The `valid` flag reflects the result of the most recent validation run
+- `validate()` touches all fields so error messages become visible
+- For async validation (e.g., server-side uniqueness checks), use `setError` manually after an async call
 
 
 ## Theme Library

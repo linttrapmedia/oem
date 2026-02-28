@@ -51,6 +51,9 @@ The core library provides the fundamental building blocks of the OEM ecosystem. 
 
 The following traits come with OEM. Traits are reusable pieces of logic that give the abilities and behaviors to your custom template engine. They can be thought of as plugins that can be applied to the output of the Template function to create a powerful and flexible system for generating UI.
 
+- [useScrollIntoViewTrait](../references/traits/ScrollIntoView.md) - Reactively scrolls an HTML element into view based on conditions
+- [useAnimationTrait](../references/traits/Animation.md) - Applies Web Animations API keyframe animations to an HTML element with reactive state and condition support
+- [useDataAttributeTrait](../references/traits/DataAttribute.md) - Reactively sets data-* attributes on an HTML element via the dataset API
 - [useFocusTrait](../references/traits/Focus.md) - Focuses an HTML element based on conditions
 - [useInputEventTrait](../references/traits/InputEvent.md) - Handles input-related events on form elements
 - [useTextContentTrait](../references/traits/TextContent.md) - Sets the text content of an HTML element
@@ -59,6 +62,7 @@ The following traits come with OEM. Traits are reusable pieces of logic that giv
 - [useInputValueTrait](../references/traits/InputValue.md) - Binds a value to an input or textarea element
 - [useEventTrait](../references/traits/Event.md) - Attaches event listeners to an HTML element
 - [useInnerHTMLTrait](../references/traits/InnerHTML.md) - Sets the innerHTML of an element with reactive children
+- [useAriaTrait](../references/traits/Aria.md) - Reactively sets ARIA attributes and roles on an HTML element
 - [useClassNameTrait](../references/traits/ClassName.md) - Sets the class name of an HTML element
 - [useStyleOnEventTrait](../references/traits/StyleOnEvent.md) - Applies CSS styles to an element on a specific event
 
@@ -70,7 +74,12 @@ OEM's state management system is simple yet powerful, providing a flexible way t
 - [useUrlState](../references/states/UrlState.md) - State Object to track the current URL in the application.
 - [useMediaQueryState](../references/states/MediaQueryState.md) - Reactive state for tracking media query matches based on viewport width and media type
 - [useThemeState](../references/states/ThemeState.md) - A simple State object of 'light' and 'dark'
+- [useOnlineState](../references/states/OnlineState.md) - Reactive state for tracking browser online/offline connectivity
+- [useWindowSizeState](../references/states/WindowSizeState.md) - Reactive state for tracking viewport width and height
 - [useTokenState](../references/states/TokenState.md) - A simple State object to manage a single design token setting
+- [useIntersectionObserverState](../references/states/IntersectionObserverState.md) - Reactive state for tracking element visibility within the viewport
+- [useTimerState](../references/states/TimerState.md) - Reactive interval-driven counter state with start, stop, and reset controls
+- [useFormState](../references/states/FormState.md) - Reactive form state with validation, dirty tracking, and field-level control
 
 ## Skills
 
