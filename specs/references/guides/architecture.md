@@ -40,6 +40,7 @@ Each category below has its own detailed guide. Every category must be its own f
 | `traits.ts`    | Custom trait functions (beyond the core trait library)      | [Traits Guide](traits.md)       |
 | `templates.ts` | Template definitions using `Template()` → `[tag, trait]`    | [Templates Guide](templates.md) |
 | `theme.ts`     | Design tokens (`useThemeState` + `useTokenState` instances) | [Theme Guide](theme.md)         |
+| `icons.ts`     | SVG icon functions with a dedicated SVG template engine     | [Icons Guide](icons.md)         |
 | `ui.ts`        | UI rendering — the main template tree and helper functions  | [UI Guide](ui.md)               |
 | `test/`        | Unit and integration tests                                  | [Test Guide](test.md)           |
 | `main.ts`      | App entry point — initializes state, renders UI             | [Main Guide](main.md)           |
@@ -60,6 +61,7 @@ my-app/
   traits.ts
   templates.ts
   theme.ts
+  icons.ts
   ui.ts
   test/
     states.test.ts

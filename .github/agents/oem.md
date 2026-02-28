@@ -62,6 +62,7 @@ The following guides cover theming, design decisions, code idioms, and architect
 - [Actions File](../references/guides/actions.md) - How to define and organize action creator functions in OEM applications.
 - [Test Files](../references/guides/test.md) - How to organize and write tests for OEM applications.
 - [Types File](../references/guides/types.md) - How to define and organize TypeScript type definitions for OEM applications.
+- [Icons File](../references/guides/icons.md) - How to define and organize SVG icon functions in OEM applications.
 - [Machines File](../references/guides/machines.md) - How to define and organize state machines in OEM applications.
 - [Responsive Design](../references/guides/responsive-design.md) - How to build responsive layouts in OEM using useMediaQueryState and trait conditions.
 - [UI File](../references/guides/ui.md) - How to structure and organize the UI rendering layer in OEM applications.
