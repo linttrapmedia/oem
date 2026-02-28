@@ -23,7 +23,7 @@ help:
 
 clean: ## Clean the project
 	@echo $(STATUS) Cleaning...
-	@rm -rf ./www/bundle.min.js ./www/bundle.min.js.map ./node_modules ./package-lock.json ./dist
+	@rm -rf ./www/main.min.js ./www/main.min.js.map ./node_modules ./package-lock.json ./dist
 
 dev: ## Run the project in development mode
 	@echo $(STATUS) Running in development mode...
