@@ -1702,7 +1702,7 @@ function DependencyFlowSVG() {
         trait.attr('y', String(cy)),
         trait.attr('text-anchor', 'middle'),
         trait.attr('dominant-baseline', 'central'),
-        trait.style('fill', textFill, text_fg_primary),
+        trait.style('fill', textFill, text_fg_muted),
         trait.style('fontSize', fontSize),
         trait.style('fontFamily', fontFamily),
         trait.text(label),
