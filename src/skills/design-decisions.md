@@ -82,6 +82,106 @@ If a child element looks wrong and you haven't styled it, check whether it's inh
 
 ---
 
+## CSS Layout Gotchas
+
+OEM has no stylesheet safety net — every style is applied inline via `trait.style()`. This means common CSS pitfalls that frameworks or resets normally absorb will silently break your layout. The following gotchas are **mandatory knowledge** for every OEM application.
+
+### Fixed/Absolute Elements Overflow on Mobile
+
+**Problem:** A `position: fixed` or `position: absolute` element with `left: 0; right: 0` (or `width: 100%`) plus horizontal padding will overflow the viewport. The browser default `box-sizing: content-box` adds padding *on top of* the declared width, so the element becomes `100% + padding-left + padding-right` — causing horizontal scroll on mobile.
+
+**Fix:** Always apply `boxSizing: 'border-box'`, `maxWidth: '100vw'`, and `overflow: 'hidden'` to fixed/absolute full-width elements:
+
+```ts
+// Fixed header — CORRECT
+tag.header(
+  trait.style('position', 'fixed'),
+  trait.style('top', '0'),
+  trait.style('left', '0'),
+  trait.style('right', '0'),
+  trait.style('boxSizing', 'border-box'),   // padding stays inside bounds
+  trait.style('maxWidth', '100vw'),          // safety clamp
+  trait.style('overflow', 'hidden'),         // prevent child bleed
+  trait.style('padding', `8px 16px`),
+);
+```
+
+**Why it matters on mobile:** Desktop browsers have wide enough viewports that a few extra pixels of overflow go unnoticed. On mobile (320–428px wide), even 1px of overflow triggers a horizontal scrollbar and shifts the entire page.
+
+### Flex Children Overflowing Their Container
+
+**Problem:** A flex child with long text or a fixed-width element can push its container wider than the viewport. Flex items default to `min-width: auto`, which prevents them from shrinking below their content size.
+
+**Fix:** Apply `minWidth: '0'` to flex children that contain variable-length content, and `overflow: 'hidden'` or `textOverflow: 'ellipsis'` where appropriate:
+
+```ts
+tag.div(
+  trait.style('display', 'flex'),
+  trait.style('gap', '8px'),
+
+  tag.div(
+    trait.style('flex', '1'),
+    trait.style('minWidth', '0'),           // allow shrinking below content size
+    trait.style('overflow', 'hidden'),
+    trait.style('textOverflow', 'ellipsis'),
+    trait.style('whiteSpace', 'nowrap'),
+  ),
+);
+```
+
+### Grid Blowout
+
+**Problem:** A CSS grid child with content wider than its track (e.g., a `<pre>` block or long URL) expands the track and overflows the grid container. Unlike flex, grid tracks don't shrink by default.
+
+**Fix:** Use `minmax(0, 1fr)` instead of bare `1fr`, and apply `overflow: 'auto'` to the content that may be too wide:
+
+```ts
+trait.style('gridTemplateColumns', 'minmax(0, 1fr) minmax(0, 1fr)'),
+// Inside the cell:
+tag.pre(
+  trait.style('overflow', 'auto'),
+  trait.style('maxWidth', '100%'),
+);
+```
+
+### 100vh on Mobile Safari
+
+**Problem:** `height: 100vh` on iOS Safari includes the area behind the address bar, so content is cut off at the bottom when the bar is visible. This affects modals, full-screen overlays, and hero sections.
+
+**Fix:** Use `minHeight: '100dvh'` (dynamic viewport height) which adjusts as the address bar shows/hides. Fall back to `100vh` for browsers that don't support `dvh`:
+
+```ts
+trait.style('minHeight', '100vh'),         // fallback
+trait.style('minHeight', '100dvh'),        // override: dynamic viewport on iOS
+```
+
+### Touch Target Size
+
+**Problem:** Interactive elements smaller than 44×44px are difficult to tap accurately on mobile. This is both a usability issue and an accessibility failure (WCAG 2.5.5).
+
+**Fix:** Ensure all buttons, links, and interactive controls have a minimum touch target of 44×44px. Use padding to expand the target area without changing the visual size:
+
+```ts
+tag.button(
+  trait.style('minWidth', '44px'),
+  trait.style('minHeight', '44px'),
+  trait.style('padding', '10px 16px'),     // visually compact, touch-friendly
+);
+```
+
+### Scrollbar Gutter Shift
+
+**Problem:** When content transitions from non-scrollable to scrollable (e.g., opening an accordion), the appearance of the scrollbar shifts the layout by ~15px on desktop browsers. This causes a visible jank.
+
+**Fix:** Apply `scrollbarGutter: 'stable'` to the scrollable container so the gutter space is always reserved:
+
+```ts
+trait.style('overflow', 'auto'),
+trait.style('scrollbarGutter', 'stable'),
+```
+
+---
+
 ## Design Composition Principles
 
 Beyond tokens and categories, great UI follows compositional principles borrowed from graphic design, architecture, and visual perception science. These are not aesthetic preferences — they are cognitive ergonomics.

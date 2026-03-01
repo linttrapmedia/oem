@@ -576,6 +576,9 @@ const NavBar = tag.header(
   trait.style('left', '0'),
   trait.style('right', '0'),
   trait.style('zIndex', '100'),
+  trait.style('boxSizing', 'border-box'),
+  trait.style('maxWidth', '100vw'),
+  trait.style('overflow', 'hidden'),
   trait.style('padding', `${space_padding_sm.val()} ${space_padding_md.val()}`),
   trait.style(
     'padding',
