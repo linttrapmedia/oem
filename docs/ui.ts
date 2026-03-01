@@ -737,6 +737,7 @@ const MobileNav = tag.div(
   webkitBackdrop('blur(20px)'),
   trait.style('zIndex', '99'),
   trait.style('display', 'flex'),
+  trait.style('display', 'none', isDesktop.$test(true)),
   trait.style('flexDirection', 'column'),
   trait.style(
     'padding',
@@ -793,6 +794,8 @@ const MobileNavBackdrop = tag.div(
   trait.style('position', 'fixed'),
   trait.style('inset', '0'),
   trait.style('zIndex', '98'),
+  trait.style('display', 'block'),
+  trait.style('display', 'none', isDesktop.$test(true)),
   trait.style('backgroundColor', 'rgba(0,0,0,0.3)'),
   trait.style('transition', 'opacity 0.3s ease'),
   trait.style('opacity', '0'),
