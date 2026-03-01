@@ -28,7 +28,7 @@ tag.$(document.body)(
   trait.style('boxSizing', 'border-box'),
   trait.style('fontFamily', type_family_base.$val),
   trait.style('fontSize', type_size_base.$val),
-  trait.style('lineHeight', '1'),
+  trait.style('lineHeight', '1.5'),
   trait.style('color', text_fg_primary.$val),
   trait.style('backgroundColor', surface_bg_primary.$val),
   trait.style('-webkit-font-smoothing', 'antialiased'),
@@ -40,25 +40,25 @@ tag.$(document.body)(
 
 The following browser defaults cause subtle problems. Neutralize them whenever you create these elements:
 
-| Element             | Browser Default Problem                                                                    | Required Reset                                                                                                                   |
-| ------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
-| `h1`–`h6`           | Top/bottom margin; large bold font. An `h2` inside a card creates unwanted space above it. | `margin: '0'`, `padding: '0'`, `fontSize` and `fontWeight` from tokens, `lineHeight: '1.2'`                                      |
-| `p`                 | Top/bottom margin. Back-to-back paragraphs double-space.                                   | `margin: '0'`, `padding: '0'`. Use the parent's `gap` for spacing between siblings.                                              |
-| `ul`, `ol`          | Left padding (~40px), top/bottom margin, bullet/number markers.                            | `margin: '0'`, `padding: '0'`, `listStyle: 'none'`                                                                               |
-| `li`                | Inherits list padding and marker.                                                          | `margin: '0'`, `padding: '0'`                                                                                                    |
-| `a`                 | Blue color, underline, cursor pointer.                                                     | `color: 'inherit'`, `textDecoration: 'none'`, then apply token-driven color and hover via traits                                 |
-| `button`            | Browser-specific padding, border, background, font inheritance issues.                     | `border: 'none'`, `background: 'none'`, `padding: '0'`, `font: 'inherit'`, `cursor: 'pointer'`, `color: 'inherit'`               |
-| `input`, `textarea` | Border, padding, font-size mismatch, outline on focus, box-sizing: content-box.            | `border: 'none'`, `outline: 'none'`, `padding: '0'`, `font: 'inherit'`, `boxSizing: 'border-box'`, `width: '100%'`               |
-| `select`            | Browser-specific chrome, arrow, padding.                                                   | `appearance: 'none'`, `border: 'none'`, `outline: 'none'`, `font: 'inherit'`, `background: 'none'`                               |
-| `img`               | Inline display causes bottom gap in containers.                                            | `display: 'block'`, `maxWidth: '100%'`, `height: 'auto'`                                                                         |
-| `table`             | Border-collapse gaps, cell padding.                                                        | `borderCollapse: 'collapse'`, `borderSpacing: '0'`, `width: '100%'`                                                              |
-| `th`, `td`          | Padding, text-align varies.                                                                | `padding: '0'`, `textAlign: 'left'`                                                                                              |
-| `fieldset`          | Border, margin, padding.                                                                   | `border: 'none'`, `margin: '0'`, `padding: '0'`                                                                                  |
-| `legend`            | Floating above fieldset border.                                                            | `padding: '0'`, `margin: '0'`                                                                                                    |
-| `hr`                | Height, border, margin.                                                                    | `border: 'none'`, `margin: '0'`, `height: '1px'`, set `backgroundColor` from a border token                                      |
-| `blockquote`        | Left margin ~40px.                                                                         | `margin: '0'`, `padding: '0'`                                                                                                    |
-| `pre`, `code`       | Monospace font, sometimes different size.                                                  | `font: 'inherit'`, then apply `fontFamily: 'monospace'` and desired `fontSize` from tokens                                       |
-| `summary`           | Disclosure triangle, cursor.                                                               | `listStyle: 'none'`, `cursor: 'pointer'`. Remove webkit triangle: `'::marker'` can't be targeted — hide via `listStyle: 'none'`. |
+| Element | Browser Default Problem | Required Reset |
+| --- | --- | --- |
+| `h1`–`h6` | Top/bottom margin; large bold font. An `h2` inside a card creates unwanted space above it. | `margin: '0'`, `padding: '0'`, `fontSize` and `fontWeight` from tokens, `lineHeight: '1.2'` |
+| `p` | Top/bottom margin. Back-to-back paragraphs double-space. | `margin: '0'`, `padding: '0'`. Use the parent's `gap` for spacing between siblings. |
+| `ul`, `ol` | Left padding (~40px), top/bottom margin, bullet/number markers. | `margin: '0'`, `padding: '0'`, `listStyle: 'none'` |
+| `li` | Inherits list padding and marker. | `margin: '0'`, `padding: '0'` |
+| `a` | Blue color, underline, cursor pointer. | `color: 'inherit'`, `textDecoration: 'none'`, then apply token-driven color and hover via traits |
+| `button` | Browser-specific padding, border, background, font inheritance issues. | `border: 'none'`, `background: 'none'`, `padding: '0'`, `font: 'inherit'`, `cursor: 'pointer'`, `color: 'inherit'` |
+| `input`, `textarea` | Border, padding, font-size mismatch, outline on focus, box-sizing: content-box. | `border: 'none'`, `outline: 'none'`, `padding: '0'`, `font: 'inherit'`, `boxSizing: 'border-box'`, `width: '100%'` |
+| `select` | Browser-specific chrome, arrow, padding. | `appearance: 'none'`, `border: 'none'`, `outline: 'none'`, `font: 'inherit'`, `background: 'none'` |
+| `img` | Inline display causes bottom gap in containers. | `display: 'block'`, `maxWidth: '100%'`, `height: 'auto'` |
+| `table` | Border-collapse gaps, cell padding. | `borderCollapse: 'collapse'`, `borderSpacing: '0'`, `width: '100%'` |
+| `th`, `td` | Padding, text-align varies. | `padding: '0'`, `textAlign: 'left'` |
+| `fieldset` | Border, margin, padding. | `border: 'none'`, `margin: '0'`, `padding: '0'` |
+| `legend` | Floating above fieldset border. | `padding: '0'`, `margin: '0'` |
+| `hr` | Height, border, margin. | `border: 'none'`, `margin: '0'`, `height: '1px'`, set `backgroundColor` from a border token |
+| `blockquote` | Left margin ~40px. | `margin: '0'`, `padding: '0'` |
+| `pre`, `code` | Monospace font, sometimes different size. | `font: 'inherit'`, then apply `fontFamily: 'monospace'` and desired `fontSize` from tokens |
+| `summary` | Disclosure triangle, cursor. | `listStyle: 'none'`, `cursor: 'pointer'`. Remove webkit triangle: `'::marker'` can't be targeted — hide via `listStyle: 'none'`. |
 
 ### The Box Model Rule
 
@@ -74,11 +74,111 @@ trait.style('padding', space_padding_md.$val),  // doesn't overflow
 
 The browser **inherits** some properties and **doesn't inherit** others. Know which is which:
 
-| Inherited (flows to children)                                                                                                        | Not inherited (must set explicitly)                                                                                                     |
-| ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Inherited (flows to children) | Not inherited (must set explicitly) |
+| --- | --- |
 | `color`, `font-*`, `line-height`, `letter-spacing`, `text-align`, `visibility`, `cursor`, `white-space`, `word-spacing`, `direction` | `margin`, `padding`, `border`, `background`, `display`, `width`, `height`, `position`, `overflow`, `opacity`, `transform`, `box-sizing` |
 
 If a child element looks wrong and you haven't styled it, check whether it's inheriting an unintended value from an ancestor.
+
+---
+
+## CSS Layout Gotchas
+
+OEM has no stylesheet safety net — every style is applied inline via `trait.style()`. This means common CSS pitfalls that frameworks or resets normally absorb will silently break your layout. The following gotchas are **mandatory knowledge** for every OEM application.
+
+### Fixed/Absolute Elements Overflow on Mobile
+
+**Problem:** A `position: fixed` or `position: absolute` element with `left: 0; right: 0` (or `width: 100%`) plus horizontal padding will overflow the viewport. The browser default `box-sizing: content-box` adds padding *on top of* the declared width, so the element becomes `100% + padding-left + padding-right` — causing horizontal scroll on mobile.
+
+**Fix:** Always apply `boxSizing: 'border-box'`, `maxWidth: '100vw'`, and `overflow: 'hidden'` to fixed/absolute full-width elements:
+
+```ts
+// Fixed header — CORRECT
+tag.header(
+  trait.style('position', 'fixed'),
+  trait.style('top', '0'),
+  trait.style('left', '0'),
+  trait.style('right', '0'),
+  trait.style('boxSizing', 'border-box'),   // padding stays inside bounds
+  trait.style('maxWidth', '100vw'),          // safety clamp
+  trait.style('overflow', 'hidden'),         // prevent child bleed
+  trait.style('padding', `8px 16px`),
+);
+```
+
+**Why it matters on mobile:** Desktop browsers have wide enough viewports that a few extra pixels of overflow go unnoticed. On mobile (320–428px wide), even 1px of overflow triggers a horizontal scrollbar and shifts the entire page.
+
+### Flex Children Overflowing Their Container
+
+**Problem:** A flex child with long text or a fixed-width element can push its container wider than the viewport. Flex items default to `min-width: auto`, which prevents them from shrinking below their content size.
+
+**Fix:** Apply `minWidth: '0'` to flex children that contain variable-length content, and `overflow: 'hidden'` or `textOverflow: 'ellipsis'` where appropriate:
+
+```ts
+tag.div(
+  trait.style('display', 'flex'),
+  trait.style('gap', '8px'),
+
+  tag.div(
+    trait.style('flex', '1'),
+    trait.style('minWidth', '0'),           // allow shrinking below content size
+    trait.style('overflow', 'hidden'),
+    trait.style('textOverflow', 'ellipsis'),
+    trait.style('whiteSpace', 'nowrap'),
+  ),
+);
+```
+
+### Grid Blowout
+
+**Problem:** A CSS grid child with content wider than its track (e.g., a `<pre>` block or long URL) expands the track and overflows the grid container. Unlike flex, grid tracks don't shrink by default.
+
+**Fix:** Use `minmax(0, 1fr)` instead of bare `1fr`, and apply `overflow: 'auto'` to the content that may be too wide:
+
+```ts
+trait.style('gridTemplateColumns', 'minmax(0, 1fr) minmax(0, 1fr)'),
+// Inside the cell:
+tag.pre(
+  trait.style('overflow', 'auto'),
+  trait.style('maxWidth', '100%'),
+);
+```
+
+### 100vh on Mobile Safari
+
+**Problem:** `height: 100vh` on iOS Safari includes the area behind the address bar, so content is cut off at the bottom when the bar is visible. This affects modals, full-screen overlays, and hero sections.
+
+**Fix:** Use `minHeight: '100dvh'` (dynamic viewport height) which adjusts as the address bar shows/hides. Fall back to `100vh` for browsers that don't support `dvh`:
+
+```ts
+trait.style('minHeight', '100vh'),         // fallback
+trait.style('minHeight', '100dvh'),        // override: dynamic viewport on iOS
+```
+
+### Touch Target Size
+
+**Problem:** Interactive elements smaller than 44×44px are difficult to tap accurately on mobile. This is both a usability issue and an accessibility failure (WCAG 2.5.5).
+
+**Fix:** Ensure all buttons, links, and interactive controls have a minimum touch target of 44×44px. Use padding to expand the target area without changing the visual size:
+
+```ts
+tag.button(
+  trait.style('minWidth', '44px'),
+  trait.style('minHeight', '44px'),
+  trait.style('padding', '10px 16px'),     // visually compact, touch-friendly
+);
+```
+
+### Scrollbar Gutter Shift
+
+**Problem:** When content transitions from non-scrollable to scrollable (e.g., opening an accordion), the appearance of the scrollbar shifts the layout by ~15px on desktop browsers. This causes a visible jank.
+
+**Fix:** Apply `scrollbarGutter: 'stable'` to the scrollable container so the gutter space is always reserved:
+
+```ts
+trait.style('overflow', 'auto'),
+trait.style('scrollbarGutter', 'stable'),
+```
 
 ---
 
@@ -94,14 +194,14 @@ A **motif** is a recurring visual element — a shape, rhythm, proportion, or tr
 
 **Examples of motifs:**
 
-| Motif Type            | What Repeats                          | How It Varies                                                                                                               |
-| --------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| **Shape**             | Rounded corners everywhere            | `radius_size_sm` on inputs, `radius_size_md` on cards, `radius_size_lg` on modals — same rounding language, different scale |
-| **Rhythm**            | Consistent spacing from the 8pt grid  | `space_gap_sm` between inline items, `space_gap_md` between card sections, `space_gap_lg` between page regions              |
-| **Color temperature** | Cool blues dominate the palette       | Primary actions are blue, info feedback is blue, nav accent is blue — warm colors reserved only for warnings/danger         |
-| **Weight**            | Light, airy feel with high whitespace | Large padding, generous line-height, light font weights for body, bold only for key headings                                |
-| **Elevation**         | Layered depth via shadow              | Flat base surfaces, subtle `shadow_box_sm` on cards, pronounced `shadow_box_md` on floating elements                        |
-| **Line**              | Thin 1px borders as separators        | Present on cards, table rows, nav dividers, input outlines — always the same weight and token color                         |
+| Motif Type | What Repeats | How It Varies |
+| --- | --- | --- |
+| **Shape** | Rounded corners everywhere | `radius_size_sm` on inputs, `radius_size_md` on cards, `radius_size_lg` on modals — same rounding language, different scale |
+| **Rhythm** | Consistent spacing from the 8pt grid | `space_gap_sm` between inline items, `space_gap_md` between card sections, `space_gap_lg` between page regions |
+| **Color temperature** | Cool blues dominate the palette | Primary actions are blue, info feedback is blue, nav accent is blue — warm colors reserved only for warnings/danger |
+| **Weight** | Light, airy feel with high whitespace | Large padding, generous line-height, light font weights for body, bold only for key headings |
+| **Elevation** | Layered depth via shadow | Flat base surfaces, subtle `shadow_box_sm` on cards, pronounced `shadow_box_md` on floating elements |
+| **Line** | Thin 1px borders as separators | Present on cards, table rows, nav dividers, input outlines — always the same weight and token color |
 
 **Rules for motifs:**
 
@@ -153,24 +253,23 @@ Balance is the distribution of visual weight across a composition. An unbalanced
 
 **Types of balance:**
 
-| Type             | Description                                                     | When to Use                                                                                      |
-| ---------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Symmetrical**  | Equal weight on both sides of a center axis                     | Forms, login screens, centered landing pages — when formality and stability are desired          |
+| Type | Description | When to Use |
+| --- | --- | --- |
+| **Symmetrical** | Equal weight on both sides of a center axis | Forms, login screens, centered landing pages — when formality and stability are desired |
 | **Asymmetrical** | Unequal distribution that achieves equilibrium through contrast | Dashboards, content pages — one large element on the left, several smaller elements on the right |
-| **Radial**       | Elements radiate from a central point                           | Rare in UI — use for circular menus, loading indicators, or hero focus points                    |
+| **Radial** | Elements radiate from a central point | Rare in UI — use for circular menus, loading indicators, or hero focus points |
 
 **Visual weight factors:**
 
-| Factor   | Heavier                          | Lighter                   |
-| -------- | -------------------------------- | ------------------------- |
-| Size     | Large elements                   | Small elements            |
-| Color    | Dark, saturated, warm            | Light, desaturated, cool  |
-| Density  | Dense text blocks, filled shapes | Whitespace, thin outlines |
-| Position | Top and left (reading gravity)   | Bottom and right          |
-| Contrast | High-contrast against background | Low-contrast / blended    |
+| Factor | Heavier | Lighter |
+| --- | --- | --- |
+| Size | Large elements | Small elements |
+| Color | Dark, saturated, warm | Light, desaturated, cool |
+| Density | Dense text blocks, filled shapes | Whitespace, thin outlines |
+| Position | Top and left (reading gravity) | Bottom and right |
+| Contrast | High-contrast against background | Low-contrast / blended |
 
 **Practical rules:**
-
 - A large image on the left can be balanced by a dense text block + CTA button on the right.
 - Generous whitespace on one side balances a heavy element cluster on the other.
 - A single bold heading at the top balances an entire list of items below.
@@ -182,25 +281,24 @@ Every screen must have exactly **one primary focal point** — the first thing t
 
 **Establishing focal point:**
 
-| Technique     | How It Works                                                                           |
-| ------------- | -------------------------------------------------------------------------------------- |
-| **Size**      | Make the primary element the largest on the screen                                     |
-| **Contrast**  | Give it the highest contrast against its background                                    |
-| **Color**     | Use the most saturated or warmest color                                                |
-| **Isolation** | Surround it with generous whitespace                                                   |
-| **Position**  | Place it at a natural eye-entry point (top-left for LTR, center for symmetric layouts) |
+| Technique | How It Works |
+| --- | --- |
+| **Size** | Make the primary element the largest on the screen |
+| **Contrast** | Give it the highest contrast against its background |
+| **Color** | Use the most saturated or warmest color |
+| **Isolation** | Surround it with generous whitespace |
+| **Position** | Place it at a natural eye-entry point (top-left for LTR, center for symmetric layouts) |
 
 **Visual flow patterns — how the eye moves:**
 
-| Pattern               | Shape                                                                                                                     | Use Case                                                                 |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| **F-pattern**         | Eye scans across the top, then down the left edge, making shorter horizontal scans                                        | Text-heavy content: articles, documentation, dashboards with sidebar nav |
-| **Z-pattern**         | Eye moves top-left → top-right → diagonal to bottom-left → bottom-right                                                   | Landing pages with minimal content, hero sections, marketing pages       |
+| Pattern | Shape | Use Case |
+| --- | --- | --- |
+| **F-pattern** | Eye scans across the top, then down the left edge, making shorter horizontal scans | Text-heavy content: articles, documentation, dashboards with sidebar nav |
+| **Z-pattern** | Eye moves top-left → top-right → diagonal to bottom-left → bottom-right | Landing pages with minimal content, hero sections, marketing pages |
 | **Gutenberg diagram** | Four quadrants: primary optical (top-left), strong fallow (top-right), weak fallow (bottom-left), terminal (bottom-right) | Balanced layouts — place primary CTA in the terminal area (bottom-right) |
-| **Center-out**        | Eye starts at center and radiates                                                                                         | Modal dialogs, centered forms, confirmation screens                      |
+| **Center-out** | Eye starts at center and radiates | Modal dialogs, centered forms, confirmation screens |
 
 **Practical rules:**
-
 1. Place the most important content along the natural flow path for the layout type.
 2. Use size and weight to create **entry points** — the eye lands there first.
 3. Use alignment and spacing to create **directional cues** — the eye follows them.
@@ -213,14 +311,13 @@ Rhythm is the predictable repetition of visual elements at regular intervals. It
 
 **Types of rhythm:**
 
-| Type            | Description                         | Example                                         |
-| --------------- | ----------------------------------- | ----------------------------------------------- |
-| **Regular**     | Same element, same interval         | A list of cards with identical spacing          |
-| **Alternating** | Two patterns, cycling predictably   | Zebra-striped table rows                        |
+| Type | Description | Example |
+| --- | --- | --- |
+| **Regular** | Same element, same interval | A list of cards with identical spacing |
+| **Alternating** | Two patterns, cycling predictably | Zebra-striped table rows |
 | **Progressive** | Interval or scale changes gradually | A type scale where sizes grow by φ at each step |
 
 **Rules:**
-
 1. **Consistent gap = consistent rhythm.** Use a single `space_gap_*` token within any repeated group. Never mix gap sizes within a list, grid, or nav.
 2. **Rhythm breaks signal section changes.** A larger gap between groups of items communicates "new section" without needing a visible divider.
 3. **Alignment creates invisible rhythm.** Left-align all text in a column. Align all card titles to the same baseline. Rhythm appears even without visible lines connecting them.
@@ -230,7 +327,6 @@ Rhythm is the predictable repetition of visual elements at regular intervals. It
 Elements that are **close together** are perceived as belonging to the same group (Gestalt law of proximity). This is the most important layout principle after hierarchy.
 
 **Rules:**
-
 1. **Related items must be closer to each other than to unrelated items.** The gap between a label and its input must be smaller than the gap between two separate form fields.
 2. **Spacing encodes relationship.** Within a card: `space_gap_sm` (4–8px) between label and value. Between cards: `space_gap_lg` (24px). Between page sections: `space_gap_xl` (32–48px).
 3. **If you need a divider line, your spacing is wrong.** Proper proximity-based grouping eliminates most divider lines. Use dividers only when spacing alone is ambiguous (e.g., dense data tables).
@@ -242,15 +338,14 @@ Whitespace (negative space) is not "empty" — it is an active structural elemen
 
 **Functions of whitespace:**
 
-| Function           | How                                                                     |
-| ------------------ | ----------------------------------------------------------------------- |
-| **Separation**     | Space between groups replaces divider lines                             |
-| **Emphasis**       | Isolating an element with whitespace increases its visual weight        |
-| **Breathing room** | Generous padding prevents cognitive overload                            |
-| **Hierarchy**      | More whitespace = higher importance (luxury brands use vast whitespace) |
+| Function | How |
+| --- | --- |
+| **Separation** | Space between groups replaces divider lines |
+| **Emphasis** | Isolating an element with whitespace increases its visual weight |
+| **Breathing room** | Generous padding prevents cognitive overload |
+| **Hierarchy** | More whitespace = higher importance (luxury brands use vast whitespace) |
 
 **Rules:**
-
 1. **More whitespace is almost always better.** When in doubt, increase padding and gap by one step on the 8pt grid.
 2. **Content density inversely correlates with perceived quality.** Dense = utilitarian. Spacious = premium.
 3. **Outer margins ≥ inner margins.** Page padding must be greater than card padding, which must be greater than element spacing within cards. This creates visual nesting.
@@ -262,15 +357,14 @@ Contrast is the measurable difference between foreground and background. Insuffi
 
 **WCAG requirements:**
 
-| Content Type                       | Minimum Contrast Ratio | Target      |
-| ---------------------------------- | ---------------------- | ----------- |
-| Body text (< 18px)                 | 4.5:1                  | 7:1 (AAA)   |
-| Large text (≥ 18px or ≥ 14px bold) | 3:1                    | 4.5:1 (AAA) |
-| UI components & icons              | 3:1                    | 4.5:1       |
-| Non-essential decorative elements  | No requirement         | —           |
+| Content Type | Minimum Contrast Ratio | Target |
+| --- | --- | --- |
+| Body text (< 18px) | 4.5:1 | 7:1 (AAA) |
+| Large text (≥ 18px or ≥ 14px bold) | 3:1 | 4.5:1 (AAA) |
+| UI components & icons | 3:1 | 4.5:1 |
+| Non-essential decorative elements | No requirement | — |
 
 **Practical rules:**
-
 1. **Primary text on primary surface must exceed 7:1.** This is the most common combination — get it right.
 2. **Muted/secondary text must still meet 4.5:1.** "Muted" does not mean "invisible."
 3. **Text on colored backgrounds requires calculation.** White text on `action_bg_primary` must meet 4.5:1 — verify the pairing.
@@ -283,17 +377,16 @@ Color choices affect perception, mood, and usability beyond mere brand identity.
 
 **Hue associations in UI context:**
 
-| Hue           | Perception               | UI Role                                                         |
-| ------------- | ------------------------ | --------------------------------------------------------------- |
-| Blue          | Trust, stability, calm   | Primary actions, links, information                             |
-| Green         | Success, growth, safety  | Confirmation, completed states, positive indicators             |
-| Red           | Urgency, danger, error   | Destructive actions, validation errors, critical alerts         |
-| Amber/Yellow  | Caution, attention       | Warnings, pending states                                        |
-| Violet/Purple | Creativity, premium      | Feature highlights, premium tiers (use sparingly)               |
+| Hue | Perception | UI Role |
+| --- | --- | --- |
+| Blue | Trust, stability, calm | Primary actions, links, information |
+| Green | Success, growth, safety | Confirmation, completed states, positive indicators |
+| Red | Urgency, danger, error | Destructive actions, validation errors, critical alerts |
+| Amber/Yellow | Caution, attention | Warnings, pending states |
+| Violet/Purple | Creativity, premium | Feature highlights, premium tiers (use sparingly) |
 | Neutral grays | Professionalism, clarity | Surfaces, borders, secondary text — the backbone of any palette |
 
 **Harmony rules:**
-
 1. **Use one dominant hue** for primary interactions (typically blue). All other hues serve specific semantic roles.
 2. **Limit the palette to 1 primary + 4 semantic colors** (success, warning, danger, info) + neutrals. More hues create visual noise.
 3. **Saturation decreases with surface area.** Large backgrounds are desaturated or neutral. Small elements (badges, buttons) can be saturated.
@@ -305,7 +398,6 @@ Color choices affect perception, mood, and usability beyond mere brand identity.
 Every element on screen sits on invisible alignment axes. When elements don't share an edge or center line, the layout feels chaotic — even if no single element is "wrong."
 
 **Rules:**
-
 1. **Establish 1-3 vertical alignment axes per layout.** All left edges, all center lines, or all right edges should snap to these axes.
 2. **Text baselines in adjacent columns must align.** If a card title and a sidebar heading are at the same vertical position, their text baselines must be on the same line.
 3. **Icons and text must be vertically centered to each other**, not top-aligned. Use `display: 'flex'` + `alignItems: 'center'` for every icon-text pair.
@@ -317,7 +409,6 @@ Every element on screen sits on invisible alignment axes. When elements don't sh
 The relationship between an element's content and its container determines whether it feels cramped, comfortable, or empty.
 
 **Rules:**
-
 1. **Buttons:** Horizontal padding ≥ 2× vertical padding. A button with `padding: '8px 16px'` feels right; `padding: '8px 8px'` feels cramped.
 2. **Cards:** Internal padding should be 16-24px. Content should fill 60-80% of the card width (leave some breathing room at the right edge).
 3. **Inputs:** Height should be 36-44px for comfortable touch targets (WCAG 2.5.8 target size). Internal padding 8-12px.
@@ -331,17 +422,16 @@ Animation in UI is not decoration — it communicates spatial relationships, con
 
 **Duration heuristics:**
 
-| Interaction           | Duration    | Easing                                |
-| --------------------- | ----------- | ------------------------------------- |
-| Hover state change    | 100-150ms   | `ease-out`                            |
-| Button press feedback | 100ms       | `ease-out`                            |
-| Fade in/out           | 150-250ms   | `ease-out` / `ease-in`                |
-| Slide or expand       | 200-350ms   | `ease-out` (enter) / `ease-in` (exit) |
-| Page transition       | 300-500ms   | `ease-in-out`                         |
-| Loading skeleton      | 1000-2000ms | `ease-in-out` (looping)               |
+| Interaction | Duration | Easing |
+| --- | --- | --- |
+| Hover state change | 100-150ms | `ease-out` |
+| Button press feedback | 100ms | `ease-out` |
+| Fade in/out | 150-250ms | `ease-out` / `ease-in` |
+| Slide or expand | 200-350ms | `ease-out` (enter) / `ease-in` (exit) |
+| Page transition | 300-500ms | `ease-in-out` |
+| Loading skeleton | 1000-2000ms | `ease-in-out` (looping) |
 
 **Principles:**
-
 1. **Enter fast, exit faster.** Entering elements should take longer than exiting ones. The user's attention should be on what's appearing, not what's leaving.
 2. **Elements should enter from where they came from.** A dropdown opens downward. A sidebar slides from the left. A modal fades from center. Never animate from an unexpected direction.
 3. **Opacity + transform together.** Combine fade with a subtle translate (4-8px) for entrances. Opacity alone feels flat.

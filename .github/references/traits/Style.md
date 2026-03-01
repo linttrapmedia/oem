@@ -50,9 +50,12 @@ A cleanup function that unsubscribes from all State listeners.
 trait.style('backgroundColor', surface_bg_primary.$val);
 trait.style('padding', space_padding_md.$val);
 
-// Reactive value from state
-trait.style('opacity', '1', visible.$test(true));
-trait.style('opacity', '0', visible.$test(false));
+// Conditional toggle — unconditional default + conditional override
+// IMPORTANT: Never use two opposing $test conditions on the same property.
+// Each conditional trait has its own saved-value slot, and opposing conditions
+// will corrupt each other's snapshots, preventing the style from reverting.
+trait.style('opacity', '0'); // default
+trait.style('opacity', '1', visible.$test(true)); // override when true
 
 // Custom CSS property
 trait.style('--header-height', '64px');
