@@ -40,7 +40,7 @@ deploy: ## Deploy the project to GitHub Pages/oem.js.org
 
 examples: ## Dev todo example
 	@echo $(STATUS) Building examples...
-	@bun --port 3002 ./examples/index.html --watch
+	@bun --port 3002 ./examples/todos.html --watch
 
 install: ## Install the project
 	@echo $(STATUS) Installing...

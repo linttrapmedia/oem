@@ -13,67 +13,41 @@ const indexFile = resolve(projectRoot, 'docs/index.html');
 import { existsSync, rmSync } from 'node:fs';
 if (existsSync(agentsDir)) {
   rmSync(agentsDir, { recursive: true });
+  
 }
 
-// copy core files to specs/references/core
+const exampleFiles = [];
+for await (const file of new Glob('examples/*.md').scan('.')) {
+  const filePath = resolve(projectRoot, file);
+  const content = await Bun.file(filePath).text();
+  const frontMatter = extractFrontMatter(content);
+  exampleFiles.push([frontMatter, content]);
+}
+
 const coreFiles = [];
 for await (const fileName of new Glob('src/core/*.md').scan('.')) {
   const filePath = resolve(projectRoot, fileName);
   const content = await Bun.file(filePath).text();
   const frontMatter = extractFrontMatter(content);
-  // copy to references/core
-  const referencePath = `${agentsDir}/references/core/${fileName.split('/').pop()!}`;
-  await Bun.write(referencePath, content);
-  coreFiles.push([`../references/core/${fileName.split('/').pop()!}`, frontMatter, content]);
+  coreFiles.push([frontMatter, content]);
 }
 
 const traitFiles = [];
 for await (const file of new Glob('src/traits/*.md').scan('.')) {
   const filePath = resolve(projectRoot, file);
-  const content = await Bun.file(file).text();
-  const fileName = file.split('/').pop()!;
+  const content = await Bun.file(filePath).text();
   const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
-  // copy to references/traits
-  const referencePath = `${agentsDir}/references/traits/${fileName}`;
-  await Bun.write(referencePath, content);
-  traitFiles.push([`../references/traits/${fileName}`, frontMatter, content]);
+  traitFiles.push([frontMatter, content]);
 }
 
 const stateFiles = [];
 for await (const file of new Glob('src/states/*.md').scan('.')) {
   const filePath = resolve(projectRoot, file);
   const content = await Bun.file(file).text();
-  const fileName = file.split('/').pop()!;
   const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
-  // copy to references/states
-  const referencePath = `${agentsDir}/references/states/${fileName}`;
-  await Bun.write(referencePath, content);
-  stateFiles.push([`../references/states/${fileName}`, frontMatter, content]);
+  stateFiles.push([frontMatter, content]);
 }
 
-const guideFiles = [];
-for await (const file of new Glob('src/guides/*.md').scan('.')) {
-  const filePath = resolve(projectRoot, file);
-  const content = await Bun.file(file).text();
-  const fileName = file.split('/').pop()!;
-  const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
-  // copy to references/guides
-  const referencePath = `${agentsDir}/references/guides/${fileName}`;
-  await Bun.write(referencePath, content);
-  guideFiles.push([`../references/guides/${fileName}`, frontMatter, content]);
-}
-
-const skillFiles = [];
-for await (const file of new Glob('src/skills/*.md').scan('.')) {
-  const filePath = resolve(projectRoot, file);
-  const content = await Bun.file(file).text();
-  const fileName = file.split('/').pop()!;
-  const frontMatter = extractFrontMatter(await Bun.file(filePath).text());
-  // copy to skills/
-  const skillPath = `${agentsDir}/skills/${fileName}`;
-  await Bun.write(skillPath, content);
-  skillFiles.push([`../skills/${fileName}`, frontMatter, content]);
-}
 
 const DOCS = `# oem <sup>${pkg.version}</sup>
 
@@ -85,17 +59,22 @@ The following documentation describes the core concepts, libraries, and conventi
 [GITHUB](${pkg.repository.url}) | [NPM](${pkg.repository.npm})
 
 ## Table of Contents
+- [Install](#install)
 - [Core Library](#core-library)
 > ${coreFiles
-  .map(([filePath, frontMatter]: any) => `- [${frontMatter.name}](#${frontMatter.name.toLowerCase().replace(/\s+/g, '-')}) - ${frontMatter.description}`)
+  .map(([frontMatter]: any) => `- [${frontMatter.name}](#${frontMatter.name.toLowerCase().replace(/\s+/g, '-')}) - ${frontMatter.description}`)
   .join('\n> ')}
 - [Trait Library](#trait-library)
 > ${traitFiles
-  .map(([filePath, frontMatter]: any) => `- [${frontMatter.name}](#${frontMatter.name.toLowerCase().replace(/\s+/g, '-')}) - ${frontMatter.description}`)
+  .map(([frontMatter]: any) => `- [${frontMatter.name}](#${frontMatter.name.toLowerCase().replace(/\s+/g, '-')}) - ${frontMatter.description}`)
   .join('\n> ')}
 - [State Library](#state-library)
 > ${stateFiles
-  .map(([filePath, frontMatter]: any) => `- [${frontMatter.name}](#${frontMatter.name.toLowerCase().replace(/\s+/g, '-')}) - ${frontMatter.description}`)
+  .map(([frontMatter]: any) => `- [${frontMatter.name}](#${frontMatter.name.toLowerCase().replace(/\s+/g, '-')}) - ${frontMatter.description}`)
+  .join('\n> ')}
+- [Examples](#examples)
+> ${exampleFiles
+  .map(([frontMatter]: any) => `- [${frontMatter.name}](#${frontMatter.name.toLowerCase().replace(/\s+/g, '-')}) - ${frontMatter.description}`)
   .join('\n> ')}
 
 ## Install
@@ -106,13 +85,16 @@ npm install @linttrap/oem
 \`\`\`
 
 ## Core Library
-${coreFiles.map(([, , content]: any) => stripFrontMatter(content)).join('\n\n---\n\n')}
+${coreFiles.map(([, content]: any) => stripFrontMatter(content)).join('\n\n---\n\n')}
 
 ## Trait Library
-${traitFiles.map(([, , content]: any) => stripFrontMatter(content)).join('\n\n---\n\n')}
+${traitFiles.map(([, content]: any) => stripFrontMatter(content)).join('\n\n---\n\n')}
 
 ## State Library
-${stateFiles.map(([, , content]: any) => stripFrontMatter(content)).join('\n\n---\n\n')}
+${stateFiles.map(([, content]: any) => stripFrontMatter(content)).join('\n\n---\n\n')}
+
+## Examples
+${exampleFiles.map(([, content]: any) => stripFrontMatter(content)).join('\n\n---\n\n')}
 `;
 
 // Generate the docs content by concatenating all the files together with appropriate section headers

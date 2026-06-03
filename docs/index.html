@@ -64,6 +64,7 @@
 <p><a href="https://github.com/linttrapmedia/oem.git">GITHUB</a> | <a href="https://www.npmjs.com/package/@linttrap/oem">NPM</a></p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
+<li><a href="#install">Install</a></li>
 <li><a href="#core-library">Core Library</a></li>
 </ul>
 <blockquote>
@@ -108,6 +109,17 @@
 <li><a href="#useintersectionobserverstate">useIntersectionObserverState</a> - Reactive state for tracking element visibility within the viewport</li>
 <li><a href="#usetimerstate">useTimerState</a> - Reactive interval-driven counter state with start, stop, and reset controls</li>
 <li><a href="#useformstate">useFormState</a> - Reactive form state with validation, dirty tracking, and field-level control</li>
+</ul>
+</blockquote>
+<ul>
+<li><a href="#examples">Examples</a></li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="#theme-toggle-example">Theme Toggle Example</a> - A theme toggle component built with OEM.</li>
+<li><a href="#dynamic-list-example">Dynamic List Example</a> - A dynamic list component built with OEM.</li>
+<li><a href="#counter-example">Counter Example</a> - A simple counter component built with OEM.</li>
+<li><a href="#conditional-styling-example">Conditional Styling Example</a> - A conditional styling component built with OEM.</li>
 </ul>
 </blockquote>
 <h2 id="install">Install</h2>
@@ -2242,5 +2254,106 @@ trait.event('blur', form.$touch('email'));
 <li><code>validate()</code> touches all fields so error messages become visible</li>
 <li>For async validation (e.g., server-side uniqueness checks), use <code>setError</code> manually after an async call</li>
 </ul>
+<h2 id="examples">Examples</h2>
+<h2 id="theme-toggle-example">Theme Toggle Example</h2>
+<pre><code class="language-typescript">import { useThemeState, useTokenState } from '@linttrap/oem';
+
+const theme = useThemeState('light');
+const bg = useTokenState('#c7c7c7', '#222222', theme);
+const fg = useTokenState('#222222', '#c7c7c7', theme);
+const accent = useTokenState('#555555', '#999999', theme);
+
+const app = tag.div(
+  trait.style('backgroundColor', bg.$val),
+  trait.style('color', fg.$val),
+  trait.style('transition', 'all 0.3s ease'),
+  tag.button(
+    trait.text('☀️ Light', theme.$test('dark')),
+    trait.text('🌙 Dark', theme.$test('light')),
+    trait.event('click', () =&gt; theme.reduce((t) =&gt; (t === 'dark' ? 'light' : 'dark'))),
+    trait.style('color', accent.$val),
+  ),
+);
+</code></pre>
+<hr />
+<h2 id="dynamic-list-example">Dynamic List Example</h2>
+<pre><code class="language-typescript">const items = State&lt;string[]&gt;([]);
+const input = State('');
+
+const list = tag.div(
+  tag.div(
+    trait.style('display', 'flex'),
+    trait.style('gap', '8px'),
+    tag.input(
+      trait.inputValue(input.$val),
+      trait.inputEvent('input', input.$set),
+      trait.style('flex', '1'),
+    ),
+    tag.button(
+      trait.text('Add'),
+      trait.event('click', () =&gt; {
+        items.reduce((prev) =&gt; [...prev, input.val()]);
+        input.set('');
+      }),
+    ),
+  ),
+  tag.ul(trait.innerHTML(() =&gt; items.val().map((item) =&gt; tag.li(trait.text(item))), items)),
+);
+</code></pre>
+<hr />
+<h2 id="counter-example">Counter Example</h2>
+<pre><code class="language-typescript">const count = State(0);
+
+const counter = tag.div(
+  trait.style('display', 'flex'),
+  trait.style('alignItems', 'center'),
+  trait.style('gap', '16px'),
+  tag.button(
+    trait.text('−'),
+    trait.event(
+      'click',
+      count.$reduce((n) =&gt; n - 1),
+    ),
+    trait.style('fontSize', '24px'),
+  ),
+  tag.span(
+    trait.text(count.$val),
+    trait.style('fontSize', '48px'),
+    trait.style('fontWeight', '700'),
+    trait.style('color', '#555555'),
+  ),
+  tag.button(
+    trait.text('+'),
+    trait.event(
+      'click',
+      count.$reduce((n) =&gt; n + 1),
+    ),
+    trait.style('fontSize', '24px'),
+  ),
+);
+</code></pre>
+<hr />
+<h2 id="conditional-styling-example">Conditional Styling Example</h2>
+<pre><code class="language-typescript">const isActive = State(false);
+
+tag.div(
+  // Base styles — always applied
+  trait.style('padding', '16px'),
+  trait.style('borderRadius', '8px'),
+  trait.style('cursor', 'pointer'),
+  trait.style('transition', 'all 0.2s ease'),
+
+  // Conditional branches — never ternaries
+  trait.style('backgroundColor', '#555555', isActive.$test(true)),
+  trait.style('backgroundColor', '#c7c7c7', isActive.$test(false)),
+  trait.style('color', '#c7c7c7', isActive.$test(true)),
+  trait.style('color', '#888888', isActive.$test(false)),
+  trait.style('boxShadow', '0 0 20px rgba(80,80,80,0.3)', isActive.$test(true)),
+  trait.style('boxShadow', 'none', isActive.$test(false)), isActive.$test(false)),
+  trait.text('Active', isActive.$test(true)),
+  trait.text('Inactive', isActive.$test(false)),
+  trait.event('click', isActive.$reduce(v =&gt; !v)),
+);
+</code></pre>
 </body>
 </html>
