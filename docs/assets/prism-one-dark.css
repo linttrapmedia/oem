@@ -36,7 +36,7 @@ pre[class*='language-'] *::-moz-selection {
 code[class*='language-']::selection,
 code[class*='language-'] *::selection,
 pre[class*='language-'] *::selection {
-  background: hsl(220, 13%, 28%);
+  background: hsl(0, 0%, 13%);
   color: inherit;
   text-shadow: none;
 }
@@ -52,7 +52,7 @@ pre[class*='language-'] {
   padding: 0.2em 0.4em;
   border-radius: 4px;
   white-space: normal;
-  background: hsl(220, 13%, 18%);
+  background: hsl(221, 9%, 65%);
 }
 
 @media print {
@@ -67,6 +67,7 @@ pre[class*='language-'] {
 .token.cdata {
   color: hsl(218, 12%, 65%);
   font-style: italic;
+  opacity: 0.7;
 }
 
 .token.doctype,
