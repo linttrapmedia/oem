@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# useInnerHTMLTrait
+## useInnerHTMLTrait
 
 Sets the inner content of an element by appending child elements or text nodes. Clears the element first, then appends children — making it safe for HTMLElement and SVGElement children (no serialization).
 
-## Signature
+### Signature
 
 ```ts
 useInnerHTMLTrait(
@@ -23,7 +23,7 @@ useInnerHTMLTrait(
 
 Where `Child = string | number | HTMLElement | SVGElement | undefined | unknown`.
 
-## Parameters
+### Parameters
 
 | Parameter  | Type                                           | Description                                                                                                                                                                        |
 | ---------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -31,7 +31,7 @@ Where `Child = string | number | HTMLElement | SVGElement | undefined | unknown`
 | `children` | `Child \| Child[] \| (() => Child \| Child[])` | The child content. Can be a single value, an array, or a function returning either. HTMLElement/SVGElement children are appended directly; primitives are converted to text nodes. |
 | `...rest`  | `(StateType<any> \| Condition)[]`              | Optional State objects and/or Conditions. The trait re-evaluates on state changes and only applies when all Conditions are truthy.                                                 |
 
-## Behavior
+### Behavior
 
 1. Clears `el.innerHTML`.
 2. Evaluates `children` (calls it if it's a function).
@@ -41,11 +41,11 @@ Where `Child = string | number | HTMLElement | SVGElement | undefined | unknown`
 6. For single primitives: sets `el.innerHTML` to the stringified value.
 7. Subscribes to every State in `rest` so the trait re-runs on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 tag.div(

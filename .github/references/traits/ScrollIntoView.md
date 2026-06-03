@@ -7,7 +7,7 @@ metadata:
   version: '1.0'
 ---
 
-# useScrollIntoViewTrait
+## useScrollIntoViewTrait
 
 Reactively scrolls an element into the visible area of its scrollable ancestor when conditions are met. Supports smooth and instant scrolling via standard `ScrollIntoViewOptions`.
 
@@ -23,11 +23,11 @@ useScrollIntoViewTrait(
 
 ## Parameters
 
-| Parameter  | Type                          | Description                                                                                                                                  |
-| ---------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `el`       | `HTMLElement`                 | The target element to scroll into view                                                                                                       |
-| `options`  | `ScrollIntoViewOptions`       | Standard scroll options: `behavior` (`'smooth'` or `'instant'`), `block` (`'start'`, `'center'`, `'end'`, `'nearest'`), `inline` (same)     |
-| `...rest`  | `(StateType<any> \| Condition)[]` | Optional State objects and/or Conditions. Scrolls when all Conditions are truthy. Re-evaluates on State changes.                          |
+| Parameter | Type                              | Description                                                                                                                             |
+| --------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `el`      | `HTMLElement`                     | The target element to scroll into view                                                                                                  |
+| `options` | `ScrollIntoViewOptions`           | Standard scroll options: `behavior` (`'smooth'` or `'instant'`), `block` (`'start'`, `'center'`, `'end'`, `'nearest'`), `inline` (same) |
+| `...rest` | `(StateType<any> \| Condition)[]` | Optional State objects and/or Conditions. Scrolls when all Conditions are truthy. Re-evaluates on State changes.                        |
 
 ## Behavior
 
@@ -82,10 +82,7 @@ const activeSection = State<string>('intro');
 // Each section scrolls into view when it becomes active
 ['intro', 'features', 'pricing'].forEach((id) => {
   tag.section(
-    trait.scrollIntoView(
-      { behavior: 'smooth', block: 'start' },
-      activeSection.$test(id),
-    ),
+    trait.scrollIntoView({ behavior: 'smooth', block: 'start' }, activeSection.$test(id)),
   );
 });
 ```

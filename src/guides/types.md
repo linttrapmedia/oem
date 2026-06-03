@@ -7,27 +7,27 @@ metadata:
   version: '1.0'
 ---
 
-# Types File
+## Types File
 
-## What This File Is
+### What This File Is
 
 `types.ts` is the single file (or `types/` folder) containing all TypeScript type definitions for the application. This includes types for state shapes, action payloads, data structures, function signatures, and any other custom types used across the app.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Types are referenced by every other category — states, actions, machines, UI, and traits all depend on shared type definitions. Centralizing them in one file eliminates circular imports, ensures a single source of truth, and lets LLMs quickly scan the entire type surface of the app.
 
-## When to Create
+### When to Create
 
 Create `types.ts` at the start of any new OEM application, immediately after the BDD files define the data model.
 
-## When to Use
+### When to Use
 
 - **Before writing state or actions**: Define the shape of your state and action types here first.
 - **When adding a new feature**: Add any new types to this file before implementing them elsewhere.
 - **When refactoring**: Check this file first to understand the app's data model.
 
-## What Belongs Here
+### What Belongs Here
 
 - State shape interfaces (e.g., `Todo`, `AppState`, `Filter`)
 - Action type unions and payload interfaces
@@ -35,14 +35,14 @@ Create `types.ts` at the start of any new OEM application, immediately after the
 - Utility types specific to the app
 - Props/parameter interfaces for helper functions
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - OEM framework types (these come from `@linttrap/oem`)
 - Implementation logic of any kind
 - Constants or literal values (those go in `constants.ts`)
 - Runtime code
 
-## Example
+### Example
 
 ```typescript
 // types.ts
@@ -64,7 +64,7 @@ export type Action =
   | { type: 'SET_FILTER'; payload: { filter: Filter } };
 ```
 
-## Rules
+### Rules
 
 1. **One file for all types.** Only split into a `types/` folder if the file exceeds manageable size.
 2. **Export everything.** Every type should be exported so other files can import it.

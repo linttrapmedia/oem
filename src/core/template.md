@@ -7,7 +7,7 @@ metadata:
   version: '1.0'
 ---
 
-## Template & Traits
+## Template
 
 ### Overview
 

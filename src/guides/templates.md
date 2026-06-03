@@ -7,39 +7,39 @@ metadata:
   version: '1.0'
 ---
 
-# Templates File
+## Templates File
 
-## What This File Is
+### What This File Is
 
 `templates.ts` is the single file (or `templates/` folder) containing all `Template()` definitions for the application. Each `Template()` call creates a `[tag, trait]` pair — a custom template engine configured with a specific set of traits.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Templates are the bridge between OEM's trait system and the UI. They define _which_ traits are available in each part of the app. Centralizing template definitions makes it easy to see what capabilities each template has and ensures consistent trait naming across the application.
 
-## When to Create
+### When to Create
 
 Create `templates.ts` at the start of any new OEM application, immediately after deciding which traits the app needs.
 
-## When to Use
+### When to Use
 
 - **When writing UI code**: Import `[tag, trait]` from this file.
 - **When adding new traits**: Register them in the appropriate Template definition here.
 - **When starting a new view or module**: Decide whether to use an existing template or create a new one.
 
-## What Belongs Here
+### What Belongs Here
 
 - All `Template()` calls and their destructured `[tag, trait]` exports
 - Imports of built-in traits from `@linttrap/oem`
 - Imports of custom traits from `traits.ts`
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - Trait implementations (those go in `traits.ts` for custom traits, or come from `@linttrap/oem`)
 - UI rendering code (that goes in `ui.ts`)
 - State definitions (those go in `states.ts`)
 
-## Example
+### Example
 
 ```typescript
 // templates.ts
@@ -71,7 +71,7 @@ export const [tag, trait] = Template({
 });
 ```
 
-## Multiple Templates
+### Multiple Templates
 
 Most applications need only one template. Create additional templates only when different parts of the app need different trait sets (e.g., an SVG-heavy section that needs specialized traits):
 
@@ -84,7 +84,7 @@ export const [svgTag, svgTrait] = Template({
 });
 ```
 
-## Rules
+### Rules
 
 1. **One file for all templates.** Only split into a folder if the file grows unmanageable.
 2. **Most apps need exactly one template.** Don't create multiple unless there's a clear reason.

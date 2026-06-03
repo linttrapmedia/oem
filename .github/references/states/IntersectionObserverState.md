@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# IntersectionObserverState
+## IntersectionObserverState
 
 A reactive state hook that tracks whether an element is visible within the viewport (or a specified root element) using the Intersection Observer API.
 
-## Features
+### Features
 
 - **Visibility tracking**: Knows when an element enters or leaves the viewport
 - **Intersection ratio**: Reports how much of the element is visible (0 to 1)
@@ -19,7 +19,7 @@ A reactive state hook that tracks whether an element is visible within the viewp
 - **Configurable thresholds**: Supports all standard `IntersectionObserver` options
 - **Reactive**: Returns a State object that updates on every intersection change
 
-## Usage
+### Usage
 
 ```typescript
 import { useIntersectionObserverState } from '@linttrap/oem';
@@ -33,7 +33,7 @@ visibility.sub(({ isIntersecting }) => {
 });
 ```
 
-## Signature
+### Signature
 
 ```typescript
 function useIntersectionObserverState(
@@ -42,14 +42,14 @@ function useIntersectionObserverState(
 ): StateType<IntersectionObserverStateValue, {}>;
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                      | Default | Description                                          |
 | --------- | ------------------------- | ------- | ---------------------------------------------------- |
 | `el`      | `Element`                 | —       | The DOM element to observe                           |
 | `options` | `IntersectionObserverInit` | —       | Standard IntersectionObserver options (root, rootMargin, threshold) |
 
-## Return Value
+### Return Value
 
 Returns a `State<IntersectionObserverStateValue>` with the following shape:
 
@@ -59,15 +59,15 @@ Returns a `State<IntersectionObserverStateValue>` with the following shape:
 | `intersectionRatio`   | `number`                  | Fraction of the element visible (0 to 1)         |
 | `boundingClientRect`  | `DOMRectReadOnly \| null` | The element's bounding rect at observation time  |
 
-## Behavior
+### Behavior
 
 - Creates an `IntersectionObserver` and immediately begins observing the target element
 - Updates state on every intersection change (entry/exit, ratio change at thresholds)
 - Notifies all subscribers with the new intersection data
 
-## Common Patterns
+### Common Patterns
 
-### Lazy loading content
+#### Lazy loading content
 
 ```typescript
 const placeholder = document.getElementById('lazy-section')!;
@@ -80,7 +80,7 @@ visibility.sub(({ isIntersecting }) => {
 });
 ```
 
-### Scroll-spy navigation
+#### Scroll-spy navigation
 
 ```typescript
 const sections = ['intro', 'features', 'pricing'].map((id) => ({
@@ -97,7 +97,7 @@ sections.forEach(({ id, visibility }) => {
 });
 ```
 
-### Animate on scroll
+#### Animate on scroll
 
 ```typescript
 const el = document.getElementById('animate-me')!;
@@ -115,7 +115,7 @@ trait.style(
 );
 ```
 
-## Notes
+### Notes
 
 - The observer remains active for the lifetime of the page
 - Use `threshold` option to control when intersection callbacks fire (e.g., `[0, 0.25, 0.5, 0.75, 1]` for granular tracking)

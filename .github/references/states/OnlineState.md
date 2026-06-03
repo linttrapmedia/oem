@@ -7,17 +7,17 @@ metadata:
   version: '1.0'
 ---
 
-# OnlineState
+## OnlineState
 
 A reactive state hook that tracks whether the browser is currently online or offline.
 
-## Features
+### Features
 
 - **Connectivity tracking**: Automatically updates when the browser goes online or offline
 - **Immediate evaluation**: Initializes to the current `navigator.onLine` value
 - **Reactive**: Returns a State object that updates on `online` and `offline` window events
 
-## Usage
+### Usage
 
 ```typescript
 import { useOnlineState } from '@linttrap/oem';
@@ -33,30 +33,30 @@ isOnline.sub((online) => {
 });
 ```
 
-## Signature
+### Signature
 
 ```typescript
 function useOnlineState(): StateType<boolean, {}>;
 ```
 
-## Parameters
+### Parameters
 
 None.
 
-## Return Value
+### Return Value
 
 Returns a `State<boolean>` that is `true` when the browser is online and `false` when offline.
 
-## Behavior
+### Behavior
 
 - Initializes to `navigator.onLine`
 - Listens for the `online` window event and sets state to `true`
 - Listens for the `offline` window event and sets state to `false`
 - Notifies all subscribers on each change
 
-## Common Patterns
+### Common Patterns
 
-### Conditional UI based on connectivity
+#### Conditional UI based on connectivity
 
 ```typescript
 const isOnline = useOnlineState();
@@ -66,7 +66,7 @@ trait.style('display', 'none', isOnline.$test(true));
 trait.style('display', 'flex', isOnline.$test(false));
 ```
 
-### Gate network actions
+#### Gate network actions
 
 ```typescript
 const isOnline = useOnlineState();
@@ -78,7 +78,7 @@ trait.event(
 );
 ```
 
-## Notes
+### Notes
 
 - Event listeners are added globally and remain active for the lifetime of the page
 - Uses the standard `navigator.onLine` API and `online`/`offline` window events

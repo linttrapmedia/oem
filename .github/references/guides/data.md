@@ -7,27 +7,27 @@ metadata:
   version: '1.0'
 ---
 
-# Data File
+## Data File
 
-## What This File Is
+### What This File Is
 
 `data.ts` is the single file (or `data/` folder) containing static data used in the application. This is data that is known at build time, does not change at runtime, and does not need to trigger re-renders.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Static data (dropdown options, navigation items, static content) is referenced by UI code but is conceptually separate from both the UI structure and the reactive state. Isolating it makes it easy to update content without touching logic, and gives LLMs a clear place to look for reference data.
 
-## When to Create
+### When to Create
 
 Create `data.ts` when the application has any static data sets — lists, lookup tables, menu items, or content that is hardcoded rather than fetched.
 
-## When to Use
+### When to Use
 
 - **When rendering static lists**: Import data arrays and `.map()` over them in `trait.innerHTML`.
 - **When populating dropdowns or menus**: Import option arrays from this file.
 - **When displaying static content**: Import text blocks or structured content objects.
 
-## What Belongs Here
+### What Belongs Here
 
 - Arrays of options for dropdowns, radio groups, or select menus
 - Navigation item definitions (label + route)
@@ -35,14 +35,14 @@ Create `data.ts` when the application has any static data sets — lists, lookup
 - Lookup tables and mappings
 - Seed data or default data sets
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - Data fetched from an API at runtime (that goes into State objects in `states.ts`)
 - Reactive values (those go in `states.ts`)
 - Configuration settings (those go in `config.ts`)
 - Single constant values (those go in `constants.ts`)
 
-## Example
+### Example
 
 ```typescript
 // data.ts
@@ -66,7 +66,7 @@ export const defaultTodos: Todo[] = [
 ];
 ```
 
-## Rules
+### Rules
 
 1. **One file for all static data.** Only split into a folder if the file grows unmanageable.
 2. **Use `as const`** for arrays and objects that should have literal types.

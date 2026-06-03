@@ -7,23 +7,23 @@ metadata:
   version: '1.0'
 ---
 
-# Folder & File Structure
+## Folder & File Structure
 
-## When to Create This Structure
+### When to Create This Structure
 
 When starting a new OEM application or adding OEM to an existing project, create the following file/folder structure at the root of the app. Each category starts as a **single file** (e.g., `states.ts`, `actions.ts`). If a file grows too large to manage, convert it into a **folder** with multiple files (e.g., `states/todos.ts`, `states/auth.ts`). Always start with single files.
 
-## When to Use This Structure
+### When to Use This Structure
 
 When the structure already exists, follow it. Every piece of application logic belongs in exactly one of these categories. Before creating a new file or adding code, identify which category it falls under and place it there. This keeps the codebase predictable for both humans and LLMs.
 
-## Design Principles
+### Design Principles
 
 - **High Cohesion, Low Coupling**: Each category groups logically related code — like a math library where functions share a role, not necessarily a dependency.
 - **LLM-Optimized**: The structure is flat and predictable so LLMs can navigate, read, and generate code without ambiguity about where things belong.
 - **Single Responsibility**: Each file/folder owns one concern. No mixing state definitions with UI templates or actions with type definitions.
 
-## Categories
+### Categories
 
 Each category below has its own detailed guide. Every category must be its own file (or folder of files if it grows large):
 
@@ -45,7 +45,7 @@ Each category below has its own detailed guide. Every category must be its own f
 | `test/`        | Unit and integration tests                                  | [Test Guide](test.md)           |
 | `main.ts`      | App entry point — initializes state, renders UI             | [Main Guide](main.md)           |
 
-## Example Structure
+### Example Structure
 
 ```
 my-app/
@@ -69,7 +69,7 @@ my-app/
   main.ts
 ```
 
-## Rules
+### Rules
 
 1. **Every category is its own file.** Do not combine categories (e.g., do not put actions inside states.ts).
 2. **Start with single files.** Only break into a folder when the file becomes unmanageable.

@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# useAriaTrait
+## useAriaTrait
 
 Reactively sets ARIA attributes and the `role` attribute on an element. When the value is `undefined` or conditions evaluate to `false`, the attribute is removed. Provides first-class accessibility support with typed ARIA property names.
 
-## Signature
+### Signature
 
 ```ts
 useAriaTrait(
@@ -22,7 +22,7 @@ useAriaTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                                                                           | Description                                                                                                                                  |
 | --------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -31,7 +31,7 @@ useAriaTrait(
 | `val`     | `(() => string \| number \| boolean \| undefined) \| string \| number \| boolean \| undefined` | The attribute value. Pass a function for reactive evaluation. `undefined` removes the attribute.                                             |
 | `...rest` | `(StateType<any> \| Condition)[]`                                                              | Optional State objects and/or Conditions. The trait re-evaluates whenever a State publishes and only applies when all Conditions are truthy. |
 
-## Behavior
+### Behavior
 
 1. Evaluates `val` (calls it if it's a function).
 2. Checks all Conditions — if any are falsy, removes the attribute.
@@ -39,11 +39,11 @@ useAriaTrait(
 4. Otherwise, sets the attribute via `el.setAttribute(prop, String(val))`.
 5. Subscribes to every State in `rest` so the trait re-runs on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 // Static ARIA label
@@ -79,9 +79,9 @@ trait.aria(
 );
 ```
 
-## Common ARIA Patterns
+### Common ARIA Patterns
 
-### Accessible toggle button
+#### Accessible toggle button
 
 ```ts
 const expanded = State<boolean>(false);
@@ -94,7 +94,7 @@ tag.button(
 );
 ```
 
-### Live region for status updates
+#### Live region for status updates
 
 ```ts
 tag.div(
@@ -104,7 +104,7 @@ tag.div(
 );
 ```
 
-### Tab panel
+#### Tab panel
 
 ```ts
 tag.div(
@@ -118,7 +118,7 @@ tag.div(
 );
 ```
 
-## Comparison with useAttributeTrait
+### Comparison with useAttributeTrait
 
 | Feature         | `useAriaTrait`                 | `useAttributeTrait`        |
 | --------------- | ------------------------------ | -------------------------- |
@@ -128,7 +128,7 @@ tag.div(
 
 `useAriaTrait` is a semantic specialization — it constrains the `prop` parameter to valid ARIA attributes, making intent clearer and preventing accidental misuse.
 
-## Notes
+### Notes
 
 - Follows the same reactive pattern as `useAttributeTrait`
 - Removing the attribute (via `undefined` or failing conditions) is the correct way to "unset" ARIA properties

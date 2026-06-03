@@ -7,28 +7,28 @@ metadata:
   version: '1.0'
 ---
 
-# Test Files
+## Test Files
 
-## What This File Is
+### What This File Is
 
 `test/` is the folder containing all unit and integration tests for the application. Test files mirror the structure of the source code and verify that states, actions, machines, and UI behavior work as expected.
 
-## Why It Must Be Its Own Folder
+### Why It Must Be Its Own Folder
 
 Tests are not application code — they are verification code. Isolating them in a `test/` folder keeps the main source clean and makes it clear which files are production code and which are test harnesses.
 
-## When to Create
+### When to Create
 
 Create a `test/` folder as soon as the application has state or machine logic worth verifying. Tests should be written alongside implementation, not deferred until later.
 
-## When to Use
+### When to Use
 
 - **After implementing state logic**: Write tests for State objects, custom methods, and reducers.
 - **After implementing machines**: Write tests for each action/case in the machine.
 - **After implementing actions**: Verify action creators return the correct shape.
 - **When debugging**: Write a failing test that reproduces the bug, then fix it.
 
-## What Belongs Here
+### What Belongs Here
 
 - Unit tests for State objects (`.set()`, `.reduce()`, `.test()`, custom methods)
 - Unit tests for machine dispatch functions
@@ -36,12 +36,12 @@ Create a `test/` folder as soon as the application has state or machine logic wo
 - Integration tests for state + machine interactions
 - Test utilities and mocks
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - Application code of any kind
 - Production state or configuration
 
-## Example Structure
+### Example Structure
 
 ```
 test/
@@ -50,7 +50,7 @@ test/
   actions.test.ts
 ```
 
-## Example Test
+### Example Test
 
 ```typescript
 // test/states.test.ts
@@ -80,11 +80,11 @@ console.assert(count.test(20) === true, 'test should check equality');
 console.assert(count.test((v) => v > 10) === true, 'test should accept predicates');
 ```
 
-## Important Note
+### Important Note
 
 Test files need to interact with internals in ways that application code never should. **Do not use test files as examples of idiomatic OEM.** Tests may import from internal paths, directly manipulate subscriptions, or use patterns that are inappropriate for production UI code.
 
-## Rules
+### Rules
 
 1. **Tests live in the `test/` folder.** Not alongside source files, not in a root `__tests__` directory.
 2. **Mirror source structure.** `states.ts` → `test/states.test.ts`, `machines.ts` → `test/machines.test.ts`.

@@ -7,18 +7,18 @@ metadata:
   version: '1.0'
 ---
 
-# MediaQueryState
+## MediaQueryState
 
 A reactive state hook that tracks whether the current viewport matches specified media query conditions.
 
-## Features
+### Features
 
 - **Responsive tracking**: Automatically updates when window is resized
 - **Width-based queries**: Support for min and max width constraints
 - **Media type support**: Filter by screen, print, or all media types
 - **Reactive**: Returns a State object that updates when conditions change
 
-## Usage
+### Usage
 
 ```typescript
 import { useMediaQueryState } from '@linttrap/oem';
@@ -45,7 +45,7 @@ const isPrint = useMediaQueryState({
 });
 ```
 
-## Props
+### Props
 
 | Property   | Type                           | Default    | Description                      |
 | ---------- | ------------------------------ | ---------- | -------------------------------- |
@@ -53,11 +53,11 @@ const isPrint = useMediaQueryState({
 | `minWidth` | `number`                       | `0`        | Minimum viewport width in pixels |
 | `maxWidth` | `number`                       | `Infinity` | Maximum viewport width in pixels |
 
-## Return Value
+### Return Value
 
 Returns a `State<boolean>` that is `true` when the media query matches and `false` otherwise.
 
-## Behavior
+### Behavior
 
 The state automatically:
 
@@ -66,9 +66,9 @@ The state automatically:
 - Updates the state value when conditions change
 - Checks both width constraints AND media type (both must match)
 
-## Common Patterns
+### Common Patterns
 
-### Responsive Breakpoints
+#### Responsive Breakpoints
 
 ```typescript
 // Define standard breakpoints
@@ -77,7 +77,7 @@ const isTablet = useMediaQueryState({ minWidth: 640, maxWidth: 1023 });
 const isDesktop = useMediaQueryState({ minWidth: 1024 });
 ```
 
-### Conditional Rendering
+#### Conditional Rendering
 
 ```typescript
 const isMobile = useMediaQueryState({ maxWidth: 768 });
@@ -89,7 +89,7 @@ if (isMobile.val()) {
 }
 ```
 
-## Notes
+### Notes
 
 - The resize listener is added globally and will remain active
 - Consider cleanup if using in components that mount/unmount frequently

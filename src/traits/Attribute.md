@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# useAttributeTrait
+## useAttributeTrait
 
 Sets or removes an HTML attribute on an element reactively. When the value is `undefined` or conditions evaluate to `false`, the attribute is removed from the element.
 
-## Signature
+### Signature
 
 ```ts
 useAttributeTrait(
@@ -22,7 +22,7 @@ useAttributeTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                                                                           | Description                                                                                                                                  |
 | --------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -31,7 +31,7 @@ useAttributeTrait(
 | `val`     | `(() => string \| number \| boolean \| undefined) \| string \| number \| boolean \| undefined` | The attribute value. Pass a function for reactive evaluation, or a static value. `undefined` removes the attribute.                          |
 | `...rest` | `(StateType<any> \| Condition)[]`                                                              | Optional State objects and/or Conditions. The trait re-evaluates whenever a State publishes and only applies when all Conditions are truthy. |
 
-## Behavior
+### Behavior
 
 1. Evaluates `val` (calls it if it's a function).
 2. Checks all Conditions — if any are falsy, removes the attribute.
@@ -39,11 +39,11 @@ useAttributeTrait(
 4. Otherwise, sets the attribute via `el.setAttribute(prop, String(val))`.
 5. Subscribes to every State in `rest` so the trait re-runs on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 When used through a Template's `trait` proxy, the `el` parameter is supplied automatically:
 

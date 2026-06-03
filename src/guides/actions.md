@@ -7,39 +7,39 @@ metadata:
   version: '1.0'
 ---
 
-# Actions File
+## Actions File
 
-## What This File Is
+### What This File Is
 
 `actions.ts` is the single file (or `actions/` folder) containing all action creator functions for the application. Each action is a function that returns an object with a `type` and an optional `payload`. Actions describe **what happened** — they do not execute the change themselves.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Actions are the vocabulary of the application's behavior. Centralizing them in one file gives LLMs and developers a complete inventory of every user intent the app can handle. It also keeps action definitions separate from the machine logic that processes them.
 
-## When to Create
+### When to Create
 
 Create `actions.ts` when the application uses a state machine pattern (i.e., it has a `machines.ts` file). Actions are the inputs to machines.
 
-## When to Use
+### When to Use
 
 - **When dispatching from event handlers**: Import action creators and call them to produce action objects.
 - **When writing machines**: Reference action types to handle each case.
 - **When adding new user interactions**: Define a new action creator here before wiring it into the machine.
 
-## What Belongs Here
+### What Belongs Here
 
 - Action creator functions (functions that return `{ type, payload }` objects)
 - Action type constants (if not using string literals directly)
 - The Action union type (or import it from `types.ts`)
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - State mutation logic (that goes in `machines.ts` or State custom methods in `states.ts`)
 - UI code or trait calls
 - State object definitions
 
-## Example
+### Example
 
 ```typescript
 // actions.ts
@@ -66,7 +66,7 @@ export const setFilter = (filter: 'all' | 'active' | 'completed'): Action => ({
 });
 ```
 
-## Rules
+### Rules
 
 1. **One file for all actions.** Only split into a folder if the file grows unmanageable.
 2. **Actions are pure functions.** They return data objects, nothing more — no side effects, no state mutation.

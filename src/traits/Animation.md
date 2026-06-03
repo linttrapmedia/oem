@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# useAnimationTrait
+## useAnimationTrait
 
 Reactively plays a [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) keyframe animation on an element. Supports conditional gating, state-driven re-triggering, and automatic cleanup.
 
-## Signature
+### Signature
 
 ```ts
 useAnimationTrait(
@@ -28,7 +28,7 @@ useAnimationTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter   | Type                                                                                       | Description                                                                                                                                                   |
 | ----------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -37,7 +37,7 @@ useAnimationTrait(
 | `options`   | `number \| KeyframeAnimationOptions \| (() => number \| KeyframeAnimationOptions)`         | Animation timing. Pass a duration in ms, a full `KeyframeAnimationOptions` object, or a function for reactive evaluation.                                     |
 | `...rest`   | `(StateType<any> \| Condition)[]`                                                          | Optional State objects and/or Conditions. The animation plays only when all Conditions are truthy.                                                            |
 
-## Behavior
+### Behavior
 
 1. Evaluates `keyframes` and `options` (calls them if they are functions).
 2. Checks all Conditions — if all are truthy, plays the animation via `el.animate()`.
@@ -46,13 +46,13 @@ useAnimationTrait(
 5. When a condition is false, the animation is not played but any previously running animation is **not** cancelled — the trait only gates new plays.
 6. Cleanup cancels any running animation and unsubscribes from all States.
 
-## Returns
+### Returns
 
 A cleanup function that cancels the running animation and unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
-### Fade-in on creation
+#### Fade-in on creation
 
 ```ts
 trait.animation([{ opacity: '0' }, { opacity: '1' }], {
@@ -62,7 +62,7 @@ trait.animation([{ opacity: '0' }, { opacity: '1' }], {
 });
 ```
 
-### Slide-in from below
+#### Slide-in from below
 
 ```ts
 trait.animation(
@@ -74,7 +74,7 @@ trait.animation(
 );
 ```
 
-### Enter/exit driven by state
+#### Enter/exit driven by state
 
 ```ts
 const mode = State<'enter' | 'exit'>('enter');
@@ -102,7 +102,7 @@ trait.animation(
 );
 ```
 
-### Infinite spinner
+#### Infinite spinner
 
 ```ts
 trait.animation([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], {
@@ -112,7 +112,7 @@ trait.animation([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }]
 });
 ```
 
-### Reactive duration from state
+#### Reactive duration from state
 
 ```ts
 const speed = State<number>(300);
@@ -124,7 +124,7 @@ trait.animation(
 );
 ```
 
-### Conditional animation (only when visible)
+#### Conditional animation (only when visible)
 
 ```ts
 const visible = State<boolean>(false);
@@ -137,7 +137,7 @@ trait.animation(
 );
 ```
 
-### Attention pulse
+#### Attention pulse
 
 ```ts
 trait.animation(
@@ -146,14 +146,14 @@ trait.animation(
 );
 ```
 
-## Performance Notes
+### Performance Notes
 
 - The Web Animations API runs animations on the compositor thread when animating `transform` and `opacity`, delivering 60fps performance without layout thrashing.
 - **Never animate layout properties** (`width`, `height`, `top`, `left`, `margin`, `padding`) — they force reflow on every frame. Use `transform: translate/scale` instead.
 - Prefer `fill: 'forwards'` when the element should retain its final animated state.
 - For looping animations, always provide a cleanup path (state condition or element removal) to avoid orphaned infinite loops.
 
-## Accessibility
+### Accessibility
 
 - Always respect `prefers-reduced-motion`. When the user has reduced motion enabled, either skip the animation entirely (via a condition tied to a media query state) or use `duration: 0` to apply the final state instantly.
 

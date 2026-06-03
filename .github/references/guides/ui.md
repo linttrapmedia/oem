@@ -7,27 +7,27 @@ metadata:
   version: '1.0'
 ---
 
-# UI File
+## UI File
 
-## What This File Is
+### What This File Is
 
 `ui.ts` is the single file (or `ui/` folder) containing the UI rendering code for the application. This is where `tag` and `trait` (from `templates.ts`) are used to construct the DOM tree. The UI file builds the entire visible interface by composing elements, applying traits, and binding state.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 The UI layer consumes everything else — states, tokens, actions, templates — but should not define any of them. Isolating UI rendering into its own file keeps the DOM construction readable and ensures that reactive data, styling tokens, and behavioral logic are imported from their canonical locations rather than defined inline.
 
-## When to Create
+### When to Create
 
 Create `ui.ts` at the start of any new OEM application, after `templates.ts` and `theme.ts` are set up.
 
-## When to Use
+### When to Use
 
 - **When building the interface**: All DOM construction happens here.
 - **When modifying the layout**: Edit this file to change structure, add elements, or adjust trait bindings.
 - **When adding new views**: Add them inline in this file, or extract helper functions when warranted.
 
-## What Belongs Here
+### What Belongs Here
 
 - The root element construction (the main `tag.$(document.body)(...)` or equivalent)
 - All `tag.*()` calls that build the DOM tree
@@ -35,7 +35,7 @@ Create `ui.ts` at the start of any new OEM application, after `templates.ts` and
 - Helper functions ("components") that return elements — but ONLY when they are reused multiple times, serve as factories with parameters, or exceed ~1000 lines
 - Responsive breakpoint conditions on traits — base styles target mobile, breakpoint overrides for larger viewports
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - State definitions (those go in `states.ts`)
 - Token definitions (those go in `theme.ts`)
@@ -44,7 +44,7 @@ Create `ui.ts` at the start of any new OEM application, after `templates.ts` and
 - Machine logic (those go in `machines.ts`)
 - Type definitions (those go in `types.ts`)
 
-## Example
+### Example
 
 ```typescript
 // ui.ts
@@ -111,7 +111,7 @@ export const app = tag.div(
 );
 ```
 
-## Guidelines
+### Guidelines
 
 - **Default to inlining everything.** Write the entire UI as one nested expression. Only extract helper functions when they are reused multiple times, serve as factories, or are extremely large (>1000 lines).
 - **Apply traits directly.** Traits belong inline on their target element — do not store them in shared arrays.
@@ -121,7 +121,7 @@ export const app = tag.div(
 - **Design mobile-first.** Base styles (no condition) target mobile. Use `isTablet.$test(true)` and `isDesktop.$test(true)` to layer on overrides for larger viewports. See [Responsive Design](responsive-design.md).
 - **Keep the file readable.** Indentation reflects DOM nesting. Each `tag.*()` call is a visual representation of the DOM tree.
 
-## Rules
+### Rules
 
 1. **One file for all UI.** Only split into a `ui/` folder if the file exceeds manageable size.
 2. **Import everything, define nothing.** States, tokens, templates, actions — all come from their own files.

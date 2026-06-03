@@ -7,39 +7,39 @@ metadata:
   version: '1.0'
 ---
 
-# Theme File
+## Theme File
 
-## What This File Is
+### What This File Is
 
 `theme.ts` is the single file (or `theme/` folder) containing the application's theming infrastructure: one `useThemeState` instance and all `useTokenState` token definitions. Tokens are the single source of truth for every visual property in the app — colors, spacing, typography, radii, shadows, and more.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Tokens are referenced by every piece of UI code. Centralizing them ensures consistent visual properties across the entire app and prevents duplicate tokens. Every token must have a documentation comment so that LLMs can decide whether to reuse an existing token or create a new one.
 
-## When to Create
+### When to Create
 
 Create `theme.ts` at the start of any new OEM application, before writing any UI code.
 
-## When to Use
+### When to Use
 
 - **When writing UI code**: Import tokens and bind them to style traits using `token.$val`.
 - **When adding new visual properties**: Check this file first — if a matching token exists, use it. Only create a new token if no existing token covers the intent.
 - **When switching themes**: Call `theme.set('dark')` or `theme.set('light')` — all tokens update automatically.
 
-## What Belongs Here
+### What Belongs Here
 
 - The single `useThemeState` instance
 - All `useTokenState` token definitions
 - Documentation comments above every token (what / when to use / when not to use)
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - UI rendering code (that goes in `ui.ts`)
 - State objects unrelated to theming (those go in `states.ts`)
 - Trait definitions (those go in `traits.ts` or `templates.ts`)
 
-## Example
+### Example
 
 ```typescript
 // theme.ts
@@ -79,7 +79,7 @@ export const space_padding_md = useTokenState('16px', '16px', theme);
 export const radius_size_md = useTokenState('8px', '8px', theme);
 ```
 
-## Token Naming Convention
+### Token Naming Convention
 
 Token names follow the pattern `<category>_<property>_<variant>`:
 
@@ -89,7 +89,7 @@ Token names follow the pattern `<category>_<property>_<variant>`:
 | **property** | CSS-adjacent property     | `bg`, `fg`, `border`, `size`, `weight`, `gap`, `padding`                                      |
 | **variant**  | Hierarchy within category | `primary`, `secondary`, `muted`, `hover`, `active`, `disabled`                                |
 
-## Rules
+### Rules
 
 1. **One file for all tokens.** Only split into a folder if the file grows unmanageable.
 2. **One `useThemeState` per app.** Never create multiple theme instances.

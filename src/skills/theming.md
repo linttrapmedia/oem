@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# Theming & Design Tokens
+## Theming & Design Tokens
 
 OEM does not ship pre-built components or a fixed token palette. Instead, every visual property — color, spacing, typography, radius, shadow, etc. — is expressed as a reactive token that LLMs generate on the fly while building UI. This gives every app a bespoke design system that grows organically and stays perfectly consistent.
 
-## Architecture Overview
+### Architecture Overview
 
 ```
 useThemeState('light')          ← single source of truth for current theme
@@ -25,7 +25,7 @@ useThemeState('light')          ← single source of truth for current theme
 2. **Create tokens with `useTokenState`.** Each token receives a light value, a dark value, and the shared `themeState` dependency. When the theme changes, every token automatically updates.
 3. **Reference tokens in traits.** Tokens are plain `State` objects, so they plug directly into traits as reactive values.
 
-## Step 1 — Create the Theme Instance
+### Step 1 — Create the Theme Instance
 
 Every app must create exactly **one** `useThemeState` instance and export it from a central `theme.ts` file:
 
@@ -36,7 +36,7 @@ import { useThemeState, useTokenState } from '@linttrap/oem';
 export const theme = useThemeState('light');
 ```
 
-## Step 2 — Generate Tokens On-the-Fly
+### Step 2 — Generate Tokens On-the-Fly
 
 LLMs create tokens as they build UI. Each token is an instance of `useTokenState` that derives its value from the shared theme:
 
@@ -62,7 +62,7 @@ export const action_bg_primary = useTokenState('#2563eb', '#3b82f6', theme);
 export const text_fg_primary = useTokenState('#111827', '#f9fafb', theme);
 ```
 
-## Token Naming Convention
+### Token Naming Convention
 
 Token names follow a strict pattern that prevents duplication and communicates intent:
 
@@ -97,7 +97,7 @@ type_size_base            // base font size
 type_weight_bold          // bold font weight
 ```
 
-## Preventing Token Duplication
+### Preventing Token Duplication
 
 Before creating a new token, **always** check whether an existing token already covers the same intent. Follow these rules:
 
@@ -113,7 +113,7 @@ Before creating a new token, **always** check whether an existing token already 
 export const action_bg_danger = useTokenState('#dc2626', '#ef4444', theme);
 ```
 
-## Using Tokens in Traits
+### Using Tokens in Traits
 
 Tokens are `State` objects. Pass them as reactive watchers to traits:
 
@@ -124,14 +124,14 @@ trait.style('color', text_fg_primary.$val);
 
 When the theme changes, every token fires its subscribers and the UI updates automatically.
 
-## Token Usage Rules
+### Token Usage Rules
 
 - **Never** write a hex value, rgb value, or pixel literal directly in a `trait.style()` call.
 - **Always** create or reference a token from `theme.ts`.
 - **Never** invent a token name that doesn't follow the `<category>_<property>_<variant>` convention.
 - When no existing token fits, create a new one with full documentation and add it to `theme.ts`.
 
-## Contrast Rules (CRITICAL)
+### Contrast Rules (CRITICAL)
 
 Every text/foreground token MUST meet WCAG contrast minimums against the surfaces it will appear on, **in both light and dark mode**.
 

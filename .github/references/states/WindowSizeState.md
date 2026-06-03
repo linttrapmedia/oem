@@ -7,17 +7,17 @@ metadata:
   version: '1.0'
 ---
 
-# WindowSizeState
+## WindowSizeState
 
 A reactive state hook that tracks the current viewport dimensions.
 
-## Features
+### Features
 
 - **Viewport tracking**: Reports both width and height as numbers
 - **Immediate evaluation**: Initializes to the current window size
 - **Reactive**: Returns a State object that updates on window resize
 
-## Usage
+### Usage
 
 ```typescript
 import { useWindowSizeState } from '@linttrap/oem';
@@ -33,17 +33,17 @@ windowSize.sub(({ width, height }) => {
 });
 ```
 
-## Signature
+### Signature
 
 ```typescript
 function useWindowSizeState(): StateType<WindowSize, {}>;
 ```
 
-## Parameters
+### Parameters
 
 None.
 
-## Return Value
+### Return Value
 
 Returns a `State<WindowSize>` containing:
 
@@ -52,16 +52,16 @@ Returns a `State<WindowSize>` containing:
 | `width`  | `number` | Current viewport width in pixels    |
 | `height` | `number` | Current viewport height in pixels   |
 
-## Behavior
+### Behavior
 
 - Initializes to `{ width: window.innerWidth, height: window.innerHeight }`
 - Listens for the `resize` window event
 - Updates state with the new dimensions on every resize
 - Notifies all subscribers on each change
 
-## Common Patterns
+### Common Patterns
 
-### Dynamic canvas sizing
+#### Dynamic canvas sizing
 
 ```typescript
 const windowSize = useWindowSizeState();
@@ -72,7 +72,7 @@ windowSize.sub(({ width, height }) => {
 });
 ```
 
-### Computed column count
+#### Computed column count
 
 ```typescript
 const windowSize = useWindowSizeState();
@@ -83,7 +83,7 @@ trait.style('gridTemplateColumns', () => {
 }, windowSize);
 ```
 
-### Reactive dimension values
+#### Reactive dimension values
 
 ```typescript
 const windowSize = useWindowSizeState();
@@ -91,7 +91,7 @@ const windowSize = useWindowSizeState();
 trait.style('height', () => `${windowSize.val().height - 64}px`, windowSize);
 ```
 
-## Comparison with useMediaQueryState
+### Comparison with useMediaQueryState
 
 | Feature              | `useWindowSizeState`   | `useMediaQueryState`      |
 | -------------------- | ---------------------- | ------------------------- |
@@ -101,7 +101,7 @@ trait.style('height', () => `${windowSize.val().height - 64}px`, windowSize);
 
 Use `useMediaQueryState` for breakpoint-gated trait conditions. Use `useWindowSizeState` when you need raw pixel values for calculations.
 
-## Notes
+### Notes
 
 - The resize listener is added globally and remains active for the lifetime of the page
 - For breakpoint-based boolean conditions, prefer `useMediaQueryState` instead

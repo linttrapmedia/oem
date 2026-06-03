@@ -7,38 +7,38 @@ metadata:
   version: '1.0'
 ---
 
-# Custom Traits File
+## Custom Traits File
 
-## What This File Is
+### What This File Is
 
 `traits.ts` is the single file (or `traits/` folder) containing any custom trait functions created for the application. Custom traits extend the behavior of OEM's template system beyond the built-in traits (style, event, attribute, textContent, className, innerHTML, etc.).
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Custom traits are reusable behavioral building blocks — they are registered into Templates just like built-in traits. Isolating them in their own file keeps them discoverable and prevents them from being buried inside UI code where they'd be hard to find and reuse.
 
-## When to Create
+### When to Create
 
 Create `traits.ts` only when the built-in trait library does not cover a behavior you need. Most applications do not need custom traits — the core library is designed to be sufficient for typical use cases.
 
-## When to Use
+### When to Use
 
 - **When building a Template**: Import custom traits and register them alongside built-in traits.
 - **When you need a repeating DOM behavior** that isn't covered by the built-in traits.
 - **Before creating a custom trait**: Check whether a built-in trait already handles the use case.
 
-## What Belongs Here
+### What Belongs Here
 
 - Custom trait functions following the OEM trait signature: `(el: HTMLElement, ...args, ...rest: (StateType | Condition)[]) => (() => void) | void`
 - Each trait should handle its own subscription to State objects and return a cleanup function
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - Built-in traits (those come from `@linttrap/oem`)
 - UI rendering code (that goes in `ui.ts`)
 - State definitions (those go in `states.ts`)
 
-## Example
+### Example
 
 ```typescript
 // traits.ts
@@ -66,7 +66,7 @@ export function useScrollToTrait(
 }
 ```
 
-## Registering Custom Traits
+### Registering Custom Traits
 
 ```typescript
 // templates.ts
@@ -84,7 +84,7 @@ export const [tag, trait] = Template({
 trait.scrollTo('smooth', someCondition.$test(true));
 ```
 
-## Rules
+### Rules
 
 1. **One file for all custom traits.** Only split into a folder if the file grows unmanageable.
 2. **Follow the trait signature convention.** First parameter is `el`, then trait-specific args, then `...rest: (StateType | Condition)[]`.

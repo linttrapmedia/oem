@@ -40,7 +40,6 @@
     <meta name="googlebot" content="index, follow" />
     <meta name="google" content="notranslate" />
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-    <link href="assets/reset.css" rel="stylesheet" />
     <link href="assets/style.css" rel="stylesheet" />
     <link rel="stylesheet" href="assets/prism-one-dark.css" type="text/css" />
 
@@ -58,7 +57,2190 @@
     <script type="text/javascript" src="assets/prism-bash.min.js"></script>
     <script type="text/javascript" src="assets/prism-typescript.min.js"></script>
   </head>
-  <body id="root">
-    <script src="main.js"></script>
-  </body>
+  <body><h1 id="oem-310">oem <sup>3.1.0</sup></h1>
+<h2 id="abstract">Abstract</h2>
+<p>OEM is an agent-first UI framework and toolkit engineered for human-AI collaboration. It provides a declarative syntax for composing reactive UIs that unifies markup, styling, and behavior.</p>
+<p>The following documentation describes the core concepts, libraries, and conventions of OEM. The sectsions in this document are normative unless otherwise specified.</p>
+<p><a href="https://github.com/linttrapmedia/oem.git">GITHUB</a> | <a href="https://www.npmjs.com/package/@linttrap/oem">NPM</a></p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#core-library">Core Library</a></li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="#template">Template</a> - Core template engine for creating declarative and reactive UI applications</li>
+<li><a href="#state">State</a> - Reactive event bus with publish-subscribe state management</li>
+<li><a href="#util">Util</a> - Runtime helpers for working with State objects and Conditions</li>
+</ul>
+</blockquote>
+<ul>
+<li><a href="#trait-library">Trait Library</a></li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="#usescrollintoviewtrait">useScrollIntoViewTrait</a> - Reactively scrolls an HTML element into view based on conditions</li>
+<li><a href="#useanimationtrait">useAnimationTrait</a> - Applies Web Animations API keyframe animations to an HTML element with reactive state and condition support</li>
+<li><a href="#usedataattributetrait">useDataAttributeTrait</a> - Reactively sets data-* attributes on an HTML element via the dataset API</li>
+<li><a href="#usefocustrait">useFocusTrait</a> - Focuses an HTML element based on conditions</li>
+<li><a href="#useinputeventtrait">useInputEventTrait</a> - Handles input-related events on form elements</li>
+<li><a href="#usetextcontenttrait">useTextContentTrait</a> - Sets the text content of an HTML element</li>
+<li><a href="#useattributetrait">useAttributeTrait</a> - Adds an attribute to an HTML element</li>
+<li><a href="#usestyletrait">useStyleTrait</a> - Applies CSS styles to an HTML element</li>
+<li><a href="#useinputvaluetrait">useInputValueTrait</a> - Binds a value to an input or textarea element</li>
+<li><a href="#useeventtrait">useEventTrait</a> - Attaches event listeners to an HTML element</li>
+<li><a href="#useinnerhtmltrait">useInnerHTMLTrait</a> - Sets the innerHTML of an element with reactive children</li>
+<li><a href="#useariatrait">useAriaTrait</a> - Reactively sets ARIA attributes and roles on an HTML element</li>
+<li><a href="#useclassnametrait">useClassNameTrait</a> - Sets the class name of an HTML element</li>
+<li><a href="#usestyleoneventtrait">useStyleOnEventTrait</a> - Applies CSS styles to an element on a specific event</li>
+</ul>
+</blockquote>
+<ul>
+<li><a href="#state-library">State Library</a></li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="#useurlstate">useUrlState</a> - State Object to track the current URL in the application.</li>
+<li><a href="#usemediaquerystate">useMediaQueryState</a> - Reactive state for tracking media query matches based on viewport width and media type</li>
+<li><a href="#usethemestate">useThemeState</a> - A simple State object of 'light' and 'dark'</li>
+<li><a href="#useonlinestate">useOnlineState</a> - Reactive state for tracking browser online/offline connectivity</li>
+<li><a href="#usewindowsizestate">useWindowSizeState</a> - Reactive state for tracking viewport width and height</li>
+<li><a href="#usetokenstate">useTokenState</a> - A simple State object to manage a single design token setting</li>
+<li><a href="#useintersectionobserverstate">useIntersectionObserverState</a> - Reactive state for tracking element visibility within the viewport</li>
+<li><a href="#usetimerstate">useTimerState</a> - Reactive interval-driven counter state with start, stop, and reset controls</li>
+<li><a href="#useformstate">useFormState</a> - Reactive form state with validation, dirty tracking, and field-level control</li>
+</ul>
+</blockquote>
+<h2 id="install">Install</h2>
+<p>To get started with OEM, install the package from npm:</p>
+<pre><code class="language-bash">npm install @linttrap/oem
+</code></pre>
+<h2 id="core-library">Core Library</h2>
+<h2 id="template">Template</h2>
+<h3 id="overview">Overview</h3>
+<p>The template module allows you to create your own template engine. It is the core mechanism that supports OEM's unique approach to declarative, reactive applications that combine HTML, Styling, Logic and Behavior.</p>
+<h3 id="key-exports">Key Exports</h3>
+<h4 id="templatep"><code>Template&lt;P&gt;</code></h4>
+<ul>
+<li><strong>Type</strong>: Function</li>
+<li><strong>Signature</strong>: <code>function Template&lt;P extends Record&lt;string, TemplateTraitFunc&gt;&gt;(config?: P): TemplateReturnType&lt;P&gt;</code></li>
+<li><strong>Description</strong>: Creates a tuple of [tagProxy, traitProxy] for element creation and trait application</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>config</code>: Optional object mapping trait names to trait implementation functions</li>
+</ul>
+</li>
+<li><strong>Returns</strong>: A tuple <code>[tagProxy, traitProxy]</code> typically destructured as <code>[tag, trait]</code></li>
+<li><strong>Basic Example</strong>:</li>
+</ul>
+<pre><code class="language-typescript">// Import Template and some traits from OEM
+import { Template, useEventTrait, useTextContentTrait, useStyleTrait } from '@linttrap/oem';
+
+// Create template and add traits
+export const [tag, trait] = Template({
+  event: useEventTrait,
+  text: useTextContentTrait,
+  style: useStyleTrait,
+});
+
+// Now you can generate elements with the tag proxy and apply available traits
+const button = tag.button(
+  trait.event('click', () =&gt; console.log('Clicked!')),
+  trait.text('Click Me'),
+  trait.style('backgroundColor', 'blue'),
+);
+</code></pre>
+<h4 id="tag-proxy-first-element-of-tuple">Tag Proxy (First element of tuple)</h4>
+<ul>
+<li><strong>Type</strong>: Proxy object</li>
+<li><strong>Description</strong>: Creates HTML or SVG elements using property access</li>
+<li><strong>Usage</strong>: Access any valid HTML or SVG tag name as a property, which returns a function that creates that element</li>
+</ul>
+<h5 id="supported-element-types">Supported Element Types</h5>
+<ul>
+<li><strong>HTML Elements</strong>: All standard HTML tags (div, span, button, input, etc.)</li>
+<li><strong>SVG Elements</strong>: svg, g, rect, circle, ellipse, line, polyline, polygon, path, text, defs, use, mask, clipPath</li>
+</ul>
+<h5 id="element-creation-function">Element Creation Function</h5>
+<ul>
+<li><strong>Signature</strong>: <code>(...traits: Trait[]) =&gt; HTMLElement | SVGElement</code></li>
+<li><strong>Parameters</strong>: Variable number of traits (TemplateTraitAppliers)</li>
+<li><strong>Returns</strong>: The created element</li>
+</ul>
+<h4 id="trait-proxy-second-element-of-tuple">Trait Proxy (Second element of tuple)</h4>
+<ul>
+<li><strong>Type</strong>: Proxy object</li>
+<li><strong>Description</strong>: Creates trait applier functions from the config object</li>
+<li><strong>Usage</strong>: Access trait names defined in config, which returns a function that creates a trait applier</li>
+</ul>
+<h5 id="trait-applier-function">Trait Applier Function</h5>
+<ul>
+<li><strong>Signature</strong>: <code>(...args: Parameters&lt;TraitFunc&gt;) =&gt; (el: HTMLElement) =&gt; void</code></li>
+<li><strong>Parameters</strong>: Arguments defined by the trait implementation (excluding the element parameter)</li>
+<li><strong>Returns</strong>: A function that applies the trait to an element</li>
+</ul>
+<h4 id="type-definitions">Type Definitions</h4>
+<h5 id="templatetraitfunc"><code>TemplateTraitFunc</code></h5>
+<ul>
+<li><strong>Type</strong>: Type alias</li>
+<li><strong>Description</strong>: <code>(...args: Args) =&gt; Return</code> - Function type for trait implementations</li>
+</ul>
+<h5 id="templatetraitapplier"><code>TemplateTraitApplier</code></h5>
+<ul>
+<li><strong>Type</strong>: Type alias</li>
+<li><strong>Description</strong>: <code>(el: HTMLElement | SVGElement) =&gt; void</code> - Function that applies a trait to an element</li>
+</ul>
+<h5 id="templatereturntypep"><code>TemplateReturnType&lt;P&gt;</code></h5>
+<ul>
+<li><strong>Type</strong>: Type alias</li>
+<li><strong>Description</strong>: Complex type defining the return value structure with proper TypeScript inference for element types</li>
+</ul>
+<h3 id="implementation-details">Implementation Details</h3>
+<h4 id="automatic-cleanup-system">Automatic Cleanup System</h4>
+<p>The template module uses a sophisticated cleanup system:</p>
+<ul>
+<li><strong>WeakMap</strong>: Stores cleanup functions keyed by element reference</li>
+<li><strong>MutationObserver</strong>: Watches for element removal from the DOM</li>
+<li>When an element is removed, all its cleanup functions are executed automatically</li>
+<li>This prevents memory leaks from event listeners and subscriptions</li>
+</ul>
+<h4 id="svg-element-detection">SVG Element Detection</h4>
+<p>SVG elements are created using <code>createElementNS</code> with the SVG namespace. The module maintains a hardcoded set of common SVG tag names for detection.</p>
+<h3 id="traits">Traits</h3>
+<p>A trait is any function that takes an element as its first parameter, applies some behavior or configuration to it and returns a cleanup function. Traits can be defined in the config object passed to <code>Template()</code> and are accessed via the trait proxy.</p>
+<p>Here's an example of the implementation of the Style Trait</p>
+<pre><code class="language-typescript">export function useStyleTrait(
+  el: HTMLElement,
+  prop: keyof CSSStyleDeclaration | `--${string}`,
+  val: (() =&gt; string | number | undefined) | (string | number | undefined),
+  ...rest: (StateType&lt;any&gt; | Condition)[]
+) {
+  const states = extractStates(val, ...rest);
+  const conditions = extractConditions(...rest);
+  const apply = () =&gt; {
+    const _val = typeof val === 'function' ? val() : val;
+    const applies = conditions.every((i) =&gt; (typeof i === 'function' ? i() : i));
+    if (applies) {
+      (prop as string).startsWith('--')
+        ? el.style.setProperty(prop as string, _val as string)
+        : (el.style[prop as any] = _val as any);
+    }
+  };
+  apply();
+  const unsubs = states.map((state) =&gt; state.sub(apply));
+  return () =&gt; unsubs.forEach((unsub) =&gt; unsub());
+}
+</code></pre>
+<h3 id="conditional-patterns">Conditional Patterns</h3>
+<p><strong>IMPORTANT</strong>: OEM prescribes using explicit conditions rather than ternary expressions when applying traits.</p>
+<h4 id="using-conditions-preferred">Using Conditions (Preferred)</h4>
+<p>All traits accept <code>...rest: (StateType&lt;any&gt; | Condition)[]</code> parameters. Use <code>$test()</code> from <code>@/core/util</code> to create conditions:</p>
+<pre><code class="language-typescript">import { $test } from '@linttrap/oem';
+
+// ✅ CORRECT: Use separate trait calls with conditions
+trait.style('opacity', '0.6', $test(disabled)),
+trait.style('opacity', '1', $test(!disabled)),
+
+// ✅ CORRECT: Multiple conditions
+trait.style('backgroundColor', 'red', $test(isError &amp;&amp; !disabled)),
+
+// ✅ CORRECT: Conditional event handlers
+trait.event('click', handleClick, $test(!disabled)),
+
+// ✅ CORRECT: Conditional attributes
+trait.attr('disabled', 'true', $test(disabled)),
+</code></pre>
+<p>Note: State objects come with a built-in <code>$test</code> method that creates a condition based on the state value (e.g. <code>state.$test(true)</code> creates a condition that checks if the state value is <code>true</code>). See <a href="state.md">State.md</a> for more details.</p>
+<pre><code class="language-typescript">
+#### Avoiding Ternary Expressions (Anti-pattern)
+
+```typescript
+// ❌ INCORRECT: Do not use ternary expressions
+trait.style('opacity', disabled ? '0.6' : '1'),
+
+// ❌ INCORRECT: Do not use conditional spreads
+...(!disabled ? [trait.event('click', handleClick)] : []),
+
+// ❌ INCORRECT: Do not use inline conditionals
+trait.style('color', isError ? 'red' : 'blue'),
+</code></pre>
+<h4 id="how-conditions-work">How Conditions Work</h4>
+<p>Traits extract conditions using <code>extractConditions()</code> (see <code>@/core/util</code>) and only apply when all conditions evaluate to <code>true</code>:</p>
+<ol>
+<li><strong>Condition Creation</strong>: <code>$test(value, expected = true)</code> creates a condition that checks if <code>value === expected</code></li>
+<li><strong>Condition Extraction</strong>: Traits filter rest parameters for objects with <code>type === '$test'</code></li>
+<li><strong>Condition Evaluation</strong>: All conditions must pass for the trait to apply</li>
+<li><strong>Reactive Updates</strong>: When states change, conditions are re-evaluated</li>
+</ol>
+<p>This pattern ensures:</p>
+<ul>
+<li><strong>Clarity</strong>: Each condition is explicit and separate</li>
+<li><strong>Reactivity</strong>: Conditions can re-evaluate when states change</li>
+<li><strong>Composability</strong>: Multiple conditions can be combined</li>
+<li><strong>Type Safety</strong>: TypeScript can properly type-check each branch</li>
+</ul>
+<hr />
+<h2 id="state">State</h2>
+<h3 id="overview-1">Overview</h3>
+<p>The state function is an an event bus with reactive state management convention used by the OEM framework. It implements a publish-subscribe pattern with support for reducing, testing and augmenting with custom methods. State is designed to be simple and flexible, allowing you to manage reactive data in your applications without the overhead of more complex state management libraries.</p>
+<h3 id="purpose">Purpose</h3>
+<p>State solves the problem of managing reactive data in applications where UI components need to automatically update when data changes. It provides a lightweight alternative to more complex state management libraries, with built-in support for:</p>
+<ul>
+<li>Reactive subscriptions</li>
+<li>State transformations</li>
+<li>Predicate testing</li>
+<li>Deferred execution patterns</li>
+</ul>
+<p>Use this module when you need to manage any state, especially with reactive data binding between your application state and UI components. State objects should live outside of function components to ensure they are shared across the application and not recreated on each render.</p>
+<h3 id="key-exports-1">Key Exports</h3>
+<h4 id="statet-m"><code>State&lt;T, M&gt;</code></h4>
+<ul>
+<li><strong>Type</strong>: Function</li>
+<li><strong>Signature</strong>: <code>function State&lt;T, M&gt;(param: T, customMethods?: M): StateType&lt;T, M&gt;</code></li>
+<li><strong>Description</strong>: Creates a reactive state container that holds a value and notifies subscribers when it changes. Optionally accepts custom methods to extend state behavior.</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>param</code>: The initial value for the state</li>
+<li><code>customMethods</code> (optional): An object containing custom methods that receive the state object as their first parameter</li>
+</ul>
+</li>
+<li><strong>Returns</strong>: A <code>StateType&lt;T, M&gt;</code> object with methods for state management</li>
+<li><strong>Usage Example</strong>:</li>
+</ul>
+<pre><code class="language-typescript">// Basic usage
+const count = State(0);
+count.sub((value) =&gt; console.log('Count changed:', value));
+count.set(5); // Logs: &quot;Count changed: 5&quot;
+
+// With custom methods
+const counter = State(
+  { count: 0 },
+  {
+    increment: (state) =&gt; {
+      state.reduce((prev) =&gt; ({ count: prev.count + 1 }));
+    },
+    incrementBy: (state, amount: number) =&gt; {
+      state.reduce((prev) =&gt; ({ count: prev.count + amount }));
+    },
+  },
+);
+
+counter.increment(); // Increments count by 1
+counter.incrementBy(5); // Increments count by 5
+counter.$increment()(); // Deferred increment
+</code></pre>
+<p>Note: the <code>$</code>-prefixed methods (e.g. <code>$increment</code>) are automatically generated for each custom method and return a closure that can be used for deferred execution, such as in event handlers.</p>
+<h4 id="statetypet"><code>StateType&lt;T&gt;</code></h4>
+<ul>
+<li><strong>Type</strong>: Interface/Type</li>
+<li><strong>Description</strong>: The return type of <code>State()</code> function, providing methods for state manipulation and observation</li>
+</ul>
+<h5 id="methods">Methods</h5>
+<h6 id="val"><code>val()</code></h6>
+<ul>
+<li><strong>Returns</strong>: The current state value</li>
+<li><strong>Usage</strong>: <code>const currentValue = count.val();</code></li>
+</ul>
+<h6 id="setatom-t"><code>set(atom: T)</code></h6>
+<ul>
+<li><strong>Description</strong>: Sets a new state value and notifies all subscribers</li>
+<li><strong>Parameters</strong>: <code>atom</code> - The new value to set</li>
+</ul>
+<h6 id="reducecb-prev-t-t"><code>reduce(cb: (prev: T) =&gt; T)</code></h6>
+<ul>
+<li><strong>Description</strong>: Updates state based on the previous value</li>
+<li><strong>Parameters</strong>: <code>cb</code> - A function that receives the current value and returns the new value</li>
+<li><strong>Usage</strong>: <code>count.reduce(prev =&gt; prev + 1);</code></li>
+</ul>
+<h6 id="subcb-atom-t-any"><code>sub(cb: (atom: T) =&gt; any)</code></h6>
+<ul>
+<li><strong>Description</strong>: Subscribes to state changes</li>
+<li><strong>Parameters</strong>: <code>cb</code> - Callback function called with new value on each change</li>
+<li><strong>Returns</strong>: An unsubscribe function</li>
+<li><strong>Usage</strong>:</li>
+</ul>
+<pre><code class="language-typescript">const unsub = count.sub((value) =&gt; console.log(value));
+// Later: unsub() to stop listening
+</code></pre>
+<h6 id="testpredicate-checkfor"><code>test(predicate, checkFor?)</code></h6>
+<ul>
+<li><strong>Description</strong>: Tests the current state value against a predicate</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>predicate</code>: A RegExp, value, or function to test against</li>
+<li><code>checkFor</code>: Optional boolean (default <code>true</code>) to invert the test result</li>
+</ul>
+</li>
+<li><strong>Returns</strong>: Boolean indicating if the test passed</li>
+<li><strong>Usage</strong>:</li>
+</ul>
+<pre><code class="language-typescript">const isZero = count.test(0); // true if count is 0
+const isPositive = count.test((v) =&gt; v &gt; 0);
+</code></pre>
+<h5 id="deferred-execution-methods-prefix">Deferred Execution Methods ($ prefix)</h5>
+<p>Each core method has a dollar-prefixed version (<code>$val</code>, <code>$set</code>, <code>$reduce</code>, <code>$test</code>, <code>$call</code>) that returns a closure for deferred execution. These closures include:</p>
+<ul>
+<li>A <code>sub</code> property for subscribing to changes</li>
+<li>A <code>type</code> property identifying the closure type</li>
+</ul>
+<p><strong>Usage Example</strong>:</p>
+<pre><code class="language-typescript">const getDouble = count.$reduce((prev) =&gt; prev * 2);
+// Later: getDouble() executes the reduction
+</code></pre>
+<h5 id="custom-methods">Custom Methods</h5>
+<p>State supports extending functionality with custom methods via the second parameter. Custom methods:</p>
+<ul>
+<li>Receive the state object as their first parameter</li>
+<li>Can accept additional parameters</li>
+<li>Have automatic deferred execution versions ($ prefix)</li>
+<li>Provide full TypeScript intellisense and type safety</li>
+</ul>
+<p><strong>Usage Example</strong>:</p>
+<pre><code class="language-typescript">type CounterState = { count: number; name: string };
+
+const counter = State&lt;CounterState&gt;(
+  { count: 0, name: 'MyCounter' },
+  {
+    increment: (state) =&gt; {
+      state.reduce((prev) =&gt; ({ ...prev, count: prev.count + 1 }));
+    },
+    incrementBy: (state, amount: number) =&gt; {
+      state.reduce((prev) =&gt; ({ ...prev, count: prev.count + amount }));
+    },
+    reset: (state) =&gt; {
+      state.set({ count: 0, name: state.val().name });
+    },
+    getDisplayText: (state) =&gt; {
+      const { count, name } = state.val();
+      return `${name}: ${count}`;
+    },
+  },
+);
+
+// Direct execution
+counter.increment();
+counter.incrementBy(5);
+console.log(counter.getDisplayText()); // &quot;MyCounter: 6&quot;
+
+// Deferred execution with $ prefix
+const incrementBtn = document.querySelector('#increment');
+incrementBtn.addEventListener('click', counter.$increment());
+
+const addFiveBtn = document.querySelector('#add-five');
+addFiveBtn.addEventListener('click', counter.$incrementBy(5));
+</code></pre>
+<p>Because custom methods take the state object as their first parameter, they have access to all state methods:</p>
+<ul>
+<li><code>state.val()</code> - Get current value</li>
+<li><code>state.set(newValue)</code> - Set new value</li>
+<li><code>state.reduce(cb)</code> - Update based on previous value</li>
+<li><code>state.sub(cb)</code> - Subscribe to changes</li>
+<li><code>state.test(predicate)</code> - Test current value</li>
+</ul>
+<h3 id="implementation-details-1">Implementation Details</h3>
+<p>The state module uses a closure-based approach to maintain private state:</p>
+<ul>
+<li>Internal value is stored in <code>_internalVal</code></li>
+<li>Subscribers are stored in a <code>Set&lt;(atom: T) =&gt; any&gt;</code></li>
+<li>When state changes via <code>set()</code> or <code>reduce()</code>, all subscribers are notified synchronously</li>
+</ul>
+<h3 id="gotchas">Gotchas</h3>
+<ul>
+<li>There is no <code>pub</code> method; state updates are published automatically when using <code>set()</code> or <code>reduce()</code></li>
+<li>Custom methods must use the provided state object parameter to manipulate state; they cannot directly access internal variables</li>
+<li>Deferred execution methods (with <code>$</code> prefix) return closures that are syntactic sugar for traits. Traits use them to get the current state value and subscribe to changes. Each trait is responsible for implementing the logic to re-run when the state changes. This design allows for flexible reactive patterns without coupling state directly to UI components.</li>
+</ul>
+<hr />
+<h2 id="util">Util</h2>
+<h3 id="overview-2">Overview</h3>
+<p>The util module provides utility functions for working with State objects and Conditions in the OEM framework. It offers runtime helpers for filtering, testing, and extracting reactive objects from mixed arrays.</p>
+<h3 id="purpose-1">Purpose</h3>
+<p>Util solves the problem of identifying and working with OEM's special object types (State, Condition) at runtime. Key features include:</p>
+<ul>
+<li>Creating conditional closures for reactive testing</li>
+<li>Extracting State objects from mixed parameter arrays</li>
+<li>Extracting Condition objects from mixed parameter arrays</li>
+</ul>
+<p>Use this module when you need to programmatically work with State or Condition objects, particularly when processing variable argument lists that may contain a mix of different types.</p>
+<h3 id="key-exports-2">Key Exports</h3>
+<h4 id="test"><code>$test()</code></h4>
+<ul>
+<li><strong>Type</strong>: Function</li>
+<li><strong>Signature</strong>: <code>function $test(val: (() =&gt; any) | any, expected: any = true): Condition</code></li>
+<li><strong>Description</strong>: Creates a conditional closure that tests a value against an expected result</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>val</code>: Either a function that returns a value, or a static value</li>
+<li><code>expected</code>: The expected value to compare against (default: <code>true</code>)</li>
+</ul>
+</li>
+<li><strong>Returns</strong>: A <code>Condition</code> function with a <code>type</code> property set to <code>'$test'</code></li>
+<li><strong>Usage Example</strong>:</li>
+</ul>
+<pre><code class="language-typescript">// Test a static value
+const isTrue = $test(true); // () =&gt; true === true
+
+// Test a function result
+const count = State(5);
+const isPositive = $test(() =&gt; count.val() &gt; 0, true);
+
+// Use in conditional rendering
+const element = h.div(isPositive &amp;&amp; h.span('Count is positive'));
+
+// Custom expected value
+const isFive = $test(count.val, 5);
+</code></pre>
+<ul>
+<li><strong>Behavior</strong>:
+<ul>
+<li>If <code>val</code> is a function, it's called on each evaluation</li>
+<li>If <code>val</code> is a static value, it's compared directly</li>
+<li>Returns true if <code>val === expected</code>, false otherwise</li>
+<li>The returned closure includes a <code>type</code> property for runtime identification</li>
+</ul>
+</li>
+</ul>
+<h4 id="extractstates"><code>extractStates()</code></h4>
+<ul>
+<li><strong>Type</strong>: Function</li>
+<li><strong>Signature</strong>: <code>function extractStates(...rest: any): StateType&lt;any&gt;[]</code></li>
+<li><strong>Description</strong>: Filters an array of mixed values to extract only State objects</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>...rest</code>: Variable number of arguments of any type</li>
+</ul>
+</li>
+<li><strong>Returns</strong>: An array containing only the State objects from the input</li>
+<li><strong>Usage Example</strong>:</li>
+</ul>
+<pre><code class="language-typescript">const count = State(0);
+const name = State('Alice');
+const regularValue = 42;
+const regularFunc = () =&gt; 'hello';
+
+const states = extractStates(count, regularValue, name, regularFunc);
+// states = [count, name]
+
+// Use case: Subscribing to all states in a component
+states.forEach((state) =&gt; {
+  state.sub((value) =&gt; {
+    console.log('State changed:', value);
+  });
+});
+</code></pre>
+<ul>
+<li><strong>Detection Logic</strong>: Checks if objects have a <code>sub</code> property (characteristic of State objects)</li>
+<li><strong>Use Cases</strong>:
+<ul>
+<li>Component lifecycle management</li>
+<li>Batch subscription to multiple states</li>
+<li>Analyzing dependencies</li>
+</ul>
+</li>
+</ul>
+<h4 id="extractconditions"><code>extractConditions()</code></h4>
+<ul>
+<li><strong>Type</strong>: Function</li>
+<li><strong>Signature</strong>: <code>function extractConditions(...rest: any[]): Condition[]</code></li>
+<li><strong>Description</strong>: Filters an array of mixed values to extract only Condition objects</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>...rest</code>: Variable number of arguments of any type</li>
+</ul>
+</li>
+<li><strong>Returns</strong>: An array containing only the Condition objects from the input</li>
+<li><strong>Usage Example</strong>:</li>
+</ul>
+<pre><code class="language-typescript">const isVisible = $test(true);
+const isEnabled = $test(() =&gt; count.val() &gt; 0);
+const regularValue = 42;
+const regularFunc = () =&gt; 'hello';
+
+const conditions = extractConditions(isVisible, regularValue, isEnabled, regularFunc);
+// conditions = [isVisible, isEnabled]
+
+// Use case: Evaluating all conditions
+const allTrue = conditions.every((condition) =&gt;
+  typeof condition === 'function' ? condition() : condition,
+);
+</code></pre>
+<ul>
+<li><strong>Detection Logic</strong>: Checks if objects have a <code>type</code> property equal to <code>'$test'</code></li>
+<li><strong>Use Cases</strong>:
+<ul>
+<li>Conditional rendering logic</li>
+<li>Form validation</li>
+<li>Feature flag evaluation</li>
+<li>Access control checks</li>
+</ul>
+</li>
+</ul>
+<h3 id="implementation-details-2">Implementation Details</h3>
+<h4 id="object-type-detection">Object Type Detection</h4>
+<p>Both <code>extractStates</code> and <code>extractConditions</code> use runtime property checking to identify objects:</p>
+<ul>
+<li><strong>State detection</strong>: Uses <code>Object.hasOwn(i, 'sub')</code> to check for the subscription method</li>
+<li><strong>Condition detection</strong>: Uses <code>i.type === '$test'</code> to check for the type marker</li>
+</ul>
+<p>This approach relies on duck typing rather than instanceof checks, making it flexible but requiring consistent object shapes.</p>
+<h4 id="test-closure-structure">$test Closure Structure</h4>
+<p>The <code>$test</code> function returns a closure with:</p>
+<ul>
+<li><strong>Function body</strong>: Performs the comparison logic</li>
+<li><strong>Type property</strong>: Marker for runtime identification (<code>type: '$test'</code>)</li>
+<li>This structure allows Conditions to be both executable and identifiable</li>
+</ul>
+<h4 id="type-safety-considerations">Type Safety Considerations</h4>
+<ul>
+<li><code>extractStates</code> returns <code>StateType&lt;any&gt;[]</code>, losing specific type information</li>
+<li><code>extractConditions</code> returns <code>Condition[]</code></li>
+<li>Both functions use <code>any</code> types internally for flexibility with mixed arrays</li>
+<li>Type information should be managed at the call site when possible</li>
+</ul>
+<h2 id="trait-library">Trait Library</h2>
+<h2 id="usescrollintoviewtrait">useScrollIntoViewTrait</h2>
+<p>Reactively scrolls an element into the visible area of its scrollable ancestor when conditions are met. Supports smooth and instant scrolling via standard <code>ScrollIntoViewOptions</code>.</p>
+<h2 id="signature">Signature</h2>
+<pre><code class="language-ts">useScrollIntoViewTrait(
+  el: HTMLElement,
+  options?: ScrollIntoViewOptions,
+  ...rest: (StateType&lt;any&gt; | Condition)[]
+) =&gt; () =&gt; void
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>The target element to scroll into view</td></tr>
+<tr><td><code>options</code></td><td><code>ScrollIntoViewOptions</code></td><td>Standard scroll options: <code>behavior</code> (<code>'smooth'</code> or <code>'instant'</code>), <code>block</code> (<code>'start'</code>, <code>'center'</code>, <code>'end'</code>, <code>'nearest'</code>), <code>inline</code> (same)</td></tr>
+<tr><td><code>...rest</code></td><td><code>(StateType&lt;any&gt; | Condition)[]</code></td><td>Optional State objects and/or Conditions. Scrolls when all Conditions are truthy. Re-evaluates on State changes.</td></tr>
+</tbody>
+</table>
+<h2 id="behavior">Behavior</h2>
+<ol>
+<li>Checks all Conditions — if all are truthy, calls <code>el.scrollIntoView(options)</code>.</li>
+<li>Subscribes to every State in <code>rest</code> so the trait re-evaluates on state changes.</li>
+<li>Scrolls on initialization if conditions are met.</li>
+</ol>
+<h2 id="returns">Returns</h2>
+<p>A cleanup function that unsubscribes from all State listeners.</p>
+<h2 id="template-usage">Template Usage</h2>
+<pre><code class="language-ts">// Scroll when an item becomes active
+trait.scrollIntoView(
+  { behavior: 'smooth', block: 'center' },
+  activeItem.$test((id) =&gt; id === itemId),
+);
+
+// Scroll to error field on validation failure
+trait.scrollIntoView(
+  { behavior: 'smooth', block: 'start' },
+  form.$test((f) =&gt; !!f.errors.email &amp;&amp; f.touched.email),
+);
+
+// Always scroll into view on mount (no conditions)
+trait.scrollIntoView({ behavior: 'instant', block: 'start' });
+</code></pre>
+<h2 id="common-patterns">Common Patterns</h2>
+<h3 id="chat-auto-scroll">Chat auto-scroll</h3>
+<pre><code class="language-ts">const messages = State&lt;Message[]&gt;([]);
+
+// Scroll the last message into view when messages change
+tag.div(
+  trait.scrollIntoView(
+    { behavior: 'smooth', block: 'end' },
+    messages.$test(() =&gt; true),
+  ),
+);
+</code></pre>
+<h3 id="anchor-navigation">Anchor navigation</h3>
+<pre><code class="language-ts">const activeSection = State&lt;string&gt;('intro');
+
+// Each section scrolls into view when it becomes active
+['intro', 'features', 'pricing'].forEach((id) =&gt; {
+  tag.section(
+    trait.scrollIntoView({ behavior: 'smooth', block: 'start' }, activeSection.$test(id)),
+  );
+});
+</code></pre>
+<h3 id="focus-first-error">Focus first error</h3>
+<pre><code class="language-ts">const form = useFormState({ name: '', email: '' }, validators);
+
+tag.input(
+  trait.scrollIntoView(
+    { behavior: 'smooth', block: 'center' },
+    form.$test((f) =&gt; !!f.errors.name &amp;&amp; f.touched.name),
+  ),
+);
+</code></pre>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Uses the standard <code>Element.scrollIntoView()</code> API</li>
+<li>Scrolls every time conditions become truthy after a state change — not just on the first occurrence</li>
+<li>For one-time scroll (e.g., on mount), pass no states and the scroll will fire only on initialization</li>
+<li>Consider using <code>{ behavior: 'smooth' }</code> for user-visible navigation and <code>{ behavior: 'instant' }</code> for programmatic repositioning</li>
+</ul>
+<hr />
+<h2 id="useanimationtrait">useAnimationTrait</h2>
+<p>Reactively plays a <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API">Web Animations API</a> keyframe animation on an element. Supports conditional gating, state-driven re-triggering, and automatic cleanup.</p>
+<h3 id="signature-1">Signature</h3>
+<pre><code class="language-ts">useAnimationTrait(
+  el: HTMLElement,
+  keyframes:
+    | Keyframe[]
+    | PropertyIndexedKeyframes
+    | (() =&gt; Keyframe[] | PropertyIndexedKeyframes),
+  options:
+    | number
+    | KeyframeAnimationOptions
+    | (() =&gt; number | KeyframeAnimationOptions),
+  ...rest: (StateType&lt;any&gt; | Condition)[]
+) =&gt; () =&gt; void
+</code></pre>
+<h3 id="parameters-1">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>The target element</td></tr>
+<tr><td><code>keyframes</code></td><td><code>Keyframe[] | PropertyIndexedKeyframes | (() =&gt; Keyframe[] | PropertyIndexedKeyframes)</code></td><td>The animation keyframes. Pass an array of <code>Keyframe</code> objects, a <code>PropertyIndexedKeyframes</code> object, or a function that returns either for reactive evaluation.</td></tr>
+<tr><td><code>options</code></td><td><code>number | KeyframeAnimationOptions | (() =&gt; number | KeyframeAnimationOptions)</code></td><td>Animation timing. Pass a duration in ms, a full <code>KeyframeAnimationOptions</code> object, or a function for reactive evaluation.</td></tr>
+<tr><td><code>...rest</code></td><td><code>(StateType&lt;any&gt; | Condition)[]</code></td><td>Optional State objects and/or Conditions. The animation plays only when all Conditions are truthy.</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-1">Behavior</h3>
+<ol>
+<li>Evaluates <code>keyframes</code> and <code>options</code> (calls them if they are functions).</li>
+<li>Checks all Conditions — if all are truthy, plays the animation via <code>el.animate()</code>.</li>
+<li>If a previous animation from this trait instance is still running, it is cancelled before the new one starts.</li>
+<li>Subscribes to every State in <code>rest</code> so the animation re-triggers on state changes.</li>
+<li>When a condition is false, the animation is not played but any previously running animation is <strong>not</strong> cancelled — the trait only gates new plays.</li>
+<li>Cleanup cancels any running animation and unsubscribes from all States.</li>
+</ol>
+<h3 id="returns-1">Returns</h3>
+<p>A cleanup function that cancels the running animation and unsubscribes from all State listeners.</p>
+<h3 id="template-usage-1">Template Usage</h3>
+<h4 id="fade-in-on-creation">Fade-in on creation</h4>
+<pre><code class="language-ts">trait.animation([{ opacity: '0' }, { opacity: '1' }], {
+  duration: 200,
+  easing: 'ease-out',
+  fill: 'forwards',
+});
+</code></pre>
+<h4 id="slide-in-from-below">Slide-in from below</h4>
+<pre><code class="language-ts">trait.animation(
+  [
+    { opacity: '0', transform: 'translateY(8px)' },
+    { opacity: '1', transform: 'translateY(0)' },
+  ],
+  { duration: 250, easing: 'ease-out', fill: 'forwards' },
+);
+</code></pre>
+<h4 id="enterexit-driven-by-state">Enter/exit driven by state</h4>
+<pre><code class="language-ts">const mode = State&lt;'enter' | 'exit'&gt;('enter');
+
+// Enter animation — plays when mode is 'enter'
+trait.animation(
+  [
+    { opacity: '0', transform: 'scale(0.95)' },
+    { opacity: '1', transform: 'scale(1)' },
+  ],
+  { duration: 200, easing: 'ease-out', fill: 'forwards' },
+  mode.$test('enter'),
+  mode,
+);
+
+// Exit animation — plays when mode is 'exit'
+trait.animation(
+  [
+    { opacity: '1', transform: 'scale(1)' },
+    { opacity: '0', transform: 'scale(0.95)' },
+  ],
+  { duration: 150, easing: 'ease-in', fill: 'forwards' },
+  mode.$test('exit'),
+  mode,
+);
+</code></pre>
+<h4 id="infinite-spinner">Infinite spinner</h4>
+<pre><code class="language-ts">trait.animation([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], {
+  duration: 800,
+  iterations: Infinity,
+  easing: 'linear',
+});
+</code></pre>
+<h4 id="reactive-duration-from-state">Reactive duration from state</h4>
+<pre><code class="language-ts">const speed = State&lt;number&gt;(300);
+
+trait.animation(
+  [{ opacity: '0' }, { opacity: '1' }],
+  () =&gt; ({ duration: speed.val(), easing: 'ease-out', fill: 'forwards' as FillMode }),
+  speed,
+);
+</code></pre>
+<h4 id="conditional-animation-only-when-visible">Conditional animation (only when visible)</h4>
+<pre><code class="language-ts">const visible = State&lt;boolean&gt;(false);
+
+trait.animation(
+  [{ opacity: '0' }, { opacity: '1' }],
+  { duration: 200, fill: 'forwards' },
+  visible.$test(true),
+  visible,
+);
+</code></pre>
+<h4 id="attention-pulse">Attention pulse</h4>
+<pre><code class="language-ts">trait.animation(
+  [{ transform: 'scale(1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }],
+  { duration: 600, easing: 'ease-in-out', iterations: 2 },
+);
+</code></pre>
+<h3 id="performance-notes">Performance Notes</h3>
+<ul>
+<li>The Web Animations API runs animations on the compositor thread when animating <code>transform</code> and <code>opacity</code>, delivering 60fps performance without layout thrashing.</li>
+<li><strong>Never animate layout properties</strong> (<code>width</code>, <code>height</code>, <code>top</code>, <code>left</code>, <code>margin</code>, <code>padding</code>) — they force reflow on every frame. Use <code>transform: translate/scale</code> instead.</li>
+<li>Prefer <code>fill: 'forwards'</code> when the element should retain its final animated state.</li>
+<li>For looping animations, always provide a cleanup path (state condition or element removal) to avoid orphaned infinite loops.</li>
+</ul>
+<h3 id="accessibility">Accessibility</h3>
+<ul>
+<li>Always respect <code>prefers-reduced-motion</code>. When the user has reduced motion enabled, either skip the animation entirely (via a condition tied to a media query state) or use <code>duration: 0</code> to apply the final state instantly.</li>
+</ul>
+<pre><code class="language-ts">const reducedMotion = useMediaQueryState('(prefers-reduced-motion: reduce)');
+
+trait.animation(
+  [{ opacity: '0' }, { opacity: '1' }],
+  () =&gt; ({ duration: reducedMotion.test(true) ? 0 : 200, fill: 'forwards' as FillMode }),
+  reducedMotion,
+);
+</code></pre>
+<hr />
+<h2 id="usedataattributetrait">useDataAttributeTrait</h2>
+<p>Reactively sets or removes <code>data-*</code> attributes on an element using the <code>dataset</code> API. Accepts either bare names (e.g. <code>'active'</code>) or prefixed names (e.g. <code>'data-active'</code>). When the value is <code>undefined</code> or conditions are falsy, the data attribute is removed.</p>
+<h3 id="signature-2">Signature</h3>
+<pre><code class="language-ts">useDataAttributeTrait(
+  el: HTMLElement,
+  name: string,
+  val: (() =&gt; string | number | boolean | undefined) | (string | number | boolean | undefined),
+  ...rest: (StateType&lt;any&gt; | Condition)[]
+) =&gt; () =&gt; void
+</code></pre>
+<h3 id="parameters-2">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>The target element</td></tr>
+<tr><td><code>name</code></td><td><code>string</code></td><td>The data attribute name. Can be bare (<code>'active'</code>) or prefixed (<code>'data-active'</code>). Automatically converted to the proper <code>dataset</code> key.</td></tr>
+<tr><td><code>val</code></td><td><code>(() =&gt; string | number | boolean | undefined) | string | number | boolean | undefined</code></td><td>The attribute value. Pass a function for reactive evaluation. <code>undefined</code> removes the attribute.</td></tr>
+<tr><td><code>...rest</code></td><td><code>(StateType&lt;any&gt; | Condition)[]</code></td><td>Optional State objects and/or Conditions. The trait re-evaluates whenever a State publishes and only applies when all Conditions are truthy.</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-2">Behavior</h3>
+<ol>
+<li>Normalizes the <code>name</code> — adds <code>data-</code> prefix if missing, converts to camelCase <code>dataset</code> key.</li>
+<li>Evaluates <code>val</code> (calls it if it's a function).</li>
+<li>Checks all Conditions — if any are falsy, removes the data attribute.</li>
+<li>If all Conditions pass and <code>val</code> is <code>undefined</code>, removes the data attribute.</li>
+<li>Otherwise, sets <code>el.dataset[key] = String(val)</code>.</li>
+<li>Subscribes to every State in <code>rest</code> so the trait re-runs on state changes.</li>
+</ol>
+<h3 id="returns-2">Returns</h3>
+<p>A cleanup function that unsubscribes from all State listeners.</p>
+<h3 id="template-usage-2">Template Usage</h3>
+<pre><code class="language-ts">// Static data attribute
+trait.data('id', '42');
+// → el.dataset.id = '42' (renders as data-id=&quot;42&quot;)
+
+// With data- prefix (also works)
+trait.data('data-id', '42');
+// → same result
+
+// Reactive value
+trait.data('active-tab', () =&gt; activeTab.val(), activeTab);
+// → el.dataset.activeTab = 'home' (renders as data-active-tab=&quot;home&quot;)
+
+// Conditional data attribute
+trait.data(
+  'selected',
+  'true',
+  item.$test((i) =&gt; i.selected),
+);
+
+// Remove when undefined
+trait.data('tooltip', () =&gt; tooltipText.val() || undefined, tooltipText);
+</code></pre>
+<h3 id="common-patterns-1">Common Patterns</h3>
+<h4 id="track-element-state-for-css-selectors">Track element state for CSS selectors</h4>
+<pre><code class="language-ts">// Set data-state for CSS-based styling or external queries
+trait.data('state', () =&gt; panelState.val(), panelState);
+// → [data-state=&quot;open&quot;], [data-state=&quot;closed&quot;]
+</code></pre>
+<h4 id="wire-up-delegation-targets">Wire up delegation targets</h4>
+<pre><code class="language-ts">items.forEach((item) =&gt;
+  tag.li(
+    trait.data('id', item.id),
+    trait.event('click', (e) =&gt; {
+      const id = (e.target as HTMLElement).dataset.id;
+      selectItem(id);
+    }),
+  ),
+);
+</code></pre>
+<h4 id="flag-elements-for-testing">Flag elements for testing</h4>
+<pre><code class="language-ts">trait.data('testid', 'submit-button');
+</code></pre>
+<h3 id="comparison-with-useattributetrait">Comparison with useAttributeTrait</h3>
+<table>
+<thead>
+<tr><th>Feature</th><th><code>useDataAttributeTrait</code></th><th><code>useAttributeTrait</code></th></tr>
+</thead>
+<tbody>
+<tr><td>API</td><td>Uses <code>el.dataset</code> (camelCase keys)</td><td>Uses <code>el.setAttribute</code></td></tr>
+<tr><td>Name handling</td><td>Auto-prefixes <code>data-</code> if missing</td><td>Requires full attr name</td></tr>
+<tr><td>Intended use</td><td><code>data-*</code> attributes only</td><td>Any HTML attribute</td></tr>
+</tbody>
+</table>
+<h3 id="notes-1">Notes</h3>
+<ul>
+<li>Names are automatically normalized: <code>'active-tab'</code> → <code>dataset.activeTab</code> → renders as <code>data-active-tab</code></li>
+<li>Uses the <code>dataset</code> API for setting/removing, which is the idiomatic way to work with data attributes</li>
+<li>Removal uses <code>delete el.dataset[key]</code> which fully removes the attribute from the DOM</li>
+</ul>
+<hr />
+<h2 id="usefocustrait">useFocusTrait</h2>
+<p>Programmatically focuses an HTML element. Unlike most traits, Focus accepts <code>conditions</code> and <code>states</code> as explicit arrays rather than using the rest-parameter extraction pattern.</p>
+<h3 id="signature-3">Signature</h3>
+<pre><code class="language-ts">useFocusTrait(
+  el: HTMLElement,
+  conditions?: Condition[],
+  states?: StateType&lt;any&gt;[]
+) =&gt; () =&gt; void
+</code></pre>
+<h3 id="parameters-3">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>The target element to focus</td></tr>
+<tr><td><code>conditions</code></td><td><code>Condition[]</code></td><td>Optional array of Conditions. The element is focused only when all evaluate to truthy. Defaults to <code>[]</code>.</td></tr>
+<tr><td><code>states</code></td><td><code>StateType&lt;any&gt;[]</code></td><td>Optional array of State objects to subscribe to. The trait re-evaluates whenever any State publishes. Defaults to <code>[]</code>.</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-3">Behavior</h3>
+<ol>
+<li>Checks all Conditions — if all are truthy, calls <code>el.focus()</code>.</li>
+<li>Subscribes to every State so the trait re-runs on state changes.</li>
+<li>Useful for auto-focusing inputs when a modal opens, a route changes, or a condition becomes true.</li>
+</ol>
+<h3 id="returns-3">Returns</h3>
+<p>A cleanup function that unsubscribes from all State listeners.</p>
+<h3 id="template-usage-3">Template Usage</h3>
+<pre><code class="language-ts">trait.focus([modalState.$test((s) =&gt; s.open)], [modalState]);
+trait.focus([], [routeState]);
+</code></pre>
+<hr />
+<h2 id="useinputeventtrait">useInputEventTrait</h2>
+<p>Attaches an input-related event listener that extracts the value from <code>e.target.value</code> and passes it to a setter function. Designed for binding form element changes directly to state updates.</p>
+<h3 id="signature-4">Signature</h3>
+<pre><code class="language-ts">useInputEventTrait(
+  el: HTMLElement,
+  evt: 'input' | 'change' | 'keyup' | 'keydown' | 'keypress' | 'beforeinput' | 'paste' | 'cut' | 'compositionstart' | 'compositionupdate' | 'compositionend',
+  setter: (val: any) =&gt; void,
+  ...rest: (StateType&lt;any&gt; | Condition)[]
+) =&gt; () =&gt; void
+</code></pre>
+<h3 id="parameters-4">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>The target form element (typically <code>HTMLInputElement</code> or <code>HTMLTextAreaElement</code>)</td></tr>
+<tr><td><code>evt</code></td><td><code>string</code></td><td>The input event type. Restricted to: <code>'input'</code>, <code>'change'</code>, <code>'keyup'</code>, <code>'keydown'</code>, <code>'keypress'</code>, <code>'beforeinput'</code>, <code>'paste'</code>, <code>'cut'</code>, <code>'compositionstart'</code>, <code>'compositionupdate'</code>, <code>'compositionend'</code>.</td></tr>
+<tr><td><code>setter</code></td><td><code>(val: any) =&gt; void</code></td><td>A function called with <code>e.target.value</code> when the event fires. Typically a State's <code>set</code> method.</td></tr>
+<tr><td><code>...rest</code></td><td><code>(StateType&lt;any&gt; | Condition)[]</code></td><td>Optional State objects and/or Conditions. The listener is attached only when all Conditions are truthy.</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-4">Behavior</h3>
+<ol>
+<li>Checks all Conditions — if all are truthy and the listener is not attached, adds the event listener.</li>
+<li>When the event fires, calls <code>setter(e.target.value)</code>.</li>
+<li>If any Condition becomes falsy, removes the listener.</li>
+<li>Tracks attachment state to prevent duplicate listeners.</li>
+<li>Subscribes to every State so the trait re-evaluates on state changes.</li>
+</ol>
+<h3 id="returns-4">Returns</h3>
+<p>A cleanup function that removes the event listener and unsubscribes from all State listeners.</p>
+<h3 id="template-usage-4">Template Usage</h3>
+<pre><code class="language-ts">trait.inputEvent('input', nameState.set);
+trait.inputEvent('change', (val) =&gt; filterState.set(val));
+trait.inputEvent('keydown', searchState.set, enabled.$test(true));
+</code></pre>
+<hr />
+<h2 id="usetextcontenttrait">useTextContentTrait</h2>
+<p>Sets the text content of an element reactively. Supports single values, arrays of values (concatenated as text nodes), and function getters.</p>
+<h3 id="signature-5">Signature</h3>
+<pre><code class="language-ts">useTextContentTrait(
+  el: HTMLElement,
+  text: TextContent | TextContent[] | (() =&gt; TextContent | TextContent[]),
+  ...rest: (StateType&lt;any&gt; | Condition)[]
+) =&gt; () =&gt; void
+</code></pre>
+<p>Where <code>TextContent = string | number | undefined | unknown</code>.</p>
+<h3 id="parameters-5">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>The target element</td></tr>
+<tr><td><code>text</code></td><td><code>TextContent | TextContent[] | (() =&gt; TextContent | TextContent[])</code></td><td>The text to display. Can be a single value, an array of values (each appended as a text node), or a function returning either.</td></tr>
+<tr><td><code>...rest</code></td><td><code>(StateType&lt;any&gt; | Condition)[]</code></td><td>Optional State objects and/or Conditions. The trait re-evaluates on state changes and only applies when all Conditions are truthy.</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-5">Behavior</h3>
+<ol>
+<li>Clears <code>el.textContent</code>.</li>
+<li>Evaluates <code>text</code> (calls it if it's a function).</li>
+<li>Checks all Conditions — if any are falsy, the element remains empty.</li>
+<li>For arrays: filters out <code>undefined</code> values and appends each as a text node.</li>
+<li>For single values: sets <code>el.textContent</code> to the stringified value.</li>
+<li>Subscribes to every State in <code>rest</code> so the trait re-runs on state changes.</li>
+</ol>
+<h3 id="returns-5">Returns</h3>
+<p>A cleanup function that unsubscribes from all State listeners.</p>
+<h3 id="template-usage-5">Template Usage</h3>
+<pre><code class="language-ts">trait.textContent('Hello, World!');
+trait.textContent(counter.$val);
+trait.textContent(() =&gt; `${items.val().length} items`, items);
+</code></pre>
+<hr />
+<h2 id="useattributetrait">useAttributeTrait</h2>
+<p>Sets or removes an HTML attribute on an element reactively. When the value is <code>undefined</code> or conditions evaluate to <code>false</code>, the attribute is removed from the element.</p>
+<h3 id="signature-6">Signature</h3>
+<pre><code class="language-ts">useAttributeTrait(
+  el: HTMLElement,
+  prop: string,
+  val: (() =&gt; string | number | boolean | undefined) | (string | number | boolean | undefined),
+  ...rest: (StateType&lt;any&gt; | Condition)[]
+) =&gt; () =&gt; void
+</code></pre>
+<h3 id="parameters-6">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>The target element</td></tr>
+<tr><td><code>prop</code></td><td><code>string</code></td><td>The attribute name (e.g. <code>'disabled'</code>, <code>'aria-label'</code>, <code>'data-id'</code>)</td></tr>
+<tr><td><code>val</code></td><td><code>(() =&gt; string | number | boolean | undefined) | string | number | boolean | undefined</code></td><td>The attribute value. Pass a function for reactive evaluation, or a static value. <code>undefined</code> removes the attribute.</td></tr>
+<tr><td><code>...rest</code></td><td><code>(StateType&lt;any&gt; | Condition)[]</code></td><td>Optional State objects and/or Conditions. The trait re-evaluates whenever a State publishes and only applies when all Conditions are truthy.</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-6">Behavior</h3>
+<ol>
+<li>Evaluates <code>val</code> (calls it if it's a function).</li>
+<li>Checks all Conditions — if any are falsy, removes the attribute.</li>
+<li>If all Conditions pass and <code>val</code> is <code>undefined</code>, removes the attribute.</li>
+<li>Otherwise, sets the attribute via <code>el.setAttribute(prop, String(val))</code>.</li>
+<li>Subscribes to every State in <code>rest</code> so the trait re-runs on state changes.</li>
+</ol>
+<h3 id="returns-6">Returns</h3>
+<p>A cleanup function that unsubscribes from all State listeners.</p>
+<h3 id="template-usage-6">Template Usage</h3>
+<p>When used through a Template's <code>trait</code> proxy, the <code>el</code> parameter is supplied automatically:</p>
+<pre><code class="language-ts">trait.attribute(
+  'disabled',
+  'true',
+  formState.$test((s) =&gt; !s.isValid),
+);
+trait.attribute('aria-label', 'Close dialog');
+trait.attribute(
+  'data-active',
+  'true',
+  tabState.$test((s) =&gt; s.active === id),
+  visible.$test(true),
+);
+</code></pre>
+<hr />
+<h2 id="usestyletrait">useStyleTrait</h2>
+<p>Reactively sets a single CSS style property on an element. Supports both standard <code>CSSStyleDeclaration</code> properties and CSS custom properties (<code>--*</code>).</p>
+<h3 id="signature-7">Signature</h3>
+<pre><code class="language-ts">useStyleTrait(
+  el: HTMLElement,
+  prop: keyof CSSStyleDeclaration | `--${string}`,
+  val: (() =&gt; string | number | undefined) | (string | number | undefined),
+  ...rest: (StateType&lt;any&gt; | Condition)[]
+) =&gt; () =&gt; void
+</code></pre>
+<h3 id="parameters-7">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>The target element</td></tr>
+<tr><td><code>prop</code></td><td><code>keyof CSSStyleDeclaration | \</code>--${string}``</td><td>The CSS property name. Use camelCase for standard properties (e.g. <code>'backgroundColor'</code>) or <code>'--custom-prop'</code> for custom properties.</td></tr>
+<tr><td><code>val</code></td><td><code>(() =&gt; string | number | undefined) | string | number | undefined</code></td><td>The CSS value. Pass a function for reactive evaluation.</td></tr>
+<tr><td><code>...rest</code></td><td><code>(StateType&lt;any&gt; | Condition)[]</code></td><td>Optional State objects and/or Conditions. The style is applied only when all Conditions are truthy.</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-7">Behavior</h3>
+<ol>
+<li>Evaluates <code>val</code> (calls it if it's a function).</li>
+<li>Checks all Conditions — if all are truthy, applies the style.</li>
+<li>For custom properties (<code>--*</code>): uses <code>el.style.setProperty(prop, val)</code>.</li>
+<li>For standard properties: assigns directly to <code>el.style[prop]</code>.</li>
+<li>Subscribes to every State in <code>rest</code> so the trait re-runs on state changes.</li>
+</ol>
+<h3 id="returns-7">Returns</h3>
+<p>A cleanup function that unsubscribes from all State listeners.</p>
+<h3 id="template-usage-7">Template Usage</h3>
+<pre><code class="language-ts">// Token value (re-evaluates on theme change via $val)
+trait.style('backgroundColor', surface_bg_primary.$val);
+trait.style('padding', space_padding_md.$val);
+
+// Conditional toggle — unconditional default + conditional override
+// IMPORTANT: Never use two opposing $test conditions on the same property.
+// Each conditional trait has its own saved-value slot, and opposing conditions
+// will corrupt each other's snapshots, preventing the style from reverting.
+trait.style('opacity', '0'); // default
+trait.style('opacity', '1', visible.$test(true)); // override when true
+
+// Custom CSS property
+trait.style('--header-height', '64px');
+
+// Conditional application
+trait.style(
+  'display',
+  'none',
+  someState.$test((s) =&gt; !s.visible),
+);
+</code></pre>
+<hr />
+<h2 id="useinputvaluetrait">useInputValueTrait</h2>
+<p>Reactively sets the <code>value</code> property of an <code>&lt;input&gt;</code> or <code>&lt;textarea&gt;</code> element. Pairs with <code>useInputEventTrait</code> for two-way data binding.</p>
+<h3 id="signature-8">Signature</h3>
+<pre><code class="language-ts">useInputValueTrait(
+  el: HTMLInputElement | HTMLTextAreaElement,
+  value: (() =&gt; string | number | undefined) | (string | number | undefined),
+  ...rest: (StateType&lt;any&gt; | Condition)[]
+) =&gt; () =&gt; void
+</code></pre>
+<h3 id="parameters-8">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>el</code></td><td><code>HTMLInputElement | HTMLTextAreaElement</code></td><td>The target input or textarea element</td></tr>
+<tr><td><code>value</code></td><td><code>(() =&gt; string | number | undefined) | string | number | undefined</code></td><td>The value to set. Pass a function for reactive evaluation.</td></tr>
+<tr><td><code>...rest</code></td><td><code>(StateType&lt;any&gt; | Condition)[]</code></td><td>Optional State objects and/or Conditions. The trait re-evaluates on state changes and only applies when all Conditions are truthy.</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-8">Behavior</h3>
+<ol>
+<li>Evaluates <code>value</code> (calls it if it's a function).</li>
+<li>Checks all Conditions — if all are truthy, sets <code>el.value</code>.</li>
+<li>Subscribes to every State in <code>rest</code> so the trait re-runs on state changes.</li>
+<li>Typically used alongside <code>useInputEventTrait</code> to create a reactive loop: state → input value → user types → event → update state → input value updates.</li>
+</ol>
+<h3 id="returns-8">Returns</h3>
+<p>A cleanup function that unsubscribes from all State listeners.</p>
+<h3 id="template-usage-8">Template Usage</h3>
+<pre><code class="language-ts">// Two-way binding pattern
+tag.input(trait.inputValue(nameState.$val), trait.inputEvent('input', nameState.set));
+
+// Conditional binding
+tag.input(trait.inputValue(searchState.$val, isEditing.$test(true)));
+</code></pre>
+<hr />
+<h2 id="useeventtrait">useEventTrait</h2>
+<p>Attaches a DOM event listener to an element. The listener is added or removed reactively based on Conditions and State changes.</p>
+<h3 id="signature-9">Signature</h3>
+<pre><code class="language-ts">useEventTrait(
+  el: HTMLElement,
+  evt: keyof GlobalEventHandlersEventMap,
+  cb: (evt?: GlobalEventHandlersEventMap[keyof GlobalEventHandlersEventMap]) =&gt; void,
+  ...rest: (StateType&lt;any&gt; | Condition)[]
+) =&gt; () =&gt; void
+</code></pre>
+<h3 id="parameters-9">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>The target element</td></tr>
+<tr><td><code>evt</code></td><td><code>keyof GlobalEventHandlersEventMap</code></td><td>The event name (e.g. <code>'click'</code>, <code>'mouseenter'</code>, <code>'submit'</code>)</td></tr>
+<tr><td><code>cb</code></td><td><code>(evt?) =&gt; void</code></td><td>The event handler callback</td></tr>
+<tr><td><code>...rest</code></td><td><code>(StateType&lt;any&gt; | Condition)[]</code></td><td>Optional State objects and/or Conditions. The listener is attached only when all Conditions are truthy and detached when any becomes falsy.</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-9">Behavior</h3>
+<ol>
+<li>Checks all Conditions — if all are truthy and the listener is not already attached, calls <code>el.addEventListener(evt, cb)</code>.</li>
+<li>If any Condition becomes falsy, calls <code>el.removeEventListener(evt, cb)</code>.</li>
+<li>Tracks attachment state internally to prevent duplicate listeners.</li>
+<li>Subscribes to every State in <code>rest</code> so the trait re-evaluates on state changes.</li>
+</ol>
+<h3 id="returns-9">Returns</h3>
+<p>A cleanup function that removes the event listener and unsubscribes from all State listeners.</p>
+<h3 id="template-usage-9">Template Usage</h3>
+<pre><code class="language-ts">trait.event(
+  'click',
+  count.$reduce((prev) =&gt; prev + 1),
+);
+trait.event('submit', (e) =&gt; {
+  e.preventDefault();
+  save();
+});
+trait.event('mouseenter', showTooltip, enabled.$test(true));
+</code></pre>
+<hr />
+<h2 id="useinnerhtmltrait">useInnerHTMLTrait</h2>
+<p>Sets the inner content of an element by appending child elements or text nodes. Clears the element first, then appends children — making it safe for HTMLElement and SVGElement children (no serialization).</p>
+<h3 id="signature-10">Signature</h3>
+<pre><code class="language-ts">useInnerHTMLTrait(
+  el: HTMLElement,
+  children: Child | Child[] | (() =&gt; Child | Child[]),
+  ...rest: (StateType&lt;any&gt; | Condition)[]
+) =&gt; () =&gt; void
+</code></pre>
+<p>Where <code>Child = string | number | HTMLElement | SVGElement | undefined | unknown</code>.</p>
+<h3 id="parameters-10">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>The parent element whose content will be set</td></tr>
+<tr><td><code>children</code></td><td><code>Child | Child[] | (() =&gt; Child | Child[])</code></td><td>The child content. Can be a single value, an array, or a function returning either. HTMLElement/SVGElement children are appended directly; primitives are converted to text nodes.</td></tr>
+<tr><td><code>...rest</code></td><td><code>(StateType&lt;any&gt; | Condition)[]</code></td><td>Optional State objects and/or Conditions. The trait re-evaluates on state changes and only applies when all Conditions are truthy.</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-10">Behavior</h3>
+<ol>
+<li>Clears <code>el.innerHTML</code>.</li>
+<li>Evaluates <code>children</code> (calls it if it's a function).</li>
+<li>Checks all Conditions — if any are falsy, the element remains empty.</li>
+<li>For arrays: filters out falsy values, appends HTMLElement/SVGElement children via <code>appendChild</code>, and wraps primitives in text nodes.</li>
+<li>For single HTMLElement/SVGElement: appends directly.</li>
+<li>For single primitives: sets <code>el.innerHTML</code> to the stringified value.</li>
+<li>Subscribes to every State in <code>rest</code> so the trait re-runs on state changes.</li>
+</ol>
+<h3 id="returns-10">Returns</h3>
+<p>A cleanup function that unsubscribes from all State listeners.</p>
+<h3 id="template-usage-10">Template Usage</h3>
+<pre><code class="language-ts">tag.div(
+  trait.innerHTML(
+    () =&gt; [tag.h1(trait.textContent('Hello')), tag.p(trait.textContent(message.$val))],
+    message,
+  ),
+);
+
+tag.ul(
+  trait.innerHTML(() =&gt; items.val().map((item) =&gt; tag.li(trait.textContent(item.label))), items),
+);
+</code></pre>
+<hr />
+<h2 id="useariatrait">useAriaTrait</h2>
+<p>Reactively sets ARIA attributes and the <code>role</code> attribute on an element. When the value is <code>undefined</code> or conditions evaluate to <code>false</code>, the attribute is removed. Provides first-class accessibility support with typed ARIA property names.</p>
+<h3 id="signature-11">Signature</h3>
+<pre><code class="language-ts">useAriaTrait(
+  el: HTMLElement,
+  prop: 'role' | `aria-${string}`,
+  val: (() =&gt; string | number | boolean | undefined) | (string | number | boolean | undefined),
+  ...rest: (StateType&lt;any&gt; | Condition)[]
+) =&gt; () =&gt; void
+</code></pre>
+<h3 id="parameters-11">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>The target element</td></tr>
+<tr><td><code>prop</code></td><td><code>'role' | \</code>aria-${string}``</td><td>The ARIA attribute name (e.g. <code>'aria-label'</code>, <code>'aria-expanded'</code>, <code>'role'</code>)</td></tr>
+<tr><td><code>val</code></td><td><code>(() =&gt; string | number | boolean | undefined) | string | number | boolean | undefined</code></td><td>The attribute value. Pass a function for reactive evaluation. <code>undefined</code> removes the attribute.</td></tr>
+<tr><td><code>...rest</code></td><td><code>(StateType&lt;any&gt; | Condition)[]</code></td><td>Optional State objects and/or Conditions. The trait re-evaluates whenever a State publishes and only applies when all Conditions are truthy.</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-11">Behavior</h3>
+<ol>
+<li>Evaluates <code>val</code> (calls it if it's a function).</li>
+<li>Checks all Conditions — if any are falsy, removes the attribute.</li>
+<li>If all Conditions pass and <code>val</code> is <code>undefined</code>, removes the attribute.</li>
+<li>Otherwise, sets the attribute via <code>el.setAttribute(prop, String(val))</code>.</li>
+<li>Subscribes to every State in <code>rest</code> so the trait re-runs on state changes.</li>
+</ol>
+<h3 id="returns-11">Returns</h3>
+<p>A cleanup function that unsubscribes from all State listeners.</p>
+<h3 id="template-usage-11">Template Usage</h3>
+<pre><code class="language-ts">// Static ARIA label
+trait.aria('aria-label', 'Close dialog');
+
+// Role assignment
+trait.aria('role', 'navigation');
+
+// Reactive expanded state
+trait.aria(
+  'aria-expanded',
+  () =&gt; String(menuOpen.val()),
+  menuOpen,
+);
+
+// Conditional aria-hidden
+trait.aria('aria-hidden', 'true', visible.$test(false));
+trait.aria('aria-hidden', 'false', visible.$test(true));
+
+// Reactive aria-live region
+trait.aria('aria-live', 'polite');
+trait.aria(
+  'aria-label',
+  () =&gt; `${notifications.val().length} new notifications`,
+  notifications,
+);
+
+// Aria-current for navigation
+trait.aria(
+  'aria-current',
+  'page',
+  activeRoute.$test((r) =&gt; r === '/about'),
+);
+</code></pre>
+<h3 id="common-aria-patterns">Common ARIA Patterns</h3>
+<h4 id="accessible-toggle-button">Accessible toggle button</h4>
+<pre><code class="language-ts">const expanded = State&lt;boolean&gt;(false);
+
+tag.button(
+  trait.aria('aria-expanded', () =&gt; String(expanded.val()), expanded),
+  trait.aria('aria-controls', 'panel-1'),
+  trait.event('click', expanded.$reduce((v) =&gt; !v)),
+  trait.textContent(() =&gt; (expanded.val() ? 'Collapse' : 'Expand'), expanded),
+);
+</code></pre>
+<h4 id="live-region-for-status-updates">Live region for status updates</h4>
+<pre><code class="language-ts">tag.div(
+  trait.aria('role', 'status'),
+  trait.aria('aria-live', 'polite'),
+  trait.textContent(() =&gt; statusMessage.val(), statusMessage),
+);
+</code></pre>
+<h4 id="tab-panel">Tab panel</h4>
+<pre><code class="language-ts">tag.div(
+  trait.aria('role', 'tabpanel'),
+  trait.aria('aria-labelledby', 'tab-1'),
+  trait.aria(
+    'aria-hidden',
+    () =&gt; String(activeTab.val() !== 'tab-1'),
+    activeTab,
+  ),
+);
+</code></pre>
+<h3 id="comparison-with-useattributetrait-1">Comparison with useAttributeTrait</h3>
+<table>
+<thead>
+<tr><th>Feature</th><th><code>useAriaTrait</code></th><th><code>useAttributeTrait</code></th></tr>
+</thead>
+<tbody>
+<tr><td>Type safety</td><td>Typed to <code>role</code> and <code>aria-*</code></td><td>Accepts any string</td></tr>
+<tr><td>Intended use</td><td>Accessibility attributes</td><td>General HTML attributes</td></tr>
+<tr><td>Behavior</td><td>Identical</td><td>Identical</td></tr>
+</tbody>
+</table>
+<p><code>useAriaTrait</code> is a semantic specialization — it constrains the <code>prop</code> parameter to valid ARIA attributes, making intent clearer and preventing accidental misuse.</p>
+<h3 id="notes-2">Notes</h3>
+<ul>
+<li>Follows the same reactive pattern as <code>useAttributeTrait</code></li>
+<li>Removing the attribute (via <code>undefined</code> or failing conditions) is the correct way to &quot;unset&quot; ARIA properties</li>
+<li>Boolean ARIA attributes like <code>aria-expanded</code> must be set as string <code>&quot;true&quot;</code> or <code>&quot;false&quot;</code> — they are not boolean HTML attributes</li>
+</ul>
+<hr />
+<h2 id="useclassnametrait">useClassNameTrait</h2>
+<p>Sets the <code>class</code> attribute of an HTML element reactively. Replaces the entire class string — does not toggle individual classes.</p>
+<h3 id="signature-12">Signature</h3>
+<pre><code class="language-ts">useClassNameTrait(
+  el: HTMLElement,
+  className: string | (() =&gt; string),
+  ...rest: (StateType&lt;any&gt; | Condition)[]
+) =&gt; () =&gt; void
+</code></pre>
+<h3 id="parameters-12">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>The target element</td></tr>
+<tr><td><code>className</code></td><td><code>string | (() =&gt; string)</code></td><td>The class string to apply. Pass a function for reactive evaluation.</td></tr>
+<tr><td><code>...rest</code></td><td><code>(StateType&lt;any&gt; | Condition)[]</code></td><td>Optional State objects and/or Conditions. The trait re-evaluates whenever a State publishes and only applies when all Conditions are truthy.</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-12">Behavior</h3>
+<ol>
+<li>Evaluates <code>className</code> (calls it if it's a function).</li>
+<li>Checks all Conditions — if all are truthy, sets the class attribute via <code>el.setAttribute('class', ...)</code>.</li>
+<li>If any Condition is falsy, the class is not applied (the previous value remains).</li>
+<li>Subscribes to every State in <code>rest</code> so the trait re-runs on state changes.</li>
+</ol>
+<h3 id="returns-12">Returns</h3>
+<p>A cleanup function that unsubscribes from all State listeners.</p>
+<h3 id="template-usage-12">Template Usage</h3>
+<pre><code class="language-ts">trait.className('btn btn-primary');
+trait.className('tab active', isActive.$test(true));
+trait.className('tab', isActive.$test(false));
+</code></pre>
+<hr />
+<h2 id="usestyleoneventtrait">useStyleOnEventTrait</h2>
+<p>Applies a CSS style property when a DOM event fires on the element. Unlike <code>useStyleTrait</code>, this trait does not subscribe to State objects — it runs the style application inside the event handler itself.</p>
+<h3 id="signature-13">Signature</h3>
+<pre><code class="language-ts">useStyleOnEventTrait(
+  el: HTMLElement,
+  evt: keyof HTMLElementEventMap,
+  prop: keyof CSSStyleDeclaration | `--${string}`,
+  val: (() =&gt; string | number | undefined) | (string | number | undefined),
+  ...rest: Condition[]
+) =&gt; () =&gt; void
+</code></pre>
+<h3 id="parameters-13">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>The target element</td></tr>
+<tr><td><code>evt</code></td><td><code>keyof HTMLElementEventMap</code></td><td>The event that triggers the style application (e.g. <code>'mouseenter'</code>, <code>'mouseleave'</code>, <code>'focus'</code>)</td></tr>
+<tr><td><code>prop</code></td><td><code>keyof CSSStyleDeclaration | \</code>--${string}``</td><td>The CSS property name (camelCase or <code>--custom-prop</code>)</td></tr>
+<tr><td><code>val</code></td><td><code>(() =&gt; string | number | undefined) | string | number | undefined</code></td><td>The CSS value. Pass a function for reactive evaluation at event time.</td></tr>
+<tr><td><code>...rest</code></td><td><code>Condition[]</code></td><td>Optional Conditions. The style is applied only when all Conditions are truthy at the time the event fires.</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-13">Behavior</h3>
+<ol>
+<li>Attaches an event listener for <code>evt</code> on <code>el</code>.</li>
+<li>When the event fires: evaluates <code>val</code>, checks Conditions, and applies the style if all pass.</li>
+<li>For custom properties (<code>--*</code>): uses <code>el.style.setProperty(prop, val)</code>.</li>
+<li>For standard properties: assigns directly to <code>el.style[prop]</code>.</li>
+<li>Does <strong>not</strong> subscribe to State objects — only re-evaluates when the event fires.</li>
+</ol>
+<h3 id="returns-13">Returns</h3>
+<p>A cleanup function that removes the event listener.</p>
+<h3 id="template-usage-13">Template Usage</h3>
+<pre><code class="language-ts">// Hover highlight pattern
+trait.styleOnEvent('mouseenter', 'backgroundColor', action_bg_hover.$val);
+trait.styleOnEvent('mouseleave', 'backgroundColor', action_bg_primary.$val);
+
+// Focus ring
+trait.styleOnEvent('focus', 'outline', () =&gt; `2px solid ${focus_border_primary.val()}`);
+trait.styleOnEvent('blur', 'outline', 'none');
+</code></pre>
+<h2 id="state-library">State Library</h2>
+<h2 id="urlstate">UrlState</h2>
+<p>A reactive state hook that tracks the current URL, matching it against a set of defined routes and extracting params, query strings, and hash fragments.</p>
+<h3 id="features">Features</h3>
+<ul>
+<li><strong>Route matching</strong>: Matches the current pathname against Express-style route patterns (e.g. <code>/user/:id</code>)</li>
+<li><strong>Param extraction</strong>: Automatically extracts named parameters from matched routes</li>
+<li><strong>Query &amp; hash parsing</strong>: Parses query string parameters and hash fragments from the URL</li>
+<li><strong>Type-safe routes</strong>: Route handler signatures are inferred from the route pattern — routes with <code>:param</code> segments require a typed params object</li>
+<li><strong>Reactive</strong>: Returns a State object that updates on <code>popstate</code> and <code>hashchange</code> events</li>
+</ul>
+<h3 id="usage">Usage</h3>
+<pre><code class="language-typescript">import { useUrlState } from '@linttrap/oem';
+
+const url = useUrlState&lt;{
+  '/': any;
+  '/about': any;
+  '/user/:id': any;
+  '/user/:id/post/:postId': any;
+}&gt;({
+  '/': () =&gt; '/',
+  '/about': () =&gt; '/about',
+  '/user/:id': ({ id }) =&gt; `/user/${id}`,
+  '/user/:id/post/:postId': ({ id, postId }) =&gt; `/user/${id}/post/${postId}`,
+});
+
+// Read the current URL state
+const { matchedRoute, params, query, hash } = url.val();
+
+// Subscribe to URL changes
+url.sub(({ matchedRoute, params, query, hash }) =&gt; {
+  console.log('Route:', matchedRoute);
+  console.log('Params:', params);
+  console.log('Query:', query);
+  console.log('Hash:', hash);
+});
+</code></pre>
+<h3 id="signature-14">Signature</h3>
+<pre><code class="language-typescript">function useUrlState&lt;T extends Record&lt;string, any&gt;&gt;(routes: {
+  [K in keyof T]: K extends string ? RouteHandler&lt;K&gt; : never;
+}): StateType&lt;UrlState&lt;typeof routes&gt;, {}&gt;;
+</code></pre>
+<h3 id="parameters-14">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>routes</code></td><td><code>object</code></td><td>A map of route patterns to handler functions. Patterns use <code>:param</code> syntax for dynamic segments.</td></tr>
+</tbody>
+</table>
+<h4 id="route-handler-signatures">Route Handler Signatures</h4>
+<p>Route handlers are type-inferred from the pattern string:</p>
+<ul>
+<li><strong>Static routes</strong> (no params): <code>() =&gt; string</code></li>
+<li><strong>Dynamic routes</strong> (with <code>:param</code>): <code>(params: { [K in ExtractRouteParams&lt;Path&gt;]: string }) =&gt; string</code></li>
+</ul>
+<h3 id="return-value">Return Value</h3>
+<p>Returns a <code>State&lt;UrlState&gt;</code> containing:</p>
+<table>
+<thead>
+<tr><th>Property</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>matchedRoute</code></td><td><code>string</code></td><td>The route pattern that matched the current pathname, or <code>''</code></td></tr>
+<tr><td><code>params</code></td><td><code>Record&lt;string, string&gt;</code></td><td>Named parameters extracted from the matched route</td></tr>
+<tr><td><code>query</code></td><td><code>Record&lt;string, string&gt;</code></td><td>Parsed query string parameters</td></tr>
+<tr><td><code>hash</code></td><td><code>string</code></td><td>The hash fragment (without the leading <code>#</code>)</td></tr>
+<tr><td><code>location</code></td><td><code>Location</code></td><td>The raw <code>document.location</code> object</td></tr>
+<tr><td><code>routes</code></td><td><code>Routes</code></td><td>The routes map passed to the hook</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-14">Behavior</h3>
+<ul>
+<li>Parses <code>document.location</code> on initialization and returns the matched state</li>
+<li>Listens for <code>popstate</code> events (browser back/forward navigation)</li>
+<li>Listens for <code>hashchange</code> events (hash fragment changes)</li>
+<li>On each event, re-parses the location and updates the state, notifying all subscribers</li>
+<li>Route matching converts patterns like <code>/user/:id</code> to regex and tests against the current pathname</li>
+<li>If no route matches, <code>matchedRoute</code> is an empty string and <code>params</code> is an empty object</li>
+</ul>
+<h3 id="common-patterns-2">Common Patterns</h3>
+<h4 id="route-based-rendering">Route-based rendering</h4>
+<pre><code class="language-typescript">const url = useUrlState&lt;{
+  '/': any;
+  '/about': any;
+  '/contact': any;
+}&gt;({
+  '/': () =&gt; '/',
+  '/about': () =&gt; '/about',
+  '/contact': () =&gt; '/contact',
+});
+
+url.sub(({ matchedRoute }) =&gt; {
+  switch (matchedRoute) {
+    case '/':
+      renderHome();
+      break;
+    case '/about':
+      renderAbout();
+      break;
+    case '/contact':
+      renderContact();
+      break;
+  }
+});
+</code></pre>
+<h4 id="reading-dynamic-params">Reading dynamic params</h4>
+<pre><code class="language-typescript">const url = useUrlState&lt;{
+  '/user/:id': any;
+}&gt;({
+  '/user/:id': ({ id }) =&gt; `/user/${id}`,
+});
+
+// If current URL is /user/42
+const { params } = url.val();
+console.log(params.id); // &quot;42&quot;
+</code></pre>
+<h4 id="using-with-conditions">Using with conditions</h4>
+<pre><code class="language-typescript">const url = useUrlState&lt;{
+  '/': any;
+  '/about': any;
+}&gt;({
+  '/': () =&gt; '/',
+  '/about': () =&gt; '/about',
+});
+
+// Create a condition to test the matched route
+const isHome = url.$test((s) =&gt; s.matchedRoute === '/');
+const isAbout = url.$test((s) =&gt; s.matchedRoute === '/about');
+</code></pre>
+<h3 id="notes-3">Notes</h3>
+<ul>
+<li>Event listeners (<code>popstate</code>, <code>hashchange</code>) are added globally and remain active for the lifetime of the page</li>
+<li>Route patterns support alphanumeric characters and hyphens in param values (<code>[\w-]+</code>)</li>
+<li>Query string parsing uses the standard <code>URLSearchParams</code> API</li>
+<li>The <code>routes</code> object is included in the state value for programmatic navigation via handler functions</li>
+</ul>
+<hr />
+<h2 id="mediaquerystate">MediaQueryState</h2>
+<p>A reactive state hook that tracks whether the current viewport matches specified media query conditions.</p>
+<h3 id="features-1">Features</h3>
+<ul>
+<li><strong>Responsive tracking</strong>: Automatically updates when window is resized</li>
+<li><strong>Width-based queries</strong>: Support for min and max width constraints</li>
+<li><strong>Media type support</strong>: Filter by screen, print, or all media types</li>
+<li><strong>Reactive</strong>: Returns a State object that updates when conditions change</li>
+</ul>
+<h3 id="usage-1">Usage</h3>
+<pre><code class="language-typescript">import { useMediaQueryState } from '@linttrap/oem';
+
+// Track mobile viewport (max 768px)
+const isMobile = useMediaQueryState({
+  maxWidth: 768,
+});
+
+// Track tablet viewport (768px - 1024px)
+const isTablet = useMediaQueryState({
+  minWidth: 768,
+  maxWidth: 1024,
+});
+
+// Track desktop viewport (min 1024px)
+const isDesktop = useMediaQueryState({
+  minWidth: 1024,
+});
+
+// Track print media
+const isPrint = useMediaQueryState({
+  type: 'print',
+});
+</code></pre>
+<h3 id="props">Props</h3>
+<table>
+<thead>
+<tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>type</code></td><td><code>'screen' | 'print' | 'all'</code></td><td><code>'all'</code></td><td>Media type to match against</td></tr>
+<tr><td><code>minWidth</code></td><td><code>number</code></td><td><code>0</code></td><td>Minimum viewport width in pixels</td></tr>
+<tr><td><code>maxWidth</code></td><td><code>number</code></td><td><code>Infinity</code></td><td>Maximum viewport width in pixels</td></tr>
+</tbody>
+</table>
+<h3 id="return-value-1">Return Value</h3>
+<p>Returns a <code>State&lt;boolean&gt;</code> that is <code>true</code> when the media query matches and <code>false</code> otherwise.</p>
+<h3 id="behavior-15">Behavior</h3>
+<p>The state automatically:</p>
+<ul>
+<li>Evaluates the media query on initialization</li>
+<li>Adds a resize event listener to track viewport changes</li>
+<li>Updates the state value when conditions change</li>
+<li>Checks both width constraints AND media type (both must match)</li>
+</ul>
+<h3 id="common-patterns-3">Common Patterns</h3>
+<h4 id="responsive-breakpoints">Responsive Breakpoints</h4>
+<pre><code class="language-typescript">// Define standard breakpoints
+const isMobile = useMediaQueryState({ maxWidth: 639 });
+const isTablet = useMediaQueryState({ minWidth: 640, maxWidth: 1023 });
+const isDesktop = useMediaQueryState({ minWidth: 1024 });
+</code></pre>
+<h4 id="conditional-rendering">Conditional Rendering</h4>
+<pre><code class="language-typescript">const isMobile = useMediaQueryState({ maxWidth: 768 });
+
+if (isMobile.val()) {
+  // Render mobile layout
+} else {
+  // Render desktop layout
+}
+</code></pre>
+<h3 id="notes-4">Notes</h3>
+<ul>
+<li>The resize listener is added globally and will remain active</li>
+<li>Consider cleanup if using in components that mount/unmount frequently</li>
+<li>Width boundaries are inclusive (&gt;= minWidth, &lt;= maxWidth)</li>
+</ul>
+<hr />
+<h2 id="themestate">ThemeState</h2>
+<p>A small state hook for managing the current theme as a reactive <code>State</code> value.</p>
+<h3 id="features-2">Features</h3>
+<ul>
+<li><strong>Typed themes</strong>: Constrains the theme to <code>'light'</code> or <code>'dark'</code></li>
+<li><strong>Reactive</strong>: Returns a <code>State</code> object that can be observed or updated</li>
+<li><strong>Minimal</strong>: No side effects, no DOM reads, no global listeners</li>
+</ul>
+<h3 id="usage-2">Usage</h3>
+<pre><code class="language-typescript">import { useThemeState } from '@linttrap/oem';
+
+const theme = useThemeState('light');
+
+// Read the current theme
+const current = theme.val();
+
+// Update the theme
+theme.set('dark');
+</code></pre>
+<h3 id="signature-15">Signature</h3>
+<pre><code class="language-typescript">type Theme = 'light' | 'dark';
+
+function useThemeState(theme: Theme): State&lt;Theme&gt;;
+</code></pre>
+<h3 id="parameters-15">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>theme</code></td><td><code>Theme</code></td><td>—</td><td>Initial theme value (<code>'light'</code> or <code>'dark'</code>)</td></tr>
+</tbody>
+</table>
+<h3 id="return-value-2">Return Value</h3>
+<p>Returns a <code>State&lt;Theme&gt;</code> representing the current theme.</p>
+<h3 id="behavior-16">Behavior</h3>
+<ul>
+<li>Initializes with the provided theme value</li>
+<li>Updates whenever <code>set()</code> is called</li>
+<li>Subscribers receive the latest theme value</li>
+</ul>
+<h3 id="notes-5">Notes</h3>
+<ul>
+<li>This hook does not persist to storage or read from the DOM</li>
+<li>Intended to be composed with other reactive state hooks</li>
+</ul>
+<hr />
+<h2 id="onlinestate">OnlineState</h2>
+<p>A reactive state hook that tracks whether the browser is currently online or offline.</p>
+<h3 id="features-3">Features</h3>
+<ul>
+<li><strong>Connectivity tracking</strong>: Automatically updates when the browser goes online or offline</li>
+<li><strong>Immediate evaluation</strong>: Initializes to the current <code>navigator.onLine</code> value</li>
+<li><strong>Reactive</strong>: Returns a State object that updates on <code>online</code> and <code>offline</code> window events</li>
+</ul>
+<h3 id="usage-3">Usage</h3>
+<pre><code class="language-typescript">import { useOnlineState } from '@linttrap/oem';
+
+const isOnline = useOnlineState();
+
+// Read current connectivity
+console.log(isOnline.val()); // true or false
+
+// React to connectivity changes
+isOnline.sub((online) =&gt; {
+  console.log(online ? 'Back online' : 'Gone offline');
+});
+</code></pre>
+<h3 id="signature-16">Signature</h3>
+<pre><code class="language-typescript">function useOnlineState(): StateType&lt;boolean, {}&gt;;
+</code></pre>
+<h3 id="parameters-16">Parameters</h3>
+<p>None.</p>
+<h3 id="return-value-3">Return Value</h3>
+<p>Returns a <code>State&lt;boolean&gt;</code> that is <code>true</code> when the browser is online and <code>false</code> when offline.</p>
+<h3 id="behavior-17">Behavior</h3>
+<ul>
+<li>Initializes to <code>navigator.onLine</code></li>
+<li>Listens for the <code>online</code> window event and sets state to <code>true</code></li>
+<li>Listens for the <code>offline</code> window event and sets state to <code>false</code></li>
+<li>Notifies all subscribers on each change</li>
+</ul>
+<h3 id="common-patterns-4">Common Patterns</h3>
+<h4 id="conditional-ui-based-on-connectivity">Conditional UI based on connectivity</h4>
+<pre><code class="language-typescript">const isOnline = useOnlineState();
+
+// Show/hide an offline banner
+trait.style('display', 'none', isOnline.$test(true));
+trait.style('display', 'flex', isOnline.$test(false));
+</code></pre>
+<h4 id="gate-network-actions">Gate network actions</h4>
+<pre><code class="language-typescript">const isOnline = useOnlineState();
+
+trait.event(
+  'click',
+  () =&gt; fetchData(),
+  isOnline.$test(true),
+);
+</code></pre>
+<h3 id="notes-6">Notes</h3>
+<ul>
+<li>Event listeners are added globally and remain active for the lifetime of the page</li>
+<li>Uses the standard <code>navigator.onLine</code> API and <code>online</code>/<code>offline</code> window events</li>
+</ul>
+<hr />
+<h2 id="windowsizestate">WindowSizeState</h2>
+<p>A reactive state hook that tracks the current viewport dimensions.</p>
+<h3 id="features-4">Features</h3>
+<ul>
+<li><strong>Viewport tracking</strong>: Reports both width and height as numbers</li>
+<li><strong>Immediate evaluation</strong>: Initializes to the current window size</li>
+<li><strong>Reactive</strong>: Returns a State object that updates on window resize</li>
+</ul>
+<h3 id="usage-4">Usage</h3>
+<pre><code class="language-typescript">import { useWindowSizeState } from '@linttrap/oem';
+
+const windowSize = useWindowSizeState();
+
+// Read current dimensions
+const { width, height } = windowSize.val();
+
+// Subscribe to size changes
+windowSize.sub(({ width, height }) =&gt; {
+  console.log(`${width}x${height}`);
+});
+</code></pre>
+<h3 id="signature-17">Signature</h3>
+<pre><code class="language-typescript">function useWindowSizeState(): StateType&lt;WindowSize, {}&gt;;
+</code></pre>
+<h3 id="parameters-17">Parameters</h3>
+<p>None.</p>
+<h3 id="return-value-4">Return Value</h3>
+<p>Returns a <code>State&lt;WindowSize&gt;</code> containing:</p>
+<table>
+<thead>
+<tr><th>Property</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>width</code></td><td><code>number</code></td><td>Current viewport width in pixels</td></tr>
+<tr><td><code>height</code></td><td><code>number</code></td><td>Current viewport height in pixels</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-18">Behavior</h3>
+<ul>
+<li>Initializes to <code>{ width: window.innerWidth, height: window.innerHeight }</code></li>
+<li>Listens for the <code>resize</code> window event</li>
+<li>Updates state with the new dimensions on every resize</li>
+<li>Notifies all subscribers on each change</li>
+</ul>
+<h3 id="common-patterns-5">Common Patterns</h3>
+<h4 id="dynamic-canvas-sizing">Dynamic canvas sizing</h4>
+<pre><code class="language-typescript">const windowSize = useWindowSizeState();
+
+windowSize.sub(({ width, height }) =&gt; {
+  canvas.width = width;
+  canvas.height = height;
+});
+</code></pre>
+<h4 id="computed-column-count">Computed column count</h4>
+<pre><code class="language-typescript">const windowSize = useWindowSizeState();
+
+trait.style('gridTemplateColumns', () =&gt; {
+  const cols = Math.floor(windowSize.val().width / 300);
+  return `repeat(${cols}, 1fr)`;
+}, windowSize);
+</code></pre>
+<h4 id="reactive-dimension-values">Reactive dimension values</h4>
+<pre><code class="language-typescript">const windowSize = useWindowSizeState();
+
+trait.style('height', () =&gt; `${windowSize.val().height - 64}px`, windowSize);
+</code></pre>
+<h3 id="comparison-with-usemediaquerystate">Comparison with useMediaQueryState</h3>
+<table>
+<thead>
+<tr><th>Feature</th><th><code>useWindowSizeState</code></th><th><code>useMediaQueryState</code></th></tr>
+</thead>
+<tbody>
+<tr><td>Return type</td><td><code>{ width, height }</code></td><td><code>boolean</code></td></tr>
+<tr><td>Use case</td><td>Computed layouts</td><td>Breakpoint conditions</td></tr>
+<tr><td>Condition-friendly</td><td>Requires <code>$test</code> fn</td><td>Direct <code>$test(true/false)</code></td></tr>
+</tbody>
+</table>
+<p>Use <code>useMediaQueryState</code> for breakpoint-gated trait conditions. Use <code>useWindowSizeState</code> when you need raw pixel values for calculations.</p>
+<h3 id="notes-7">Notes</h3>
+<ul>
+<li>The resize listener is added globally and remains active for the lifetime of the page</li>
+<li>For breakpoint-based boolean conditions, prefer <code>useMediaQueryState</code> instead</li>
+</ul>
+<hr />
+<h2 id="tokenstate">TokenState</h2>
+<p>A derived state hook that selects between two token values based on the current theme.</p>
+<h3 id="features-5">Features</h3>
+<ul>
+<li><strong>Theme-aware</strong>: Switches between light and dark values</li>
+<li><strong>Derived state</strong>: Recomputes when the theme state changes</li>
+<li><strong>Generic</strong>: Works with any token value type</li>
+</ul>
+<h3 id="usage-5">Usage</h3>
+<pre><code class="language-typescript">import { useThemeState, useTokenState } from '@linttrap/oem';
+
+const theme = useThemeState('light');
+const primaryColor = useTokenState('#111827', '#f9fafb', theme);
+
+// Read the current token value
+const color = primaryColor.val();
+
+// Switch theme and let token update
+theme.set('dark');
+</code></pre>
+<h3 id="signature-18">Signature</h3>
+<pre><code class="language-typescript">function useTokenState&lt;T&gt;(lightVal: T, darkVal: T, themeState: StateType&lt;Theme, {}&gt;): State&lt;T&gt;;
+</code></pre>
+<h3 id="parameters-18">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>lightVal</code></td><td><code>T</code></td><td>—</td><td>Token value for the light theme</td></tr>
+<tr><td><code>darkVal</code></td><td><code>T</code></td><td>—</td><td>Token value for the dark theme</td></tr>
+<tr><td><code>themeState</code></td><td><code>StateType&lt;Theme, {}&gt;</code></td><td>—</td><td>Theme state used to select the active token</td></tr>
+</tbody>
+</table>
+<h3 id="return-value-5">Return Value</h3>
+<p>Returns a <code>State&lt;T&gt;</code> whose value updates when the theme changes.</p>
+<h3 id="behavior-19">Behavior</h3>
+<ul>
+<li>Initializes to <code>lightVal</code> or <code>darkVal</code> based on <code>themeState.val()</code></li>
+<li>Subscribes to <code>themeState</code> and updates the token whenever the theme changes</li>
+</ul>
+<h3 id="common-patterns-6">Common Patterns</h3>
+<pre><code class="language-typescript">const theme = useThemeState('light');
+const textColor = useTokenState('#111', '#eee', theme);
+const bgColor = useTokenState('#fff', '#0b0f1a', theme);
+</code></pre>
+<h3 id="notes-8">Notes</h3>
+<ul>
+<li>The subscription remains active as long as <code>themeState</code> exists</li>
+<li>Ensure the <code>themeState</code> is shared across tokens to keep updates consistent</li>
+</ul>
+<hr />
+<h2 id="intersectionobserverstate">IntersectionObserverState</h2>
+<p>A reactive state hook that tracks whether an element is visible within the viewport (or a specified root element) using the Intersection Observer API.</p>
+<h3 id="features-6">Features</h3>
+<ul>
+<li><strong>Visibility tracking</strong>: Knows when an element enters or leaves the viewport</li>
+<li><strong>Intersection ratio</strong>: Reports how much of the element is visible (0 to 1)</li>
+<li><strong>Bounding rect</strong>: Exposes the element's bounding client rect on each observation</li>
+<li><strong>Configurable thresholds</strong>: Supports all standard <code>IntersectionObserver</code> options</li>
+<li><strong>Reactive</strong>: Returns a State object that updates on every intersection change</li>
+</ul>
+<h3 id="usage-6">Usage</h3>
+<pre><code class="language-typescript">import { useIntersectionObserverState } from '@linttrap/oem';
+
+const section = document.getElementById('hero')!;
+const visibility = useIntersectionObserverState(section);
+
+// Check if element is visible
+visibility.sub(({ isIntersecting }) =&gt; {
+  console.log(isIntersecting ? 'Visible' : 'Hidden');
+});
+</code></pre>
+<h3 id="signature-19">Signature</h3>
+<pre><code class="language-typescript">function useIntersectionObserverState(
+  el: Element,
+  options?: IntersectionObserverInit,
+): StateType&lt;IntersectionObserverStateValue, {}&gt;;
+</code></pre>
+<h3 id="parameters-19">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>el</code></td><td><code>Element</code></td><td>—</td><td>The DOM element to observe</td></tr>
+<tr><td><code>options</code></td><td><code>IntersectionObserverInit</code></td><td>—</td><td>Standard IntersectionObserver options (root, rootMargin, threshold)</td></tr>
+</tbody>
+</table>
+<h3 id="return-value-6">Return Value</h3>
+<p>Returns a <code>State&lt;IntersectionObserverStateValue&gt;</code> with the following shape:</p>
+<table>
+<thead>
+<tr><th>Property</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>isIntersecting</code></td><td><code>boolean</code></td><td>Whether the element is currently intersecting</td></tr>
+<tr><td><code>intersectionRatio</code></td><td><code>number</code></td><td>Fraction of the element visible (0 to 1)</td></tr>
+<tr><td><code>boundingClientRect</code></td><td><code>DOMRectReadOnly | null</code></td><td>The element's bounding rect at observation time</td></tr>
+</tbody>
+</table>
+<h3 id="behavior-20">Behavior</h3>
+<ul>
+<li>Creates an <code>IntersectionObserver</code> and immediately begins observing the target element</li>
+<li>Updates state on every intersection change (entry/exit, ratio change at thresholds)</li>
+<li>Notifies all subscribers with the new intersection data</li>
+</ul>
+<h3 id="common-patterns-7">Common Patterns</h3>
+<h4 id="lazy-loading-content">Lazy loading content</h4>
+<pre><code class="language-typescript">const placeholder = document.getElementById('lazy-section')!;
+const visibility = useIntersectionObserverState(placeholder, {
+  threshold: 0.1,
+});
+
+visibility.sub(({ isIntersecting }) =&gt; {
+  if (isIntersecting) loadContent();
+});
+</code></pre>
+<h4 id="scroll-spy-navigation">Scroll-spy navigation</h4>
+<pre><code class="language-typescript">const sections = ['intro', 'features', 'pricing'].map((id) =&gt; ({
+  id,
+  visibility: useIntersectionObserverState(document.getElementById(id)!, {
+    threshold: 0.5,
+  }),
+}));
+
+sections.forEach(({ id, visibility }) =&gt; {
+  visibility.sub(({ isIntersecting }) =&gt; {
+    if (isIntersecting) activeSection.set(id);
+  });
+});
+</code></pre>
+<h4 id="animate-on-scroll">Animate on scroll</h4>
+<pre><code class="language-typescript">const el = document.getElementById('animate-me')!;
+const visibility = useIntersectionObserverState(el, { threshold: 0.2 });
+
+trait.style('opacity', '0');
+trait.style(
+  'opacity',
+  '1',
+  visibility.$test((v) =&gt; v.isIntersecting),
+);
+trait.style(
+  'transition',
+  'opacity 0.3s ease',
+);
+</code></pre>
+<h3 id="notes-9">Notes</h3>
+<ul>
+<li>The observer remains active for the lifetime of the page</li>
+<li>Use <code>threshold</code> option to control when intersection callbacks fire (e.g., <code>[0, 0.25, 0.5, 0.75, 1]</code> for granular tracking)</li>
+<li>Uses the standard <code>IntersectionObserver</code> API — supported in all modern browsers</li>
+</ul>
+<hr />
+<h2 id="timerstate">TimerState</h2>
+<p>A reactive state hook that increments a counter at a fixed interval. Provides custom methods to start, stop, and reset the timer.</p>
+<h3 id="features-7">Features</h3>
+<ul>
+<li><strong>Interval counter</strong>: Increments a numeric value at a configurable interval</li>
+<li><strong>Start/stop/reset</strong>: Custom methods for full timer lifecycle control</li>
+<li><strong>Auto-start</strong>: Starts automatically by default (configurable)</li>
+<li><strong>Deferred methods</strong>: <code>$start</code>, <code>$stop</code>, <code>$reset</code> for use in event handlers</li>
+<li><strong>Reactive</strong>: Returns a State object that updates on every tick</li>
+</ul>
+<h3 id="usage-7">Usage</h3>
+<pre><code class="language-typescript">import { useTimerState } from '@linttrap/oem';
+
+// Tick every second, auto-starts
+const timer = useTimerState(1000);
+
+// Read current tick count
+console.log(timer.val()); // 0, 1, 2, ...
+
+// Control the timer
+timer.stop();
+timer.reset();
+timer.start();
+
+// Subscribe to ticks
+timer.sub((count) =&gt; {
+  console.log('Tick:', count);
+});
+</code></pre>
+<h3 id="signature-20">Signature</h3>
+<pre><code class="language-typescript">function useTimerState(
+  intervalMs: number,
+  options?: { autoStart?: boolean },
+): StateType&lt;number, { start; stop; reset }&gt;;
+</code></pre>
+<h3 id="parameters-20">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>intervalMs</code></td><td><code>number</code></td><td>—</td><td>Interval between ticks in milliseconds</td></tr>
+<tr><td><code>options</code></td><td><code>{ autoStart?: boolean }</code></td><td>—</td><td>Configuration. <code>autoStart</code> defaults to <code>true</code> if omitted.</td></tr>
+</tbody>
+</table>
+<h3 id="return-value-7">Return Value</h3>
+<p>Returns a <code>State&lt;number&gt;</code> with these additional custom methods:</p>
+<table>
+<thead>
+<tr><th>Method</th><th>Signature</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>start()</code></td><td><code>() =&gt; void</code></td><td>Starts the interval (no-op if already running)</td></tr>
+<tr><td><code>stop()</code></td><td><code>() =&gt; void</code></td><td>Stops the interval</td></tr>
+<tr><td><code>reset()</code></td><td><code>() =&gt; void</code></td><td>Stops the interval and resets the counter to <code>0</code></td></tr>
+</tbody>
+</table>
+<p>Each method also has a <code>$</code>-prefixed deferred version (<code>$start</code>, <code>$stop</code>, <code>$reset</code>) that returns <code>() =&gt; void</code>.</p>
+<h3 id="behavior-21">Behavior</h3>
+<ul>
+<li>Initializes the counter to <code>0</code></li>
+<li>If <code>autoStart</code> is not explicitly <code>false</code>, starts the interval immediately</li>
+<li>Each tick increments the counter by <code>1</code> and notifies all subscribers</li>
+<li><code>start()</code> is a no-op if the timer is already running (prevents double intervals)</li>
+<li><code>stop()</code> clears the interval; <code>start()</code> can resume from the current count</li>
+<li><code>reset()</code> clears the interval AND sets the counter back to <code>0</code></li>
+</ul>
+<h3 id="common-patterns-8">Common Patterns</h3>
+<h4 id="auto-save-indicator">Auto-save indicator</h4>
+<pre><code class="language-typescript">const timer = useTimerState(30000); // every 30 seconds
+
+timer.sub(() =&gt; {
+  saveDocument();
+});
+</code></pre>
+<h4 id="countdown-display">Countdown display</h4>
+<pre><code class="language-typescript">const DURATION = 60;
+const timer = useTimerState(1000);
+
+trait.textContent(() =&gt; `${DURATION - timer.val()}s remaining`);
+</code></pre>
+<h4 id="polling-with-deferred-controls">Polling with deferred controls</h4>
+<pre><code class="language-typescript">const timer = useTimerState(5000, { autoStart: false });
+
+timer.sub(() =&gt; fetchUpdates());
+
+// Wire start/stop to buttons
+trait.event('click', timer.$start());
+trait.event('click', timer.$stop());
+</code></pre>
+<h4 id="session-timeout">Session timeout</h4>
+<pre><code class="language-typescript">const idle = useTimerState(1000);
+
+idle.sub((seconds) =&gt; {
+  if (seconds &gt;= 300) logout();
+});
+
+// Reset on user activity
+document.addEventListener('mousemove', () =&gt; idle.reset());
+</code></pre>
+<h3 id="notes-10">Notes</h3>
+<ul>
+<li>The interval uses <code>setInterval</code> under the hood</li>
+<li>Timer remains active until explicitly stopped or reset</li>
+<li>The counter is a simple incrementing integer — for elapsed time, multiply by <code>intervalMs</code></li>
+</ul>
+<hr />
+<h2 id="formstate">FormState</h2>
+<p>A reactive state hook for managing form values, validation errors, touched fields, and dirty state.</p>
+<h3 id="features-8">Features</h3>
+<ul>
+<li><strong>Field-level control</strong>: Set individual field values with automatic re-validation</li>
+<li><strong>Validation</strong>: Optional per-field validators that run on every field change</li>
+<li><strong>Touched tracking</strong>: Track which fields have been interacted with</li>
+<li><strong>Dirty tracking</strong>: Knows when any field has been modified from initial values</li>
+<li><strong>Full validate</strong>: Validate all fields at once (e.g., on submit)</li>
+<li><strong>Reset</strong>: Return to initial values and clear all state</li>
+<li><strong>Deferred methods</strong>: <code>$setField</code>, <code>$touch</code>, <code>$validate</code>, <code>$reset</code> for event wiring</li>
+</ul>
+<h3 id="usage-8">Usage</h3>
+<pre><code class="language-typescript">import { useFormState } from '@linttrap/oem';
+
+const form = useFormState(
+  { email: '', password: '' },
+  {
+    email: (val) =&gt; (!val ? 'Required' : undefined),
+    password: (val) =&gt; (val.length &lt; 8 ? 'Min 8 characters' : undefined),
+  },
+);
+
+// Set a field value
+form.setField('email', 'user@example.com');
+
+// Touch a field
+form.touch('email');
+
+// Validate all fields
+const isValid = form.validate();
+
+// Read state
+const { values, errors, touched, dirty, valid } = form.val();
+
+// Reset to initial
+form.reset();
+</code></pre>
+<h3 id="signature-21">Signature</h3>
+<pre><code class="language-typescript">function useFormState&lt;T extends Record&lt;string, any&gt;&gt;(
+  initialValues: T,
+  validators?: Partial&lt;Record&lt;keyof T, (value: T[keyof T], values: T) =&gt; string | undefined&gt;&gt;,
+): StateType&lt;FormStateValue&lt;T&gt;, { setField; setError; touch; validate; reset }&gt;;
+</code></pre>
+<h3 id="parameters-21">Parameters</h3>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>initialValues</code></td><td><code>T</code></td><td>—</td><td>The initial form values</td></tr>
+<tr><td><code>validators</code></td><td><code>Partial&lt;Record&lt;keyof T, (value, values) =&gt; string | undefined&gt;&gt;</code></td><td>—</td><td>Optional validators per field. Return a string for errors, <code>undefined</code> for valid.</td></tr>
+</tbody>
+</table>
+<h3 id="return-value-8">Return Value</h3>
+<p>Returns a <code>State&lt;FormStateValue&lt;T&gt;&gt;</code> with shape:</p>
+<table>
+<thead>
+<tr><th>Property</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>values</code></td><td><code>T</code></td><td>Current field values</td></tr>
+<tr><td><code>errors</code></td><td><code>Partial&lt;Record&lt;keyof T, string&gt;&gt;</code></td><td>Validation error messages per field</td></tr>
+<tr><td><code>touched</code></td><td><code>Partial&lt;Record&lt;keyof T, boolean&gt;&gt;</code></td><td>Whether each field has been touched</td></tr>
+<tr><td><code>dirty</code></td><td><code>boolean</code></td><td><code>true</code> if any field has been modified</td></tr>
+<tr><td><code>valid</code></td><td><code>boolean</code></td><td><code>true</code> if there are no validation errors</td></tr>
+</tbody>
+</table>
+<h4 id="custom-methods-1">Custom Methods</h4>
+<table>
+<thead>
+<tr><th>Method</th><th>Signature</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>setField(field, value)</code></td><td><code>(keyof T, T[keyof T]) =&gt; void</code></td><td>Updates a field value and re-runs validation</td></tr>
+<tr><td><code>setError(field, error)</code></td><td><code>(keyof T, string | undefined) =&gt; void</code></td><td>Manually set or clear an error on a field</td></tr>
+<tr><td><code>touch(field)</code></td><td><code>(keyof T) =&gt; void</code></td><td>Marks a field as touched</td></tr>
+<tr><td><code>validate()</code></td><td><code>() =&gt; boolean</code></td><td>Validates all fields, touches all, returns validity</td></tr>
+<tr><td><code>reset()</code></td><td><code>() =&gt; void</code></td><td>Resets values, errors, touched, dirty, and valid</td></tr>
+</tbody>
+</table>
+<p>Each method also has a <code>$</code>-prefixed deferred version.</p>
+<h3 id="behavior-22">Behavior</h3>
+<ul>
+<li>Initializes with the provided <code>initialValues</code>, no errors, no touched fields, <code>dirty: false</code>, <code>valid: true</code></li>
+<li>On <code>setField</code>: updates the field value, runs all validators, updates <code>errors</code> and <code>valid</code>, sets <code>dirty: true</code></li>
+<li>On <code>touch</code>: marks the field as touched (useful for showing errors only after interaction)</li>
+<li>On <code>validate</code>: runs all validators, marks all fields as touched, updates state, returns <code>boolean</code></li>
+<li>On <code>reset</code>: returns to the exact initial state</li>
+<li>Validators receive both the field value and the full values object (for cross-field validation)</li>
+</ul>
+<h3 id="common-patterns-9">Common Patterns</h3>
+<h4 id="contact-form">Contact form</h4>
+<pre><code class="language-typescript">const form = useFormState(
+  { name: '', email: '', message: '' },
+  {
+    name: (v) =&gt; (!v ? 'Name is required' : undefined),
+    email: (v) =&gt; (!v.includes('@') ? 'Invalid email' : undefined),
+    message: (v) =&gt; (v.length &lt; 10 ? 'Too short' : undefined),
+  },
+);
+</code></pre>
+<h4 id="two-way-binding-with-input-traits">Two-way binding with input traits</h4>
+<pre><code class="language-typescript">trait.inputValue(() =&gt; form.val().values.email, form);
+trait.inputEvent('input', (val) =&gt; form.setField('email', val), form);
+trait.event('blur', form.$touch('email'));
+</code></pre>
+<h4 id="show-errors-only-for-touched-fields">Show errors only for touched fields</h4>
+<pre><code class="language-typescript">trait.textContent(
+  () =&gt; {
+    const { errors, touched } = form.val();
+    return touched.email ? errors.email || '' : '';
+  },
+  form,
+);
+</code></pre>
+<h4 id="submit-handler">Submit handler</h4>
+<pre><code class="language-typescript">trait.event('click', () =&gt; {
+  if (form.validate()) {
+    submitForm(form.val().values);
+  }
+});
+</code></pre>
+<h4 id="cross-field-validation">Cross-field validation</h4>
+<pre><code class="language-typescript">const form = useFormState(
+  { password: '', confirmPassword: '' },
+  {
+    confirmPassword: (val, values) =&gt;
+      val !== values.password ? 'Passwords must match' : undefined,
+  },
+);
+</code></pre>
+<h3 id="notes-11">Notes</h3>
+<ul>
+<li>Validators run synchronously on every <code>setField</code> call</li>
+<li>The <code>valid</code> flag reflects the result of the most recent validation run</li>
+<li><code>validate()</code> touches all fields so error messages become visible</li>
+<li>For async validation (e.g., server-side uniqueness checks), use <code>setError</code> manually after an async call</li>
+</ul>
+</body>
 </html>

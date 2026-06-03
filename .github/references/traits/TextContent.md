@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# useTextContentTrait
+## useTextContentTrait
 
 Sets the text content of an element reactively. Supports single values, arrays of values (concatenated as text nodes), and function getters.
 
-## Signature
+### Signature
 
 ```ts
 useTextContentTrait(
@@ -23,7 +23,7 @@ useTextContentTrait(
 
 Where `TextContent = string | number | undefined | unknown`.
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                                                   | Description                                                                                                                        |
 | --------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -31,7 +31,7 @@ Where `TextContent = string | number | undefined | unknown`.
 | `text`    | `TextContent \| TextContent[] \| (() => TextContent \| TextContent[])` | The text to display. Can be a single value, an array of values (each appended as a text node), or a function returning either.     |
 | `...rest` | `(StateType<any> \| Condition)[]`                                      | Optional State objects and/or Conditions. The trait re-evaluates on state changes and only applies when all Conditions are truthy. |
 
-## Behavior
+### Behavior
 
 1. Clears `el.textContent`.
 2. Evaluates `text` (calls it if it's a function).
@@ -40,11 +40,11 @@ Where `TextContent = string | number | undefined | unknown`.
 5. For single values: sets `el.textContent` to the stringified value.
 6. Subscribes to every State in `rest` so the trait re-runs on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 trait.textContent('Hello, World!');

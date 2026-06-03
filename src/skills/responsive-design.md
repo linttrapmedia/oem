@@ -7,7 +7,7 @@ metadata:
   version: '1.0'
 ---
 
-# Responsive Design
+## Responsive Design
 
 OEM handles responsive design without CSS media queries. Instead, viewport conditions are modeled as reactive `State<boolean>` objects using `useMediaQueryState`. Traits subscribe to these states via conditions, so style changes are automatic, surgical, and declarative.
 
@@ -15,7 +15,7 @@ OEM handles responsive design without CSS media queries. Instead, viewport condi
 
 ---
 
-## Core Mechanism
+### Core Mechanism
 
 `useMediaQueryState` returns a `State<boolean>` that tracks whether the viewport matches the given constraints. It listens to `window.resize` and updates automatically:
 
@@ -29,7 +29,7 @@ const isDesktop = useMediaQueryState({ minWidth: 1024 });
 
 Each of these is a normal State object — it has `.val()`, `.set()`, `.sub()`, `.$val`, `.$test()`, and all the standard State methods.
 
-### Props
+#### Props
 
 | Property   | Type                           | Default    | Description                      |
 | ---------- | ------------------------------ | ---------- | -------------------------------- |
@@ -41,7 +41,7 @@ Width boundaries are inclusive (`>= minWidth` and `<= maxWidth`).
 
 ---
 
-## Where to Define Breakpoints
+### Where to Define Breakpoints
 
 Define all breakpoint states in `states.ts` (or a dedicated `breakpoints.ts` if the app is large). They are module-level singletons, just like any other State:
 
@@ -58,11 +58,11 @@ Import them wherever UI code needs responsive behavior.
 
 ---
 
-## Using Breakpoints in Traits
+### Using Breakpoints in Traits
 
 Because `useMediaQueryState` returns a `State<boolean>`, its `.$test()` method produces conditions that traits natively understand. Use separate trait calls gated by breakpoint conditions — never ternaries:
 
-### Responsive Styles
+#### Responsive Styles
 
 ```ts
 import { isTablet, isDesktop } from './states';
@@ -82,7 +82,7 @@ tag.div(
 
 Each trait subscribes to the breakpoint state independently. When the viewport crosses a boundary, only the affected traits re-evaluate — no full re-render.
 
-### Responsive Text
+#### Responsive Text
 
 ```ts
 tag.h1(
@@ -94,7 +94,7 @@ tag.h1(
 );
 ```
 
-### Showing / Hiding Elements
+#### Showing / Hiding Elements
 
 Use `display: none` gated by a breakpoint condition to show or hide elements at different viewport sizes:
 
@@ -115,7 +115,7 @@ tag.nav(
 ),
 ```
 
-### Responsive Grid Columns
+#### Responsive Grid Columns
 
 ```ts
 tag.div(
@@ -133,7 +133,7 @@ tag.div(
 
 ---
 
-## Combining Breakpoints with Other Conditions
+### Combining Breakpoints with Other Conditions
 
 Breakpoint conditions compose with any other condition. When multiple conditions are passed to a trait, all must be truthy for it to apply:
 
@@ -149,7 +149,7 @@ trait.style(
 
 ---
 
-## Print Media
+### Print Media
 
 `useMediaQueryState` also supports the `type` property for print-specific styles:
 
@@ -166,7 +166,7 @@ tag.main(
 
 ---
 
-## Rules
+### Rules
 
 1. **Mobile-first.** Base styles (no condition) target the smallest viewport. Larger breakpoints add overrides.
 2. **Define breakpoints once in `states.ts`.** Never call `useMediaQueryState` inline inside UI code.

@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# useDataAttributeTrait
+## useDataAttributeTrait
 
 Reactively sets or removes `data-*` attributes on an element using the `dataset` API. Accepts either bare names (e.g. `'active'`) or prefixed names (e.g. `'data-active'`). When the value is `undefined` or conditions are falsy, the data attribute is removed.
 
-## Signature
+### Signature
 
 ```ts
 useDataAttributeTrait(
@@ -22,7 +22,7 @@ useDataAttributeTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                                                                           | Description                                                                                                                                  |
 | --------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -31,7 +31,7 @@ useDataAttributeTrait(
 | `val`     | `(() => string \| number \| boolean \| undefined) \| string \| number \| boolean \| undefined` | The attribute value. Pass a function for reactive evaluation. `undefined` removes the attribute.                                             |
 | `...rest` | `(StateType<any> \| Condition)[]`                                                              | Optional State objects and/or Conditions. The trait re-evaluates whenever a State publishes and only applies when all Conditions are truthy. |
 
-## Behavior
+### Behavior
 
 1. Normalizes the `name` — adds `data-` prefix if missing, converts to camelCase `dataset` key.
 2. Evaluates `val` (calls it if it's a function).
@@ -40,11 +40,11 @@ useDataAttributeTrait(
 5. Otherwise, sets `el.dataset[key] = String(val)`.
 6. Subscribes to every State in `rest` so the trait re-runs on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 // Static data attribute
@@ -70,9 +70,9 @@ trait.data(
 trait.data('tooltip', () => tooltipText.val() || undefined, tooltipText);
 ```
 
-## Common Patterns
+### Common Patterns
 
-### Track element state for CSS selectors
+#### Track element state for CSS selectors
 
 ```ts
 // Set data-state for CSS-based styling or external queries
@@ -80,7 +80,7 @@ trait.data('state', () => panelState.val(), panelState);
 // → [data-state="open"], [data-state="closed"]
 ```
 
-### Wire up delegation targets
+#### Wire up delegation targets
 
 ```ts
 items.forEach((item) =>
@@ -94,13 +94,13 @@ items.forEach((item) =>
 );
 ```
 
-### Flag elements for testing
+#### Flag elements for testing
 
 ```ts
 trait.data('testid', 'submit-button');
 ```
 
-## Comparison with useAttributeTrait
+### Comparison with useAttributeTrait
 
 | Feature       | `useDataAttributeTrait`            | `useAttributeTrait`     |
 | ------------- | ---------------------------------- | ----------------------- |
@@ -108,7 +108,7 @@ trait.data('testid', 'submit-button');
 | Name handling | Auto-prefixes `data-` if missing   | Requires full attr name |
 | Intended use  | `data-*` attributes only           | Any HTML attribute      |
 
-## Notes
+### Notes
 
 - Names are automatically normalized: `'active-tab'` → `dataset.activeTab` → renders as `data-active-tab`
 - Uses the `dataset` API for setting/removing, which is the idiomatic way to work with data attributes

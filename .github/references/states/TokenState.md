@@ -7,17 +7,17 @@ metadata:
   version: '1.0'
 ---
 
-# TokenState
+## TokenState
 
 A derived state hook that selects between two token values based on the current theme.
 
-## Features
+### Features
 
 - **Theme-aware**: Switches between light and dark values
 - **Derived state**: Recomputes when the theme state changes
 - **Generic**: Works with any token value type
 
-## Usage
+### Usage
 
 ```typescript
 import { useThemeState, useTokenState } from '@linttrap/oem';
@@ -32,13 +32,13 @@ const color = primaryColor.val();
 theme.set('dark');
 ```
 
-## Signature
+### Signature
 
 ```typescript
 function useTokenState<T>(lightVal: T, darkVal: T, themeState: StateType<Theme, {}>): State<T>;
 ```
 
-## Parameters
+### Parameters
 
 | Parameter    | Type                   | Default | Description                                 |
 | ------------ | ---------------------- | ------- | ------------------------------------------- |
@@ -46,16 +46,16 @@ function useTokenState<T>(lightVal: T, darkVal: T, themeState: StateType<Theme, 
 | `darkVal`    | `T`                    | —       | Token value for the dark theme              |
 | `themeState` | `StateType<Theme, {}>` | —       | Theme state used to select the active token |
 
-## Return Value
+### Return Value
 
 Returns a `State<T>` whose value updates when the theme changes.
 
-## Behavior
+### Behavior
 
 - Initializes to `lightVal` or `darkVal` based on `themeState.val()`
 - Subscribes to `themeState` and updates the token whenever the theme changes
 
-## Common Patterns
+### Common Patterns
 
 ```typescript
 const theme = useThemeState('light');
@@ -63,7 +63,7 @@ const textColor = useTokenState('#111', '#eee', theme);
 const bgColor = useTokenState('#fff', '#0b0f1a', theme);
 ```
 
-## Notes
+### Notes
 
 - The subscription remains active as long as `themeState` exists
 - Ensure the `themeState` is shared across tokens to keep updates consistent

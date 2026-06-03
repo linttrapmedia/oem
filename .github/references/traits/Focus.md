@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# useFocusTrait
+## useFocusTrait
 
 Programmatically focuses an HTML element. Unlike most traits, Focus accepts `conditions` and `states` as explicit arrays rather than using the rest-parameter extraction pattern.
 
-## Signature
+### Signature
 
 ```ts
 useFocusTrait(
@@ -21,7 +21,7 @@ useFocusTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter    | Type               | Description                                                                                                             |
 | ------------ | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
@@ -29,17 +29,17 @@ useFocusTrait(
 | `conditions` | `Condition[]`      | Optional array of Conditions. The element is focused only when all evaluate to truthy. Defaults to `[]`.                |
 | `states`     | `StateType<any>[]` | Optional array of State objects to subscribe to. The trait re-evaluates whenever any State publishes. Defaults to `[]`. |
 
-## Behavior
+### Behavior
 
 1. Checks all Conditions — if all are truthy, calls `el.focus()`.
 2. Subscribes to every State so the trait re-runs on state changes.
 3. Useful for auto-focusing inputs when a modal opens, a route changes, or a condition becomes true.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 trait.focus([modalState.$test((s) => s.open)], [modalState]);

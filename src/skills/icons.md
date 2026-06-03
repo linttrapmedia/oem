@@ -7,40 +7,40 @@ metadata:
   version: '1.0'
 ---
 
-# Icons File
+## Icons File
 
-## What This File Is
+### What This File Is
 
 `icons.ts` is the single file (or `icons/` folder) containing all SVG icon functions for the application. Each icon is an exported function that accepts a common `IconProps` argument and returns an `SVGElement`. The file has its own dedicated `Template` instance configured for SVG.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Icons are visual primitives referenced by the UI layer but distinct from layout, state, and behavior. Keeping them in a dedicated file makes icons discoverable, reusable, and easy to add or remove without touching UI code. Because SVG elements need `createElementNS` with the SVG namespace, icons use their own `Template` instance with only the traits relevant to SVG — keeping it separate from the main HTML template.
 
-## When to Create
+### When to Create
 
 Create `icons.ts` when the application needs any SVG icons. Even a single icon belongs here.
 
-## When to Use
+### When to Use
 
 - **When building UI**: Import icon functions into `ui.ts` and call them inline in the element tree.
 - **When adding new icons**: Add a new exported function to this file.
 - **When an icon needs to change size or color contextually**: Use the `IconProps` argument.
 
-## What Belongs Here
+### What Belongs Here
 
 - A dedicated `Template` instance for SVG (at the top of the file)
 - The `IconProps` type (or import it from `types.ts`)
 - Exported icon functions — one function per icon
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - The main HTML template (that goes in `templates.ts`)
 - UI layout or composition (that goes in `ui.ts`)
 - Design tokens (those go in `theme.ts`)
 - Raster images or external asset URLs
 
-## IconProps
+### IconProps
 
 Every icon function accepts the same `IconProps` object so that icons have a consistent API:
 
@@ -53,7 +53,7 @@ type IconProps = {
 
 Define `IconProps` in `types.ts` if your app already has a types file, or define it locally at the top of `icons.ts`.
 
-## Template Instance
+### Template Instance
 
 Icons need their own `Template` instance because `tag.svg`, `tag.path`, etc. create SVG-namespaced elements. Only include the traits you actually use on SVG elements — typically `style` and `attr`:
 
@@ -68,7 +68,7 @@ const [svg, svgTrait] = Template({
 
 This template is **private to the icons file** — it is not exported. UI code imports the icon _functions_, not the SVG template.
 
-## Example
+### Example
 
 ```typescript
 // icons.ts
@@ -155,7 +155,7 @@ export function PlusIcon(props: IconProps = {}) {
 }
 ```
 
-## Usage in UI
+### Usage in UI
 
 ```typescript
 // ui.ts
@@ -172,7 +172,7 @@ tag.button(
 );
 ```
 
-## Passing Reactive Token Values
+### Passing Reactive Token Values
 
 When icon color should react to theme changes, pass a token's resolved value:
 
@@ -182,7 +182,7 @@ CheckIcon({ color: text_fg_primary.$val() });
 
 If the icon needs to re-render on state change, place the icon call inside a `trait.innerHTML` callback so it is rebuilt when the state fires.
 
-## Rules
+### Rules
 
 1. **One file for all icons.** Only split into a folder if the file grows unmanageable.
 2. **One function per icon.** Each icon is a named export — `CheckIcon`, `TrashIcon`, `CloseIcon`, etc.

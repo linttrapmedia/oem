@@ -5,7 +5,7 @@
 ## Core Library
 
 
-## Template & Traits
+## Template
 
 ### Overview
 
@@ -386,137 +386,6 @@ The state module uses a closure-based approach to maintain private state:
 ---
 
 
-## Types
-
-### Overview
-
-The types module provides common TypeScript type definitions used throughout the OEM framework. These types establish shared contracts for reactive conditions, testing, and utility type transformations.
-
-### Purpose
-
-Types serves as a central location for common type definitions, ensuring type consistency across the OEM codebase. It provides:
-
-- Type definitions for conditional expressions
-- Test function signatures for unit testing
-- Utility types for type-level programming
-
-Use this module when you need to import common type definitions or understand the type contracts used across OEM.
-
-### Key Exports
-
-#### `Condition`
-
-- **Type**: Type alias
-- **Signature**: `type Condition = (() => boolean) | boolean | 1 | 0`
-- **Description**: Represents a conditional expression that can be evaluated to determine truthiness
-- **Supported Forms**:
-  - `() => boolean`: A function that returns a boolean
-  - `boolean`: A static true/false value
-  - `1`: Truthy numeric value
-  - `0`: Falsy numeric value
-- **Usage Example**:
-
-```typescript
-const condition1: Condition = true;
-const condition2: Condition = () => count.val() > 0;
-const condition3: Condition = 1;
-
-// Used in OEM conditional rendering
-const element = h.div(condition1 && h.span('Visible when true'));
-```
-
-- **Use Cases**:
-  - Conditional rendering in templates
-  - Control flow in reactive systems
-  - Feature flags and toggles
-
-#### `Test`
-
-- **Type**: Type alias
-- **Signature**: `type Test = (sandbox?: HTMLElement) => Promise<{ pass: boolean; message?: string }>`
-- **Description**: Defines the signature for test functions in OEM's testing system
-- **Parameters**:
-  - `sandbox`: Optional HTMLElement that serves as a testing container for DOM operations
-- **Returns**: A Promise resolving to a test result object
-  - `pass`: Boolean indicating if the test passed
-  - `message`: Optional message providing test details or failure information
-- **Usage Example**:
-
-```typescript
-const myTest: Test = async (sandbox) => {
-  const element = h.div('Test content');
-  sandbox?.appendChild(element);
-
-  const hasContent = element.textContent === 'Test content';
-
-  return {
-    pass: hasContent,
-    message: hasContent ? 'Content matches' : 'Content mismatch',
-  };
-};
-```
-
-- **Use Cases**:
-  - Unit testing DOM components
-  - Integration testing with isolated DOM sandboxes
-  - Automated test suites
-
-#### `Tail<T>`
-
-- **Type**: Utility type
-- **Signature**: `type Tail<T extends any[]> = T extends [any, ...infer R] ? R : never`
-- **Description**: Extracts all elements from a tuple type except the first element
-- **Type Parameters**:
-  - `T`: A tuple type (array with fixed length and types)
-- **Returns**: A tuple type containing all elements except the first
-- **Usage Example**:
-
-```typescript
-type Original = [string, number, boolean];
-type Rest = Tail<Original>; // [number, boolean]
-
-type SingleElement = [string];
-type Empty = Tail<SingleElement>; // []
-
-// Used internally in Template trait parameter inference
-type TraitParams = Tail<Parameters<TraitFunction>>;
-```
-
-- **Use Cases**:
-  - Removing the first parameter from function signatures (e.g., removing the `element` parameter from trait functions)
-  - Type-level tuple manipulation
-  - Generic type transformations
-
-### Implementation Details
-
-#### Condition Design
-
-The `Condition` type is designed to be flexible and accommodate various patterns:
-
-- **Function form**: Enables dynamic conditions that can re-evaluate
-- **Boolean form**: For static conditions known at creation time
-- **Numeric form**: Allows using 1/0 as truthy/falsy, common in certain programming paradigms
-
-#### Test Design
-
-The `Test` type follows the async test pattern common in modern testing frameworks:
-
-- **Async by nature**: Returns a Promise to support async operations in tests
-- **Sandbox parameter**: Provides isolation for DOM tests
-- **Structured result**: Object with `pass` boolean and optional `message` for clear test output
-
-#### Tail Type Mechanics
-
-The `Tail` type uses TypeScript's conditional types and `infer` keyword:
-
-- Matches tuple types with at least one element `[any, ...infer R]`
-- Infers the rest of the tuple as `R`
-- Returns `never` for non-matching types (type safety)
-
-
----
-
-
 ## Util
 
 ### Overview
@@ -662,7 +531,7 @@ The `$test` function returns a closure with:
 ## Trait Library
 
 
-# useScrollIntoViewTrait
+## useScrollIntoViewTrait
 
 Reactively scrolls an element into the visible area of its scrollable ancestor when conditions are met. Supports smooth and instant scrolling via standard `ScrollIntoViewOptions`.
 
@@ -678,11 +547,11 @@ useScrollIntoViewTrait(
 
 ## Parameters
 
-| Parameter  | Type                          | Description                                                                                                                                  |
-| ---------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `el`       | `HTMLElement`                 | The target element to scroll into view                                                                                                       |
-| `options`  | `ScrollIntoViewOptions`       | Standard scroll options: `behavior` (`'smooth'` or `'instant'`), `block` (`'start'`, `'center'`, `'end'`, `'nearest'`), `inline` (same)     |
-| `...rest`  | `(StateType<any> \| Condition)[]` | Optional State objects and/or Conditions. Scrolls when all Conditions are truthy. Re-evaluates on State changes.                          |
+| Parameter | Type                              | Description                                                                                                                             |
+| --------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `el`      | `HTMLElement`                     | The target element to scroll into view                                                                                                  |
+| `options` | `ScrollIntoViewOptions`           | Standard scroll options: `behavior` (`'smooth'` or `'instant'`), `block` (`'start'`, `'center'`, `'end'`, `'nearest'`), `inline` (same) |
+| `...rest` | `(StateType<any> \| Condition)[]` | Optional State objects and/or Conditions. Scrolls when all Conditions are truthy. Re-evaluates on State changes.                        |
 
 ## Behavior
 
@@ -737,10 +606,7 @@ const activeSection = State<string>('intro');
 // Each section scrolls into view when it becomes active
 ['intro', 'features', 'pricing'].forEach((id) => {
   tag.section(
-    trait.scrollIntoView(
-      { behavior: 'smooth', block: 'start' },
-      activeSection.$test(id),
-    ),
+    trait.scrollIntoView({ behavior: 'smooth', block: 'start' }, activeSection.$test(id)),
   );
 });
 ```
@@ -769,11 +635,11 @@ tag.input(
 ---
 
 
-# useAnimationTrait
+## useAnimationTrait
 
 Reactively plays a [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) keyframe animation on an element. Supports conditional gating, state-driven re-triggering, and automatic cleanup.
 
-## Signature
+### Signature
 
 ```ts
 useAnimationTrait(
@@ -790,7 +656,7 @@ useAnimationTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter   | Type                                                                                       | Description                                                                                                                                                   |
 | ----------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -799,7 +665,7 @@ useAnimationTrait(
 | `options`   | `number \| KeyframeAnimationOptions \| (() => number \| KeyframeAnimationOptions)`         | Animation timing. Pass a duration in ms, a full `KeyframeAnimationOptions` object, or a function for reactive evaluation.                                     |
 | `...rest`   | `(StateType<any> \| Condition)[]`                                                          | Optional State objects and/or Conditions. The animation plays only when all Conditions are truthy.                                                            |
 
-## Behavior
+### Behavior
 
 1. Evaluates `keyframes` and `options` (calls them if they are functions).
 2. Checks all Conditions — if all are truthy, plays the animation via `el.animate()`.
@@ -808,13 +674,13 @@ useAnimationTrait(
 5. When a condition is false, the animation is not played but any previously running animation is **not** cancelled — the trait only gates new plays.
 6. Cleanup cancels any running animation and unsubscribes from all States.
 
-## Returns
+### Returns
 
 A cleanup function that cancels the running animation and unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
-### Fade-in on creation
+#### Fade-in on creation
 
 ```ts
 trait.animation([{ opacity: '0' }, { opacity: '1' }], {
@@ -824,7 +690,7 @@ trait.animation([{ opacity: '0' }, { opacity: '1' }], {
 });
 ```
 
-### Slide-in from below
+#### Slide-in from below
 
 ```ts
 trait.animation(
@@ -836,7 +702,7 @@ trait.animation(
 );
 ```
 
-### Enter/exit driven by state
+#### Enter/exit driven by state
 
 ```ts
 const mode = State<'enter' | 'exit'>('enter');
@@ -864,7 +730,7 @@ trait.animation(
 );
 ```
 
-### Infinite spinner
+#### Infinite spinner
 
 ```ts
 trait.animation([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], {
@@ -874,7 +740,7 @@ trait.animation([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }]
 });
 ```
 
-### Reactive duration from state
+#### Reactive duration from state
 
 ```ts
 const speed = State<number>(300);
@@ -886,7 +752,7 @@ trait.animation(
 );
 ```
 
-### Conditional animation (only when visible)
+#### Conditional animation (only when visible)
 
 ```ts
 const visible = State<boolean>(false);
@@ -899,7 +765,7 @@ trait.animation(
 );
 ```
 
-### Attention pulse
+#### Attention pulse
 
 ```ts
 trait.animation(
@@ -908,14 +774,14 @@ trait.animation(
 );
 ```
 
-## Performance Notes
+### Performance Notes
 
 - The Web Animations API runs animations on the compositor thread when animating `transform` and `opacity`, delivering 60fps performance without layout thrashing.
 - **Never animate layout properties** (`width`, `height`, `top`, `left`, `margin`, `padding`) — they force reflow on every frame. Use `transform: translate/scale` instead.
 - Prefer `fill: 'forwards'` when the element should retain its final animated state.
 - For looping animations, always provide a cleanup path (state condition or element removal) to avoid orphaned infinite loops.
 
-## Accessibility
+### Accessibility
 
 - Always respect `prefers-reduced-motion`. When the user has reduced motion enabled, either skip the animation entirely (via a condition tied to a media query state) or use `duration: 0` to apply the final state instantly.
 
@@ -933,11 +799,11 @@ trait.animation(
 ---
 
 
-# useDataAttributeTrait
+## useDataAttributeTrait
 
 Reactively sets or removes `data-*` attributes on an element using the `dataset` API. Accepts either bare names (e.g. `'active'`) or prefixed names (e.g. `'data-active'`). When the value is `undefined` or conditions are falsy, the data attribute is removed.
 
-## Signature
+### Signature
 
 ```ts
 useDataAttributeTrait(
@@ -948,7 +814,7 @@ useDataAttributeTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                                                                           | Description                                                                                                                                  |
 | --------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -957,7 +823,7 @@ useDataAttributeTrait(
 | `val`     | `(() => string \| number \| boolean \| undefined) \| string \| number \| boolean \| undefined` | The attribute value. Pass a function for reactive evaluation. `undefined` removes the attribute.                                             |
 | `...rest` | `(StateType<any> \| Condition)[]`                                                              | Optional State objects and/or Conditions. The trait re-evaluates whenever a State publishes and only applies when all Conditions are truthy. |
 
-## Behavior
+### Behavior
 
 1. Normalizes the `name` — adds `data-` prefix if missing, converts to camelCase `dataset` key.
 2. Evaluates `val` (calls it if it's a function).
@@ -966,11 +832,11 @@ useDataAttributeTrait(
 5. Otherwise, sets `el.dataset[key] = String(val)`.
 6. Subscribes to every State in `rest` so the trait re-runs on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 // Static data attribute
@@ -996,9 +862,9 @@ trait.data(
 trait.data('tooltip', () => tooltipText.val() || undefined, tooltipText);
 ```
 
-## Common Patterns
+### Common Patterns
 
-### Track element state for CSS selectors
+#### Track element state for CSS selectors
 
 ```ts
 // Set data-state for CSS-based styling or external queries
@@ -1006,7 +872,7 @@ trait.data('state', () => panelState.val(), panelState);
 // → [data-state="open"], [data-state="closed"]
 ```
 
-### Wire up delegation targets
+#### Wire up delegation targets
 
 ```ts
 items.forEach((item) =>
@@ -1020,13 +886,13 @@ items.forEach((item) =>
 );
 ```
 
-### Flag elements for testing
+#### Flag elements for testing
 
 ```ts
 trait.data('testid', 'submit-button');
 ```
 
-## Comparison with useAttributeTrait
+### Comparison with useAttributeTrait
 
 | Feature       | `useDataAttributeTrait`            | `useAttributeTrait`     |
 | ------------- | ---------------------------------- | ----------------------- |
@@ -1034,7 +900,7 @@ trait.data('testid', 'submit-button');
 | Name handling | Auto-prefixes `data-` if missing   | Requires full attr name |
 | Intended use  | `data-*` attributes only           | Any HTML attribute      |
 
-## Notes
+### Notes
 
 - Names are automatically normalized: `'active-tab'` → `dataset.activeTab` → renders as `data-active-tab`
 - Uses the `dataset` API for setting/removing, which is the idiomatic way to work with data attributes
@@ -1044,11 +910,11 @@ trait.data('testid', 'submit-button');
 ---
 
 
-# useFocusTrait
+## useFocusTrait
 
 Programmatically focuses an HTML element. Unlike most traits, Focus accepts `conditions` and `states` as explicit arrays rather than using the rest-parameter extraction pattern.
 
-## Signature
+### Signature
 
 ```ts
 useFocusTrait(
@@ -1058,7 +924,7 @@ useFocusTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter    | Type               | Description                                                                                                             |
 | ------------ | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
@@ -1066,17 +932,17 @@ useFocusTrait(
 | `conditions` | `Condition[]`      | Optional array of Conditions. The element is focused only when all evaluate to truthy. Defaults to `[]`.                |
 | `states`     | `StateType<any>[]` | Optional array of State objects to subscribe to. The trait re-evaluates whenever any State publishes. Defaults to `[]`. |
 
-## Behavior
+### Behavior
 
 1. Checks all Conditions — if all are truthy, calls `el.focus()`.
 2. Subscribes to every State so the trait re-runs on state changes.
 3. Useful for auto-focusing inputs when a modal opens, a route changes, or a condition becomes true.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 trait.focus([modalState.$test((s) => s.open)], [modalState]);
@@ -1087,11 +953,11 @@ trait.focus([], [routeState]);
 ---
 
 
-# useInputEventTrait
+## useInputEventTrait
 
 Attaches an input-related event listener that extracts the value from `e.target.value` and passes it to a setter function. Designed for binding form element changes directly to state updates.
 
-## Signature
+### Signature
 
 ```ts
 useInputEventTrait(
@@ -1102,7 +968,7 @@ useInputEventTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                              | Description                                                                                                                                                                                             |
 | --------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1111,7 +977,7 @@ useInputEventTrait(
 | `setter`  | `(val: any) => void`              | A function called with `e.target.value` when the event fires. Typically a State's `set` method.                                                                                                         |
 | `...rest` | `(StateType<any> \| Condition)[]` | Optional State objects and/or Conditions. The listener is attached only when all Conditions are truthy.                                                                                                 |
 
-## Behavior
+### Behavior
 
 1. Checks all Conditions — if all are truthy and the listener is not attached, adds the event listener.
 2. When the event fires, calls `setter(e.target.value)`.
@@ -1119,11 +985,11 @@ useInputEventTrait(
 4. Tracks attachment state to prevent duplicate listeners.
 5. Subscribes to every State so the trait re-evaluates on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that removes the event listener and unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 trait.inputEvent('input', nameState.set);
@@ -1135,11 +1001,11 @@ trait.inputEvent('keydown', searchState.set, enabled.$test(true));
 ---
 
 
-# useTextContentTrait
+## useTextContentTrait
 
 Sets the text content of an element reactively. Supports single values, arrays of values (concatenated as text nodes), and function getters.
 
-## Signature
+### Signature
 
 ```ts
 useTextContentTrait(
@@ -1151,7 +1017,7 @@ useTextContentTrait(
 
 Where `TextContent = string | number | undefined | unknown`.
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                                                   | Description                                                                                                                        |
 | --------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -1159,7 +1025,7 @@ Where `TextContent = string | number | undefined | unknown`.
 | `text`    | `TextContent \| TextContent[] \| (() => TextContent \| TextContent[])` | The text to display. Can be a single value, an array of values (each appended as a text node), or a function returning either.     |
 | `...rest` | `(StateType<any> \| Condition)[]`                                      | Optional State objects and/or Conditions. The trait re-evaluates on state changes and only applies when all Conditions are truthy. |
 
-## Behavior
+### Behavior
 
 1. Clears `el.textContent`.
 2. Evaluates `text` (calls it if it's a function).
@@ -1168,11 +1034,11 @@ Where `TextContent = string | number | undefined | unknown`.
 5. For single values: sets `el.textContent` to the stringified value.
 6. Subscribes to every State in `rest` so the trait re-runs on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 trait.textContent('Hello, World!');
@@ -1184,11 +1050,11 @@ trait.textContent(() => `${items.val().length} items`, items);
 ---
 
 
-# useAttributeTrait
+## useAttributeTrait
 
 Sets or removes an HTML attribute on an element reactively. When the value is `undefined` or conditions evaluate to `false`, the attribute is removed from the element.
 
-## Signature
+### Signature
 
 ```ts
 useAttributeTrait(
@@ -1199,7 +1065,7 @@ useAttributeTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                                                                           | Description                                                                                                                                  |
 | --------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1208,7 +1074,7 @@ useAttributeTrait(
 | `val`     | `(() => string \| number \| boolean \| undefined) \| string \| number \| boolean \| undefined` | The attribute value. Pass a function for reactive evaluation, or a static value. `undefined` removes the attribute.                          |
 | `...rest` | `(StateType<any> \| Condition)[]`                                                              | Optional State objects and/or Conditions. The trait re-evaluates whenever a State publishes and only applies when all Conditions are truthy. |
 
-## Behavior
+### Behavior
 
 1. Evaluates `val` (calls it if it's a function).
 2. Checks all Conditions — if any are falsy, removes the attribute.
@@ -1216,11 +1082,11 @@ useAttributeTrait(
 4. Otherwise, sets the attribute via `el.setAttribute(prop, String(val))`.
 5. Subscribes to every State in `rest` so the trait re-runs on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 When used through a Template's `trait` proxy, the `el` parameter is supplied automatically:
 
@@ -1243,11 +1109,11 @@ trait.attribute(
 ---
 
 
-# useStyleTrait
+## useStyleTrait
 
 Reactively sets a single CSS style property on an element. Supports both standard `CSSStyleDeclaration` properties and CSS custom properties (`--*`).
 
-## Signature
+### Signature
 
 ```ts
 useStyleTrait(
@@ -1258,7 +1124,7 @@ useStyleTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                                                     | Description                                                                                                                         |
 | --------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
@@ -1267,7 +1133,7 @@ useStyleTrait(
 | `val`     | `(() => string \| number \| undefined) \| string \| number \| undefined` | The CSS value. Pass a function for reactive evaluation.                                                                             |
 | `...rest` | `(StateType<any> \| Condition)[]`                                        | Optional State objects and/or Conditions. The style is applied only when all Conditions are truthy.                                 |
 
-## Behavior
+### Behavior
 
 1. Evaluates `val` (calls it if it's a function).
 2. Checks all Conditions — if all are truthy, applies the style.
@@ -1275,20 +1141,23 @@ useStyleTrait(
 4. For standard properties: assigns directly to `el.style[prop]`.
 5. Subscribes to every State in `rest` so the trait re-runs on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 // Token value (re-evaluates on theme change via $val)
 trait.style('backgroundColor', surface_bg_primary.$val);
 trait.style('padding', space_padding_md.$val);
 
-// Reactive value from state
-trait.style('opacity', '1', visible.$test(true));
-trait.style('opacity', '0', visible.$test(false));
+// Conditional toggle — unconditional default + conditional override
+// IMPORTANT: Never use two opposing $test conditions on the same property.
+// Each conditional trait has its own saved-value slot, and opposing conditions
+// will corrupt each other's snapshots, preventing the style from reverting.
+trait.style('opacity', '0'); // default
+trait.style('opacity', '1', visible.$test(true)); // override when true
 
 // Custom CSS property
 trait.style('--header-height', '64px');
@@ -1305,11 +1174,11 @@ trait.style(
 ---
 
 
-# useInputValueTrait
+## useInputValueTrait
 
 Reactively sets the `value` property of an `<input>` or `<textarea>` element. Pairs with `useInputEventTrait` for two-way data binding.
 
-## Signature
+### Signature
 
 ```ts
 useInputValueTrait(
@@ -1319,7 +1188,7 @@ useInputValueTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                                                     | Description                                                                                                                        |
 | --------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -1327,18 +1196,18 @@ useInputValueTrait(
 | `value`   | `(() => string \| number \| undefined) \| string \| number \| undefined` | The value to set. Pass a function for reactive evaluation.                                                                         |
 | `...rest` | `(StateType<any> \| Condition)[]`                                        | Optional State objects and/or Conditions. The trait re-evaluates on state changes and only applies when all Conditions are truthy. |
 
-## Behavior
+### Behavior
 
 1. Evaluates `value` (calls it if it's a function).
 2. Checks all Conditions — if all are truthy, sets `el.value`.
 3. Subscribes to every State in `rest` so the trait re-runs on state changes.
 4. Typically used alongside `useInputEventTrait` to create a reactive loop: state → input value → user types → event → update state → input value updates.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 // Two-way binding pattern
@@ -1352,11 +1221,11 @@ tag.input(trait.inputValue(searchState.$val, isEditing.$test(true)));
 ---
 
 
-# useEventTrait
+## useEventTrait
 
 Attaches a DOM event listener to an element. The listener is added or removed reactively based on Conditions and State changes.
 
-## Signature
+### Signature
 
 ```ts
 useEventTrait(
@@ -1367,7 +1236,7 @@ useEventTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                | Description                                                                                                                                 |
 | --------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1376,18 +1245,18 @@ useEventTrait(
 | `cb`      | `(evt?) => void`                    | The event handler callback                                                                                                                  |
 | `...rest` | `(StateType<any> \| Condition)[]`   | Optional State objects and/or Conditions. The listener is attached only when all Conditions are truthy and detached when any becomes falsy. |
 
-## Behavior
+### Behavior
 
 1. Checks all Conditions — if all are truthy and the listener is not already attached, calls `el.addEventListener(evt, cb)`.
 2. If any Condition becomes falsy, calls `el.removeEventListener(evt, cb)`.
 3. Tracks attachment state internally to prevent duplicate listeners.
 4. Subscribes to every State in `rest` so the trait re-evaluates on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that removes the event listener and unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 trait.event(
@@ -1405,11 +1274,11 @@ trait.event('mouseenter', showTooltip, enabled.$test(true));
 ---
 
 
-# useInnerHTMLTrait
+## useInnerHTMLTrait
 
 Sets the inner content of an element by appending child elements or text nodes. Clears the element first, then appends children — making it safe for HTMLElement and SVGElement children (no serialization).
 
-## Signature
+### Signature
 
 ```ts
 useInnerHTMLTrait(
@@ -1421,7 +1290,7 @@ useInnerHTMLTrait(
 
 Where `Child = string | number | HTMLElement | SVGElement | undefined | unknown`.
 
-## Parameters
+### Parameters
 
 | Parameter  | Type                                           | Description                                                                                                                                                                        |
 | ---------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1429,7 +1298,7 @@ Where `Child = string | number | HTMLElement | SVGElement | undefined | unknown`
 | `children` | `Child \| Child[] \| (() => Child \| Child[])` | The child content. Can be a single value, an array, or a function returning either. HTMLElement/SVGElement children are appended directly; primitives are converted to text nodes. |
 | `...rest`  | `(StateType<any> \| Condition)[]`              | Optional State objects and/or Conditions. The trait re-evaluates on state changes and only applies when all Conditions are truthy.                                                 |
 
-## Behavior
+### Behavior
 
 1. Clears `el.innerHTML`.
 2. Evaluates `children` (calls it if it's a function).
@@ -1439,11 +1308,11 @@ Where `Child = string | number | HTMLElement | SVGElement | undefined | unknown`
 6. For single primitives: sets `el.innerHTML` to the stringified value.
 7. Subscribes to every State in `rest` so the trait re-runs on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 tag.div(
@@ -1462,11 +1331,11 @@ tag.ul(
 ---
 
 
-# useAriaTrait
+## useAriaTrait
 
 Reactively sets ARIA attributes and the `role` attribute on an element. When the value is `undefined` or conditions evaluate to `false`, the attribute is removed. Provides first-class accessibility support with typed ARIA property names.
 
-## Signature
+### Signature
 
 ```ts
 useAriaTrait(
@@ -1477,7 +1346,7 @@ useAriaTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                                                                           | Description                                                                                                                                  |
 | --------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1486,7 +1355,7 @@ useAriaTrait(
 | `val`     | `(() => string \| number \| boolean \| undefined) \| string \| number \| boolean \| undefined` | The attribute value. Pass a function for reactive evaluation. `undefined` removes the attribute.                                             |
 | `...rest` | `(StateType<any> \| Condition)[]`                                                              | Optional State objects and/or Conditions. The trait re-evaluates whenever a State publishes and only applies when all Conditions are truthy. |
 
-## Behavior
+### Behavior
 
 1. Evaluates `val` (calls it if it's a function).
 2. Checks all Conditions — if any are falsy, removes the attribute.
@@ -1494,11 +1363,11 @@ useAriaTrait(
 4. Otherwise, sets the attribute via `el.setAttribute(prop, String(val))`.
 5. Subscribes to every State in `rest` so the trait re-runs on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 // Static ARIA label
@@ -1534,9 +1403,9 @@ trait.aria(
 );
 ```
 
-## Common ARIA Patterns
+### Common ARIA Patterns
 
-### Accessible toggle button
+#### Accessible toggle button
 
 ```ts
 const expanded = State<boolean>(false);
@@ -1549,7 +1418,7 @@ tag.button(
 );
 ```
 
-### Live region for status updates
+#### Live region for status updates
 
 ```ts
 tag.div(
@@ -1559,7 +1428,7 @@ tag.div(
 );
 ```
 
-### Tab panel
+#### Tab panel
 
 ```ts
 tag.div(
@@ -1573,7 +1442,7 @@ tag.div(
 );
 ```
 
-## Comparison with useAttributeTrait
+### Comparison with useAttributeTrait
 
 | Feature         | `useAriaTrait`                 | `useAttributeTrait`        |
 | --------------- | ------------------------------ | -------------------------- |
@@ -1583,7 +1452,7 @@ tag.div(
 
 `useAriaTrait` is a semantic specialization — it constrains the `prop` parameter to valid ARIA attributes, making intent clearer and preventing accidental misuse.
 
-## Notes
+### Notes
 
 - Follows the same reactive pattern as `useAttributeTrait`
 - Removing the attribute (via `undefined` or failing conditions) is the correct way to "unset" ARIA properties
@@ -1593,11 +1462,11 @@ tag.div(
 ---
 
 
-# useClassNameTrait
+## useClassNameTrait
 
 Sets the `class` attribute of an HTML element reactively. Replaces the entire class string — does not toggle individual classes.
 
-## Signature
+### Signature
 
 ```ts
 useClassNameTrait(
@@ -1607,7 +1476,7 @@ useClassNameTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter   | Type                              | Description                                                                                                                                  |
 | ----------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1615,18 +1484,18 @@ useClassNameTrait(
 | `className` | `string \| (() => string)`        | The class string to apply. Pass a function for reactive evaluation.                                                                          |
 | `...rest`   | `(StateType<any> \| Condition)[]` | Optional State objects and/or Conditions. The trait re-evaluates whenever a State publishes and only applies when all Conditions are truthy. |
 
-## Behavior
+### Behavior
 
 1. Evaluates `className` (calls it if it's a function).
 2. Checks all Conditions — if all are truthy, sets the class attribute via `el.setAttribute('class', ...)`.
 3. If any Condition is falsy, the class is not applied (the previous value remains).
 4. Subscribes to every State in `rest` so the trait re-runs on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 trait.className('btn btn-primary');
@@ -1638,11 +1507,11 @@ trait.className('tab', isActive.$test(false));
 ---
 
 
-# useStyleOnEventTrait
+## useStyleOnEventTrait
 
 Applies a CSS style property when a DOM event fires on the element. Unlike `useStyleTrait`, this trait does not subscribe to State objects — it runs the style application inside the event handler itself.
 
-## Signature
+### Signature
 
 ```ts
 useStyleOnEventTrait(
@@ -1654,7 +1523,7 @@ useStyleOnEventTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                                                     | Description                                                                                                |
 | --------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
@@ -1664,7 +1533,7 @@ useStyleOnEventTrait(
 | `val`     | `(() => string \| number \| undefined) \| string \| number \| undefined` | The CSS value. Pass a function for reactive evaluation at event time.                                      |
 | `...rest` | `Condition[]`                                                            | Optional Conditions. The style is applied only when all Conditions are truthy at the time the event fires. |
 
-## Behavior
+### Behavior
 
 1. Attaches an event listener for `evt` on `el`.
 2. When the event fires: evaluates `val`, checks Conditions, and applies the style if all pass.
@@ -1672,11 +1541,11 @@ useStyleOnEventTrait(
 4. For standard properties: assigns directly to `el.style[prop]`.
 5. Does **not** subscribe to State objects — only re-evaluates when the event fires.
 
-## Returns
+### Returns
 
 A cleanup function that removes the event listener.
 
-## Template Usage
+### Template Usage
 
 ```ts
 // Hover highlight pattern
@@ -1692,11 +1561,11 @@ trait.styleOnEvent('blur', 'outline', 'none');
 ## State Library
 
 
-# UrlState
+## UrlState
 
 A reactive state hook that tracks the current URL, matching it against a set of defined routes and extracting params, query strings, and hash fragments.
 
-## Features
+### Features
 
 - **Route matching**: Matches the current pathname against Express-style route patterns (e.g. `/user/:id`)
 - **Param extraction**: Automatically extracts named parameters from matched routes
@@ -1704,7 +1573,7 @@ A reactive state hook that tracks the current URL, matching it against a set of 
 - **Type-safe routes**: Route handler signatures are inferred from the route pattern — routes with `:param` segments require a typed params object
 - **Reactive**: Returns a State object that updates on `popstate` and `hashchange` events
 
-## Usage
+### Usage
 
 ```typescript
 import { useUrlState } from '@linttrap/oem';
@@ -1733,7 +1602,7 @@ url.sub(({ matchedRoute, params, query, hash }) => {
 });
 ```
 
-## Signature
+### Signature
 
 ```typescript
 function useUrlState<T extends Record<string, any>>(routes: {
@@ -1741,20 +1610,20 @@ function useUrlState<T extends Record<string, any>>(routes: {
 }): StateType<UrlState<typeof routes>, {}>;
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type     | Description                                                                                      |
 | --------- | -------- | ------------------------------------------------------------------------------------------------ |
 | `routes`  | `object` | A map of route patterns to handler functions. Patterns use `:param` syntax for dynamic segments. |
 
-### Route Handler Signatures
+#### Route Handler Signatures
 
 Route handlers are type-inferred from the pattern string:
 
 - **Static routes** (no params): `() => string`
 - **Dynamic routes** (with `:param`): `(params: { [K in ExtractRouteParams<Path>]: string }) => string`
 
-## Return Value
+### Return Value
 
 Returns a `State<UrlState>` containing:
 
@@ -1767,7 +1636,7 @@ Returns a `State<UrlState>` containing:
 | `location`     | `Location`               | The raw `document.location` object                           |
 | `routes`       | `Routes`                 | The routes map passed to the hook                            |
 
-## Behavior
+### Behavior
 
 - Parses `document.location` on initialization and returns the matched state
 - Listens for `popstate` events (browser back/forward navigation)
@@ -1776,9 +1645,9 @@ Returns a `State<UrlState>` containing:
 - Route matching converts patterns like `/user/:id` to regex and tests against the current pathname
 - If no route matches, `matchedRoute` is an empty string and `params` is an empty object
 
-## Common Patterns
+### Common Patterns
 
-### Route-based rendering
+#### Route-based rendering
 
 ```typescript
 const url = useUrlState<{
@@ -1806,7 +1675,7 @@ url.sub(({ matchedRoute }) => {
 });
 ```
 
-### Reading dynamic params
+#### Reading dynamic params
 
 ```typescript
 const url = useUrlState<{
@@ -1820,7 +1689,7 @@ const { params } = url.val();
 console.log(params.id); // "42"
 ```
 
-### Using with conditions
+#### Using with conditions
 
 ```typescript
 const url = useUrlState<{
@@ -1836,7 +1705,7 @@ const isHome = url.$test((s) => s.matchedRoute === '/');
 const isAbout = url.$test((s) => s.matchedRoute === '/about');
 ```
 
-## Notes
+### Notes
 
 - Event listeners (`popstate`, `hashchange`) are added globally and remain active for the lifetime of the page
 - Route patterns support alphanumeric characters and hyphens in param values (`[\w-]+`)
@@ -1847,18 +1716,18 @@ const isAbout = url.$test((s) => s.matchedRoute === '/about');
 ---
 
 
-# MediaQueryState
+## MediaQueryState
 
 A reactive state hook that tracks whether the current viewport matches specified media query conditions.
 
-## Features
+### Features
 
 - **Responsive tracking**: Automatically updates when window is resized
 - **Width-based queries**: Support for min and max width constraints
 - **Media type support**: Filter by screen, print, or all media types
 - **Reactive**: Returns a State object that updates when conditions change
 
-## Usage
+### Usage
 
 ```typescript
 import { useMediaQueryState } from '@linttrap/oem';
@@ -1885,7 +1754,7 @@ const isPrint = useMediaQueryState({
 });
 ```
 
-## Props
+### Props
 
 | Property   | Type                           | Default    | Description                      |
 | ---------- | ------------------------------ | ---------- | -------------------------------- |
@@ -1893,11 +1762,11 @@ const isPrint = useMediaQueryState({
 | `minWidth` | `number`                       | `0`        | Minimum viewport width in pixels |
 | `maxWidth` | `number`                       | `Infinity` | Maximum viewport width in pixels |
 
-## Return Value
+### Return Value
 
 Returns a `State<boolean>` that is `true` when the media query matches and `false` otherwise.
 
-## Behavior
+### Behavior
 
 The state automatically:
 
@@ -1906,9 +1775,9 @@ The state automatically:
 - Updates the state value when conditions change
 - Checks both width constraints AND media type (both must match)
 
-## Common Patterns
+### Common Patterns
 
-### Responsive Breakpoints
+#### Responsive Breakpoints
 
 ```typescript
 // Define standard breakpoints
@@ -1917,7 +1786,7 @@ const isTablet = useMediaQueryState({ minWidth: 640, maxWidth: 1023 });
 const isDesktop = useMediaQueryState({ minWidth: 1024 });
 ```
 
-### Conditional Rendering
+#### Conditional Rendering
 
 ```typescript
 const isMobile = useMediaQueryState({ maxWidth: 768 });
@@ -1929,7 +1798,7 @@ if (isMobile.val()) {
 }
 ```
 
-## Notes
+### Notes
 
 - The resize listener is added globally and will remain active
 - Consider cleanup if using in components that mount/unmount frequently
@@ -1939,17 +1808,17 @@ if (isMobile.val()) {
 ---
 
 
-# ThemeState
+## ThemeState
 
 A small state hook for managing the current theme as a reactive `State` value.
 
-## Features
+### Features
 
 - **Typed themes**: Constrains the theme to `'light'` or `'dark'`
 - **Reactive**: Returns a `State` object that can be observed or updated
 - **Minimal**: No side effects, no DOM reads, no global listeners
 
-## Usage
+### Usage
 
 ```typescript
 import { useThemeState } from '@linttrap/oem';
@@ -1963,7 +1832,7 @@ const current = theme.val();
 theme.set('dark');
 ```
 
-## Signature
+### Signature
 
 ```typescript
 type Theme = 'light' | 'dark';
@@ -1971,23 +1840,23 @@ type Theme = 'light' | 'dark';
 function useThemeState(theme: Theme): State<Theme>;
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type    | Default | Description                                 |
 | --------- | ------- | ------- | ------------------------------------------- |
 | `theme`   | `Theme` | —       | Initial theme value (`'light'` or `'dark'`) |
 
-## Return Value
+### Return Value
 
 Returns a `State<Theme>` representing the current theme.
 
-## Behavior
+### Behavior
 
 - Initializes with the provided theme value
 - Updates whenever `set()` is called
 - Subscribers receive the latest theme value
 
-## Notes
+### Notes
 
 - This hook does not persist to storage or read from the DOM
 - Intended to be composed with other reactive state hooks
@@ -1996,17 +1865,17 @@ Returns a `State<Theme>` representing the current theme.
 ---
 
 
-# OnlineState
+## OnlineState
 
 A reactive state hook that tracks whether the browser is currently online or offline.
 
-## Features
+### Features
 
 - **Connectivity tracking**: Automatically updates when the browser goes online or offline
 - **Immediate evaluation**: Initializes to the current `navigator.onLine` value
 - **Reactive**: Returns a State object that updates on `online` and `offline` window events
 
-## Usage
+### Usage
 
 ```typescript
 import { useOnlineState } from '@linttrap/oem';
@@ -2022,30 +1891,30 @@ isOnline.sub((online) => {
 });
 ```
 
-## Signature
+### Signature
 
 ```typescript
 function useOnlineState(): StateType<boolean, {}>;
 ```
 
-## Parameters
+### Parameters
 
 None.
 
-## Return Value
+### Return Value
 
 Returns a `State<boolean>` that is `true` when the browser is online and `false` when offline.
 
-## Behavior
+### Behavior
 
 - Initializes to `navigator.onLine`
 - Listens for the `online` window event and sets state to `true`
 - Listens for the `offline` window event and sets state to `false`
 - Notifies all subscribers on each change
 
-## Common Patterns
+### Common Patterns
 
-### Conditional UI based on connectivity
+#### Conditional UI based on connectivity
 
 ```typescript
 const isOnline = useOnlineState();
@@ -2055,7 +1924,7 @@ trait.style('display', 'none', isOnline.$test(true));
 trait.style('display', 'flex', isOnline.$test(false));
 ```
 
-### Gate network actions
+#### Gate network actions
 
 ```typescript
 const isOnline = useOnlineState();
@@ -2067,7 +1936,7 @@ trait.event(
 );
 ```
 
-## Notes
+### Notes
 
 - Event listeners are added globally and remain active for the lifetime of the page
 - Uses the standard `navigator.onLine` API and `online`/`offline` window events
@@ -2076,17 +1945,17 @@ trait.event(
 ---
 
 
-# WindowSizeState
+## WindowSizeState
 
 A reactive state hook that tracks the current viewport dimensions.
 
-## Features
+### Features
 
 - **Viewport tracking**: Reports both width and height as numbers
 - **Immediate evaluation**: Initializes to the current window size
 - **Reactive**: Returns a State object that updates on window resize
 
-## Usage
+### Usage
 
 ```typescript
 import { useWindowSizeState } from '@linttrap/oem';
@@ -2102,17 +1971,17 @@ windowSize.sub(({ width, height }) => {
 });
 ```
 
-## Signature
+### Signature
 
 ```typescript
 function useWindowSizeState(): StateType<WindowSize, {}>;
 ```
 
-## Parameters
+### Parameters
 
 None.
 
-## Return Value
+### Return Value
 
 Returns a `State<WindowSize>` containing:
 
@@ -2121,16 +1990,16 @@ Returns a `State<WindowSize>` containing:
 | `width`  | `number` | Current viewport width in pixels    |
 | `height` | `number` | Current viewport height in pixels   |
 
-## Behavior
+### Behavior
 
 - Initializes to `{ width: window.innerWidth, height: window.innerHeight }`
 - Listens for the `resize` window event
 - Updates state with the new dimensions on every resize
 - Notifies all subscribers on each change
 
-## Common Patterns
+### Common Patterns
 
-### Dynamic canvas sizing
+#### Dynamic canvas sizing
 
 ```typescript
 const windowSize = useWindowSizeState();
@@ -2141,7 +2010,7 @@ windowSize.sub(({ width, height }) => {
 });
 ```
 
-### Computed column count
+#### Computed column count
 
 ```typescript
 const windowSize = useWindowSizeState();
@@ -2152,7 +2021,7 @@ trait.style('gridTemplateColumns', () => {
 }, windowSize);
 ```
 
-### Reactive dimension values
+#### Reactive dimension values
 
 ```typescript
 const windowSize = useWindowSizeState();
@@ -2160,7 +2029,7 @@ const windowSize = useWindowSizeState();
 trait.style('height', () => `${windowSize.val().height - 64}px`, windowSize);
 ```
 
-## Comparison with useMediaQueryState
+### Comparison with useMediaQueryState
 
 | Feature              | `useWindowSizeState`   | `useMediaQueryState`      |
 | -------------------- | ---------------------- | ------------------------- |
@@ -2170,7 +2039,7 @@ trait.style('height', () => `${windowSize.val().height - 64}px`, windowSize);
 
 Use `useMediaQueryState` for breakpoint-gated trait conditions. Use `useWindowSizeState` when you need raw pixel values for calculations.
 
-## Notes
+### Notes
 
 - The resize listener is added globally and remains active for the lifetime of the page
 - For breakpoint-based boolean conditions, prefer `useMediaQueryState` instead
@@ -2179,17 +2048,17 @@ Use `useMediaQueryState` for breakpoint-gated trait conditions. Use `useWindowSi
 ---
 
 
-# TokenState
+## TokenState
 
 A derived state hook that selects between two token values based on the current theme.
 
-## Features
+### Features
 
 - **Theme-aware**: Switches between light and dark values
 - **Derived state**: Recomputes when the theme state changes
 - **Generic**: Works with any token value type
 
-## Usage
+### Usage
 
 ```typescript
 import { useThemeState, useTokenState } from '@linttrap/oem';
@@ -2204,13 +2073,13 @@ const color = primaryColor.val();
 theme.set('dark');
 ```
 
-## Signature
+### Signature
 
 ```typescript
 function useTokenState<T>(lightVal: T, darkVal: T, themeState: StateType<Theme, {}>): State<T>;
 ```
 
-## Parameters
+### Parameters
 
 | Parameter    | Type                   | Default | Description                                 |
 | ------------ | ---------------------- | ------- | ------------------------------------------- |
@@ -2218,16 +2087,16 @@ function useTokenState<T>(lightVal: T, darkVal: T, themeState: StateType<Theme, 
 | `darkVal`    | `T`                    | —       | Token value for the dark theme              |
 | `themeState` | `StateType<Theme, {}>` | —       | Theme state used to select the active token |
 
-## Return Value
+### Return Value
 
 Returns a `State<T>` whose value updates when the theme changes.
 
-## Behavior
+### Behavior
 
 - Initializes to `lightVal` or `darkVal` based on `themeState.val()`
 - Subscribes to `themeState` and updates the token whenever the theme changes
 
-## Common Patterns
+### Common Patterns
 
 ```typescript
 const theme = useThemeState('light');
@@ -2235,7 +2104,7 @@ const textColor = useTokenState('#111', '#eee', theme);
 const bgColor = useTokenState('#fff', '#0b0f1a', theme);
 ```
 
-## Notes
+### Notes
 
 - The subscription remains active as long as `themeState` exists
 - Ensure the `themeState` is shared across tokens to keep updates consistent
@@ -2244,11 +2113,11 @@ const bgColor = useTokenState('#fff', '#0b0f1a', theme);
 ---
 
 
-# IntersectionObserverState
+## IntersectionObserverState
 
 A reactive state hook that tracks whether an element is visible within the viewport (or a specified root element) using the Intersection Observer API.
 
-## Features
+### Features
 
 - **Visibility tracking**: Knows when an element enters or leaves the viewport
 - **Intersection ratio**: Reports how much of the element is visible (0 to 1)
@@ -2256,7 +2125,7 @@ A reactive state hook that tracks whether an element is visible within the viewp
 - **Configurable thresholds**: Supports all standard `IntersectionObserver` options
 - **Reactive**: Returns a State object that updates on every intersection change
 
-## Usage
+### Usage
 
 ```typescript
 import { useIntersectionObserverState } from '@linttrap/oem';
@@ -2270,7 +2139,7 @@ visibility.sub(({ isIntersecting }) => {
 });
 ```
 
-## Signature
+### Signature
 
 ```typescript
 function useIntersectionObserverState(
@@ -2279,14 +2148,14 @@ function useIntersectionObserverState(
 ): StateType<IntersectionObserverStateValue, {}>;
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                      | Default | Description                                          |
 | --------- | ------------------------- | ------- | ---------------------------------------------------- |
 | `el`      | `Element`                 | —       | The DOM element to observe                           |
 | `options` | `IntersectionObserverInit` | —       | Standard IntersectionObserver options (root, rootMargin, threshold) |
 
-## Return Value
+### Return Value
 
 Returns a `State<IntersectionObserverStateValue>` with the following shape:
 
@@ -2296,15 +2165,15 @@ Returns a `State<IntersectionObserverStateValue>` with the following shape:
 | `intersectionRatio`   | `number`                  | Fraction of the element visible (0 to 1)         |
 | `boundingClientRect`  | `DOMRectReadOnly \| null` | The element's bounding rect at observation time  |
 
-## Behavior
+### Behavior
 
 - Creates an `IntersectionObserver` and immediately begins observing the target element
 - Updates state on every intersection change (entry/exit, ratio change at thresholds)
 - Notifies all subscribers with the new intersection data
 
-## Common Patterns
+### Common Patterns
 
-### Lazy loading content
+#### Lazy loading content
 
 ```typescript
 const placeholder = document.getElementById('lazy-section')!;
@@ -2317,7 +2186,7 @@ visibility.sub(({ isIntersecting }) => {
 });
 ```
 
-### Scroll-spy navigation
+#### Scroll-spy navigation
 
 ```typescript
 const sections = ['intro', 'features', 'pricing'].map((id) => ({
@@ -2334,7 +2203,7 @@ sections.forEach(({ id, visibility }) => {
 });
 ```
 
-### Animate on scroll
+#### Animate on scroll
 
 ```typescript
 const el = document.getElementById('animate-me')!;
@@ -2352,7 +2221,7 @@ trait.style(
 );
 ```
 
-## Notes
+### Notes
 
 - The observer remains active for the lifetime of the page
 - Use `threshold` option to control when intersection callbacks fire (e.g., `[0, 0.25, 0.5, 0.75, 1]` for granular tracking)
@@ -2362,11 +2231,11 @@ trait.style(
 ---
 
 
-# TimerState
+## TimerState
 
 A reactive state hook that increments a counter at a fixed interval. Provides custom methods to start, stop, and reset the timer.
 
-## Features
+### Features
 
 - **Interval counter**: Increments a numeric value at a configurable interval
 - **Start/stop/reset**: Custom methods for full timer lifecycle control
@@ -2374,7 +2243,7 @@ A reactive state hook that increments a counter at a fixed interval. Provides cu
 - **Deferred methods**: `$start`, `$stop`, `$reset` for use in event handlers
 - **Reactive**: Returns a State object that updates on every tick
 
-## Usage
+### Usage
 
 ```typescript
 import { useTimerState } from '@linttrap/oem';
@@ -2396,7 +2265,7 @@ timer.sub((count) => {
 });
 ```
 
-## Signature
+### Signature
 
 ```typescript
 function useTimerState(
@@ -2405,14 +2274,14 @@ function useTimerState(
 ): StateType<number, { start; stop; reset }>;
 ```
 
-## Parameters
+### Parameters
 
 | Parameter    | Type                        | Default | Description                                                |
 | ------------ | --------------------------- | ------- | ---------------------------------------------------------- |
 | `intervalMs` | `number`                    | —       | Interval between ticks in milliseconds                     |
 | `options`    | `{ autoStart?: boolean }`   | —       | Configuration. `autoStart` defaults to `true` if omitted.  |
 
-## Return Value
+### Return Value
 
 Returns a `State<number>` with these additional custom methods:
 
@@ -2424,7 +2293,7 @@ Returns a `State<number>` with these additional custom methods:
 
 Each method also has a `$`-prefixed deferred version (`$start`, `$stop`, `$reset`) that returns `() => void`.
 
-## Behavior
+### Behavior
 
 - Initializes the counter to `0`
 - If `autoStart` is not explicitly `false`, starts the interval immediately
@@ -2433,9 +2302,9 @@ Each method also has a `$`-prefixed deferred version (`$start`, `$stop`, `$reset
 - `stop()` clears the interval; `start()` can resume from the current count
 - `reset()` clears the interval AND sets the counter back to `0`
 
-## Common Patterns
+### Common Patterns
 
-### Auto-save indicator
+#### Auto-save indicator
 
 ```typescript
 const timer = useTimerState(30000); // every 30 seconds
@@ -2445,7 +2314,7 @@ timer.sub(() => {
 });
 ```
 
-### Countdown display
+#### Countdown display
 
 ```typescript
 const DURATION = 60;
@@ -2454,7 +2323,7 @@ const timer = useTimerState(1000);
 trait.textContent(() => `${DURATION - timer.val()}s remaining`);
 ```
 
-### Polling with deferred controls
+#### Polling with deferred controls
 
 ```typescript
 const timer = useTimerState(5000, { autoStart: false });
@@ -2466,7 +2335,7 @@ trait.event('click', timer.$start());
 trait.event('click', timer.$stop());
 ```
 
-### Session timeout
+#### Session timeout
 
 ```typescript
 const idle = useTimerState(1000);
@@ -2479,7 +2348,7 @@ idle.sub((seconds) => {
 document.addEventListener('mousemove', () => idle.reset());
 ```
 
-## Notes
+### Notes
 
 - The interval uses `setInterval` under the hood
 - Timer remains active until explicitly stopped or reset
@@ -2489,11 +2358,11 @@ document.addEventListener('mousemove', () => idle.reset());
 ---
 
 
-# FormState
+## FormState
 
 A reactive state hook for managing form values, validation errors, touched fields, and dirty state.
 
-## Features
+### Features
 
 - **Field-level control**: Set individual field values with automatic re-validation
 - **Validation**: Optional per-field validators that run on every field change
@@ -2503,7 +2372,7 @@ A reactive state hook for managing form values, validation errors, touched field
 - **Reset**: Return to initial values and clear all state
 - **Deferred methods**: `$setField`, `$touch`, `$validate`, `$reset` for event wiring
 
-## Usage
+### Usage
 
 ```typescript
 import { useFormState } from '@linttrap/oem';
@@ -2532,7 +2401,7 @@ const { values, errors, touched, dirty, valid } = form.val();
 form.reset();
 ```
 
-## Signature
+### Signature
 
 ```typescript
 function useFormState<T extends Record<string, any>>(
@@ -2541,14 +2410,14 @@ function useFormState<T extends Record<string, any>>(
 ): StateType<FormStateValue<T>, { setField; setError; touch; validate; reset }>;
 ```
 
-## Parameters
+### Parameters
 
 | Parameter        | Type                | Default | Description                                              |
 | ---------------- | ------------------- | ------- | -------------------------------------------------------- |
 | `initialValues`  | `T`                 | —       | The initial form values                                  |
 | `validators`     | `Partial<Record<keyof T, (value, values) => string \| undefined>>` | — | Optional validators per field. Return a string for errors, `undefined` for valid. |
 
-## Return Value
+### Return Value
 
 Returns a `State<FormStateValue<T>>` with shape:
 
@@ -2560,7 +2429,7 @@ Returns a `State<FormStateValue<T>>` with shape:
 | `dirty`   | `boolean`                        | `true` if any field has been modified       |
 | `valid`   | `boolean`                        | `true` if there are no validation errors    |
 
-### Custom Methods
+#### Custom Methods
 
 | Method                        | Signature                                | Description                                               |
 | ----------------------------- | ---------------------------------------- | --------------------------------------------------------- |
@@ -2572,7 +2441,7 @@ Returns a `State<FormStateValue<T>>` with shape:
 
 Each method also has a `$`-prefixed deferred version.
 
-## Behavior
+### Behavior
 
 - Initializes with the provided `initialValues`, no errors, no touched fields, `dirty: false`, `valid: true`
 - On `setField`: updates the field value, runs all validators, updates `errors` and `valid`, sets `dirty: true`
@@ -2581,9 +2450,9 @@ Each method also has a `$`-prefixed deferred version.
 - On `reset`: returns to the exact initial state
 - Validators receive both the field value and the full values object (for cross-field validation)
 
-## Common Patterns
+### Common Patterns
 
-### Contact form
+#### Contact form
 
 ```typescript
 const form = useFormState(
@@ -2596,7 +2465,7 @@ const form = useFormState(
 );
 ```
 
-### Two-way binding with input traits
+#### Two-way binding with input traits
 
 ```typescript
 trait.inputValue(() => form.val().values.email, form);
@@ -2604,7 +2473,7 @@ trait.inputEvent('input', (val) => form.setField('email', val), form);
 trait.event('blur', form.$touch('email'));
 ```
 
-### Show errors only for touched fields
+#### Show errors only for touched fields
 
 ```typescript
 trait.textContent(
@@ -2616,7 +2485,7 @@ trait.textContent(
 );
 ```
 
-### Submit handler
+#### Submit handler
 
 ```typescript
 trait.event('click', () => {
@@ -2626,7 +2495,7 @@ trait.event('click', () => {
 });
 ```
 
-### Cross-field validation
+#### Cross-field validation
 
 ```typescript
 const form = useFormState(
@@ -2638,7 +2507,7 @@ const form = useFormState(
 );
 ```
 
-## Notes
+### Notes
 
 - Validators run synchronously on every `setField` call
 - The `valid` flag reflects the result of the most recent validation run
@@ -2653,23 +2522,23 @@ const form = useFormState(
 ## Skills
 
 
-# Folder & File Structure
+## Folder & File Structure
 
-## When to Create This Structure
+### When to Create This Structure
 
 When starting a new OEM application or adding OEM to an existing project, create the following file/folder structure at the root of the app. Each category starts as a **single file** (e.g., `states.ts`, `actions.ts`). If a file grows too large to manage, convert it into a **folder** with multiple files (e.g., `states/todos.ts`, `states/auth.ts`). Always start with single files.
 
-## When to Use This Structure
+### When to Use This Structure
 
 When the structure already exists, follow it. Every piece of application logic belongs in exactly one of these categories. Before creating a new file or adding code, identify which category it falls under and place it there. This keeps the codebase predictable for both humans and LLMs.
 
-## Design Principles
+### Design Principles
 
 - **High Cohesion, Low Coupling**: Each category groups logically related code — like a math library where functions share a role, not necessarily a dependency.
 - **LLM-Optimized**: The structure is flat and predictable so LLMs can navigate, read, and generate code without ambiguity about where things belong.
 - **Single Responsibility**: Each file/folder owns one concern. No mixing state definitions with UI templates or actions with type definitions.
 
-## Categories
+### Categories
 
 Each category below has its own detailed guide. Every category must be its own file (or folder of files if it grows large):
 
@@ -2691,7 +2560,7 @@ Each category below has its own detailed guide. Every category must be its own f
 | `test/`        | Unit and integration tests                                  | [Test Guide](test.md)           |
 | `main.ts`      | App entry point — initializes state, renders UI             | [Main Guide](main.md)           |
 
-## Example Structure
+### Example Structure
 
 ```
 my-app/
@@ -2715,7 +2584,7 @@ my-app/
   main.ts
 ```
 
-## Rules
+### Rules
 
 1. **Every category is its own file.** Do not combine categories (e.g., do not put actions inside states.ts).
 2. **Start with single files.** Only break into a folder when the file becomes unmanageable.
@@ -2726,28 +2595,28 @@ my-app/
 ---
 
 
-# BDD Files
+## BDD Files
 
-## What This File Is
+### What This File Is
 
 The `bdd/` folder contains behavior-driven design files — markdown documents that describe **what the application should do** in terms of requirements, acceptance criteria, and concrete scenarios. Each feature or major use case gets its own `.md` file inside this folder.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 BDD files are the **source of truth for intent**. They exist so that LLMs (and humans) can read the expected behavior before writing or modifying code. Mixing requirements with implementation would make it impossible to reason about what the app _should_ do vs. what it _currently_ does.
 
-## When to Create
+### When to Create
 
 Create a `bdd/` folder at the start of any new OEM application. Add a `.md` file for each distinct feature or user story before writing implementation code.
 
-## When to Use
+### When to Use
 
 - **Before coding**: Read the relevant BDD file to understand what needs to be built.
 - **During coding**: Reference the scenarios to ensure the implementation matches the specification.
 - **After coding**: Verify the implementation satisfies every scenario in the BDD file.
 - **When adding features**: Create a new BDD file for the new feature before writing any code.
 
-## File Structure
+### File Structure
 
 Each BDD file should contain:
 
@@ -2756,7 +2625,7 @@ Each BDD file should contain:
 3. **Properties / Data model** — what data the feature works with
 4. **BDD Scenarios** — Gherkin-style Given/When/Then blocks
 
-## Example
+### Example
 
 ```markdown
 # User Authentication
@@ -2794,7 +2663,7 @@ Then I should see "Invalid credentials" error message
 And I should remain on the sign-in page
 ```
 
-## Rules
+### Rules
 
 1. **One file per feature or major use case.** Do not combine unrelated features into a single BDD file.
 2. **Write BDD before implementation.** The BDD file drives what gets built.
@@ -2806,7 +2675,7 @@ And I should remain on the sign-in page
 ---
 
 
-# Idiomatic OEM
+## Idiomatic OEM
 
 OEM is unlike traditional UI frameworks. There is no virtual DOM, no JSX, no component lifecycle, and no render loop. Instead, OEM models UI as a flat composition of **elements**, **traits**, and **state** — three primitives that combine into a declarative, reactive system that reads like a blueprint and behaves like a living document.
 
@@ -2814,7 +2683,7 @@ This guide codifies the patterns and conventions that make OEM code idiomatic: e
 
 ---
 
-## The Three Primitives
+### The Three Primitives
 
 Everything in OEM reduces to three things:
 
@@ -2828,7 +2697,7 @@ An OEM application is built by creating elements, decorating them with traits, a
 
 ---
 
-## Template Destructuring
+### Template Destructuring
 
 Every OEM file that produces UI starts by creating a template and destructuring it into `tag` and `trait`:
 
@@ -2848,7 +2717,7 @@ export const [tag, trait] = Template({
 
 ---
 
-## Element Construction
+### Element Construction
 
 Elements are created by calling a tag function with traits and child elements as arguments. Traits and children are interleaved freely — order determines DOM order for children, and trait application order for behaviors:
 
@@ -2863,7 +2732,7 @@ tag.div(
 
 This is the heart of idiomatic OEM: a single nested expression that declaratively specifies structure, style, content, and reactivity in one place. Notice that `token.$val` is used rather than `() => token.val(), token` — `$val` is simultaneously a getter function AND a subscribable (it carries a `.sub` property), so traits auto-detect it as both the value source and the subscription source.
 
-### Adopting Existing Elements
+#### Adopting Existing Elements
 
 Use `tag.$(existingElement)` to wrap an existing DOM node and apply traits to it:
 
@@ -2877,7 +2746,7 @@ tag.$(document.body)(
 
 ---
 
-## Traits Are Appliers
+### Traits Are Appliers
 
 A trait call like `trait.style('color', 'red')` does **not** immediately mutate the DOM. It returns a function `(el: HTMLElement) => void` — an **applier**. The tag proxy calls each applier with the created element after it exists.
 
@@ -2885,7 +2754,7 @@ This is an implementation detail. Traits should always be applied directly and i
 
 ---
 
-## Reactivity Model
+### Reactivity Model
 
 OEM's reactivity is **push-based** and **surgically scoped**:
 
@@ -2893,7 +2762,7 @@ OEM's reactivity is **push-based** and **surgically scoped**:
 2. Traits subscribe to states they depend on. When a state changes, only the traits subscribed to that state re-run — no diffing, no reconciliation, no tree walk.
 3. When an element is removed from the DOM, a `MutationObserver` fires and all its trait subscriptions are cleaned up automatically via a `WeakMap`.
 
-### How traits subscribe to state
+#### How traits subscribe to state
 
 Every trait accepts `...rest: (StateType | Condition)[]` as trailing arguments. The runtime uses `extractStates()` and `extractConditions()` with duck-typing to separate these:
 
@@ -2916,7 +2785,7 @@ Use `$val` when you need the state's raw value. Use the verbose `() => expr, sta
 
 For State objects with custom methods, each method auto-generates a `$`-prefixed deferred version. For complex state objects (Objects, Arrays), custom getter methods provide targeted access to specific keys or values. These custom `$`-prefixed methods work as thunks for event handlers, but they do NOT carry `.sub` — so for reactive binding of complex state values, use the verbose form or `$val` when the whole value is needed.
 
-### Static vs. dynamic values
+#### Static vs. dynamic values
 
 Every trait parameter that accepts a value also accepts a `() => value` function. Use a function when the value should re-evaluate on state changes; use a literal when it's constant:
 
@@ -2927,7 +2796,7 @@ trait.style('opacity', () => '...some computed value...'); // dynamic — re-eva
 
 ---
 
-## Conditions Over Ternaries
+### Conditions Over Ternaries
 
 **Never use ternary operators in trait arguments.** Instead, use separate trait calls gated by conditions. This keeps each branch explicit, reactive, and independently addressable:
 
@@ -2940,7 +2809,7 @@ trait.style('opacity', '0.4', enabled.$test(false)),
 trait.style('opacity', enabled ? '1' : '0.4'),
 ```
 
-### Always pair `$test(true)` with `$test(false)`
+#### Always pair `$test(true)` with `$test(false)`
 
 When using conditions to toggle a style between two values, **always provide both the truth and false branches.** If you only supply the `$test(true)` branch, OEM has no instruction for what value to apply when the condition becomes false — the previous value stays on the element and the UI can appear "stuck."
 
@@ -2956,7 +2825,7 @@ trait.style('display', 'flex', navOpen.$test(true)),
 
 This applies everywhere conditions are used — responsive breakpoints, visibility toggles, theme switches, and all other state-driven style or attribute changes. The rule is simple: **if there is a `$test(true)`, there should be a corresponding `$test(false)` (or vice versa)** so that every state transition produces a defined result.
 
-### Creating conditions
+#### Creating conditions
 
 State objects have `.test()` for immediate evaluation and `.$test()` for reactive conditions. The standalone `$test()` helper from `@linttrap/oem` handles cases where State's built-in `.$test` doesn't apply:
 
@@ -2979,7 +2848,7 @@ $test(() => count.val() > 0); // must also pass `count` in ...rest
 
 **Important**: `state.$test(...)` is self-subscribing because it carries `.sub` — the trait auto-detects it as a subscription source AND a condition simultaneously. The standalone `$test()` from util does NOT have `.sub`, so when using it with state-derived values you must pass the state objects separately in `...rest`.
 
-### Multiple conditions are AND-ed
+#### Multiple conditions are AND-ed
 
 When a trait receives multiple conditions, **all** must be truthy for the trait to apply:
 
@@ -2994,7 +2863,7 @@ trait.style(
 
 ---
 
-## The `$` Thunk Convention
+### The `$` Thunk Convention
 
 Every State method has a `$`-prefixed twin that returns a **closure** instead of executing immediately. This is the primary mechanism for wiring state to event handlers and traits without intermediate arrow functions:
 
@@ -3033,7 +2902,7 @@ trait.style(
 );
 ```
 
-### Custom methods follow the same pattern
+#### Custom methods follow the same pattern
 
 ```ts
 const counter = State(
@@ -3052,7 +2921,7 @@ trait.event('click', counter.$increment());
 
 ---
 
-## State Lives Outside Functions
+### State Lives Outside Functions
 
 State objects are **module-level singletons**, not component-local. They are created once and imported wherever needed:
 
@@ -3067,7 +2936,7 @@ This is fundamental to OEM's architecture. Because state is not scoped to a comp
 
 ---
 
-## Token-Driven Styling
+### Token-Driven Styling
 
 **Never hardcode visual values.** Every color, spacing, font size, radius, shadow, and other design property must come from a `useTokenState` token:
 
@@ -3085,7 +2954,7 @@ Tokens are State objects — they react to theme changes automatically. Tokens a
 
 ---
 
-## No CSS Files — All Styles via OEM Syntax
+### No CSS Files — All Styles via OEM Syntax
 
 OEM applications **never** use CSS files, `<style>` tags, or external stylesheets. Every visual property — layout, color, spacing, typography, transitions, hover states — is expressed inline through `trait.style()`, `trait.styleOnEvent()`, and design tokens. This is a core architectural rule, not a preference.
 
@@ -3103,11 +2972,11 @@ trait.styleOnEvent('mouseleave', 'backgroundColor', 'transparent'),
 // Do NOT use className for visual styling (className is reserved for third-party integration only)
 ```
 
-### Animations and Advanced CSS Features
+#### Animations and Advanced CSS Features
 
 When you need CSS features like keyframe animations, scroll-driven effects, or other capabilities typically expressed with `@keyframes` or `@media`, **always use the equivalent JavaScript APIs** — never inject CSS strings or create stylesheet rules.
 
-#### Web Animations API (for keyframe animations)
+##### Web Animations API (for keyframe animations)
 
 Use `Element.animate()` from the [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API):
 
@@ -3135,7 +3004,7 @@ document.body.appendChild(el);
 fadeIn(el);
 ```
 
-#### CSSStyleSheet API (when absolutely necessary)
+##### CSSStyleSheet API (when absolutely necessary)
 
 If you must create dynamic rules (e.g., a global `@keyframes` definition needed by a third-party library), use the `CSSStyleSheet` constructor API — never a `<style>` tag or `.css` file:
 
@@ -3154,7 +3023,7 @@ document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
 trait.style('animation', 'pulse 2s infinite');
 ```
 
-#### matchMedia (for programmatic media queries)
+##### matchMedia (for programmatic media queries)
 
 OEM provides `useMediaQueryState` for responsive design, but if you need direct access, use `window.matchMedia()`:
 
@@ -3167,7 +3036,7 @@ trait.style('flexDirection', 'row', isDesktop.$test(true)),
 trait.style('flexDirection', 'column', isDesktop.$test(false)),
 ```
 
-### Why No CSS Files?
+#### Why No CSS Files?
 
 1. **Single source of truth.** Styles live next to the elements they affect — no hunting across files.
 2. **Reactive by default.** Trait-based styles are wired to State objects and update automatically on theme or state changes.
@@ -3176,9 +3045,9 @@ trait.style('flexDirection', 'column', isDesktop.$test(false)),
 
 ---
 
-## Composition Patterns
+### Composition Patterns
 
-### Apply traits directly and inline
+#### Apply traits directly and inline
 
 Traits should be applied directly to their target element, not stored in shared variables. Reusable visual consistency comes from tokens, not from shared trait arrays:
 
@@ -3193,7 +3062,7 @@ tag.div(
 );
 ```
 
-### Helper functions ("components")
+#### Helper functions ("components")
 
 Extract a subtree into a plain function **only** when: (a) it is used multiple times, (b) it needs to exist as a factory with parameters, or (c) it is extremely large (>1000 lines). There is no special component API — it's just a function that returns an element. Default to inlining everything:
 
@@ -3219,7 +3088,7 @@ function TodoItem(todo: Todo) {
 }
 ```
 
-### Looping / Dynamic Lists
+#### Looping / Dynamic Lists
 
 Use `trait.innerHTML` with a reactive function to render lists that update when state changes:
 
@@ -3236,7 +3105,7 @@ tag.ul(trait.innerHTML(() => filteredTodos().map((todo) => TodoItem(todo)), todo
 
 ---
 
-## Event Handling
+### Event Handling
 
 Wire events with `trait.event`. Handlers can be plain functions or `$`-thunked state operations:
 
@@ -3258,7 +3127,7 @@ Events are automatically removed when the element is removed from the DOM.
 
 ---
 
-## Automatic Cleanup
+### Automatic Cleanup
 
 OEM manages memory automatically:
 
@@ -3271,7 +3140,7 @@ You never need to manually unsubscribe or tear down. Build elements, append them
 
 ---
 
-## Summary of Rules
+### Summary of Rules
 
 | Rule                                         | Why                                                                  |
 | -------------------------------------------- | -------------------------------------------------------------------- |
@@ -3295,17 +3164,17 @@ You never need to manually unsubscribe or tear down. Build elements, append them
 ---
 
 
-# Design Decision Guide
+## Design Decision Guide
 
 The following heuristics should be applied when making visual and structural design decisions. They reflect the reasoning of a world-class UI expert and ensure consistent, intentional output. Because OEM renders all styles via `trait.style()` directly onto DOM elements, the agent must internalize the knowledge that CSS resets, browser defaults, and layout edge cases normally handle — there is no stylesheet safety net.
 
 ---
 
-## Browser Default Neutralization
+### Browser Default Neutralization
 
 Browsers apply default styles to HTML elements (the "user-agent stylesheet"). In traditional development, a `reset.css` or `normalize.css` removes these. In OEM, **every element must be explicitly styled to a known baseline**. The agent must apply these resets inline via traits whenever it creates the affected elements.
 
-### Mandatory Resets — Apply to Every Application
+#### Mandatory Resets — Apply to Every Application
 
 These styles must be applied to `document.body` (via `tag.$(document.body)`) in every OEM app:
 
@@ -3324,7 +3193,7 @@ tag.$(document.body)(
 );
 ```
 
-### Element-Specific Resets
+#### Element-Specific Resets
 
 The following browser defaults cause subtle problems. Neutralize them whenever you create these elements:
 
@@ -3348,7 +3217,7 @@ The following browser defaults cause subtle problems. Neutralize them whenever y
 | `pre`, `code` | Monospace font, sometimes different size. | `font: 'inherit'`, then apply `fontFamily: 'monospace'` and desired `fontSize` from tokens |
 | `summary` | Disclosure triangle, cursor. | `listStyle: 'none'`, `cursor: 'pointer'`. Remove webkit triangle: `'::marker'` can't be targeted — hide via `listStyle: 'none'`. |
 
-### The Box Model Rule
+#### The Box Model Rule
 
 **Always apply `boxSizing: 'border-box'` to any element that receives explicit width, height, padding, or border.** The browser default is `content-box`, which causes padding and border to add to the element's declared dimensions — the single most common cause of layout overflow.
 
@@ -3358,7 +3227,7 @@ trait.style('width', '100%'),
 trait.style('padding', space_padding_md.$val),  // doesn't overflow
 ```
 
-### Inherited Properties That Silently Break
+#### Inherited Properties That Silently Break
 
 The browser **inherits** some properties and **doesn't inherit** others. Know which is which:
 
@@ -3370,11 +3239,111 @@ If a child element looks wrong and you haven't styled it, check whether it's inh
 
 ---
 
-## Design Composition Principles
+### CSS Layout Gotchas
+
+OEM has no stylesheet safety net — every style is applied inline via `trait.style()`. This means common CSS pitfalls that frameworks or resets normally absorb will silently break your layout. The following gotchas are **mandatory knowledge** for every OEM application.
+
+#### Fixed/Absolute Elements Overflow on Mobile
+
+**Problem:** A `position: fixed` or `position: absolute` element with `left: 0; right: 0` (or `width: 100%`) plus horizontal padding will overflow the viewport. The browser default `box-sizing: content-box` adds padding *on top of* the declared width, so the element becomes `100% + padding-left + padding-right` — causing horizontal scroll on mobile.
+
+**Fix:** Always apply `boxSizing: 'border-box'`, `maxWidth: '100vw'`, and `overflow: 'hidden'` to fixed/absolute full-width elements:
+
+```ts
+// Fixed header — CORRECT
+tag.header(
+  trait.style('position', 'fixed'),
+  trait.style('top', '0'),
+  trait.style('left', '0'),
+  trait.style('right', '0'),
+  trait.style('boxSizing', 'border-box'),   // padding stays inside bounds
+  trait.style('maxWidth', '100vw'),          // safety clamp
+  trait.style('overflow', 'hidden'),         // prevent child bleed
+  trait.style('padding', `8px 16px`),
+);
+```
+
+**Why it matters on mobile:** Desktop browsers have wide enough viewports that a few extra pixels of overflow go unnoticed. On mobile (320–428px wide), even 1px of overflow triggers a horizontal scrollbar and shifts the entire page.
+
+#### Flex Children Overflowing Their Container
+
+**Problem:** A flex child with long text or a fixed-width element can push its container wider than the viewport. Flex items default to `min-width: auto`, which prevents them from shrinking below their content size.
+
+**Fix:** Apply `minWidth: '0'` to flex children that contain variable-length content, and `overflow: 'hidden'` or `textOverflow: 'ellipsis'` where appropriate:
+
+```ts
+tag.div(
+  trait.style('display', 'flex'),
+  trait.style('gap', '8px'),
+
+  tag.div(
+    trait.style('flex', '1'),
+    trait.style('minWidth', '0'),           // allow shrinking below content size
+    trait.style('overflow', 'hidden'),
+    trait.style('textOverflow', 'ellipsis'),
+    trait.style('whiteSpace', 'nowrap'),
+  ),
+);
+```
+
+#### Grid Blowout
+
+**Problem:** A CSS grid child with content wider than its track (e.g., a `<pre>` block or long URL) expands the track and overflows the grid container. Unlike flex, grid tracks don't shrink by default.
+
+**Fix:** Use `minmax(0, 1fr)` instead of bare `1fr`, and apply `overflow: 'auto'` to the content that may be too wide:
+
+```ts
+trait.style('gridTemplateColumns', 'minmax(0, 1fr) minmax(0, 1fr)'),
+// Inside the cell:
+tag.pre(
+  trait.style('overflow', 'auto'),
+  trait.style('maxWidth', '100%'),
+);
+```
+
+#### 100vh on Mobile Safari
+
+**Problem:** `height: 100vh` on iOS Safari includes the area behind the address bar, so content is cut off at the bottom when the bar is visible. This affects modals, full-screen overlays, and hero sections.
+
+**Fix:** Use `minHeight: '100dvh'` (dynamic viewport height) which adjusts as the address bar shows/hides. Fall back to `100vh` for browsers that don't support `dvh`:
+
+```ts
+trait.style('minHeight', '100vh'),         // fallback
+trait.style('minHeight', '100dvh'),        // override: dynamic viewport on iOS
+```
+
+#### Touch Target Size
+
+**Problem:** Interactive elements smaller than 44×44px are difficult to tap accurately on mobile. This is both a usability issue and an accessibility failure (WCAG 2.5.5).
+
+**Fix:** Ensure all buttons, links, and interactive controls have a minimum touch target of 44×44px. Use padding to expand the target area without changing the visual size:
+
+```ts
+tag.button(
+  trait.style('minWidth', '44px'),
+  trait.style('minHeight', '44px'),
+  trait.style('padding', '10px 16px'),     // visually compact, touch-friendly
+);
+```
+
+#### Scrollbar Gutter Shift
+
+**Problem:** When content transitions from non-scrollable to scrollable (e.g., opening an accordion), the appearance of the scrollbar shifts the layout by ~15px on desktop browsers. This causes a visible jank.
+
+**Fix:** Apply `scrollbarGutter: 'stable'` to the scrollable container so the gutter space is always reserved:
+
+```ts
+trait.style('overflow', 'auto'),
+trait.style('scrollbarGutter', 'stable'),
+```
+
+---
+
+### Design Composition Principles
 
 Beyond tokens and categories, great UI follows compositional principles borrowed from graphic design, architecture, and visual perception science. These are not aesthetic preferences — they are cognitive ergonomics.
 
-### Motif — Variation on a Theme
+#### Motif — Variation on a Theme
 
 A **motif** is a recurring visual element — a shape, rhythm, proportion, or treatment — that repeats across an interface with intentional variation. It is the single most powerful tool for making a design feel cohesive without making it feel monotonous.
 
@@ -3399,7 +3368,7 @@ A **motif** is a recurring visual element — a shape, rhythm, proportion, or tr
 4. **Motifs apply to tokens, not elements.** The motif lives in the token values. All elements that use the same token family automatically participate in the motif.
 5. **Break the motif only to signal exception.** A sharp-cornered element in a rounded-corner motif screams "I am different." Use this power sparingly — e.g., an error state, a destructive action, a foreign embed.
 
-### The Golden Ratio in Practice
+#### The Golden Ratio in Practice
 
 The golden ratio (φ ≈ 1.618) appears in nature, architecture (the Parthenon), photography (rule of thirds ≈ φ), and renaissance painting. In UI, it governs proportional relationships that feel "right" without the user knowing why.
 
@@ -3435,7 +3404,7 @@ This creates a split that feels balanced without being symmetric. Apply with `fl
 
 **Do not force φ everywhere.** Use it as a starting heuristic for proportions, then adjust to the 8pt grid. The goal is harmonious proportion, not mathematical purity.
 
-### Visual Balance
+#### Visual Balance
 
 Balance is the distribution of visual weight across a composition. An unbalanced layout creates subconscious tension and makes the user feel that something is "off."
 
@@ -3463,7 +3432,7 @@ Balance is the distribution of visual weight across a composition. An unbalanced
 - A single bold heading at the top balances an entire list of items below.
 - Always check balance at every breakpoint — what's balanced on desktop may collapse unevenly on mobile.
 
-### Focal Point and Visual Flow
+#### Focal Point and Visual Flow
 
 Every screen must have exactly **one primary focal point** — the first thing the eye lands on. Everything else exists in service of that focal point.
 
@@ -3493,7 +3462,7 @@ Every screen must have exactly **one primary focal point** — the first thing t
 4. Place the primary CTA at a **terminal point** — where the eye naturally ends its scan.
 5. **Never create two competing focal points.** If an element fights the primary for attention, reduce its visual weight.
 
-### Rhythm and Repetition
+#### Rhythm and Repetition
 
 Rhythm is the predictable repetition of visual elements at regular intervals. It creates a sense of order and makes interfaces scannable.
 
@@ -3510,7 +3479,7 @@ Rhythm is the predictable repetition of visual elements at regular intervals. It
 2. **Rhythm breaks signal section changes.** A larger gap between groups of items communicates "new section" without needing a visible divider.
 3. **Alignment creates invisible rhythm.** Left-align all text in a column. Align all card titles to the same baseline. Rhythm appears even without visible lines connecting them.
 
-### Proximity and Gestalt Grouping
+#### Proximity and Gestalt Grouping
 
 Elements that are **close together** are perceived as belonging to the same group (Gestalt law of proximity). This is the most important layout principle after hierarchy.
 
@@ -3520,7 +3489,7 @@ Elements that are **close together** are perceived as belonging to the same grou
 3. **If you need a divider line, your spacing is wrong.** Proper proximity-based grouping eliminates most divider lines. Use dividers only when spacing alone is ambiguous (e.g., dense data tables).
 4. **Group size should not exceed 5–7 items** (Miller's Law). Beyond that, create sub-groups.
 
-### Whitespace as a Design Element
+#### Whitespace as a Design Element
 
 Whitespace (negative space) is not "empty" — it is an active structural element. It does the work that borders, backgrounds, and dividers do elsewhere, but with more elegance.
 
@@ -3539,7 +3508,7 @@ Whitespace (negative space) is not "empty" — it is an active structural elemen
 3. **Outer margins ≥ inner margins.** Page padding must be greater than card padding, which must be greater than element spacing within cards. This creates visual nesting.
 4. **Never let content touch its container edge.** Every container must have internal padding.
 
-### Contrast and Readability
+#### Contrast and Readability
 
 Contrast is the measurable difference between foreground and background. Insufficient contrast is the #1 accessibility failure and the most common visual design error.
 
@@ -3559,7 +3528,7 @@ Contrast is the measurable difference between foreground and background. Insuffi
 4. **Dark mode contrast is different.** Pure white (#fff) on dark backgrounds causes halation (glowing edges). Use off-white (#f9fafb, #e5e7eb) as `text_fg_primary` in dark mode.
 5. **Suppress contrast for disabled states** — drop to 40-50% opacity, which intentionally fails contrast minimums as a signal that the element is non-interactive.
 
-### Color Psychology and Harmony
+#### Color Psychology and Harmony
 
 Color choices affect perception, mood, and usability beyond mere brand identity.
 
@@ -3581,7 +3550,7 @@ Color choices affect perception, mood, and usability beyond mere brand identity.
 4. **Adjacent hues (analogous) create harmony.** Complementary hues (opposite on the wheel) create tension — use only for intentional contrast.
 5. **Test every color pairing in both light and dark mode.** What works on white may wash out on dark surfaces.
 
-### Alignment and the Invisible Grid
+#### Alignment and the Invisible Grid
 
 Every element on screen sits on invisible alignment axes. When elements don't share an edge or center line, the layout feels chaotic — even if no single element is "wrong."
 
@@ -3592,7 +3561,7 @@ Every element on screen sits on invisible alignment axes. When elements don't sh
 4. **Ragged right edges are acceptable for text.** Do not justify body copy in UI — it creates uneven word spacing. Left-align everything.
 5. **Grid tracks create alignment automatically.** Prefer CSS Grid (`display: 'grid'`) over manual positioning for any layout with more than two alignment axes.
 
-### Proportion and Content Density
+#### Proportion and Content Density
 
 The relationship between an element's content and its container determines whether it feels cramped, comfortable, or empty.
 
@@ -3604,7 +3573,7 @@ The relationship between an element's content and its container determines wheth
 5. **Sidebar navigation:** Width 240-280px. Item padding 8-12px vertical, 16-20px horizontal.
 6. **Line length:** Optimal reading length is 45-75 characters per line (≈ 600-800px at 16px). Beyond 80 characters, readability drops sharply. Constrain with `maxWidth`.
 
-### Motion and Transition Principles
+#### Motion and Transition Principles
 
 Animation in UI is not decoration — it communicates spatial relationships, confirms actions, and guides attention.
 
@@ -3628,7 +3597,7 @@ Animation in UI is not decoration — it communicates spatial relationships, con
 
 ---
 
-## Category: Structure
+### Category: Structure
 
 Tokens: `surface_*`, `space_*`, `radius_*`, `shadow_*`
 
@@ -3642,7 +3611,7 @@ Tokens: `surface_*`, `space_*`, `radius_*`, `shadow_*`
 | **When to use**     | Any element that contains, separates, or groups other elements                                                       |
 | **When NOT to use** | Inline text runs, single atomic icons                                                                                |
 
-## Category: Actions
+### Category: Actions
 
 Tokens: `action_*`
 
@@ -3656,7 +3625,7 @@ Tokens: `action_*`
 | **When to use**          | Buttons, links, toggles, interactive chips                                                        |
 | **When NOT to use**      | Static labels, read-only badges, non-interactive status indicators                                |
 
-## Category: Surfaces
+### Category: Surfaces
 
 Tokens: `surface_*`
 
@@ -3669,7 +3638,7 @@ Tokens: `surface_*`
 | **When to use**     | Backgrounds, cards, modals, sidebars, popovers                                       |
 | **When NOT to use** | Inline text styling, icon fills                                                      |
 
-## Category: Feedback
+### Category: Feedback
 
 Tokens: `feedback_*`
 
@@ -3682,7 +3651,7 @@ Tokens: `feedback_*`
 | **When to use**          | Toasts, banners, inline validation, status badges                                                                                |
 | **When NOT to use**      | Decorative elements, branding, navigation states                                                                                 |
 
-## Category: Navigation
+### Category: Navigation
 
 Tokens: `nav_*`
 
@@ -3694,7 +3663,7 @@ Tokens: `nav_*`
 | **When to use**     | Tabs, sidebars, breadcrumbs, pagination, steppers                                                                                              |
 | **When NOT to use** | In-page links within body copy (use text links instead)                                                                                        |
 
-## Category: Data
+### Category: Data
 
 Tokens: `data_*`
 
@@ -3707,7 +3676,7 @@ Tokens: `data_*`
 | **When to use**     | Tables, lists, key-value pairs, stat cards                                                                                  |
 | **When NOT to use** | Free-form content, marketing sections                                                                                       |
 
-## Category: Text & Typography
+### Category: Text & Typography
 
 Tokens: `text_*`, `type_*`
 
@@ -3721,7 +3690,7 @@ Tokens: `text_*`, `type_*`
 | **When to use**     | All visible text content                                                                                                                                  |
 | **When NOT to use** | N/A — every text element needs typographic tokens                                                                                                         |
 
-## Category: Focus & Accessibility
+### Category: Focus & Accessibility
 
 Tokens: `focus_*`
 
@@ -3733,7 +3702,7 @@ Tokens: `focus_*`
 | **When to use**     | Every focusable element: buttons, inputs, links, custom controls                        |
 | **When NOT to use** | Mouse-only decorative hover effects                                                     |
 
-## Category: Borders
+### Category: Borders
 
 Tokens: `border_*`
 
@@ -3745,7 +3714,7 @@ Tokens: `border_*`
 | **When to use**     | Dividers, input outlines, card edges, active tab indicators                                      |
 | **When NOT to use** | Decorative gradients, background patterns                                                        |
 
-## Decision Checklist — Before Creating Any Token
+### Decision Checklist — Before Creating Any Token
 
 1. **What category does this belong to?** (structure, action, surface, feedback, nav, data, text, focus, border)
 2. **What property am I setting?** (bg, fg, border, size, weight, gap, padding, radius, shadow, opacity)
@@ -3754,7 +3723,7 @@ Tokens: `border_*`
 5. **Does a token with the same intent but different name exist?** → Reuse it and consider whether it should be renamed.
 6. **Is this truly new?** → Create it with a documentation comment (what / when to use / when NOT to use).
 
-## Decision Checklist — Before Styling Any Element
+### Decision Checklist — Before Styling Any Element
 
 1. **Did I neutralize browser defaults?** Check the Element-Specific Resets table. Apply `margin: '0'`, `padding: '0'`, and any other required resets for this element type.
 2. **Is `boxSizing: 'border-box'` applied?** If the element has explicit width/height/padding/border, it must be border-box.
@@ -3771,11 +3740,11 @@ Tokens: `border_*`
 ---
 
 
-# Theming & Design Tokens
+## Theming & Design Tokens
 
 OEM does not ship pre-built components or a fixed token palette. Instead, every visual property — color, spacing, typography, radius, shadow, etc. — is expressed as a reactive token that LLMs generate on the fly while building UI. This gives every app a bespoke design system that grows organically and stays perfectly consistent.
 
-## Architecture Overview
+### Architecture Overview
 
 ```
 useThemeState('light')          ← single source of truth for current theme
@@ -3789,7 +3758,7 @@ useThemeState('light')          ← single source of truth for current theme
 2. **Create tokens with `useTokenState`.** Each token receives a light value, a dark value, and the shared `themeState` dependency. When the theme changes, every token automatically updates.
 3. **Reference tokens in traits.** Tokens are plain `State` objects, so they plug directly into traits as reactive values.
 
-## Step 1 — Create the Theme Instance
+### Step 1 — Create the Theme Instance
 
 Every app must create exactly **one** `useThemeState` instance and export it from a central `theme.ts` file:
 
@@ -3800,7 +3769,7 @@ import { useThemeState, useTokenState } from '@linttrap/oem';
 export const theme = useThemeState('light');
 ```
 
-## Step 2 — Generate Tokens On-the-Fly
+### Step 2 — Generate Tokens On-the-Fly
 
 LLMs create tokens as they build UI. Each token is an instance of `useTokenState` that derives its value from the shared theme:
 
@@ -3826,7 +3795,7 @@ export const action_bg_primary = useTokenState('#2563eb', '#3b82f6', theme);
 export const text_fg_primary = useTokenState('#111827', '#f9fafb', theme);
 ```
 
-## Token Naming Convention
+### Token Naming Convention
 
 Token names follow a strict pattern that prevents duplication and communicates intent:
 
@@ -3861,7 +3830,7 @@ type_size_base            // base font size
 type_weight_bold          // bold font weight
 ```
 
-## Preventing Token Duplication
+### Preventing Token Duplication
 
 Before creating a new token, **always** check whether an existing token already covers the same intent. Follow these rules:
 
@@ -3877,7 +3846,7 @@ Before creating a new token, **always** check whether an existing token already 
 export const action_bg_danger = useTokenState('#dc2626', '#ef4444', theme);
 ```
 
-## Using Tokens in Traits
+### Using Tokens in Traits
 
 Tokens are `State` objects. Pass them as reactive watchers to traits:
 
@@ -3888,51 +3857,69 @@ trait.style('color', text_fg_primary.$val);
 
 When the theme changes, every token fires its subscribers and the UI updates automatically.
 
-## Token Usage Rules
+### Token Usage Rules
 
 - **Never** write a hex value, rgb value, or pixel literal directly in a `trait.style()` call.
 - **Always** create or reference a token from `theme.ts`.
 - **Never** invent a token name that doesn't follow the `<category>_<property>_<variant>` convention.
 - When no existing token fits, create a new one with full documentation and add it to `theme.ts`.
 
+### Contrast Rules (CRITICAL)
+
+Every text/foreground token MUST meet WCAG contrast minimums against the surfaces it will appear on, **in both light and dark mode**.
+
+| Content Type | Minimum Contrast Ratio |
+| --- | --- |
+| Body text (< 18px) | 4.5:1 |
+| Large text (≥ 18px bold) | 3:1 |
+| UI components & icons | 3:1 |
+
+**Rules:**
+1. When creating a `text_fg_*` token, check its contrast against every `surface_bg_*` it will sit on — in BOTH themes.
+2. "Muted" does not mean "invisible." `text_fg_muted` must still meet 4.5:1 against its typical background.
+3. When a token is used as text on a colored background (e.g., selected chip text on an accent background), verify contrast for that specific pairing.
+4. Dark mode: avoid pure white (#fff) — use off-white (#c7c7c7–#e5e7eb) to prevent halation.
+5. Light mode: avoid pairing mid-grays as both foreground and background — they collapse into unreadable mush.
+6. Add a `// CONTRAST:` comment to every text token documenting which surface it was verified against.
+
 
 ---
 
 
-# Icons File
+## Icons File
 
-## What This File Is
+### What This File Is
 
 `icons.ts` is the single file (or `icons/` folder) containing all SVG icon functions for the application. Each icon is an exported function that accepts a common `IconProps` argument and returns an `SVGElement`. The file has its own dedicated `Template` instance configured for SVG.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Icons are visual primitives referenced by the UI layer but distinct from layout, state, and behavior. Keeping them in a dedicated file makes icons discoverable, reusable, and easy to add or remove without touching UI code. Because SVG elements need `createElementNS` with the SVG namespace, icons use their own `Template` instance with only the traits relevant to SVG — keeping it separate from the main HTML template.
 
-## When to Create
+### When to Create
 
 Create `icons.ts` when the application needs any SVG icons. Even a single icon belongs here.
 
-## When to Use
+### When to Use
 
 - **When building UI**: Import icon functions into `ui.ts` and call them inline in the element tree.
 - **When adding new icons**: Add a new exported function to this file.
 - **When an icon needs to change size or color contextually**: Use the `IconProps` argument.
 
-## What Belongs Here
+### What Belongs Here
 
 - A dedicated `Template` instance for SVG (at the top of the file)
 - The `IconProps` type (or import it from `types.ts`)
 - Exported icon functions — one function per icon
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - The main HTML template (that goes in `templates.ts`)
 - UI layout or composition (that goes in `ui.ts`)
 - Design tokens (those go in `theme.ts`)
 - Raster images or external asset URLs
 
-## IconProps
+### IconProps
 
 Every icon function accepts the same `IconProps` object so that icons have a consistent API:
 
@@ -3945,7 +3932,7 @@ type IconProps = {
 
 Define `IconProps` in `types.ts` if your app already has a types file, or define it locally at the top of `icons.ts`.
 
-## Template Instance
+### Template Instance
 
 Icons need their own `Template` instance because `tag.svg`, `tag.path`, etc. create SVG-namespaced elements. Only include the traits you actually use on SVG elements — typically `style` and `attr`:
 
@@ -3960,7 +3947,7 @@ const [svg, svgTrait] = Template({
 
 This template is **private to the icons file** — it is not exported. UI code imports the icon _functions_, not the SVG template.
 
-## Example
+### Example
 
 ```typescript
 // icons.ts
@@ -4047,7 +4034,7 @@ export function PlusIcon(props: IconProps = {}) {
 }
 ```
 
-## Usage in UI
+### Usage in UI
 
 ```typescript
 // ui.ts
@@ -4064,7 +4051,7 @@ tag.button(
 );
 ```
 
-## Passing Reactive Token Values
+### Passing Reactive Token Values
 
 When icon color should react to theme changes, pass a token's resolved value:
 
@@ -4074,7 +4061,7 @@ CheckIcon({ color: text_fg_primary.$val() });
 
 If the icon needs to re-render on state change, place the icon call inside a `trait.innerHTML` callback so it is rebuilt when the state fires.
 
-## Rules
+### Rules
 
 1. **One file for all icons.** Only split into a folder if the file grows unmanageable.
 2. **One function per icon.** Each icon is a named export — `CheckIcon`, `TrashIcon`, `CloseIcon`, etc.
@@ -4088,7 +4075,7 @@ If the icon needs to re-render on state change, place the icon call inside a `tr
 ---
 
 
-# Responsive Design
+## Responsive Design
 
 OEM handles responsive design without CSS media queries. Instead, viewport conditions are modeled as reactive `State<boolean>` objects using `useMediaQueryState`. Traits subscribe to these states via conditions, so style changes are automatic, surgical, and declarative.
 
@@ -4096,7 +4083,7 @@ OEM handles responsive design without CSS media queries. Instead, viewport condi
 
 ---
 
-## Core Mechanism
+### Core Mechanism
 
 `useMediaQueryState` returns a `State<boolean>` that tracks whether the viewport matches the given constraints. It listens to `window.resize` and updates automatically:
 
@@ -4110,7 +4097,7 @@ const isDesktop = useMediaQueryState({ minWidth: 1024 });
 
 Each of these is a normal State object — it has `.val()`, `.set()`, `.sub()`, `.$val`, `.$test()`, and all the standard State methods.
 
-### Props
+#### Props
 
 | Property   | Type                           | Default    | Description                      |
 | ---------- | ------------------------------ | ---------- | -------------------------------- |
@@ -4122,7 +4109,7 @@ Width boundaries are inclusive (`>= minWidth` and `<= maxWidth`).
 
 ---
 
-## Where to Define Breakpoints
+### Where to Define Breakpoints
 
 Define all breakpoint states in `states.ts` (or a dedicated `breakpoints.ts` if the app is large). They are module-level singletons, just like any other State:
 
@@ -4139,11 +4126,11 @@ Import them wherever UI code needs responsive behavior.
 
 ---
 
-## Using Breakpoints in Traits
+### Using Breakpoints in Traits
 
 Because `useMediaQueryState` returns a `State<boolean>`, its `.$test()` method produces conditions that traits natively understand. Use separate trait calls gated by breakpoint conditions — never ternaries:
 
-### Responsive Styles
+#### Responsive Styles
 
 ```ts
 import { isTablet, isDesktop } from './states';
@@ -4163,7 +4150,7 @@ tag.div(
 
 Each trait subscribes to the breakpoint state independently. When the viewport crosses a boundary, only the affected traits re-evaluate — no full re-render.
 
-### Responsive Text
+#### Responsive Text
 
 ```ts
 tag.h1(
@@ -4175,7 +4162,7 @@ tag.h1(
 );
 ```
 
-### Showing / Hiding Elements
+#### Showing / Hiding Elements
 
 Use `display: none` gated by a breakpoint condition to show or hide elements at different viewport sizes:
 
@@ -4196,7 +4183,7 @@ tag.nav(
 ),
 ```
 
-### Responsive Grid Columns
+#### Responsive Grid Columns
 
 ```ts
 tag.div(
@@ -4214,7 +4201,7 @@ tag.div(
 
 ---
 
-## Combining Breakpoints with Other Conditions
+### Combining Breakpoints with Other Conditions
 
 Breakpoint conditions compose with any other condition. When multiple conditions are passed to a trait, all must be truthy for it to apply:
 
@@ -4230,7 +4217,7 @@ trait.style(
 
 ---
 
-## Print Media
+### Print Media
 
 `useMediaQueryState` also supports the `type` property for print-specific styles:
 
@@ -4247,7 +4234,7 @@ tag.main(
 
 ---
 
-## Rules
+### Rules
 
 1. **Mobile-first.** Base styles (no condition) target the smallest viewport. Larger breakpoints add overrides.
 2. **Define breakpoints once in `states.ts`.** Never call `useMediaQueryState` inline inside UI code.
@@ -4261,38 +4248,38 @@ tag.main(
 ## Guides
 
 
-# Custom Traits File
+## Custom Traits File
 
-## What This File Is
+### What This File Is
 
 `traits.ts` is the single file (or `traits/` folder) containing any custom trait functions created for the application. Custom traits extend the behavior of OEM's template system beyond the built-in traits (style, event, attribute, textContent, className, innerHTML, etc.).
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Custom traits are reusable behavioral building blocks — they are registered into Templates just like built-in traits. Isolating them in their own file keeps them discoverable and prevents them from being buried inside UI code where they'd be hard to find and reuse.
 
-## When to Create
+### When to Create
 
 Create `traits.ts` only when the built-in trait library does not cover a behavior you need. Most applications do not need custom traits — the core library is designed to be sufficient for typical use cases.
 
-## When to Use
+### When to Use
 
 - **When building a Template**: Import custom traits and register them alongside built-in traits.
 - **When you need a repeating DOM behavior** that isn't covered by the built-in traits.
 - **Before creating a custom trait**: Check whether a built-in trait already handles the use case.
 
-## What Belongs Here
+### What Belongs Here
 
 - Custom trait functions following the OEM trait signature: `(el: HTMLElement, ...args, ...rest: (StateType | Condition)[]) => (() => void) | void`
 - Each trait should handle its own subscription to State objects and return a cleanup function
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - Built-in traits (those come from `@linttrap/oem`)
 - UI rendering code (that goes in `ui.ts`)
 - State definitions (those go in `states.ts`)
 
-## Example
+### Example
 
 ```typescript
 // traits.ts
@@ -4320,7 +4307,7 @@ export function useScrollToTrait(
 }
 ```
 
-## Registering Custom Traits
+### Registering Custom Traits
 
 ```typescript
 // templates.ts
@@ -4338,7 +4325,7 @@ export const [tag, trait] = Template({
 trait.scrollTo('smooth', someCondition.$test(true));
 ```
 
-## Rules
+### Rules
 
 1. **One file for all custom traits.** Only split into a folder if the file grows unmanageable.
 2. **Follow the trait signature convention.** First parameter is `el`, then trait-specific args, then `...rest: (StateType | Condition)[]`.
@@ -4350,39 +4337,39 @@ trait.scrollTo('smooth', someCondition.$test(true));
 ---
 
 
-# Templates File
+## Templates File
 
-## What This File Is
+### What This File Is
 
 `templates.ts` is the single file (or `templates/` folder) containing all `Template()` definitions for the application. Each `Template()` call creates a `[tag, trait]` pair — a custom template engine configured with a specific set of traits.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Templates are the bridge between OEM's trait system and the UI. They define _which_ traits are available in each part of the app. Centralizing template definitions makes it easy to see what capabilities each template has and ensures consistent trait naming across the application.
 
-## When to Create
+### When to Create
 
 Create `templates.ts` at the start of any new OEM application, immediately after deciding which traits the app needs.
 
-## When to Use
+### When to Use
 
 - **When writing UI code**: Import `[tag, trait]` from this file.
 - **When adding new traits**: Register them in the appropriate Template definition here.
 - **When starting a new view or module**: Decide whether to use an existing template or create a new one.
 
-## What Belongs Here
+### What Belongs Here
 
 - All `Template()` calls and their destructured `[tag, trait]` exports
 - Imports of built-in traits from `@linttrap/oem`
 - Imports of custom traits from `traits.ts`
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - Trait implementations (those go in `traits.ts` for custom traits, or come from `@linttrap/oem`)
 - UI rendering code (that goes in `ui.ts`)
 - State definitions (those go in `states.ts`)
 
-## Example
+### Example
 
 ```typescript
 // templates.ts
@@ -4414,7 +4401,7 @@ export const [tag, trait] = Template({
 });
 ```
 
-## Multiple Templates
+### Multiple Templates
 
 Most applications need only one template. Create additional templates only when different parts of the app need different trait sets (e.g., an SVG-heavy section that needs specialized traits):
 
@@ -4427,7 +4414,7 @@ export const [svgTag, svgTrait] = Template({
 });
 ```
 
-## Rules
+### Rules
 
 1. **One file for all templates.** Only split into a folder if the file grows unmanageable.
 2. **Most apps need exactly one template.** Don't create multiple unless there's a clear reason.
@@ -4439,27 +4426,27 @@ export const [svgTag, svgTrait] = Template({
 ---
 
 
-# Data File
+## Data File
 
-## What This File Is
+### What This File Is
 
 `data.ts` is the single file (or `data/` folder) containing static data used in the application. This is data that is known at build time, does not change at runtime, and does not need to trigger re-renders.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Static data (dropdown options, navigation items, static content) is referenced by UI code but is conceptually separate from both the UI structure and the reactive state. Isolating it makes it easy to update content without touching logic, and gives LLMs a clear place to look for reference data.
 
-## When to Create
+### When to Create
 
 Create `data.ts` when the application has any static data sets — lists, lookup tables, menu items, or content that is hardcoded rather than fetched.
 
-## When to Use
+### When to Use
 
 - **When rendering static lists**: Import data arrays and `.map()` over them in `trait.innerHTML`.
 - **When populating dropdowns or menus**: Import option arrays from this file.
 - **When displaying static content**: Import text blocks or structured content objects.
 
-## What Belongs Here
+### What Belongs Here
 
 - Arrays of options for dropdowns, radio groups, or select menus
 - Navigation item definitions (label + route)
@@ -4467,14 +4454,14 @@ Create `data.ts` when the application has any static data sets — lists, lookup
 - Lookup tables and mappings
 - Seed data or default data sets
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - Data fetched from an API at runtime (that goes into State objects in `states.ts`)
 - Reactive values (those go in `states.ts`)
 - Configuration settings (those go in `config.ts`)
 - Single constant values (those go in `constants.ts`)
 
-## Example
+### Example
 
 ```typescript
 // data.ts
@@ -4498,7 +4485,7 @@ export const defaultTodos: Todo[] = [
 ];
 ```
 
-## Rules
+### Rules
 
 1. **One file for all static data.** Only split into a folder if the file grows unmanageable.
 2. **Use `as const`** for arrays and objects that should have literal types.
@@ -4510,34 +4497,34 @@ export const defaultTodos: Todo[] = [
 ---
 
 
-# States File
+## States File
 
-## What This File Is
+### What This File Is
 
 `states.ts` is the single file (or `states/` folder) containing all reactive State objects for the application. State objects are created with the `State()` function from OEM and are the mechanism for storing any value that needs to trigger UI re-renders when it changes.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 State objects are module-level singletons shared across the entire application. Centralizing them in one file gives LLMs and developers a single inventory of all reactive data in the app. It also prevents accidental duplication — before creating a new State, check this file to see if one already exists.
 
-## When to Create
+### When to Create
 
 Create `states.ts` at the start of any new OEM application, as soon as the types are defined.
 
-## When to Use
+### When to Use
 
 - **When rendering UI**: Import State objects and bind them to traits using `$val` or the verbose form.
 - **When handling events**: Import State objects and use `$set`, `$reduce`, or custom `$`-prefixed methods.
 - **When adding a new feature**: Add any new State objects to this file.
 - **Before creating a new State**: Read this file to check if an appropriate State already exists.
 
-## What Belongs Here
+### What Belongs Here
 
 - All `State()` instances for the application
 - Custom methods defined on State objects (passed as the second argument to `State()`)
 - State objects for any data that UI traits subscribe to
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - Type definitions (those go in `types.ts`)
 - Static data that never changes (those go in `data.ts`)
@@ -4546,7 +4533,7 @@ Create `states.ts` at the start of any new OEM application, as soon as the types
 - Action creator functions (those go in `actions.ts`)
 - Machine/dispatch logic (those go in `machines.ts`)
 
-## Example
+### Example
 
 ```typescript
 // states.ts
@@ -4575,7 +4562,7 @@ export const todoList = State<Todo[]>([], {
 });
 ```
 
-## Responsive Breakpoints
+### Responsive Breakpoints
 
 Every app should define mobile-first breakpoint states. These are `State<boolean>` objects that update automatically when the viewport crosses a width boundary:
 
@@ -4590,7 +4577,7 @@ export const isDesktop = useMediaQueryState({ minWidth: 1024 });
 
 Use these in UI code via `.$test(true)` conditions on traits. Base styles (no condition) target mobile; breakpoint conditions layer on overrides for larger viewports. See the [Responsive Design](responsive-design.md) guide for full patterns.
 
-## Usage Patterns
+### Usage Patterns
 
 ```typescript
 // In UI — binding to traits using $val
@@ -4609,7 +4596,7 @@ trait.event('click', todoList.$toggle(todo.id));
 trait.text(() => `${todos.val().filter((t) => !t.completed).length} items left`, todos);
 ```
 
-## Persistence
+### Persistence
 
 If a State needs to survive page reloads, subscribe to it and persist its value. Load the persisted value back on startup:
 
@@ -4629,7 +4616,7 @@ todos.sub((value) => {
 });
 ```
 
-## Rules
+### Rules
 
 1. **One file for all State objects.** Only split into a folder if the file grows unmanageable.
 2. **State objects are module-level singletons.** Never create State inside a function or loop.
@@ -4641,33 +4628,33 @@ todos.sub((value) => {
 ---
 
 
-# Main File
+## Main File
 
-## What This File Is
+### What This File Is
 
 `main.ts` is the single entry point of the OEM application. It is the file that gets loaded by the HTML page's `<script>` tag. Its job is to initialize the application — wire the UI into the DOM and perform any one-time setup.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 The entry point is the only file with side effects on import (it mounts the UI to the DOM). Keeping it minimal and separate ensures that all other files are pure and importable without side effects, which makes them testable and reusable.
 
-## When to Create
+### When to Create
 
 Create `main.ts` as one of the first files in any new OEM application.
 
-## When to Use
+### When to Use
 
 - **When starting the application**: This is what the browser loads.
 - **When changing initialization logic**: Edit this file to modify what happens on app startup.
 - **When adding global setup**: One-time side effects (loading from localStorage, adding global event listeners) go here.
 
-## What Belongs Here
+### What Belongs Here
 
 - Importing the root UI element from `ui.ts`
 - Mounting the UI to the DOM via `tag.$(document.body)(...)` or `document.body.appendChild(...)`
 - Global event listeners that don't belong to a specific element
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - State definitions (those go in `states.ts`)
 - UI construction (that goes in `ui.ts`)
@@ -4675,7 +4662,7 @@ Create `main.ts` as one of the first files in any new OEM application.
 - Template definitions (those go in `templates.ts`)
 - Machine logic (that goes in `machines.ts`)
 
-## Example
+### Example
 
 ```typescript
 // main.ts
@@ -4690,7 +4677,7 @@ tag.$(document.body)(
 );
 ```
 
-## HTML Integration
+### HTML Integration
 
 The HTML file simply loads the entry point:
 
@@ -4708,7 +4695,7 @@ The HTML file simply loads the entry point:
 </html>
 ```
 
-## Rules
+### Rules
 
 1. **One entry point per app.** There is exactly one `main.ts`.
 2. **Keep it minimal.** Import, initialize, mount — nothing more.
@@ -4720,27 +4707,27 @@ The HTML file simply loads the entry point:
 ---
 
 
-# Config File
+## Config File
 
-## What This File Is
+### What This File Is
 
 `config.ts` is the single file (or `config/` folder) containing environment-aware configuration settings for the application. These are values that may differ between development, staging, and production environments but do not need to trigger re-renders when they change.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Configuration is separate from constants because config values are environment-dependent. Isolating them makes it easy for LLMs and developers to see what can be changed per deployment without touching application logic.
 
-## When to Create
+### When to Create
 
 Create `config.ts` when the application has any settings that vary by environment (e.g., API URLs, feature flags, debug toggles).
 
-## When to Use
+### When to Use
 
 - **When setting up API calls**: Import the base URL or environment-specific endpoints from config.
 - **When toggling features**: Check feature flags defined in config.
 - **When deploying**: Review this file to confirm environment-specific settings.
 
-## What Belongs Here
+### What Belongs Here
 
 - Environment-specific API URLs
 - Feature flags (boolean toggles for unreleased features)
@@ -4748,14 +4735,14 @@ Create `config.ts` when the application has any settings that vary by environmen
 - Environment detection logic (`isDev`, `isProd`)
 - Third-party service keys (non-secret, client-side only)
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - Fixed values that never change per environment (those go in `constants.ts`)
 - Reactive values (those go in `states.ts`)
 - Design tokens (those go in `theme.ts`)
 - Type definitions (those go in `types.ts`)
 
-## Example
+### Example
 
 ```typescript
 // config.ts
@@ -4771,7 +4758,7 @@ export const config = {
 } as const;
 ```
 
-## Rules
+### Rules
 
 1. **One file for all config.** Only split into a folder if the file grows unmanageable.
 2. **Export a single `config` object** or named exports — keep access patterns consistent.
@@ -4783,39 +4770,39 @@ export const config = {
 ---
 
 
-# Theme File
+## Theme File
 
-## What This File Is
+### What This File Is
 
 `theme.ts` is the single file (or `theme/` folder) containing the application's theming infrastructure: one `useThemeState` instance and all `useTokenState` token definitions. Tokens are the single source of truth for every visual property in the app — colors, spacing, typography, radii, shadows, and more.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Tokens are referenced by every piece of UI code. Centralizing them ensures consistent visual properties across the entire app and prevents duplicate tokens. Every token must have a documentation comment so that LLMs can decide whether to reuse an existing token or create a new one.
 
-## When to Create
+### When to Create
 
 Create `theme.ts` at the start of any new OEM application, before writing any UI code.
 
-## When to Use
+### When to Use
 
 - **When writing UI code**: Import tokens and bind them to style traits using `token.$val`.
 - **When adding new visual properties**: Check this file first — if a matching token exists, use it. Only create a new token if no existing token covers the intent.
 - **When switching themes**: Call `theme.set('dark')` or `theme.set('light')` — all tokens update automatically.
 
-## What Belongs Here
+### What Belongs Here
 
 - The single `useThemeState` instance
 - All `useTokenState` token definitions
 - Documentation comments above every token (what / when to use / when not to use)
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - UI rendering code (that goes in `ui.ts`)
 - State objects unrelated to theming (those go in `states.ts`)
 - Trait definitions (those go in `traits.ts` or `templates.ts`)
 
-## Example
+### Example
 
 ```typescript
 // theme.ts
@@ -4855,7 +4842,7 @@ export const space_padding_md = useTokenState('16px', '16px', theme);
 export const radius_size_md = useTokenState('8px', '8px', theme);
 ```
 
-## Token Naming Convention
+### Token Naming Convention
 
 Token names follow the pattern `<category>_<property>_<variant>`:
 
@@ -4865,7 +4852,7 @@ Token names follow the pattern `<category>_<property>_<variant>`:
 | **property** | CSS-adjacent property     | `bg`, `fg`, `border`, `size`, `weight`, `gap`, `padding`                                      |
 | **variant**  | Hierarchy within category | `primary`, `secondary`, `muted`, `hover`, `active`, `disabled`                                |
 
-## Rules
+### Rules
 
 1. **One file for all tokens.** Only split into a folder if the file grows unmanageable.
 2. **One `useThemeState` per app.** Never create multiple theme instances.
@@ -4879,39 +4866,39 @@ Token names follow the pattern `<category>_<property>_<variant>`:
 ---
 
 
-# Actions File
+## Actions File
 
-## What This File Is
+### What This File Is
 
 `actions.ts` is the single file (or `actions/` folder) containing all action creator functions for the application. Each action is a function that returns an object with a `type` and an optional `payload`. Actions describe **what happened** — they do not execute the change themselves.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Actions are the vocabulary of the application's behavior. Centralizing them in one file gives LLMs and developers a complete inventory of every user intent the app can handle. It also keeps action definitions separate from the machine logic that processes them.
 
-## When to Create
+### When to Create
 
 Create `actions.ts` when the application uses a state machine pattern (i.e., it has a `machines.ts` file). Actions are the inputs to machines.
 
-## When to Use
+### When to Use
 
 - **When dispatching from event handlers**: Import action creators and call them to produce action objects.
 - **When writing machines**: Reference action types to handle each case.
 - **When adding new user interactions**: Define a new action creator here before wiring it into the machine.
 
-## What Belongs Here
+### What Belongs Here
 
 - Action creator functions (functions that return `{ type, payload }` objects)
 - Action type constants (if not using string literals directly)
 - The Action union type (or import it from `types.ts`)
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - State mutation logic (that goes in `machines.ts` or State custom methods in `states.ts`)
 - UI code or trait calls
 - State object definitions
 
-## Example
+### Example
 
 ```typescript
 // actions.ts
@@ -4938,7 +4925,7 @@ export const setFilter = (filter: 'all' | 'active' | 'completed'): Action => ({
 });
 ```
 
-## Rules
+### Rules
 
 1. **One file for all actions.** Only split into a folder if the file grows unmanageable.
 2. **Actions are pure functions.** They return data objects, nothing more — no side effects, no state mutation.
@@ -4950,28 +4937,28 @@ export const setFilter = (filter: 'all' | 'active' | 'completed'): Action => ({
 ---
 
 
-# Test Files
+## Test Files
 
-## What This File Is
+### What This File Is
 
 `test/` is the folder containing all unit and integration tests for the application. Test files mirror the structure of the source code and verify that states, actions, machines, and UI behavior work as expected.
 
-## Why It Must Be Its Own Folder
+### Why It Must Be Its Own Folder
 
 Tests are not application code — they are verification code. Isolating them in a `test/` folder keeps the main source clean and makes it clear which files are production code and which are test harnesses.
 
-## When to Create
+### When to Create
 
 Create a `test/` folder as soon as the application has state or machine logic worth verifying. Tests should be written alongside implementation, not deferred until later.
 
-## When to Use
+### When to Use
 
 - **After implementing state logic**: Write tests for State objects, custom methods, and reducers.
 - **After implementing machines**: Write tests for each action/case in the machine.
 - **After implementing actions**: Verify action creators return the correct shape.
 - **When debugging**: Write a failing test that reproduces the bug, then fix it.
 
-## What Belongs Here
+### What Belongs Here
 
 - Unit tests for State objects (`.set()`, `.reduce()`, `.test()`, custom methods)
 - Unit tests for machine dispatch functions
@@ -4979,12 +4966,12 @@ Create a `test/` folder as soon as the application has state or machine logic wo
 - Integration tests for state + machine interactions
 - Test utilities and mocks
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - Application code of any kind
 - Production state or configuration
 
-## Example Structure
+### Example Structure
 
 ```
 test/
@@ -4993,7 +4980,7 @@ test/
   actions.test.ts
 ```
 
-## Example Test
+### Example Test
 
 ```typescript
 // test/states.test.ts
@@ -5023,11 +5010,11 @@ console.assert(count.test(20) === true, 'test should check equality');
 console.assert(count.test((v) => v > 10) === true, 'test should accept predicates');
 ```
 
-## Important Note
+### Important Note
 
 Test files need to interact with internals in ways that application code never should. **Do not use test files as examples of idiomatic OEM.** Tests may import from internal paths, directly manipulate subscriptions, or use patterns that are inappropriate for production UI code.
 
-## Rules
+### Rules
 
 1. **Tests live in the `test/` folder.** Not alongside source files, not in a root `__tests__` directory.
 2. **Mirror source structure.** `states.ts` → `test/states.test.ts`, `machines.ts` → `test/machines.test.ts`.
@@ -5039,27 +5026,27 @@ Test files need to interact with internals in ways that application code never s
 ---
 
 
-# Types File
+## Types File
 
-## What This File Is
+### What This File Is
 
 `types.ts` is the single file (or `types/` folder) containing all TypeScript type definitions for the application. This includes types for state shapes, action payloads, data structures, function signatures, and any other custom types used across the app.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Types are referenced by every other category — states, actions, machines, UI, and traits all depend on shared type definitions. Centralizing them in one file eliminates circular imports, ensures a single source of truth, and lets LLMs quickly scan the entire type surface of the app.
 
-## When to Create
+### When to Create
 
 Create `types.ts` at the start of any new OEM application, immediately after the BDD files define the data model.
 
-## When to Use
+### When to Use
 
 - **Before writing state or actions**: Define the shape of your state and action types here first.
 - **When adding a new feature**: Add any new types to this file before implementing them elsewhere.
 - **When refactoring**: Check this file first to understand the app's data model.
 
-## What Belongs Here
+### What Belongs Here
 
 - State shape interfaces (e.g., `Todo`, `AppState`, `Filter`)
 - Action type unions and payload interfaces
@@ -5067,14 +5054,14 @@ Create `types.ts` at the start of any new OEM application, immediately after the
 - Utility types specific to the app
 - Props/parameter interfaces for helper functions
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - OEM framework types (these come from `@linttrap/oem`)
 - Implementation logic of any kind
 - Constants or literal values (those go in `constants.ts`)
 - Runtime code
 
-## Example
+### Example
 
 ```typescript
 // types.ts
@@ -5096,7 +5083,7 @@ export type Action =
   | { type: 'SET_FILTER'; payload: { filter: Filter } };
 ```
 
-## Rules
+### Rules
 
 1. **One file for all types.** Only split into a `types/` folder if the file exceeds manageable size.
 2. **Export everything.** Every type should be exported so other files can import it.
@@ -5108,40 +5095,40 @@ export type Action =
 ---
 
 
-# Machines File
+## Machines File
 
-## What This File Is
+### What This File Is
 
 `machines.ts` is the single file (or `machines/` folder) containing all state machines for the application. Each machine is a function that takes the current state and a dispatched action, then uses a switch statement to determine what state mutation to perform.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Machines are the decision-making layer of the application. They determine how the app responds to actions. Isolating them from state definitions, actions, and UI makes the behavioral logic easy to read, test, and modify without affecting other layers.
 
-## When to Create
+### When to Create
 
 Create `machines.ts` when the application has complex state transitions that benefit from a centralized dispatch pattern — especially when multiple actions affect multiple State objects in coordinated ways.
 
-## When to Use
+### When to Use
 
 - **When processing dispatched actions**: The machine reads the action type and performs the appropriate state mutations.
 - **When adding new behavior**: Add a new case to the relevant machine's switch statement.
 - **When debugging behavior**: Read the machine to trace how an action maps to a state change.
 
-## What Belongs Here
+### What Belongs Here
 
 - Machine functions (switch statements on action type)
 - Dispatch functions that feed actions into machines
 - Any coordination logic that involves multiple State objects reacting to a single action
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - State object definitions (those go in `states.ts`)
 - Action creator functions (those go in `actions.ts`)
 - Type definitions (those go in `types.ts`)
 - UI code or trait calls
 
-## Example
+### Example
 
 ```typescript
 // machines.ts
@@ -5182,7 +5169,7 @@ export function dispatch(action: Action) {
 export const $dispatch = (action: Action) => () => dispatch(action);
 ```
 
-## Usage in UI
+### Usage in UI
 
 Use `$dispatch` to wire actions directly to event handlers without wrapping in an arrow function:
 
@@ -5206,7 +5193,7 @@ import { addTodo } from './actions';
 trait.event('click', () => dispatch(addTodo(newTodoText.val()))),
 ```
 
-## Rules
+### Rules
 
 1. **One file for all machines.** Only split into a folder if the file grows unmanageable.
 2. **Use simple switch statements.** Each case handles one action type. No nesting, no complex conditionals.
@@ -5219,27 +5206,27 @@ trait.event('click', () => dispatch(addTodo(newTodoText.val()))),
 ---
 
 
-# UI File
+## UI File
 
-## What This File Is
+### What This File Is
 
 `ui.ts` is the single file (or `ui/` folder) containing the UI rendering code for the application. This is where `tag` and `trait` (from `templates.ts`) are used to construct the DOM tree. The UI file builds the entire visible interface by composing elements, applying traits, and binding state.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 The UI layer consumes everything else — states, tokens, actions, templates — but should not define any of them. Isolating UI rendering into its own file keeps the DOM construction readable and ensures that reactive data, styling tokens, and behavioral logic are imported from their canonical locations rather than defined inline.
 
-## When to Create
+### When to Create
 
 Create `ui.ts` at the start of any new OEM application, after `templates.ts` and `theme.ts` are set up.
 
-## When to Use
+### When to Use
 
 - **When building the interface**: All DOM construction happens here.
 - **When modifying the layout**: Edit this file to change structure, add elements, or adjust trait bindings.
 - **When adding new views**: Add them inline in this file, or extract helper functions when warranted.
 
-## What Belongs Here
+### What Belongs Here
 
 - The root element construction (the main `tag.$(document.body)(...)` or equivalent)
 - All `tag.*()` calls that build the DOM tree
@@ -5247,7 +5234,7 @@ Create `ui.ts` at the start of any new OEM application, after `templates.ts` and
 - Helper functions ("components") that return elements — but ONLY when they are reused multiple times, serve as factories with parameters, or exceed ~1000 lines
 - Responsive breakpoint conditions on traits — base styles target mobile, breakpoint overrides for larger viewports
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - State definitions (those go in `states.ts`)
 - Token definitions (those go in `theme.ts`)
@@ -5256,7 +5243,7 @@ Create `ui.ts` at the start of any new OEM application, after `templates.ts` and
 - Machine logic (those go in `machines.ts`)
 - Type definitions (those go in `types.ts`)
 
-## Example
+### Example
 
 ```typescript
 // ui.ts
@@ -5323,17 +5310,17 @@ export const app = tag.div(
 );
 ```
 
-## Guidelines
+### Guidelines
 
 - **Default to inlining everything.** Write the entire UI as one nested expression. Only extract helper functions when they are reused multiple times, serve as factories, or are extremely large (>1000 lines).
 - **Apply traits directly.** Traits belong inline on their target element — do not store them in shared arrays.
 - **Use `$val` for reactive bindings.** Prefer `token.$val` over the verbose `() => token.val(), token` form.
 - **Use `$test` for conditions.** Prefer `state.$test(...)` over standalone `$test()` with separate state arguments.
-- **Always pair `$test(true)` with `$test(false)`.** When using conditions to toggle a style between two values, always provide both branches. If only the truth condition is supplied, the element has no instruction for resetting when the condition becomes false — the previous value stays and the UI appears stuck. For example: `trait.style('display', 'flex', navOpen.$test(true))` must be paired with `trait.style('display', 'none', navOpen.$test(false))`.
+- **Use unconditional defaults with conditional overrides.** When toggling a style between two values, set the default value unconditionally and use a single `$test` condition for the override. Never use two opposing conditions (`$test(true)` and `$test(false)`) on the same CSS property — each conditional trait maintains its own saved-value slot, and opposing conditions corrupt each other's snapshots, preventing the style from reverting. For example: `trait.style('display', 'none')` followed by `trait.style('display', 'flex', navOpen.$test(true))`.
 - **Design mobile-first.** Base styles (no condition) target mobile. Use `isTablet.$test(true)` and `isDesktop.$test(true)` to layer on overrides for larger viewports. See [Responsive Design](responsive-design.md).
 - **Keep the file readable.** Indentation reflects DOM nesting. Each `tag.*()` call is a visual representation of the DOM tree.
 
-## Rules
+### Rules
 
 1. **One file for all UI.** Only split into a `ui/` folder if the file exceeds manageable size.
 2. **Import everything, define nothing.** States, tokens, templates, actions — all come from their own files.
@@ -5345,27 +5332,27 @@ export const app = tag.div(
 ---
 
 
-# Constants File
+## Constants File
 
-## What This File Is
+### What This File Is
 
 `constants.ts` is the single file (or `constants/` folder) containing all fixed, immutable values used throughout the application. These are values that are truly constant — they never change at runtime and do not need to trigger re-renders.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Constants are referenced across multiple files (states, machines, UI, config). Centralizing them prevents magic literals scattered throughout the codebase and gives LLMs a single place to look up fixed values.
 
-## When to Create
+### When to Create
 
 Create `constants.ts` when the application has any fixed values that are used in more than one place, or any value that should be named for clarity rather than inlined as a literal.
 
-## When to Use
+### When to Use
 
 - **When writing state or machine logic**: Import constants instead of using magic strings or numbers.
 - **When adding API calls**: Define endpoint URLs here.
 - **When defining enums or fixed option sets**: Place them here if they don't need to be reactive.
 
-## What Belongs Here
+### What Belongs Here
 
 - API endpoint URLs
 - Fixed configuration values (timeouts, limits, thresholds)
@@ -5373,14 +5360,14 @@ Create `constants.ts` when the application has any fixed values that are used in
 - Key names, storage keys, event names
 - Any literal value used in more than one place
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - Reactive values (those are State objects in `states.ts`)
 - Design tokens (those go in `theme.ts`)
 - Environment-dependent settings (those go in `config.ts`)
 - Type definitions (those go in `types.ts`)
 
-## Example
+### Example
 
 ```typescript
 // constants.ts
@@ -5399,7 +5386,7 @@ export const KEYBOARD: KeyboardShortcut = {
 } as const;
 ```
 
-## Rules
+### Rules
 
 1. **One file for all constants.** Only split into a folder if the file grows unmanageable.
 2. **Use UPPER_SNAKE_CASE** for primitive constants and PascalCase or UPPER_SNAKE_CASE for object constants.

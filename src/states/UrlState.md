@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# UrlState
+## UrlState
 
 A reactive state hook that tracks the current URL, matching it against a set of defined routes and extracting params, query strings, and hash fragments.
 
-## Features
+### Features
 
 - **Route matching**: Matches the current pathname against Express-style route patterns (e.g. `/user/:id`)
 - **Param extraction**: Automatically extracts named parameters from matched routes
@@ -19,7 +19,7 @@ A reactive state hook that tracks the current URL, matching it against a set of 
 - **Type-safe routes**: Route handler signatures are inferred from the route pattern — routes with `:param` segments require a typed params object
 - **Reactive**: Returns a State object that updates on `popstate` and `hashchange` events
 
-## Usage
+### Usage
 
 ```typescript
 import { useUrlState } from '@linttrap/oem';
@@ -48,7 +48,7 @@ url.sub(({ matchedRoute, params, query, hash }) => {
 });
 ```
 
-## Signature
+### Signature
 
 ```typescript
 function useUrlState<T extends Record<string, any>>(routes: {
@@ -56,20 +56,20 @@ function useUrlState<T extends Record<string, any>>(routes: {
 }): StateType<UrlState<typeof routes>, {}>;
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type     | Description                                                                                      |
 | --------- | -------- | ------------------------------------------------------------------------------------------------ |
 | `routes`  | `object` | A map of route patterns to handler functions. Patterns use `:param` syntax for dynamic segments. |
 
-### Route Handler Signatures
+#### Route Handler Signatures
 
 Route handlers are type-inferred from the pattern string:
 
 - **Static routes** (no params): `() => string`
 - **Dynamic routes** (with `:param`): `(params: { [K in ExtractRouteParams<Path>]: string }) => string`
 
-## Return Value
+### Return Value
 
 Returns a `State<UrlState>` containing:
 
@@ -82,7 +82,7 @@ Returns a `State<UrlState>` containing:
 | `location`     | `Location`               | The raw `document.location` object                           |
 | `routes`       | `Routes`                 | The routes map passed to the hook                            |
 
-## Behavior
+### Behavior
 
 - Parses `document.location` on initialization and returns the matched state
 - Listens for `popstate` events (browser back/forward navigation)
@@ -91,9 +91,9 @@ Returns a `State<UrlState>` containing:
 - Route matching converts patterns like `/user/:id` to regex and tests against the current pathname
 - If no route matches, `matchedRoute` is an empty string and `params` is an empty object
 
-## Common Patterns
+### Common Patterns
 
-### Route-based rendering
+#### Route-based rendering
 
 ```typescript
 const url = useUrlState<{
@@ -121,7 +121,7 @@ url.sub(({ matchedRoute }) => {
 });
 ```
 
-### Reading dynamic params
+#### Reading dynamic params
 
 ```typescript
 const url = useUrlState<{
@@ -135,7 +135,7 @@ const { params } = url.val();
 console.log(params.id); // "42"
 ```
 
-### Using with conditions
+#### Using with conditions
 
 ```typescript
 const url = useUrlState<{
@@ -151,7 +151,7 @@ const isHome = url.$test((s) => s.matchedRoute === '/');
 const isAbout = url.$test((s) => s.matchedRoute === '/about');
 ```
 
-## Notes
+### Notes
 
 - Event listeners (`popstate`, `hashchange`) are added globally and remain active for the lifetime of the page
 - Route patterns support alphanumeric characters and hyphens in param values (`[\w-]+`)

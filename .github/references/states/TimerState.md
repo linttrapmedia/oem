@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# TimerState
+## TimerState
 
 A reactive state hook that increments a counter at a fixed interval. Provides custom methods to start, stop, and reset the timer.
 
-## Features
+### Features
 
 - **Interval counter**: Increments a numeric value at a configurable interval
 - **Start/stop/reset**: Custom methods for full timer lifecycle control
@@ -19,7 +19,7 @@ A reactive state hook that increments a counter at a fixed interval. Provides cu
 - **Deferred methods**: `$start`, `$stop`, `$reset` for use in event handlers
 - **Reactive**: Returns a State object that updates on every tick
 
-## Usage
+### Usage
 
 ```typescript
 import { useTimerState } from '@linttrap/oem';
@@ -41,7 +41,7 @@ timer.sub((count) => {
 });
 ```
 
-## Signature
+### Signature
 
 ```typescript
 function useTimerState(
@@ -50,14 +50,14 @@ function useTimerState(
 ): StateType<number, { start; stop; reset }>;
 ```
 
-## Parameters
+### Parameters
 
 | Parameter    | Type                        | Default | Description                                                |
 | ------------ | --------------------------- | ------- | ---------------------------------------------------------- |
 | `intervalMs` | `number`                    | —       | Interval between ticks in milliseconds                     |
 | `options`    | `{ autoStart?: boolean }`   | —       | Configuration. `autoStart` defaults to `true` if omitted.  |
 
-## Return Value
+### Return Value
 
 Returns a `State<number>` with these additional custom methods:
 
@@ -69,7 +69,7 @@ Returns a `State<number>` with these additional custom methods:
 
 Each method also has a `$`-prefixed deferred version (`$start`, `$stop`, `$reset`) that returns `() => void`.
 
-## Behavior
+### Behavior
 
 - Initializes the counter to `0`
 - If `autoStart` is not explicitly `false`, starts the interval immediately
@@ -78,9 +78,9 @@ Each method also has a `$`-prefixed deferred version (`$start`, `$stop`, `$reset
 - `stop()` clears the interval; `start()` can resume from the current count
 - `reset()` clears the interval AND sets the counter back to `0`
 
-## Common Patterns
+### Common Patterns
 
-### Auto-save indicator
+#### Auto-save indicator
 
 ```typescript
 const timer = useTimerState(30000); // every 30 seconds
@@ -90,7 +90,7 @@ timer.sub(() => {
 });
 ```
 
-### Countdown display
+#### Countdown display
 
 ```typescript
 const DURATION = 60;
@@ -99,7 +99,7 @@ const timer = useTimerState(1000);
 trait.textContent(() => `${DURATION - timer.val()}s remaining`);
 ```
 
-### Polling with deferred controls
+#### Polling with deferred controls
 
 ```typescript
 const timer = useTimerState(5000, { autoStart: false });
@@ -111,7 +111,7 @@ trait.event('click', timer.$start());
 trait.event('click', timer.$stop());
 ```
 
-### Session timeout
+#### Session timeout
 
 ```typescript
 const idle = useTimerState(1000);
@@ -124,7 +124,7 @@ idle.sub((seconds) => {
 document.addEventListener('mousemove', () => idle.reset());
 ```
 
-## Notes
+### Notes
 
 - The interval uses `setInterval` under the hood
 - Timer remains active until explicitly stopped or reset

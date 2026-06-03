@@ -7,34 +7,34 @@ metadata:
   version: '1.0'
 ---
 
-# States File
+## States File
 
-## What This File Is
+### What This File Is
 
 `states.ts` is the single file (or `states/` folder) containing all reactive State objects for the application. State objects are created with the `State()` function from OEM and are the mechanism for storing any value that needs to trigger UI re-renders when it changes.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 State objects are module-level singletons shared across the entire application. Centralizing them in one file gives LLMs and developers a single inventory of all reactive data in the app. It also prevents accidental duplication — before creating a new State, check this file to see if one already exists.
 
-## When to Create
+### When to Create
 
 Create `states.ts` at the start of any new OEM application, as soon as the types are defined.
 
-## When to Use
+### When to Use
 
 - **When rendering UI**: Import State objects and bind them to traits using `$val` or the verbose form.
 - **When handling events**: Import State objects and use `$set`, `$reduce`, or custom `$`-prefixed methods.
 - **When adding a new feature**: Add any new State objects to this file.
 - **Before creating a new State**: Read this file to check if an appropriate State already exists.
 
-## What Belongs Here
+### What Belongs Here
 
 - All `State()` instances for the application
 - Custom methods defined on State objects (passed as the second argument to `State()`)
 - State objects for any data that UI traits subscribe to
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - Type definitions (those go in `types.ts`)
 - Static data that never changes (those go in `data.ts`)
@@ -43,7 +43,7 @@ Create `states.ts` at the start of any new OEM application, as soon as the types
 - Action creator functions (those go in `actions.ts`)
 - Machine/dispatch logic (those go in `machines.ts`)
 
-## Example
+### Example
 
 ```typescript
 // states.ts
@@ -72,7 +72,7 @@ export const todoList = State<Todo[]>([], {
 });
 ```
 
-## Responsive Breakpoints
+### Responsive Breakpoints
 
 Every app should define mobile-first breakpoint states. These are `State<boolean>` objects that update automatically when the viewport crosses a width boundary:
 
@@ -87,7 +87,7 @@ export const isDesktop = useMediaQueryState({ minWidth: 1024 });
 
 Use these in UI code via `.$test(true)` conditions on traits. Base styles (no condition) target mobile; breakpoint conditions layer on overrides for larger viewports. See the [Responsive Design](responsive-design.md) guide for full patterns.
 
-## Usage Patterns
+### Usage Patterns
 
 ```typescript
 // In UI — binding to traits using $val
@@ -106,7 +106,7 @@ trait.event('click', todoList.$toggle(todo.id));
 trait.text(() => `${todos.val().filter((t) => !t.completed).length} items left`, todos);
 ```
 
-## Persistence
+### Persistence
 
 If a State needs to survive page reloads, subscribe to it and persist its value. Load the persisted value back on startup:
 
@@ -126,7 +126,7 @@ todos.sub((value) => {
 });
 ```
 
-## Rules
+### Rules
 
 1. **One file for all State objects.** Only split into a folder if the file grows unmanageable.
 2. **State objects are module-level singletons.** Never create State inside a function or loop.

@@ -7,17 +7,17 @@ metadata:
   version: '1.0'
 ---
 
-# ThemeState
+## ThemeState
 
 A small state hook for managing the current theme as a reactive `State` value.
 
-## Features
+### Features
 
 - **Typed themes**: Constrains the theme to `'light'` or `'dark'`
 - **Reactive**: Returns a `State` object that can be observed or updated
 - **Minimal**: No side effects, no DOM reads, no global listeners
 
-## Usage
+### Usage
 
 ```typescript
 import { useThemeState } from '@linttrap/oem';
@@ -31,7 +31,7 @@ const current = theme.val();
 theme.set('dark');
 ```
 
-## Signature
+### Signature
 
 ```typescript
 type Theme = 'light' | 'dark';
@@ -39,23 +39,23 @@ type Theme = 'light' | 'dark';
 function useThemeState(theme: Theme): State<Theme>;
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type    | Default | Description                                 |
 | --------- | ------- | ------- | ------------------------------------------- |
 | `theme`   | `Theme` | —       | Initial theme value (`'light'` or `'dark'`) |
 
-## Return Value
+### Return Value
 
 Returns a `State<Theme>` representing the current theme.
 
-## Behavior
+### Behavior
 
 - Initializes with the provided theme value
 - Updates whenever `set()` is called
 - Subscribers receive the latest theme value
 
-## Notes
+### Notes
 
 - This hook does not persist to storage or read from the DOM
 - Intended to be composed with other reactive state hooks

@@ -25,10 +25,10 @@ clean: ## Clean the project
 	@echo $(STATUS) Cleaning...
 	@rm -rf ./docs/main.min.js ./docs/main.min.js.map ./node_modules ./package-lock.json ./dist
 
-dev: ## Run the project in development mode
+serve: ## Serve the docs site in development mode
 	@echo $(STATUS) Running in development mode...
 	@open http://localhost:3000
-	@bun ./docs/index.dev.html --watch
+	@bun ./docs/index.html
 
 deploy: ## Deploy the project to GitHub Pages/oem.js.org
 	@echo $(STATUS) Deploying...
@@ -37,16 +37,6 @@ deploy: ## Deploy the project to GitHub Pages/oem.js.org
 	@git merge main --no-commit --no-ff
 	@git push -f origin gh-pages
 	@git checkout main
-
-build: ## Build www
-	@echo $(STATUS) Building www...
-	@bun build ./docs/main.ts \
-		--sourcemap \
-		--minify \
-		--bundle \
-		--format=iife \
-		--outfile=./docs/main.js \
-		--target=browser \
 
 examples: ## Dev todo example
 	@echo $(STATUS) Building examples...
@@ -60,13 +50,16 @@ publish: ## Publish the project to npm
 	@echo $(STATUS) Publish package...
 	@npm publish --access public
 
-agents: ## Generate agents files
-	@echo $(STATUS) Generating agents files...
-	@bun ./scripts/gen-agents.ts
+gen-docs-llm: ## Generate docs-llm files
+	@echo $(STATUS) Generating docs-llm files...
+	@bun ./scripts/gen-docs-llm.ts
+
+gen-docs: ## Generate docs
+	@echo $(STATUS) Generating docs...
+	@bun ./scripts/gen-docs.ts
 
 test: ## Run tests
 	@echo $(STATUS) Testing...
 	@bun --port 3001 ./test/unit.html
-
 
 

@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# useStyleOnEventTrait
+## useStyleOnEventTrait
 
 Applies a CSS style property when a DOM event fires on the element. Unlike `useStyleTrait`, this trait does not subscribe to State objects — it runs the style application inside the event handler itself.
 
-## Signature
+### Signature
 
 ```ts
 useStyleOnEventTrait(
@@ -23,7 +23,7 @@ useStyleOnEventTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                                                     | Description                                                                                                |
 | --------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
@@ -33,7 +33,7 @@ useStyleOnEventTrait(
 | `val`     | `(() => string \| number \| undefined) \| string \| number \| undefined` | The CSS value. Pass a function for reactive evaluation at event time.                                      |
 | `...rest` | `Condition[]`                                                            | Optional Conditions. The style is applied only when all Conditions are truthy at the time the event fires. |
 
-## Behavior
+### Behavior
 
 1. Attaches an event listener for `evt` on `el`.
 2. When the event fires: evaluates `val`, checks Conditions, and applies the style if all pass.
@@ -41,11 +41,11 @@ useStyleOnEventTrait(
 4. For standard properties: assigns directly to `el.style[prop]`.
 5. Does **not** subscribe to State objects — only re-evaluates when the event fires.
 
-## Returns
+### Returns
 
 A cleanup function that removes the event listener.
 
-## Template Usage
+### Template Usage
 
 ```ts
 // Hover highlight pattern

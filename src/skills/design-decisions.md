@@ -7,17 +7,17 @@ metadata:
   version: '1.0'
 ---
 
-# Design Decision Guide
+## Design Decision Guide
 
 The following heuristics should be applied when making visual and structural design decisions. They reflect the reasoning of a world-class UI expert and ensure consistent, intentional output. Because OEM renders all styles via `trait.style()` directly onto DOM elements, the agent must internalize the knowledge that CSS resets, browser defaults, and layout edge cases normally handle — there is no stylesheet safety net.
 
 ---
 
-## Browser Default Neutralization
+### Browser Default Neutralization
 
 Browsers apply default styles to HTML elements (the "user-agent stylesheet"). In traditional development, a `reset.css` or `normalize.css` removes these. In OEM, **every element must be explicitly styled to a known baseline**. The agent must apply these resets inline via traits whenever it creates the affected elements.
 
-### Mandatory Resets — Apply to Every Application
+#### Mandatory Resets — Apply to Every Application
 
 These styles must be applied to `document.body` (via `tag.$(document.body)`) in every OEM app:
 
@@ -36,7 +36,7 @@ tag.$(document.body)(
 );
 ```
 
-### Element-Specific Resets
+#### Element-Specific Resets
 
 The following browser defaults cause subtle problems. Neutralize them whenever you create these elements:
 
@@ -60,7 +60,7 @@ The following browser defaults cause subtle problems. Neutralize them whenever y
 | `pre`, `code` | Monospace font, sometimes different size. | `font: 'inherit'`, then apply `fontFamily: 'monospace'` and desired `fontSize` from tokens |
 | `summary` | Disclosure triangle, cursor. | `listStyle: 'none'`, `cursor: 'pointer'`. Remove webkit triangle: `'::marker'` can't be targeted — hide via `listStyle: 'none'`. |
 
-### The Box Model Rule
+#### The Box Model Rule
 
 **Always apply `boxSizing: 'border-box'` to any element that receives explicit width, height, padding, or border.** The browser default is `content-box`, which causes padding and border to add to the element's declared dimensions — the single most common cause of layout overflow.
 
@@ -70,7 +70,7 @@ trait.style('width', '100%'),
 trait.style('padding', space_padding_md.$val),  // doesn't overflow
 ```
 
-### Inherited Properties That Silently Break
+#### Inherited Properties That Silently Break
 
 The browser **inherits** some properties and **doesn't inherit** others. Know which is which:
 
@@ -82,11 +82,11 @@ If a child element looks wrong and you haven't styled it, check whether it's inh
 
 ---
 
-## CSS Layout Gotchas
+### CSS Layout Gotchas
 
 OEM has no stylesheet safety net — every style is applied inline via `trait.style()`. This means common CSS pitfalls that frameworks or resets normally absorb will silently break your layout. The following gotchas are **mandatory knowledge** for every OEM application.
 
-### Fixed/Absolute Elements Overflow on Mobile
+#### Fixed/Absolute Elements Overflow on Mobile
 
 **Problem:** A `position: fixed` or `position: absolute` element with `left: 0; right: 0` (or `width: 100%`) plus horizontal padding will overflow the viewport. The browser default `box-sizing: content-box` adds padding *on top of* the declared width, so the element becomes `100% + padding-left + padding-right` — causing horizontal scroll on mobile.
 
@@ -108,7 +108,7 @@ tag.header(
 
 **Why it matters on mobile:** Desktop browsers have wide enough viewports that a few extra pixels of overflow go unnoticed. On mobile (320–428px wide), even 1px of overflow triggers a horizontal scrollbar and shifts the entire page.
 
-### Flex Children Overflowing Their Container
+#### Flex Children Overflowing Their Container
 
 **Problem:** A flex child with long text or a fixed-width element can push its container wider than the viewport. Flex items default to `min-width: auto`, which prevents them from shrinking below their content size.
 
@@ -129,7 +129,7 @@ tag.div(
 );
 ```
 
-### Grid Blowout
+#### Grid Blowout
 
 **Problem:** A CSS grid child with content wider than its track (e.g., a `<pre>` block or long URL) expands the track and overflows the grid container. Unlike flex, grid tracks don't shrink by default.
 
@@ -144,7 +144,7 @@ tag.pre(
 );
 ```
 
-### 100vh on Mobile Safari
+#### 100vh on Mobile Safari
 
 **Problem:** `height: 100vh` on iOS Safari includes the area behind the address bar, so content is cut off at the bottom when the bar is visible. This affects modals, full-screen overlays, and hero sections.
 
@@ -155,7 +155,7 @@ trait.style('minHeight', '100vh'),         // fallback
 trait.style('minHeight', '100dvh'),        // override: dynamic viewport on iOS
 ```
 
-### Touch Target Size
+#### Touch Target Size
 
 **Problem:** Interactive elements smaller than 44×44px are difficult to tap accurately on mobile. This is both a usability issue and an accessibility failure (WCAG 2.5.5).
 
@@ -169,7 +169,7 @@ tag.button(
 );
 ```
 
-### Scrollbar Gutter Shift
+#### Scrollbar Gutter Shift
 
 **Problem:** When content transitions from non-scrollable to scrollable (e.g., opening an accordion), the appearance of the scrollbar shifts the layout by ~15px on desktop browsers. This causes a visible jank.
 
@@ -182,11 +182,11 @@ trait.style('scrollbarGutter', 'stable'),
 
 ---
 
-## Design Composition Principles
+### Design Composition Principles
 
 Beyond tokens and categories, great UI follows compositional principles borrowed from graphic design, architecture, and visual perception science. These are not aesthetic preferences — they are cognitive ergonomics.
 
-### Motif — Variation on a Theme
+#### Motif — Variation on a Theme
 
 A **motif** is a recurring visual element — a shape, rhythm, proportion, or treatment — that repeats across an interface with intentional variation. It is the single most powerful tool for making a design feel cohesive without making it feel monotonous.
 
@@ -211,7 +211,7 @@ A **motif** is a recurring visual element — a shape, rhythm, proportion, or tr
 4. **Motifs apply to tokens, not elements.** The motif lives in the token values. All elements that use the same token family automatically participate in the motif.
 5. **Break the motif only to signal exception.** A sharp-cornered element in a rounded-corner motif screams "I am different." Use this power sparingly — e.g., an error state, a destructive action, a foreign embed.
 
-### The Golden Ratio in Practice
+#### The Golden Ratio in Practice
 
 The golden ratio (φ ≈ 1.618) appears in nature, architecture (the Parthenon), photography (rule of thirds ≈ φ), and renaissance painting. In UI, it governs proportional relationships that feel "right" without the user knowing why.
 
@@ -247,7 +247,7 @@ This creates a split that feels balanced without being symmetric. Apply with `fl
 
 **Do not force φ everywhere.** Use it as a starting heuristic for proportions, then adjust to the 8pt grid. The goal is harmonious proportion, not mathematical purity.
 
-### Visual Balance
+#### Visual Balance
 
 Balance is the distribution of visual weight across a composition. An unbalanced layout creates subconscious tension and makes the user feel that something is "off."
 
@@ -275,7 +275,7 @@ Balance is the distribution of visual weight across a composition. An unbalanced
 - A single bold heading at the top balances an entire list of items below.
 - Always check balance at every breakpoint — what's balanced on desktop may collapse unevenly on mobile.
 
-### Focal Point and Visual Flow
+#### Focal Point and Visual Flow
 
 Every screen must have exactly **one primary focal point** — the first thing the eye lands on. Everything else exists in service of that focal point.
 
@@ -305,7 +305,7 @@ Every screen must have exactly **one primary focal point** — the first thing t
 4. Place the primary CTA at a **terminal point** — where the eye naturally ends its scan.
 5. **Never create two competing focal points.** If an element fights the primary for attention, reduce its visual weight.
 
-### Rhythm and Repetition
+#### Rhythm and Repetition
 
 Rhythm is the predictable repetition of visual elements at regular intervals. It creates a sense of order and makes interfaces scannable.
 
@@ -322,7 +322,7 @@ Rhythm is the predictable repetition of visual elements at regular intervals. It
 2. **Rhythm breaks signal section changes.** A larger gap between groups of items communicates "new section" without needing a visible divider.
 3. **Alignment creates invisible rhythm.** Left-align all text in a column. Align all card titles to the same baseline. Rhythm appears even without visible lines connecting them.
 
-### Proximity and Gestalt Grouping
+#### Proximity and Gestalt Grouping
 
 Elements that are **close together** are perceived as belonging to the same group (Gestalt law of proximity). This is the most important layout principle after hierarchy.
 
@@ -332,7 +332,7 @@ Elements that are **close together** are perceived as belonging to the same grou
 3. **If you need a divider line, your spacing is wrong.** Proper proximity-based grouping eliminates most divider lines. Use dividers only when spacing alone is ambiguous (e.g., dense data tables).
 4. **Group size should not exceed 5–7 items** (Miller's Law). Beyond that, create sub-groups.
 
-### Whitespace as a Design Element
+#### Whitespace as a Design Element
 
 Whitespace (negative space) is not "empty" — it is an active structural element. It does the work that borders, backgrounds, and dividers do elsewhere, but with more elegance.
 
@@ -351,7 +351,7 @@ Whitespace (negative space) is not "empty" — it is an active structural elemen
 3. **Outer margins ≥ inner margins.** Page padding must be greater than card padding, which must be greater than element spacing within cards. This creates visual nesting.
 4. **Never let content touch its container edge.** Every container must have internal padding.
 
-### Contrast and Readability
+#### Contrast and Readability
 
 Contrast is the measurable difference between foreground and background. Insufficient contrast is the #1 accessibility failure and the most common visual design error.
 
@@ -371,7 +371,7 @@ Contrast is the measurable difference between foreground and background. Insuffi
 4. **Dark mode contrast is different.** Pure white (#fff) on dark backgrounds causes halation (glowing edges). Use off-white (#f9fafb, #e5e7eb) as `text_fg_primary` in dark mode.
 5. **Suppress contrast for disabled states** — drop to 40-50% opacity, which intentionally fails contrast minimums as a signal that the element is non-interactive.
 
-### Color Psychology and Harmony
+#### Color Psychology and Harmony
 
 Color choices affect perception, mood, and usability beyond mere brand identity.
 
@@ -393,7 +393,7 @@ Color choices affect perception, mood, and usability beyond mere brand identity.
 4. **Adjacent hues (analogous) create harmony.** Complementary hues (opposite on the wheel) create tension — use only for intentional contrast.
 5. **Test every color pairing in both light and dark mode.** What works on white may wash out on dark surfaces.
 
-### Alignment and the Invisible Grid
+#### Alignment and the Invisible Grid
 
 Every element on screen sits on invisible alignment axes. When elements don't share an edge or center line, the layout feels chaotic — even if no single element is "wrong."
 
@@ -404,7 +404,7 @@ Every element on screen sits on invisible alignment axes. When elements don't sh
 4. **Ragged right edges are acceptable for text.** Do not justify body copy in UI — it creates uneven word spacing. Left-align everything.
 5. **Grid tracks create alignment automatically.** Prefer CSS Grid (`display: 'grid'`) over manual positioning for any layout with more than two alignment axes.
 
-### Proportion and Content Density
+#### Proportion and Content Density
 
 The relationship between an element's content and its container determines whether it feels cramped, comfortable, or empty.
 
@@ -416,7 +416,7 @@ The relationship between an element's content and its container determines wheth
 5. **Sidebar navigation:** Width 240-280px. Item padding 8-12px vertical, 16-20px horizontal.
 6. **Line length:** Optimal reading length is 45-75 characters per line (≈ 600-800px at 16px). Beyond 80 characters, readability drops sharply. Constrain with `maxWidth`.
 
-### Motion and Transition Principles
+#### Motion and Transition Principles
 
 Animation in UI is not decoration — it communicates spatial relationships, confirms actions, and guides attention.
 
@@ -440,7 +440,7 @@ Animation in UI is not decoration — it communicates spatial relationships, con
 
 ---
 
-## Category: Structure
+### Category: Structure
 
 Tokens: `surface_*`, `space_*`, `radius_*`, `shadow_*`
 
@@ -454,7 +454,7 @@ Tokens: `surface_*`, `space_*`, `radius_*`, `shadow_*`
 | **When to use**     | Any element that contains, separates, or groups other elements                                                       |
 | **When NOT to use** | Inline text runs, single atomic icons                                                                                |
 
-## Category: Actions
+### Category: Actions
 
 Tokens: `action_*`
 
@@ -468,7 +468,7 @@ Tokens: `action_*`
 | **When to use**          | Buttons, links, toggles, interactive chips                                                        |
 | **When NOT to use**      | Static labels, read-only badges, non-interactive status indicators                                |
 
-## Category: Surfaces
+### Category: Surfaces
 
 Tokens: `surface_*`
 
@@ -481,7 +481,7 @@ Tokens: `surface_*`
 | **When to use**     | Backgrounds, cards, modals, sidebars, popovers                                       |
 | **When NOT to use** | Inline text styling, icon fills                                                      |
 
-## Category: Feedback
+### Category: Feedback
 
 Tokens: `feedback_*`
 
@@ -494,7 +494,7 @@ Tokens: `feedback_*`
 | **When to use**          | Toasts, banners, inline validation, status badges                                                                                |
 | **When NOT to use**      | Decorative elements, branding, navigation states                                                                                 |
 
-## Category: Navigation
+### Category: Navigation
 
 Tokens: `nav_*`
 
@@ -506,7 +506,7 @@ Tokens: `nav_*`
 | **When to use**     | Tabs, sidebars, breadcrumbs, pagination, steppers                                                                                              |
 | **When NOT to use** | In-page links within body copy (use text links instead)                                                                                        |
 
-## Category: Data
+### Category: Data
 
 Tokens: `data_*`
 
@@ -519,7 +519,7 @@ Tokens: `data_*`
 | **When to use**     | Tables, lists, key-value pairs, stat cards                                                                                  |
 | **When NOT to use** | Free-form content, marketing sections                                                                                       |
 
-## Category: Text & Typography
+### Category: Text & Typography
 
 Tokens: `text_*`, `type_*`
 
@@ -533,7 +533,7 @@ Tokens: `text_*`, `type_*`
 | **When to use**     | All visible text content                                                                                                                                  |
 | **When NOT to use** | N/A — every text element needs typographic tokens                                                                                                         |
 
-## Category: Focus & Accessibility
+### Category: Focus & Accessibility
 
 Tokens: `focus_*`
 
@@ -545,7 +545,7 @@ Tokens: `focus_*`
 | **When to use**     | Every focusable element: buttons, inputs, links, custom controls                        |
 | **When NOT to use** | Mouse-only decorative hover effects                                                     |
 
-## Category: Borders
+### Category: Borders
 
 Tokens: `border_*`
 
@@ -557,7 +557,7 @@ Tokens: `border_*`
 | **When to use**     | Dividers, input outlines, card edges, active tab indicators                                      |
 | **When NOT to use** | Decorative gradients, background patterns                                                        |
 
-## Decision Checklist — Before Creating Any Token
+### Decision Checklist — Before Creating Any Token
 
 1. **What category does this belong to?** (structure, action, surface, feedback, nav, data, text, focus, border)
 2. **What property am I setting?** (bg, fg, border, size, weight, gap, padding, radius, shadow, opacity)
@@ -566,7 +566,7 @@ Tokens: `border_*`
 5. **Does a token with the same intent but different name exist?** → Reuse it and consider whether it should be renamed.
 6. **Is this truly new?** → Create it with a documentation comment (what / when to use / when NOT to use).
 
-## Decision Checklist — Before Styling Any Element
+### Decision Checklist — Before Styling Any Element
 
 1. **Did I neutralize browser defaults?** Check the Element-Specific Resets table. Apply `margin: '0'`, `padding: '0'`, and any other required resets for this element type.
 2. **Is `boxSizing: 'border-box'` applied?** If the element has explicit width/height/padding/border, it must be border-box.

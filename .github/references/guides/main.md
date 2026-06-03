@@ -7,33 +7,33 @@ metadata:
   version: '1.0'
 ---
 
-# Main File
+## Main File
 
-## What This File Is
+### What This File Is
 
 `main.ts` is the single entry point of the OEM application. It is the file that gets loaded by the HTML page's `<script>` tag. Its job is to initialize the application — wire the UI into the DOM and perform any one-time setup.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 The entry point is the only file with side effects on import (it mounts the UI to the DOM). Keeping it minimal and separate ensures that all other files are pure and importable without side effects, which makes them testable and reusable.
 
-## When to Create
+### When to Create
 
 Create `main.ts` as one of the first files in any new OEM application.
 
-## When to Use
+### When to Use
 
 - **When starting the application**: This is what the browser loads.
 - **When changing initialization logic**: Edit this file to modify what happens on app startup.
 - **When adding global setup**: One-time side effects (loading from localStorage, adding global event listeners) go here.
 
-## What Belongs Here
+### What Belongs Here
 
 - Importing the root UI element from `ui.ts`
 - Mounting the UI to the DOM via `tag.$(document.body)(...)` or `document.body.appendChild(...)`
 - Global event listeners that don't belong to a specific element
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - State definitions (those go in `states.ts`)
 - UI construction (that goes in `ui.ts`)
@@ -41,7 +41,7 @@ Create `main.ts` as one of the first files in any new OEM application.
 - Template definitions (those go in `templates.ts`)
 - Machine logic (that goes in `machines.ts`)
 
-## Example
+### Example
 
 ```typescript
 // main.ts
@@ -56,7 +56,7 @@ tag.$(document.body)(
 );
 ```
 
-## HTML Integration
+### HTML Integration
 
 The HTML file simply loads the entry point:
 
@@ -74,7 +74,7 @@ The HTML file simply loads the entry point:
 </html>
 ```
 
-## Rules
+### Rules
 
 1. **One entry point per app.** There is exactly one `main.ts`.
 2. **Keep it minimal.** Import, initialize, mount — nothing more.

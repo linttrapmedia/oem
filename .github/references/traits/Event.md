@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# useEventTrait
+## useEventTrait
 
 Attaches a DOM event listener to an element. The listener is added or removed reactively based on Conditions and State changes.
 
-## Signature
+### Signature
 
 ```ts
 useEventTrait(
@@ -22,7 +22,7 @@ useEventTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                | Description                                                                                                                                 |
 | --------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -31,18 +31,18 @@ useEventTrait(
 | `cb`      | `(evt?) => void`                    | The event handler callback                                                                                                                  |
 | `...rest` | `(StateType<any> \| Condition)[]`   | Optional State objects and/or Conditions. The listener is attached only when all Conditions are truthy and detached when any becomes falsy. |
 
-## Behavior
+### Behavior
 
 1. Checks all Conditions — if all are truthy and the listener is not already attached, calls `el.addEventListener(evt, cb)`.
 2. If any Condition becomes falsy, calls `el.removeEventListener(evt, cb)`.
 3. Tracks attachment state internally to prevent duplicate listeners.
 4. Subscribes to every State in `rest` so the trait re-evaluates on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that removes the event listener and unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 trait.event(

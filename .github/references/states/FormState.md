@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# FormState
+## FormState
 
 A reactive state hook for managing form values, validation errors, touched fields, and dirty state.
 
-## Features
+### Features
 
 - **Field-level control**: Set individual field values with automatic re-validation
 - **Validation**: Optional per-field validators that run on every field change
@@ -21,7 +21,7 @@ A reactive state hook for managing form values, validation errors, touched field
 - **Reset**: Return to initial values and clear all state
 - **Deferred methods**: `$setField`, `$touch`, `$validate`, `$reset` for event wiring
 
-## Usage
+### Usage
 
 ```typescript
 import { useFormState } from '@linttrap/oem';
@@ -50,7 +50,7 @@ const { values, errors, touched, dirty, valid } = form.val();
 form.reset();
 ```
 
-## Signature
+### Signature
 
 ```typescript
 function useFormState<T extends Record<string, any>>(
@@ -59,14 +59,14 @@ function useFormState<T extends Record<string, any>>(
 ): StateType<FormStateValue<T>, { setField; setError; touch; validate; reset }>;
 ```
 
-## Parameters
+### Parameters
 
 | Parameter        | Type                | Default | Description                                              |
 | ---------------- | ------------------- | ------- | -------------------------------------------------------- |
 | `initialValues`  | `T`                 | —       | The initial form values                                  |
 | `validators`     | `Partial<Record<keyof T, (value, values) => string \| undefined>>` | — | Optional validators per field. Return a string for errors, `undefined` for valid. |
 
-## Return Value
+### Return Value
 
 Returns a `State<FormStateValue<T>>` with shape:
 
@@ -78,7 +78,7 @@ Returns a `State<FormStateValue<T>>` with shape:
 | `dirty`   | `boolean`                        | `true` if any field has been modified       |
 | `valid`   | `boolean`                        | `true` if there are no validation errors    |
 
-### Custom Methods
+#### Custom Methods
 
 | Method                        | Signature                                | Description                                               |
 | ----------------------------- | ---------------------------------------- | --------------------------------------------------------- |
@@ -90,7 +90,7 @@ Returns a `State<FormStateValue<T>>` with shape:
 
 Each method also has a `$`-prefixed deferred version.
 
-## Behavior
+### Behavior
 
 - Initializes with the provided `initialValues`, no errors, no touched fields, `dirty: false`, `valid: true`
 - On `setField`: updates the field value, runs all validators, updates `errors` and `valid`, sets `dirty: true`
@@ -99,9 +99,9 @@ Each method also has a `$`-prefixed deferred version.
 - On `reset`: returns to the exact initial state
 - Validators receive both the field value and the full values object (for cross-field validation)
 
-## Common Patterns
+### Common Patterns
 
-### Contact form
+#### Contact form
 
 ```typescript
 const form = useFormState(
@@ -114,7 +114,7 @@ const form = useFormState(
 );
 ```
 
-### Two-way binding with input traits
+#### Two-way binding with input traits
 
 ```typescript
 trait.inputValue(() => form.val().values.email, form);
@@ -122,7 +122,7 @@ trait.inputEvent('input', (val) => form.setField('email', val), form);
 trait.event('blur', form.$touch('email'));
 ```
 
-### Show errors only for touched fields
+#### Show errors only for touched fields
 
 ```typescript
 trait.textContent(
@@ -134,7 +134,7 @@ trait.textContent(
 );
 ```
 
-### Submit handler
+#### Submit handler
 
 ```typescript
 trait.event('click', () => {
@@ -144,7 +144,7 @@ trait.event('click', () => {
 });
 ```
 
-### Cross-field validation
+#### Cross-field validation
 
 ```typescript
 const form = useFormState(
@@ -156,7 +156,7 @@ const form = useFormState(
 );
 ```
 
-## Notes
+### Notes
 
 - Validators run synchronously on every `setField` call
 - The `valid` flag reflects the result of the most recent validation run

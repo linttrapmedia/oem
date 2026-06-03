@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# useInputValueTrait
+## useInputValueTrait
 
 Reactively sets the `value` property of an `<input>` or `<textarea>` element. Pairs with `useInputEventTrait` for two-way data binding.
 
-## Signature
+### Signature
 
 ```ts
 useInputValueTrait(
@@ -21,7 +21,7 @@ useInputValueTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                                                     | Description                                                                                                                        |
 | --------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -29,18 +29,18 @@ useInputValueTrait(
 | `value`   | `(() => string \| number \| undefined) \| string \| number \| undefined` | The value to set. Pass a function for reactive evaluation.                                                                         |
 | `...rest` | `(StateType<any> \| Condition)[]`                                        | Optional State objects and/or Conditions. The trait re-evaluates on state changes and only applies when all Conditions are truthy. |
 
-## Behavior
+### Behavior
 
 1. Evaluates `value` (calls it if it's a function).
 2. Checks all Conditions — if all are truthy, sets `el.value`.
 3. Subscribes to every State in `rest` so the trait re-runs on state changes.
 4. Typically used alongside `useInputEventTrait` to create a reactive loop: state → input value → user types → event → update state → input value updates.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 // Two-way binding pattern

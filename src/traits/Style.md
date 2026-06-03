@@ -7,11 +7,11 @@ metadata:
   version: '1.0'
 ---
 
-# useStyleTrait
+## useStyleTrait
 
 Reactively sets a single CSS style property on an element. Supports both standard `CSSStyleDeclaration` properties and CSS custom properties (`--*`).
 
-## Signature
+### Signature
 
 ```ts
 useStyleTrait(
@@ -22,7 +22,7 @@ useStyleTrait(
 ) => () => void
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Type                                                                     | Description                                                                                                                         |
 | --------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
@@ -31,7 +31,7 @@ useStyleTrait(
 | `val`     | `(() => string \| number \| undefined) \| string \| number \| undefined` | The CSS value. Pass a function for reactive evaluation.                                                                             |
 | `...rest` | `(StateType<any> \| Condition)[]`                                        | Optional State objects and/or Conditions. The style is applied only when all Conditions are truthy.                                 |
 
-## Behavior
+### Behavior
 
 1. Evaluates `val` (calls it if it's a function).
 2. Checks all Conditions — if all are truthy, applies the style.
@@ -39,11 +39,11 @@ useStyleTrait(
 4. For standard properties: assigns directly to `el.style[prop]`.
 5. Subscribes to every State in `rest` so the trait re-runs on state changes.
 
-## Returns
+### Returns
 
 A cleanup function that unsubscribes from all State listeners.
 
-## Template Usage
+### Template Usage
 
 ```ts
 // Token value (re-evaluates on theme change via $val)

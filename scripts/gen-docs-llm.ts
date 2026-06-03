@@ -6,7 +6,7 @@ import { extractFrontMatter, stripFrontMatter } from 'scripts/helpers';
 
 const projectRoot = resolve(import.meta.dir, '..');
 const agentsDir = resolve(projectRoot, '.github');
-const wwwDir = resolve(projectRoot, 'www');
+const docsDir = resolve(projectRoot, 'docs');
 
 // delete the agents directory if it exists, then recreate it with the necessary subdirectories
 import { existsSync, rmSync } from 'node:fs';
@@ -201,9 +201,9 @@ $ARGUMENTS
 
 await Bun.write(`${agentsDir}/commands/oem.md`, oemCommandContent);
 
-// Generate www/llms.txt — a single file with all documentation for LLM consumption
+// Generate docs/llms.txt — a single file with all documentation for LLM consumption
 await Bun.write(
-  `${wwwDir}/llms.txt`,
+  `${docsDir}/llms.txt`,
   `# OEM
 
 > OEM is an agent-first UI framework and toolkit engineered for human-AI collaboration. It provides a design-token-driven system for generating declarative, reactive UI via a compositional syntax that unifies markup, styling, and behavior.

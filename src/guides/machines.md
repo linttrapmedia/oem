@@ -7,40 +7,40 @@ metadata:
   version: '1.0'
 ---
 
-# Machines File
+## Machines File
 
-## What This File Is
+### What This File Is
 
 `machines.ts` is the single file (or `machines/` folder) containing all state machines for the application. Each machine is a function that takes the current state and a dispatched action, then uses a switch statement to determine what state mutation to perform.
 
-## Why It Must Be Its Own File
+### Why It Must Be Its Own File
 
 Machines are the decision-making layer of the application. They determine how the app responds to actions. Isolating them from state definitions, actions, and UI makes the behavioral logic easy to read, test, and modify without affecting other layers.
 
-## When to Create
+### When to Create
 
 Create `machines.ts` when the application has complex state transitions that benefit from a centralized dispatch pattern — especially when multiple actions affect multiple State objects in coordinated ways.
 
-## When to Use
+### When to Use
 
 - **When processing dispatched actions**: The machine reads the action type and performs the appropriate state mutations.
 - **When adding new behavior**: Add a new case to the relevant machine's switch statement.
 - **When debugging behavior**: Read the machine to trace how an action maps to a state change.
 
-## What Belongs Here
+### What Belongs Here
 
 - Machine functions (switch statements on action type)
 - Dispatch functions that feed actions into machines
 - Any coordination logic that involves multiple State objects reacting to a single action
 
-## What Does NOT Belong Here
+### What Does NOT Belong Here
 
 - State object definitions (those go in `states.ts`)
 - Action creator functions (those go in `actions.ts`)
 - Type definitions (those go in `types.ts`)
 - UI code or trait calls
 
-## Example
+### Example
 
 ```typescript
 // machines.ts
@@ -81,7 +81,7 @@ export function dispatch(action: Action) {
 export const $dispatch = (action: Action) => () => dispatch(action);
 ```
 
-## Usage in UI
+### Usage in UI
 
 Use `$dispatch` to wire actions directly to event handlers without wrapping in an arrow function:
 
@@ -105,7 +105,7 @@ import { addTodo } from './actions';
 trait.event('click', () => dispatch(addTodo(newTodoText.val()))),
 ```
 
-## Rules
+### Rules
 
 1. **One file for all machines.** Only split into a folder if the file grows unmanageable.
 2. **Use simple switch statements.** Each case handles one action type. No nesting, no complex conditionals.

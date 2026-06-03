@@ -7,7 +7,7 @@ metadata:
   version: '1.0'
 ---
 
-# Idiomatic OEM
+## Idiomatic OEM
 
 OEM is unlike traditional UI frameworks. There is no virtual DOM, no JSX, no component lifecycle, and no render loop. Instead, OEM models UI as a flat composition of **elements**, **traits**, and **state** — three primitives that combine into a declarative, reactive system that reads like a blueprint and behaves like a living document.
 
@@ -15,7 +15,7 @@ This guide codifies the patterns and conventions that make OEM code idiomatic: e
 
 ---
 
-## The Three Primitives
+### The Three Primitives
 
 Everything in OEM reduces to three things:
 
@@ -29,7 +29,7 @@ An OEM application is built by creating elements, decorating them with traits, a
 
 ---
 
-## Template Destructuring
+### Template Destructuring
 
 Every OEM file that produces UI starts by creating a template and destructuring it into `tag` and `trait`:
 
@@ -49,7 +49,7 @@ export const [tag, trait] = Template({
 
 ---
 
-## Element Construction
+### Element Construction
 
 Elements are created by calling a tag function with traits and child elements as arguments. Traits and children are interleaved freely — order determines DOM order for children, and trait application order for behaviors:
 
@@ -64,7 +64,7 @@ tag.div(
 
 This is the heart of idiomatic OEM: a single nested expression that declaratively specifies structure, style, content, and reactivity in one place. Notice that `token.$val` is used rather than `() => token.val(), token` — `$val` is simultaneously a getter function AND a subscribable (it carries a `.sub` property), so traits auto-detect it as both the value source and the subscription source.
 
-### Adopting Existing Elements
+#### Adopting Existing Elements
 
 Use `tag.$(existingElement)` to wrap an existing DOM node and apply traits to it:
 
@@ -78,7 +78,7 @@ tag.$(document.body)(
 
 ---
 
-## Traits Are Appliers
+### Traits Are Appliers
 
 A trait call like `trait.style('color', 'red')` does **not** immediately mutate the DOM. It returns a function `(el: HTMLElement) => void` — an **applier**. The tag proxy calls each applier with the created element after it exists.
 
@@ -86,7 +86,7 @@ This is an implementation detail. Traits should always be applied directly and i
 
 ---
 
-## Reactivity Model
+### Reactivity Model
 
 OEM's reactivity is **push-based** and **surgically scoped**:
 
@@ -94,7 +94,7 @@ OEM's reactivity is **push-based** and **surgically scoped**:
 2. Traits subscribe to states they depend on. When a state changes, only the traits subscribed to that state re-run — no diffing, no reconciliation, no tree walk.
 3. When an element is removed from the DOM, a `MutationObserver` fires and all its trait subscriptions are cleaned up automatically via a `WeakMap`.
 
-### How traits subscribe to state
+#### How traits subscribe to state
 
 Every trait accepts `...rest: (StateType | Condition)[]` as trailing arguments. The runtime uses `extractStates()` and `extractConditions()` with duck-typing to separate these:
 
@@ -117,7 +117,7 @@ Use `$val` when you need the state's raw value. Use the verbose `() => expr, sta
 
 For State objects with custom methods, each method auto-generates a `$`-prefixed deferred version. For complex state objects (Objects, Arrays), custom getter methods provide targeted access to specific keys or values. These custom `$`-prefixed methods work as thunks for event handlers, but they do NOT carry `.sub` — so for reactive binding of complex state values, use the verbose form or `$val` when the whole value is needed.
 
-### Static vs. dynamic values
+#### Static vs. dynamic values
 
 Every trait parameter that accepts a value also accepts a `() => value` function. Use a function when the value should re-evaluate on state changes; use a literal when it's constant:
 
@@ -128,7 +128,7 @@ trait.style('opacity', () => '...some computed value...'); // dynamic — re-eva
 
 ---
 
-## Conditions Over Ternaries
+### Conditions Over Ternaries
 
 **Never use ternary operators in trait arguments.** Instead, use separate trait calls gated by conditions. This keeps each branch explicit, reactive, and independently addressable:
 
@@ -141,7 +141,7 @@ trait.style('opacity', '0.4', enabled.$test(false)),
 trait.style('opacity', enabled ? '1' : '0.4'),
 ```
 
-### Always pair `$test(true)` with `$test(false)`
+#### Always pair `$test(true)` with `$test(false)`
 
 When using conditions to toggle a style between two values, **always provide both the truth and false branches.** If you only supply the `$test(true)` branch, OEM has no instruction for what value to apply when the condition becomes false — the previous value stays on the element and the UI can appear "stuck."
 
@@ -157,7 +157,7 @@ trait.style('display', 'flex', navOpen.$test(true)),
 
 This applies everywhere conditions are used — responsive breakpoints, visibility toggles, theme switches, and all other state-driven style or attribute changes. The rule is simple: **if there is a `$test(true)`, there should be a corresponding `$test(false)` (or vice versa)** so that every state transition produces a defined result.
 
-### Creating conditions
+#### Creating conditions
 
 State objects have `.test()` for immediate evaluation and `.$test()` for reactive conditions. The standalone `$test()` helper from `@linttrap/oem` handles cases where State's built-in `.$test` doesn't apply:
 
@@ -180,7 +180,7 @@ $test(() => count.val() > 0); // must also pass `count` in ...rest
 
 **Important**: `state.$test(...)` is self-subscribing because it carries `.sub` — the trait auto-detects it as a subscription source AND a condition simultaneously. The standalone `$test()` from util does NOT have `.sub`, so when using it with state-derived values you must pass the state objects separately in `...rest`.
 
-### Multiple conditions are AND-ed
+#### Multiple conditions are AND-ed
 
 When a trait receives multiple conditions, **all** must be truthy for the trait to apply:
 
@@ -195,7 +195,7 @@ trait.style(
 
 ---
 
-## The `$` Thunk Convention
+### The `$` Thunk Convention
 
 Every State method has a `$`-prefixed twin that returns a **closure** instead of executing immediately. This is the primary mechanism for wiring state to event handlers and traits without intermediate arrow functions:
 
@@ -234,7 +234,7 @@ trait.style(
 );
 ```
 
-### Custom methods follow the same pattern
+#### Custom methods follow the same pattern
 
 ```ts
 const counter = State(
@@ -253,7 +253,7 @@ trait.event('click', counter.$increment());
 
 ---
 
-## State Lives Outside Functions
+### State Lives Outside Functions
 
 State objects are **module-level singletons**, not component-local. They are created once and imported wherever needed:
 
@@ -268,7 +268,7 @@ This is fundamental to OEM's architecture. Because state is not scoped to a comp
 
 ---
 
-## Token-Driven Styling
+### Token-Driven Styling
 
 **Never hardcode visual values.** Every color, spacing, font size, radius, shadow, and other design property must come from a `useTokenState` token:
 
@@ -286,7 +286,7 @@ Tokens are State objects — they react to theme changes automatically. Tokens a
 
 ---
 
-## No CSS Files — All Styles via OEM Syntax
+### No CSS Files — All Styles via OEM Syntax
 
 OEM applications **never** use CSS files, `<style>` tags, or external stylesheets. Every visual property — layout, color, spacing, typography, transitions, hover states — is expressed inline through `trait.style()`, `trait.styleOnEvent()`, and design tokens. This is a core architectural rule, not a preference.
 
@@ -304,11 +304,11 @@ trait.styleOnEvent('mouseleave', 'backgroundColor', 'transparent'),
 // Do NOT use className for visual styling (className is reserved for third-party integration only)
 ```
 
-### Animations and Advanced CSS Features
+#### Animations and Advanced CSS Features
 
 When you need CSS features like keyframe animations, scroll-driven effects, or other capabilities typically expressed with `@keyframes` or `@media`, **always use the equivalent JavaScript APIs** — never inject CSS strings or create stylesheet rules.
 
-#### Web Animations API (for keyframe animations)
+##### Web Animations API (for keyframe animations)
 
 Use `Element.animate()` from the [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API):
 
@@ -336,7 +336,7 @@ document.body.appendChild(el);
 fadeIn(el);
 ```
 
-#### CSSStyleSheet API (when absolutely necessary)
+##### CSSStyleSheet API (when absolutely necessary)
 
 If you must create dynamic rules (e.g., a global `@keyframes` definition needed by a third-party library), use the `CSSStyleSheet` constructor API — never a `<style>` tag or `.css` file:
 
@@ -355,7 +355,7 @@ document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
 trait.style('animation', 'pulse 2s infinite');
 ```
 
-#### matchMedia (for programmatic media queries)
+##### matchMedia (for programmatic media queries)
 
 OEM provides `useMediaQueryState` for responsive design, but if you need direct access, use `window.matchMedia()`:
 
@@ -368,7 +368,7 @@ trait.style('flexDirection', 'row', isDesktop.$test(true)),
 trait.style('flexDirection', 'column', isDesktop.$test(false)),
 ```
 
-### Why No CSS Files?
+#### Why No CSS Files?
 
 1. **Single source of truth.** Styles live next to the elements they affect — no hunting across files.
 2. **Reactive by default.** Trait-based styles are wired to State objects and update automatically on theme or state changes.
@@ -377,9 +377,9 @@ trait.style('flexDirection', 'column', isDesktop.$test(false)),
 
 ---
 
-## Composition Patterns
+### Composition Patterns
 
-### Apply traits directly and inline
+#### Apply traits directly and inline
 
 Traits should be applied directly to their target element, not stored in shared variables. Reusable visual consistency comes from tokens, not from shared trait arrays:
 
@@ -394,7 +394,7 @@ tag.div(
 );
 ```
 
-### Helper functions ("components")
+#### Helper functions ("components")
 
 Extract a subtree into a plain function **only** when: (a) it is used multiple times, (b) it needs to exist as a factory with parameters, or (c) it is extremely large (>1000 lines). There is no special component API — it's just a function that returns an element. Default to inlining everything:
 
@@ -420,7 +420,7 @@ function TodoItem(todo: Todo) {
 }
 ```
 
-### Looping / Dynamic Lists
+#### Looping / Dynamic Lists
 
 Use `trait.innerHTML` with a reactive function to render lists that update when state changes:
 
@@ -437,7 +437,7 @@ tag.ul(trait.innerHTML(() => filteredTodos().map((todo) => TodoItem(todo)), todo
 
 ---
 
-## Event Handling
+### Event Handling
 
 Wire events with `trait.event`. Handlers can be plain functions or `$`-thunked state operations:
 
@@ -459,7 +459,7 @@ Events are automatically removed when the element is removed from the DOM.
 
 ---
 
-## Automatic Cleanup
+### Automatic Cleanup
 
 OEM manages memory automatically:
 
@@ -472,7 +472,7 @@ You never need to manually unsubscribe or tear down. Build elements, append them
 
 ---
 
-## Summary of Rules
+### Summary of Rules
 
 | Rule                                         | Why                                                                  |
 | -------------------------------------------- | -------------------------------------------------------------------- |

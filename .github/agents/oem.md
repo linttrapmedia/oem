@@ -43,7 +43,6 @@ The core library provides the fundamental building blocks of the OEM ecosystem. 
 
 - [Template](../references/core/template.md) - Core template engine for creating declarative and reactive UI applications
 - [State](../references/core/state.md) - Reactive event bus with publish-subscribe state management
-- [Types](../references/core/types.md) - Common TypeScript type definitions for reactive conditions, testing, and utilities
 - [Util](../references/core/util.md) - Runtime helpers for working with State objects and Conditions
 
 
