@@ -4,7 +4,7 @@
   "author": "@linttrapmedia",
   "repository": {
     "type": "git",
-    "url": "https://github.com/linttrapmedia/oem.git",
+    "url": "git+https://github.com/linttrapmedia/oem.git",
     "npm": "https://www.npmjs.com/package/@linttrap/oem"
   },
   "main": "./src/registry.ts",
