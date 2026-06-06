@@ -9,8 +9,6 @@ export function useStyleTrait(
   const states = extractStates(val, ...rest);
   const conditions = extractConditions(...rest);
   const isCustomProp = (prop as string).startsWith('--');
-  const hasConditions = conditions.length > 0;
-  let _savedValue: string | undefined;
 
   const _get = (): string =>
     isCustomProp
@@ -27,13 +25,11 @@ export function useStyleTrait(
     const _val = typeof val === 'function' ? val() : val;
     const applies = conditions.every((i) => (typeof i === 'function' ? i() : i));
     if (applies) {
-      if (hasConditions && _savedValue === undefined) {
-        _savedValue = _get();
+      if (_val === undefined) {
+        isCustomProp ? el.style.removeProperty(prop as string) : (el.style[prop as any] = '');
+      } else {
+        _set(_val);
       }
-      _set(_val);
-    } else if (hasConditions && _savedValue !== undefined) {
-      _set(_savedValue);
-      _savedValue = undefined;
     }
   };
   apply();

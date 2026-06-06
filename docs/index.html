@@ -57,11 +57,11 @@
     <script type="text/javascript" src="assets/prism-bash.min.js"></script>
     <script type="text/javascript" src="assets/prism-typescript.min.js"></script>
   </head>
-  <body><h1 id="oem-310">oem <sup>3.1.0</sup></h1>
+  <body><h1 id="oem-320">oem <sup>3.2.0</sup></h1>
 <h2 id="abstract">Abstract</h2>
-<p>OEM is an agent-first UI framework and toolkit engineered for human-AI collaboration. It provides a declarative syntax for composing reactive UIs that unifies markup, styling, and behavior.</p>
+<p>OEM is an agent-first UI framework and toolkit engineered for human-AI collaboration. It provides a declarative syntax for composing reactive UIs in 100% TypeScript.</p>
 <p>The following documentation describes the core concepts, libraries, and conventions of OEM. The sectsions in this document are normative unless otherwise specified.</p>
-<p><a href="https://github.com/linttrapmedia/oem.git">GITHUB</a> | <a href="https://www.npmjs.com/package/@linttrap/oem">NPM</a></p>
+<p><a href="git+https://github.com/linttrapmedia/oem.git">GITHUB</a> | <a href="https://www.npmjs.com/package/@linttrap/oem">NPM</a></p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#install">Install</a></li>
@@ -125,6 +125,37 @@
 <h2 id="install">Install</h2>
 <p>To get started with OEM, install the package from npm:</p>
 <pre><code class="language-bash">npm install @linttrap/oem
+</code></pre>
+<h2 id="quick-example">Quick Example</h2>
+<pre><code class="language-typescript">// define a template engine
+const [tag, trait] = Template({
+  style: useStyleTrait,
+  event: useEventTrait,
+  text: useTextTrait,
+})
+
+// define state
+const count = State(0);
+
+// define your dom
+const counter = tag.div(
+  trait.style('display', 'flex'),
+  trait.style('alignItems', 'center'),
+  trait.style('gap', '16px'),
+  tag.span(
+    trait.text(count.$val),
+    trait.style('fontSize', '48px'),
+    trait.style('fontWeight', '700'),
+    trait.style('color', '#555555'),
+  ),
+  tag.button(
+    trait.text('+'),
+    trait.event('click', count.$reduce((n) =&gt; n + 1)),
+    trait.style('fontSize', '24px'),
+  ),
+);
+
+// that's it! You just defined: behavior, state, and presentation in one cohesive block of code. 
 </code></pre>
 <h2 id="core-library">Core Library</h2>
 <h2 id="template">Template</h2>

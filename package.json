@@ -1,6 +1,6 @@
 {
   "name": "@linttrap/oem",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "author": "@linttrapmedia",
   "repository": {
     "type": "git",
@@ -14,7 +14,7 @@
     "prettier": "2.7.1"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   },
   "exports": {
     ".": "./src/registry.ts"

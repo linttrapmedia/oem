@@ -52,7 +52,7 @@ for await (const file of new Glob('src/states/*.md').scan('.')) {
 const DOCS = `# oem <sup>${pkg.version}</sup>
 
 ## Abstract
-OEM is an agent-first UI framework and toolkit engineered for human-AI collaboration. It provides a declarative syntax for composing reactive UIs that unifies markup, styling, and behavior.
+OEM is an agent-first UI framework and toolkit engineered for human-AI collaboration. It provides a declarative syntax for composing reactive UIs in 100% TypeScript.
 
 The following documentation describes the core concepts, libraries, and conventions of OEM. The sectsions in this document are normative unless otherwise specified.
 
@@ -82,6 +82,40 @@ To get started with OEM, install the package from npm:
 
 \`\`\`bash
 npm install @linttrap/oem
+\`\`\`
+
+## Quick Example
+
+\`\`\`typescript
+// define a template engine
+const [tag, trait] = Template({
+  style: useStyleTrait,
+  event: useEventTrait,
+  text: useTextTrait,
+})
+
+// define state
+const count = State(0);
+
+// define your dom
+const counter = tag.div(
+  trait.style('display', 'flex'),
+  trait.style('alignItems', 'center'),
+  trait.style('gap', '16px'),
+  tag.span(
+    trait.text(count.$val),
+    trait.style('fontSize', '48px'),
+    trait.style('fontWeight', '700'),
+    trait.style('color', '#555555'),
+  ),
+  tag.button(
+    trait.text('+'),
+    trait.event('click', count.$reduce((n) => n + 1)),
+    trait.style('fontSize', '24px'),
+  ),
+);
+
+// that's it! You just defined: behavior, state, and presentation in one cohesive block of code. 
 \`\`\`
 
 ## Core Library
